@@ -17,6 +17,7 @@ from selenium.common.exceptions import (NoSuchElementException,
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
@@ -107,7 +108,7 @@ class MidJourneyAPI:
         return extracted_messages
 
     @staticmethod
-    def _get_image_url(message) -> str:
+    def _get_image_url(message: WebElement) -> str:
         # Extract image if present
         image_url = ""
         image_element = message.find_elements(By.CSS_SELECTOR, "img.lazyImg-ewiNCh")
@@ -123,7 +124,7 @@ class MidJourneyAPI:
 
         return image_url
 
-    def initialize_webdriver(self):
+    def initialize_webdriver(self) -> None:
         # Setup WebDriverManager
         self.webdriver_service = Service(ChromeDriverManager().install())
 
@@ -169,19 +170,14 @@ class MidJourneyAPI:
             # Input Credentials and submit
             self._submit_credentials()
 
-    def _get_channel_text_area(self):
-        return self.driver.find_elements(
-            By.CSS_SELECTOR, 'div[class*="channelTextArea-"]'
-        )
-
-    def _submit_credentials(self):
+    def _submit_credentials(self) -> None:
         email_input = self.driver.find_element(By.NAME, "email")
         email_input.send_keys(self.email)
         password_input = self.driver.find_element(By.NAME, "password")
         password_input.send_keys(self.password)
         password_input.submit()
 
-    def create_image(self, prompt: str):
+    def create_image(self, prompt: str) -> None:
         if not self.driver:
             raise ValueError("WebDriver not initialized")
 
@@ -223,7 +219,7 @@ class MidJourneyAPI:
         finally:
             self.driver.quit()
 
-    def _wait_for_image(self, old_message_ids, prompt):
+    def _wait_for_image(self, old_message_ids: list[str], prompt: str) -> None:
         while True:
             messages = self.extract_messages()
 
@@ -270,7 +266,7 @@ class MidJourneyAPI:
             time.sleep(1)
 
     @staticmethod
-    def _split_in_four(image):
+    def _split_in_four(image: Image) -> list[Image]:
         width, height = image.size
         images = [
             image.crop((0, 0, math.floor(width / 2), math.floor(height / 2))),
