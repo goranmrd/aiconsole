@@ -5,15 +5,6 @@ from pydantic import validator, Field
 from aiconsole.gpt.consts import GPTMode
 import litellm
 
-AIC_DIRECTORY = os.path.join(os.getcwd(), ".aic")
-MATERIALS_DIRECTORY = os.path.join(os.getcwd(), "materials")
-MATERIALS_CORE_RESOURCE = "aiconsole.materials.core"
-AGENTS_DIRECTORY = os.path.join(os.getcwd(), "agents")
-AGENTS_CORE_RESOURCE = "aiconsole.agents.core"
-CREDENTIALS_DIRECTORY = os.path.join(AIC_DIRECTORY, "credentials")
-DEFAULT_MODE = GPTMode.FAST
-FUNCTION_CALL_OUTPUT_LIMIT: int = 2000
-
 
 # FIXME: Move it to a more appropriate place
 litellm.set_verbose = False
@@ -21,7 +12,6 @@ MAX_BUDGET = None
 
 if MAX_BUDGET:
     litellm.max_budget = MAX_BUDGET
-
 
 
 class Settings(BaseSettings):
@@ -33,13 +23,34 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = Field("INFO", env=["LOG_LEVEL", "LOGLEVEL"])
     LOG_HANDLERS: list[str] = ["console"]
 
+    AIC_DIRECTORY: str = os.path.join(os.getcwd(), ".aic")
+
     HISTORY_LIMIT: int = 1000
-    HISTORY_DIRECTORY: str = os.path.join(AIC_DIRECTORY, "history")
+    HISTORY_DIRECTORY: str = ""
     COMMANDS_HISTORY_JSON: str = "command_history.json"
+
+    MATERIALS_DIRECTORY: str = os.path.join(os.getcwd(), "materials")
+    MATERIALS_CORE_RESOURCE: str = "aiconsole.materials.core"
+    AGENTS_DIRECTORY: str = os.path.join(os.getcwd(), "agents")
+    AGENTS_CORE_RESOURCE: str = "aiconsole.agents.core"
+    CREDENTIALS_DIRECTORY: str = ""
+
+    DEFAULT_MODE: str = GPTMode.FAST.value
+    FUNCTION_CALL_OUTPUT_LIMIT: int = 2000
+
+    MIDJOURNEY_TIMEOUT: int = 100
 
     @validator("LOG_LEVEL", pre=True)
     def uppercase_log_level(cls, v: str) -> str:
         return v.upper()
+
+    @validator("HISTORY_DIRECTORY", always=True)
+    def set_history_directory(cls, value: str, values) -> str:
+        return os.path.join(values["AIC_DIRECTORY"], "history")
+
+    @validator("CREDENTIALS_DIRECTORY", always=True)
+    def set_credentials_directory(cls, value: str, values) -> str:
+        return os.path.join(values["AIC_DIRECTORY"], "credentials")
 
     class Config(SettingsConfigDict):
         env_file = ".env"

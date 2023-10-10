@@ -11,7 +11,7 @@ from aiconsole.aic_types import Agent
 from aiconsole.execution_modes.interpreter import execution_mode_interpreter
 from aiconsole.execution_modes.normal import execution_mode_normal
 from aiconsole.gpt.consts import GPTMode
-from aiconsole.settings import AGENTS_CORE_RESOURCE, AGENTS_DIRECTORY, DEFAULT_MODE
+from aiconsole.settings import settings
 from aiconsole.utils.BatchingWatchDogHandler import BatchingWatchDogHandler
 from aiconsole.utils.list_files_in_file_system import list_files_in_file_system
 from aiconsole.utils.list_files_in_resource_path import list_files_in_resource_path
@@ -34,7 +34,7 @@ class Agents:
         self.agents = {}
 
         observer = watchdog.observers.Observer()
-        observer.schedule(BatchingWatchDogHandler(self.reload), AGENTS_DIRECTORY, recursive=True)
+        observer.schedule(BatchingWatchDogHandler(self.reload), settings.AGENTS_DIRECTORY, recursive=True)
         observer.start()
 
     def all_agents(self):
@@ -54,8 +54,8 @@ class Agents:
         self.agents = {}
 
         paths = [path for paths_yielding_function in [
-            list_files_in_resource_path(AGENTS_CORE_RESOURCE),
-            list_files_in_file_system(AGENTS_DIRECTORY)
+            list_files_in_resource_path(settings.AGENTS_CORE_RESOURCE),
+            list_files_in_file_system(settings.AGENTS_DIRECTORY)
         ] for path in paths_yielding_function]
 
         for path in paths:
