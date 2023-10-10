@@ -1,4 +1,5 @@
 import { PaperAirplaneIcon, StopIcon } from '@heroicons/react/24/solid';
+import TextareaAutosize from 'react-textarea-autosize';
 import { useRef } from 'react';
 
 import { cn } from '../utils/styles';
@@ -31,16 +32,6 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
   const canBeStopped = isExecuteRunning;
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
-
-  if (textAreaRef.current) {
-    if (command.trim() === '') {
-      textAreaRef.current.style.height = `${16 + 24 + 2}px`;
-    } else {
-      textAreaRef.current.style.height = `${
-        textAreaRef.current.scrollHeight + 2
-      }px`;
-    }
-  }
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setCommand(e.target.value);
@@ -89,7 +80,7 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
   return (
     <div className={cn(className, 'flex w-full flex-col p-4  bg-stone-800/20 border-t border-gray-900')}>
       <div className="flex items-center">
-        <textarea
+        <TextareaAutosize
           ref={textAreaRef}
           className="border-slate-300 bg-slate-400 text-slate-900 flex-grow resize-none overflow-hidden rounded-md border px-4 py-2 focus:outline-none focus:ring-2"
           value={command}
