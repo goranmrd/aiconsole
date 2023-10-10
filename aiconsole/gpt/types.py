@@ -1,4 +1,4 @@
-from typing import List, Literal, Optional
+from typing import List, Literal, Optional, Union
 from pydantic import BaseModel
 from typing_extensions import TypedDict
 
@@ -16,12 +16,12 @@ class EnforcedFunctionCall(TypedDict):
 
 class GPTFunctionCall(BaseModel):
     name: str
-    arguments: str
+    arguments: Union[dict, str]
 
 
 class GPTMessage(BaseModel):
     role: GPTRole
-    content: Optional[str]
+    content: Optional[str] = None
     function_call: Optional[GPTFunctionCall] = None
     name: Optional[str] = None
 

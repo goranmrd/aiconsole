@@ -114,8 +114,11 @@ async def director_analyse(request: Chat) -> AnalysisResponse:
         raise ValueError(
             f"Could not find function call in the text: {result}")
 
-    raw_arguments = result.choices[0].message.function_call.arguments
-    arguments = json.loads(raw_arguments, strict=False)
+    arguments = result.choices[0].message.function_call.arguments
+
+    # if arguments is a string retry to parse it as json
+    if isinstance(arguments, str):
+        arguments = json.loads(arguments)
 
     picked_agents = [
         agent for agent in available_agents if agent.id == arguments["agent_id"]]
@@ -127,9 +130,8 @@ async def director_analyse(request: Chat) -> AnalysisResponse:
         log.error(f"Could not find agent in the text: {result}")
         picked_agent = available_agents[0]
 
-    # TODO raw_arguments might not be accurate to check which materials are needed
     relevant_materials = [
-        k for k in available_materials if k.id in raw_arguments]
+        k for k in available_materials if k.id in arguments]
 
     # Maximum of 5 materials
     relevant_materials = relevant_materials[: 5]

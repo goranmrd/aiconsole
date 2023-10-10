@@ -1,7 +1,7 @@
 from ast import parse
 from typing import List, Optional
 from pydantic import BaseModel
-from aiconsole.gpt.types import GPTResponse, GPTRole
+from aiconsole.gpt.types import GPTChoice, GPTFunctionCall, GPTMessage, GPTResponse, GPTRole
 import logging
 import json
 from typing import Union
@@ -53,7 +53,7 @@ class GPTPartialFunctionCall(BaseModel):
     arguments_builder: List[str] = []
 
     @property
-    def arguments(self):
+    def arguments(self) -> Union[dict, str]:
         self.arguments_builder = [''.join(self.arguments_builder)]
         return _parse_partial_json(self.arguments_builder[0])
 
@@ -67,7 +67,8 @@ class GPTPartialMessage(BaseModel):
 
     @property
     def content(self):
-        if self.content_builder is None:
+        _log.debug(f"Content builder: {self.content_builder}")
+        if not self.content_builder:
             return None
     
         self.content_builder = [''.join(self.content_builder)]
@@ -90,7 +91,25 @@ class GPTPartialResponse(BaseModel):
 
     def to_final_response(self):
         _log.debug(f"Partial response: {self.model_dump()}")
-        return GPTResponse(**self.model_dump())
+        return GPTResponse(
+            id=self.id,
+            object=self.object,
+            created=self.created,
+            model=self.model,
+            choices=[GPTChoice(
+                index=choice.index,
+                message=GPTMessage(
+                    role=choice.message.role or "user", # ???
+                    content=choice.message.content,
+                    function_call=GPTFunctionCall(
+                        name=choice.message.function_call.name,
+                        arguments=choice.message.function_call.arguments
+                    ) if choice.message.function_call else None,
+                    name=choice.message.name
+                ),
+                finnish_reason=choice.finnish_reason
+            ) for choice in self.choices]
+        )
 
     def apply_chunk(self, chunk: dict):
 
@@ -144,7 +163,7 @@ class GPTPartialResponse(BaseModel):
                     if "role" in chunk_delta:
                         message.role = chunk_delta["role"]
 
-                    if "content" in chunk_delta:
+                    if "content" in chunk_delta and chunk_delta["content"] != None:
                         if message.content_builder is None:
                             message.content_builder = []
 
