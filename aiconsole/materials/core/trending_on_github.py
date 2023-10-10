@@ -1,0 +1,37 @@
+from typing import List, Literal, Dict
+import requests
+from bs4 import BeautifulSoup
+
+def get_top_trending_repos_information() -> List[Dict[Literal["name", "description"], str]]:
+    """
+    Can be used to get top trending repos on Github
+
+    """
+    url = "https://github.com/trending"
+    response = requests.get(url)
+    soup = BeautifulSoup(response.content, 'html.parser')
+    soup = soup.find_all("div", attrs={"data-hpc": ""})[0]
+
+    if not soup:
+        return []
+
+    repos = []
+
+    for repo in soup.find_all("article", class_="Box-row"):
+        try:
+            repo_description = repo.find("p").text.strip()
+            repo_url = repo.h2.a['href'].strip('/')
+            repos.append({
+                "name": repo_url,
+                "description": repo_description,
+            })
+        except:
+            pass
+
+    return repos
+
+
+material = {
+    "usage": "When you need to know what are the top trending repos on github",
+}
+

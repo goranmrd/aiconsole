@@ -1,0 +1,23 @@
+
+<!---
+Use this to get to know how to get weather information.
+-->
+
+# How to get weather information
+
+In order to get weather data use the following python script:
+
+```python
+import requests
+
+response = requests.get('https://api.open-meteo.com/v1/forecast', params={'latitude': 52.23, 'longitude': 21.01, 'current_weather': True, 'hourly': 'temperature_2m,relativehumidity_2m,windspeed_10m'})
+response.json()
+```
+
+You can get geo location data of cities atc from this api:
+
+https://geocoding-api.open-meteo.com/v1/search?name=WARSAW&count=5&language=en&format=json
+
+to get such info:
+
+{"results":[{"id":756135,"name":"Warsaw","latitude":52.22977,"longitude":21.01178,"elevation":113.0,"feature_code":"PPLC","country_code":"PL","admin1_id":858787,"admin2_id":6695624,"admin3_id":7531926,"timezone":"Europe/Warsaw","population":1702139,"country_id":798544,"country":"Poland","admin1":"Masovian","admin2":"Warszawa","admin3":"Warsaw"}, ...],"generationtime_ms":0.62298775}
