@@ -5,7 +5,7 @@ from aiconsole.gpt.types import GPTFunctionCall, GPTMessage
 
 from typing import List
 
-from aiconsole.settings import FUNCTION_CALL_OUTPUT_LIMIT
+from aiconsole.settings import settings
 
 
 last_system_message = None
@@ -52,8 +52,8 @@ def convert_message(message: AICMessage) -> List[GPTMessage]:
             content = "No output"
 
         # Enforce limit on output length, and put info that it was truncated only if limit was reached, truncate so the last part remains (not the first)
-        if (len(content) > FUNCTION_CALL_OUTPUT_LIMIT):
-            content = f"Output truncated to last {FUNCTION_CALL_OUTPUT_LIMIT} characters: \n\n...\n{content[-FUNCTION_CALL_OUTPUT_LIMIT:]}"
+        if (len(content) > settings.FUNCTION_CALL_OUTPUT_LIMIT):
+            content = f"Output truncated to last {settings.FUNCTION_CALL_OUTPUT_LIMIT} characters: \n\n...\n{content[-FUNCTION_CALL_OUTPUT_LIMIT:]}"
 
     elif (message.agent_id != 'user'):
         name = message.agent_id

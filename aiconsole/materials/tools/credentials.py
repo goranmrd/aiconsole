@@ -1,11 +1,11 @@
 import json
 import os
 
-from aiconsole.settings import CREDENTIALS_DIRECTORY
+from aiconsole.settings import settings
 
 def save_credential(module: str, credential: str, value: str):
     # Specify the path for the credential file
-    file_path = os.path.join(CREDENTIALS_DIRECTORY, module + ".json")
+    file_path = os.path.join(settings.CREDENTIALS_DIRECTORY, module + ".json")
     
     # Ensure the directory for the file exists
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
@@ -33,7 +33,7 @@ def load_credential(module: str, credential: str) -> str:
     
     # Try file
     try: 
-        with open(os.path.join(CREDENTIALS_DIRECTORY, module + ".json"), "r") as f:
+        with open(os.path.join(settings.CREDENTIALS_DIRECTORY, module + ".json"), "r") as f:
             value = str(json.loads(f.read())[credential])
             if value:
                 return value
