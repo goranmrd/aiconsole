@@ -7,7 +7,7 @@ const keyAspects = [
       'Construct your own personal AIs, fitted to your bespoke requirements. Spend time on your tool, and watch it grow better and sharper with time.',
     btnText: 'Guide me through building my personal assistant using AIConsole.',
   },
-  
+
   {
     title: 'Teach Your AI New Tricks',
     description:
@@ -18,7 +18,8 @@ const keyAspects = [
     title: 'Build Domain-Specific Tools',
     description:
       'Engineer domain tools for the AIConsole, personalizing it to cater to niche tasks and specifications.',
-    btnText: 'How to develop and customize my domain-specific tools in AIConsole?',
+    btnText:
+      'How to develop and customize my domain-specific tools in AIConsole?',
   },
   {
     title: 'Run It Locally',
@@ -49,8 +50,14 @@ export const Welcome = () => {
   return (
     <div className="flex flex-col items-center justify-center h-full">
       <section className="container mx-auto px-6 py-8">
-        <img src="/logo.png" className="filter saturate-200 opacity-75 shadows-lg w-20 h-20 mx-auto m-4" alt="Logo" />
-        <h2 className="text-4xl font-bold mb-4  text-center">Welcome to AIConsole!</h2>
+        <img
+          src="/logo.png"
+          className="filter saturate-200 opacity-75 shadows-lg w-20 h-20 mx-auto m-4"
+          alt="Logo"
+        />
+        <h2 className="text-4xl font-bold mb-4  text-center">
+          Welcome to AIConsole!
+        </h2>
         <p className="text-xl mb-12  text-center">
           The platform to build your AI universe.
         </p>

@@ -21,13 +21,13 @@ function App() {
   return (
     <MantineProvider>
       <Notifications position="top-right" />
-        <div className="App flex flex-col h-screen fixed top-0 left-0 bottom-0 right-0 bg-gray-800 dark: text-slate-200">
-          <TopBar />
-          <div className="flex flex-row h-full">
-            <SideBar />
-            {chat_id && <Chat chatId={chat_id} />}
-          </div>
+      <div className="App flex flex-col h-screen fixed top-0 left-0 bottom-0 right-0 bg-gray-800 dark: text-slate-200">
+        <TopBar />
+        <div className="flex flex-row h-full overflow-y-auto">
+          <SideBar />
+          {chat_id && <Chat chatId={chat_id} />}
         </div>
+      </div>
     </MantineProvider>
   );
 }

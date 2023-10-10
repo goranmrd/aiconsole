@@ -115,7 +115,7 @@ export function Chat({ chatId }: { chatId: string }) {
   return (
     <div className="flex w-full flex-col justify-between bg-gray-800 dark: text-slate-200">
       <div
-        className="flex-grow overflow-y-auto flex flex-col"
+        className="h-full overflow-y-auto flex flex-col"
         ref={messagesEndRef}
       >
         {messages?.length === 0 ? (
@@ -149,7 +149,10 @@ export function Chat({ chatId }: { chatId: string }) {
           </>
         )}
       </div>
-      <CommandInput className='flex-none' onSubmit={() => setAutoScrolling(true)} />
+      <CommandInput
+        className="flex-none"
+        onSubmit={() => setAutoScrolling(true)}
+      />
     </div>
   );
 }
