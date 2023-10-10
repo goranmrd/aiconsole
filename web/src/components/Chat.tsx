@@ -7,7 +7,6 @@ import { useWebSocketStore } from '../store/useWebSocketStore';
 import { BlinkingCursor } from './BlinkingCursor';
 import { cn } from '../utils/styles';
 import { UserInfo } from './UserInfo';
-import { TopBar } from './TopBar';
 
 export function Chat({ chatId }: { chatId: string }) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -15,7 +14,9 @@ export function Chat({ chatId }: { chatId: string }) {
   const [autoScrolling, setAutoScrolling] = useState<boolean>(false);
   const timerIdRef = useRef<number | null>(null);
 
-  const calculateGroupedMessages = useAICStore((state) => state.groupedMessages);
+  const calculateGroupedMessages = useAICStore(
+    (state) => state.groupedMessages,
+  );
   const setChatId = useAICStore((state) => state.setChatId);
   const isAnalysisRunning = useAICStore((state) => state.isAnalysisRunning);
   const isExecuteRunning = useAICStore((state) => state.isExecuteRunning);
@@ -41,7 +42,7 @@ export function Chat({ chatId }: { chatId: string }) {
     const textAreas = document.getElementsByTagName('textarea');
     if (textAreas.length === 1) {
       textAreas[0].focus();
-    } 
+    }
 
     setAutoScrolling(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -51,7 +52,6 @@ export function Chat({ chatId }: { chatId: string }) {
     setAutoScrolling(false);
 
     if (!scrolling) {
-
       //check if we are at the bottom of the chat
       const { current } = messagesEndRef;
       if (!current) return;
@@ -114,7 +114,6 @@ export function Chat({ chatId }: { chatId: string }) {
 
   return (
     <div className="flex w-full flex-col justify-between bg-gray-800 dark: text-slate-200">
-      <TopBar />
       <div
         className="flex-grow overflow-y-auto flex flex-col"
         ref={messagesEndRef}
@@ -145,15 +144,12 @@ export function Chat({ chatId }: { chatId: string }) {
                   </div>
                 </div>
               )}
-              {!isAnalysisRunning && (
-                <div className="flex flex-row h-4">
-                </div>
-              )}
+              {!isAnalysisRunning && <div className="flex flex-row h-4"></div>}
             </div>
           </>
         )}
       </div>
-      <CommandInput onSubmit={() => setAutoScrolling(true)} />
+      <CommandInput className='flex-none' onSubmit={() => setAutoScrolling(true)} />
     </div>
   );
 }

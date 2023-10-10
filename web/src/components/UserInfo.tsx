@@ -16,7 +16,7 @@ export function UserInfo({
         <img
           title={agent.id}
           src={`http://${window.location.hostname}:8000/profile/${agent.id}.jpg`}
-          className="w-14 h-14 rounded-xl mb-2  border shadow-md border-slate-800"
+          className="w-14 h-14 rounded-full mb-2  border shadow-md border-slate-800"
         />
       )}
       <div
@@ -29,7 +29,7 @@ export function UserInfo({
       {materials.map((material) => (
         <div
           key={material.id}
-          className=" font-bold w-20 text-xs text-center overflow-ellipsis overflow-hidden whitespace-nowrap"
+          className="font-bold w-20 text-xs text-center overflow-ellipsis overflow-hidden whitespace-nowrap"
           title={`id: ${material.id}\nusage: ${material.usage}\ncontent: ${
             material.content.length > 100
               ? material.content.substring(0, 100) + '...'
