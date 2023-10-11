@@ -13,16 +13,10 @@ from aiconsole.gpt.types import CLEAR_STR
 import logging
 from pydantic import Field
 
+from aiconsole.websockets.messages import DebugJSONWSMessage
+
 
 _log = logging.getLogger(__name__)
-
-
-class RunParameters(OpenAISchema):
-    lang: str = Field(..., json_schema_extra={"type": "string", "enum": [
-        language for language in language_map.keys()
-    ]})
-
-    code: str = Field(..., json_schema_extra={"type": "string"})
 
 
 class Run(OpenAISchema):
@@ -30,7 +24,11 @@ class Run(OpenAISchema):
     This function executes the given code on the user's system using the local environment and returns the output.
     """
 
-    parameters = RunParameters
+    lang: str = Field(..., json_schema_extra={"type": "string", "enum": [
+        language for language in language_map.keys()
+    ]})
+
+    code: str = Field(..., json_schema_extra={"type": "string"})
 
 
 async def execution_mode_interpreter(
@@ -61,6 +59,8 @@ async def execution_mode_interpreter(
             preferred_tokens=2000
         )
     ):
+
+
         if chunk == CLEAR_STR:
             yield CLEAR_STR
             continue
@@ -83,7 +83,9 @@ async def execution_mode_interpreter(
 
             # We need to handle incorrect OpenAI responses, sometmes arguments is a string containing the code
             if isinstance(arguments, str):
+
                 if language is None and function_call.name in languages:
+                    # Languge is in the name of the function call
                     language = function_call.name
                     yield f'<<<< START CODE ({language}) >>>>'
 
@@ -99,16 +101,20 @@ async def execution_mode_interpreter(
                         yield code_delta
 
             else:
-                if language is None and arguments and "language" in arguments and arguments["language"] in languages:
+                if language is None and arguments and arguments.get("language", "") in languages:
                     language = arguments["language"]
                     yield f'<<<< START CODE ({language}) >>>>'
 
-                if language is not None and arguments and "code" in arguments:
+                if arguments and "code" in arguments:
+                    if language is None:
+                        language = "python"
+                        yield f'<<<< START CODE ({language}) >>>>'
                     code_delta = arguments["code"][len(code):]
                     code = arguments["code"]
 
                     if code_delta:
                         yield code_delta
+                
 
     # If the code starts with a !, that means a shell command
     if language == "python" and code.startswith("!"):
