@@ -33,11 +33,11 @@ export function MessageControls({
         </>
       ) : (
         <>
-          {onSaveClick && onEditClick && onCancelClick && (
+          {onSaveClick && onEditClick && onCancelClick ? (
             <button>
               <PencilIcon onClick={onEditClick} className="h-5 w-5" />{' '}
             </button>
-          )}
+          ): <div className="h-5 w-5"></div>}
         </>
       )}
       {onRemoveClick && (

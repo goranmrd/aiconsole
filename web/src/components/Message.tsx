@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import { ChangeEvent, useCallback, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import TextareaAutosize from 'react-textarea-autosize';
@@ -42,15 +42,15 @@ export function Message({ message, isStreaming }: MessageProps) {
     setIsEditing(false);
   }, [content, message.id, updateMessage]);
 
-  const messageContent = useMemo(() => {
-    const handleBlur = () => {
-      // setTimeout with 0ms to delay the handleSaveClick call, this will ensure the
-      // onClick event has priority over the onBlur event.
-      setTimeout(handleSaveClick, 0);
-    };
+  const handleBlur = useCallback(() => {
+    // setTimeout with 0ms to delay the handleSaveClick call, this will ensure the
+    // onClick event has priority over the onBlur event.
+    setTimeout(handleSaveClick, 0);
+  }, [handleSaveClick]);
 
-    if (isEditing) {
-      return (
+  return (
+    <div className="flex flex-grow items-start">
+      {isEditing ? (
         <div className="bg-[#00000080] rounded-md w-[660px]">
           <TextareaAutosize
             className="resize-none border-0 bg-transparent w-full outline-none h-96 p-4"
@@ -59,23 +59,7 @@ export function Message({ message, isStreaming }: MessageProps) {
             onBlur={handleBlur} // added onBlur event here
           />
         </div>
-      );
-    }
-  }, [
-    isEditing,
-    content,
-    message.content,
-    message.code,
-    message.role,
-    message.code_output,
-    message.language,
-    handleSaveClick,
-    isStreaming,
-  ]);
-
-  return (
-    <div className="flex flex-grow items-start">
-      {
+      ) : (
         <>
           {message.code && (
             <>
@@ -84,7 +68,7 @@ export function Message({ message, isStreaming }: MessageProps) {
                 style={darcula}
                 children={message.content}
                 language={message.language}
-                className="not-prose overflow-scroll max-w-2xl"
+                className="overflow-scroll max-w-2xl"
               />
             </>
           )}
@@ -96,57 +80,62 @@ export function Message({ message, isStreaming }: MessageProps) {
                 style={darcula}
                 children={message.content}
                 language={'text'}
-                className="not-prose basis-0 flex-grow overflow-scroll max-w-2xl"
+                className="basis-0 flex-grow overflow-scroll max-w-2xl"
               />
             </>
           )}
 
           {!message.code && !message.code_output && message.role !== 'user' && (
-            <div className="prose prose-stone dark:prose-invert">
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                components={{
-                  img: ({ src, ...props }) => {
-                    return (
-                      <a href={`${BASE_URL}/image?path=${src}`} target="_blank">
-                        <img
-                          src={`${BASE_URL}/image?path=${src}`}
-                          {...props}
-                          className=" max-w-xs rounded-md float-left mr-5 "
-                          alt={props.alt}
+            <div className="flex-grow">
+              <div className="prose prose-stone dark:prose-invert">
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    img: ({ src, ...props }) => {
+                      return (
+                        <a
+                          href={`${BASE_URL}/image?path=${src}`}
+                          target="_blank"
+                        >
+                          <img
+                            src={`${BASE_URL}/image?path=${src}`}
+                            {...props}
+                            className=" max-w-xs rounded-md float-left mr-5 "
+                            alt={props.alt}
+                          />
+                        </a>
+                      );
+                    },
+                    code(props) {
+                      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                      const { children, className, inline, node, ...rest } =
+                        props;
+                      const match = /language-(\w+)/.exec(className || '');
+                      return !inline && match ? (
+                        <SyntaxHighlighter
+                          {...rest}
+                          style={darcula}
+                          children={String(children).replace(/\n$/, '')}
+                          language={match[1]}
+                          PreTag="div"
                         />
-                      </a>
-                    );
-                  },
-                  code(props) {
-                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                    const { children, className, inline, node, ...rest } =
-                      props;
-                    const match = /language-(\w+)/.exec(className || '');
-                    return !inline && match ? (
-                      <SyntaxHighlighter
-                        {...rest}
-                        style={darcula}
-                        children={String(children).replace(/\n$/, '')}
-                        language={match[1]}
-                        PreTag="div"
-                      />
-                    ) : (
-                      <code {...rest} className={className}>
-                        {children}
-                      </code>
-                    );
-                  },
-                }}
-              >
-                {message.content}
-              </ReactMarkdown>
-              {isStreaming && !message.content && <BlinkingCursor />}
+                      ) : (
+                        <code {...rest} className={className}>
+                          {children}
+                        </code>
+                      );
+                    },
+                  }}
+                >
+                  {message.content}
+                </ReactMarkdown>
+                {isStreaming && !message.content && <BlinkingCursor />}
+              </div>
             </div>
           )}
 
           {!message.code && !message.code_output && message.role === 'user' && (
-            <div>
+            <div className="flex-grow">
               {message.content.split('\n').map((line, index) => (
                 <span key={`line-${index}`} style={{ whiteSpace: 'pre-wrap' }}>
                   {line}
@@ -156,7 +145,7 @@ export function Message({ message, isStreaming }: MessageProps) {
             </div>
           )}
         </>
-      }
+      )}
 
       {!isStreaming && (
         <MessageControls
