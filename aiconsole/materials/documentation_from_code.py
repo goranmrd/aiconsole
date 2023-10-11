@@ -1,7 +1,7 @@
 import importlib.util
 import logging
 
-log = logging.getLogger(__name__)
+_log = logging.getLogger(__name__)
 
 
 def documentation_from_code(module_name: str, path: str):

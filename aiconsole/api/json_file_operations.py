@@ -6,7 +6,7 @@ from typing import Callable
 
 from fastapi import HTTPException, status
 
-log = logging.getLogger(__name__)
+_log = logging.getLogger(__name__)
 
 
 def json_write() -> Callable[[str, str, dict | list], None]:
@@ -16,7 +16,7 @@ def json_write() -> Callable[[str, str, dict | list], None]:
             with open(Path(directory) / file_name, "w") as f:
                 json.dump(content, f, indent=4)
         except Exception as e:
-            log.error(f"Failed to save to json file: {e}")
+            _log.error(f"Failed to save to json file: {e}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Failed to save history"
@@ -37,7 +37,7 @@ def json_read() -> Callable[[str, list | dict], dict | list]:
             return data
 
         except Exception as e:
-            log.error(f"Failed to read file: {e} {file_path}")
+            _log.error(f"Failed to read file: {e} {file_path}")
             raise HTTPException(
                 status_code=500,
                 detail="Failed to read file"

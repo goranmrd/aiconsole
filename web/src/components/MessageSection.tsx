@@ -32,8 +32,8 @@ export function MessageSection({ messageSection, isStreaming }: MessageProps) {
 
   if (messageSection.foldable) {
     return (
-      <div className="flex justify-between items-center relative">
-        <div className="p-5 rounded-md flex flex-col gap-5 max-w-4xl bg-gray-300/5 ">
+      <div className="flex justify-between items-center">
+        <div className="p-5 rounded-md flex flex-col gap-5 bg-primary/5  flex-grow">
           <div
             className="cursor-pointer"
             onClick={() => setFolded((folded) => !folded)}

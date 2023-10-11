@@ -63,7 +63,8 @@ export function Chat({ chatId, autoScrolling, setAutoScrolling }: { chatId: stri
         setAutoScrolling(true);
       }
     }
-  }, [scrolling]);
+  // intentional trigger when scrolling changes
+  }, [scrolling]); // eslint-disable-line react-hooks/exhaustive-deps 
 
   useEffect(() => {
     const { current } = messagesEndRef;

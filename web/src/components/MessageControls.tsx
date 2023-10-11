@@ -21,7 +21,7 @@ export function MessageControls({
   onRemoveClick,
 }: MessageControlsProps) {
   return (
-    <div className="flex gap-4 absolute top-0 right-0">
+    <div className="flex gap-4 px-4 self-start">
       {isEditing ? (
         <>
           <button>

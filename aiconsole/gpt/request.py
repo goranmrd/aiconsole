@@ -8,7 +8,7 @@ from aiconsole.gpt.consts import MODEL_DATA, GPTMode, GPTModel
 from aiconsole.gpt.types import EnforcedFunctionCall, GPTMessage
 from aiconsole.gpt.token_error import TokenError
 
-log = logging.getLogger(__name__)
+_log = logging.getLogger(__name__)
 
 EXTRA_BUFFER_FOR_ENCODING_OVERHEAD = 50
 
@@ -45,7 +45,7 @@ class GPTRequest:
         available_tokens = self.model_max_tokens - used_tokens
 
         if available_tokens < min_tokens:
-            log.error(
+            _log.error(
                 f"Not enough tokens to perform the modification. Used tokens: {used_tokens},"
                 f" available tokens: {available_tokens},"
                 f" requested tokens: {self.max_tokens}"
@@ -126,7 +126,7 @@ class GPTRequest:
         model_max_tokens = self.model_max_tokens
 
         if used_tokens - model_max_tokens >= self.max_tokens:
-            log.error(
+            _log.error(
                 f"Not enough tokens to perform the modification. Used tokens: {used_tokens},"
                 f" available tokens: {model_max_tokens},"
                 f" requested tokens: {self.max_tokens}"

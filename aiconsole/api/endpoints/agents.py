@@ -7,7 +7,7 @@ from aiconsole.gpt.consts import GPTMode
 
 router = APIRouter()
 
-log = logging.getLogger(__name__)
+_log = logging.getLogger(__name__)
 
 @router.get("/agents")
 async def agents_handler():

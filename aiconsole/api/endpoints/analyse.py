@@ -8,7 +8,7 @@ from aiconsole.analysis.director import director_analyse
 from aiconsole.websockets.messages import ErrorWSMessage
 
 router = APIRouter()
-log = logging.getLogger(__name__)
+_log = logging.getLogger(__name__)
 
 @router.post("/analyse")
 async def director(chat: Chat) -> AnalysisResponse:

@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from aiconsole.api.endpoints import analyse, chats, commands_history, execute, profile, image, agents, run_code, ws
+from aiconsole.api.endpoints import analyse, chats, commands_history, execute, profile, image, agents, run_code, ws, material
 
 
 app_router = APIRouter()
@@ -14,3 +14,4 @@ app_router.include_router(chats.router, prefix="/chats", tags=["chats"])
 app_router.include_router(commands_history.router, tags=["commands_history"])
 app_router.include_router(agents.router, tags=["agents"])
 app_router.include_router(ws.router, tags=["ws"])
+app_router.include_router(material.router, tags=["material"])

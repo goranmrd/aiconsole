@@ -6,7 +6,7 @@ from fastapi.responses import FileResponse
 
 router = APIRouter()
 
-log = logging.getLogger(__name__)
+_log = logging.getLogger(__name__)
 
 @router.get("/image")
 async def image(path: str):

@@ -7,7 +7,7 @@ from aiconsole.websockets import connection_manager
 
 router = APIRouter()
 
-log = logging.getLogger(__name__)
+_log = logging.getLogger(__name__)
 
 class IncomingMessage(BaseModel):
     type: str

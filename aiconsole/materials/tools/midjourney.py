@@ -25,8 +25,8 @@ from webdriver_manager.chrome import ChromeDriverManager
 from aiconsole.materials.tools.credentials import load_credential
 from aiconsole.settings import settings
 
-log = logging.getLogger(__name__)
-log.setLevel(settings.LOG_LEVEL)
+_log = logging.getLogger(__name__)
+_log.setLevel(settings.LOG_LEVEL)
 
 
 class MidJourneyImageType(str, Enum):
@@ -214,7 +214,7 @@ class MidJourneyAPI:
             self.driver.switch_to.active_element.send_keys(prompt)
             self.driver.switch_to.active_element.send_keys(Keys.RETURN)
 
-            log.info("Prompt sent, monitoring for results ...")
+            _log.info("Prompt sent, monitoring for results ...")
             self._wait_for_image(old_message_ids, prompt)
         finally:
             self.driver.quit()
@@ -247,7 +247,7 @@ class MidJourneyAPI:
                     ):
                         download_url = message.images[0]
                         file_name = download_url.split("/")[-1].split("?")[0]
-                        log.info(f"Downloading image: {file_name}")
+                        _log.info(f"Downloading image: {file_name}")
                         # Assuming it should be a GET request
                         response = requests.get(download_url)
                         image = Image.open(BytesIO(response.content))
@@ -258,9 +258,9 @@ class MidJourneyAPI:
                         images = self._split_in_four(image)
                         for i, image in enumerate(images):
                             image.save(f"{file_name}-{i}.png", **metadata)
-                            log.info(f"Saved image: {file_name}-{i}.png")
+                            _log.info(f"Saved image: {file_name}-{i}.png")
 
-                        log.info("Image generated: " + str(image))
+                        _log.info("Image generated: " + str(image))
                         return image
 
             time.sleep(1)

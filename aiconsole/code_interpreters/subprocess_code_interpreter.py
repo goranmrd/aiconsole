@@ -41,7 +41,7 @@ from typing import Generator
 from .base_code_interpreter import BaseCodeInterpreter
 import logging
 
-log = logging.getLogger(__name__)
+_log = logging.getLogger(__name__)
 
 class SubprocessCodeInterpreter(BaseCodeInterpreter):
     def __init__(self):
@@ -155,7 +155,7 @@ class SubprocessCodeInterpreter(BaseCodeInterpreter):
 
     def handle_stream_output(self, stream, is_error_stream):
         for line in iter(stream.readline, ''):
-            log.debug(f"Received output line:\n{line}\n---")
+            _log.debug(f"Received output line:\n{line}\n---")
 
             line = self.line_postprocessor(line)
 

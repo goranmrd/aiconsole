@@ -10,7 +10,7 @@ from aiconsole.api.json_file_operations import json_read, json_write
 from aiconsole.settings import settings
 
 router = APIRouter()
-log = logging.getLogger(__name__)
+_log = logging.getLogger(__name__)
 
 
 @router.get("/commands/history")

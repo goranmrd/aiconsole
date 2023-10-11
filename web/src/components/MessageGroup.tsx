@@ -13,14 +13,13 @@ export function MessageGroup({
   return (
     <div
       className={cn(
-        'flex flex-row shadow-md border-t border-gray-900/50 p-5',
+        'flex flex-row shadow-md border-t border-gray-900/50 py-10',
         group.role === 'user' ? 'bg-gray-800/20' : 'bg-gray-700/20',
       )}
     >
-      <div className="container flex mx-auto gap-4">
-        <UserInfo agent_id={group.agent_id} materials={group.materials} />
+      <div className="container flex mx-auto gap-5">
+        <UserInfo agent_id={group.agent_id} materials={group.materials} task={group.task} />
         <div className="flex-grow flex flex-col gap-5">
-          {group.task && <h3 className='font-bold italic'>Task: {group.task}</h3> }
           {group.sections.map((section, index) => (
             <MessageSection
               key={section.id}

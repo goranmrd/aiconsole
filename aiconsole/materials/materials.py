@@ -7,7 +7,7 @@ from typing import Dict
 import watchdog.events
 import watchdog.observers
 
-from aiconsole.aic_types import Material
+from aiconsole.aic_types import Material, StaticMaterial
 from aiconsole.utils.BatchingWatchDogHandler import BatchingWatchDogHandler
 from aiconsole.settings import settings
 from aiconsole.materials.documentation_from_code import documentation_from_code
@@ -15,7 +15,7 @@ from aiconsole.utils.list_files_in_file_system import list_files_in_file_system
 from aiconsole.utils.list_files_in_resource_path import list_files_in_resource_path
 from aiconsole.websockets.messages import NotificationWSMessage
 
-log = logging.getLogger(__name__)
+_log = logging.getLogger(__name__)
 
 
 class Materials:
@@ -39,6 +39,19 @@ class Materials:
         Return all loaded materials.
         """
         return list(self.materials.values())
+    
+
+    def save_static(self, material: StaticMaterial):
+        """
+        Save a static material.
+        """
+        self.materials[material.id] = Material(
+            id=material.id, usage=material.usage, content=lambda context, content=material.content: content
+        )
+
+        # Save to .md file
+        with open(os.path.join(settings.MATERIALS_DIRECTORY, f"{material.id}.md"), "w") as file:
+            file.write(f"<!--- {material.usage} -->\n\n{material.content}")
 
     def delete_material(self, name):
         """
@@ -49,7 +62,7 @@ class Materials:
         del self.materials[name]
 
     async def reload(self):
-        log.info("Reloading materials ...")
+        _log.info("Reloading materials ...")
 
         self.materials = {}
 

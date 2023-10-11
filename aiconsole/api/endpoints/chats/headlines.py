@@ -1,7 +1,7 @@
 import os
 from fastapi import Depends
 from typing import Callable
-from aiconsole.api.endpoints.chats.history import log, router
+from aiconsole.api.endpoints.chats.history import _log, router
 from aiconsole.api.json_file_operations import json_read
 from aiconsole.settings import settings
 
@@ -37,5 +37,5 @@ def get_history_headlines(get_json: Callable = Depends(json_read)):
                             break  # Exit the loop after finding the first user message
 
             except Exception as e:
-                log.error(f"Failed to get history: {e} {file.path}")
+                _log.error(f"Failed to get history: {e} {file.path}")
     return headlines

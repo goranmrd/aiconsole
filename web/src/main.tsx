@@ -8,8 +8,14 @@ import { useAICStore } from './store/AICStore.ts';
 
 import ErrorPage from './components/ErrorPage.tsx';
 import App from './components/App.tsx';
+import { MaterialView } from './components/MaterialView.tsx';
 
 const router = createBrowserRouter([
+  {
+    path: '/materials/:material_id',
+    element: <MaterialView/>,
+    errorElement: <ErrorPage />,
+  },
   {
     path: '/',
     element: <App/>,
@@ -20,6 +26,7 @@ const router = createBrowserRouter([
     element: <App/>,
     errorElement: <ErrorPage />,
   },
+  
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
