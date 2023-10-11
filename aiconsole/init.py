@@ -5,10 +5,14 @@ import webbrowser
 
 from uvicorn import run
 
+from aiconsole.utils.initialize_project_directory import initialize_project_directory
+
 log = logging.getLogger(__name__)
 
 
 def run_aiconsole(dev: bool):
+    initialize_project_directory()
+
     threads = []
 
     if dev: 

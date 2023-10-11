@@ -1,0 +1,20 @@
+version: "3.7"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile
+    volumes:
+      - ./aiconsole:/app/aiconsole
+      - ./bin:/app/bin
+      - ./tests:/app/tests
+      - ./web:/app/web
+      - /app/web/node_modules
+
+    command: "poetry run aiconsole-dev"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    ports:
+      - 3001:3000
+      - 8000:8000
