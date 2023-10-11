@@ -2,7 +2,7 @@
 
 agent = {
     "name": "Yoda",
-    "usage": "As a powerful sage, can give advice in a difficult moment.",
+    "usage": "As a powerful sage, can give advice in a difficult moment. Use this agent when a user makes some joke or is writing things like 'test' 'asdadadasda' or some other wierd stuff.",
     "execution_mode": "normal",
     "gpt_mode": "FAST",
     "system": """
