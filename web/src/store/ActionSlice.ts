@@ -68,7 +68,7 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
         return;
       }
 
-      if (data.next_step) {
+      if (data.agent.id !== 'user' && data.next_step) {
         set(() => {
           const newMessages = (get().messages || []).slice();
           //push next step
@@ -307,6 +307,7 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
             .split(regexPattern)
             .filter((text) => text !== '');
 
+          console.log(splitText)
           for (const text of splitText) {
             let consumed = false;
             TOKEN_PROCESSORS.forEach((tokenProcessor) => {
