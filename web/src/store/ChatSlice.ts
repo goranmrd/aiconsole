@@ -11,6 +11,7 @@ export type ChatSlice = {
   deleteChat: (id: string) => Promise<void>;
   initChatHistory: () => Promise<void>;
   saveCurrentChatHistory: () => Promise<void>;
+  updateChatHeadline: (id: string, headline: string) => Promise<void>;
 };
 
 export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
@@ -59,6 +60,24 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
     });
 
     await get().initChatHistory();
+  },
+  updateChatHeadline: async (id: string, headline: string) => {
+    const editedHeadline = get().chatHeadlines.find((chat) => chat.id === id);
+    const editedHeadlineIndex = get().chatHeadlines.findIndex(
+      (chat) => chat.id === id,
+    );
+
+    if (!editedHeadline) return;
+    editedHeadline.message = headline;
+    set(() => ({
+      chatHeadlines: [
+        ...get().chatHeadlines.slice(0, editedHeadlineIndex),
+        editedHeadline,
+        ...get().chatHeadlines.slice(editedHeadlineIndex + 1),
+      ],
+    }));
+
+    await Api.updateChatHeadline(id, headline);
   },
 });
 

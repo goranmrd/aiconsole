@@ -37,6 +37,11 @@ export const Api = (function () {
   const analyse = (body: object, signal?: AbortSignal) =>
     ky.post(`${BASE_URL}/analyse`, { json: { ...body }, signal, timeout: 60000 });
 
+  const updateChatHeadline = (id: string, headline: string) =>
+    ky.post(`${BASE_URL}/chats/headlines/${id}`, {
+      json: { headline },
+    });
+
   return {
     execute,
     run_code,
@@ -50,5 +55,6 @@ export const Api = (function () {
     saveCommandToHistory,
     saveHistory,
     deleteChat,
+    updateChatHeadline
   };
 })()
