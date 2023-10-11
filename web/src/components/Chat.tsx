@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { CommandInput } from './CommandInput';
 import { MessageGroup } from './MessageGroup';
 import { Welcome } from './Welcome';
 import { useAICStore } from '../store/AICStore';
@@ -8,10 +7,9 @@ import { BlinkingCursor } from './BlinkingCursor';
 import { cn } from '../utils/styles';
 import { UserInfo } from './UserInfo';
 
-export function Chat({ chatId }: { chatId: string }) {
+export function Chat({ chatId, autoScrolling, setAutoScrolling }: { chatId: string, autoScrolling: boolean, setAutoScrolling: (value: boolean) => void }) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [scrolling, setScrolling] = useState<boolean>(false);
-  const [autoScrolling, setAutoScrolling] = useState<boolean>(false);
   const timerIdRef = useRef<number | null>(null);
 
   const calculateGroupedMessages = useAICStore(
@@ -113,46 +111,37 @@ export function Chat({ chatId }: { chatId: string }) {
   const groupedMessages = calculateGroupedMessages();
 
   return (
-    <div className="flex w-full flex-col justify-between bg-gray-800 dark: text-slate-200">
-      <div
-        className="h-full overflow-y-auto flex flex-col"
-        ref={messagesEndRef}
-      >
-        {messages?.length === 0 ? (
-          <Welcome />
-        ) : (
-          <>
-            <div>
-              {groupedMessages.map((group, index) => (
-                <MessageGroup
-                  group={group}
-                  key={group.id}
-                  isStreaming={
-                    isExecuteRunning && index === groupedMessages.length - 1
-                  }
-                />
-              ))}
-              {isAnalysisRunning && (
-                <div className={cn('flex flex-row  p-5')}>
-                  <div className="container flex mx-auto gap-4">
-                    <UserInfo agent_id={''} materials={[]} />
-                    <div className="flex-grow flex flex-col gap-5">
-                      <h3 className="italic">
-                        Assigning agent ... <BlinkingCursor />{' '}
-                      </h3>
-                    </div>
+    <div className="h-full overflow-y-auto flex flex-col" ref={messagesEndRef}>
+      {messages?.length === 0 ? (
+        <Welcome />
+      ) : (
+        <>
+          <div>
+            {groupedMessages.map((group, index) => (
+              <MessageGroup
+                group={group}
+                key={group.id}
+                isStreaming={
+                  isExecuteRunning && index === groupedMessages.length - 1
+                }
+              />
+            ))}
+            {isAnalysisRunning && (
+              <div className={cn('flex flex-row  p-5')}>
+                <div className="container flex mx-auto gap-4">
+                  <UserInfo agent_id={''} materials={[]} />
+                  <div className="flex-grow flex flex-col gap-5">
+                    <h3 className="italic">
+                      Assigning agent ... <BlinkingCursor />{' '}
+                    </h3>
                   </div>
                 </div>
-              )}
-              {!isAnalysisRunning && <div className="flex flex-row h-4"></div>}
-            </div>
-          </>
-        )}
-      </div>
-      <CommandInput
-        className="flex-none"
-        onSubmit={() => setAutoScrolling(true)}
-      />
+              </div>
+            )}
+            {!isAnalysisRunning && <div className="flex flex-row h-4"></div>}
+          </div>
+        </>
+      )}
     </div>
   );
 }

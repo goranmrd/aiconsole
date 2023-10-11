@@ -78,11 +78,11 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
   };
 
   return (
-    <div className={cn(className, 'flex w-full flex-col p-4  bg-stone-800/20 border-t border-gray-900')}>
+    <div className={cn(className, 'flex w-full flex-col p-4  bg-gray-800/90 border-t border-white/10')}>
       <div className="flex items-center">
         <TextareaAutosize
           ref={textAreaRef}
-          className="border-slate-300 bg-slate-400 text-slate-900 flex-grow resize-none overflow-hidden rounded-md border px-4 py-2 focus:outline-none focus:ring-2"
+          className="border-white/20 ring-secondary/30 bg-black flex-grow resize-none overflow-hidden rounded-3xl border px-4 py-2 focus:outline-none focus:ring-2"
           value={command}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
@@ -93,21 +93,21 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
         {canBeStopped && (
           <button
             className={cn(
-              'focus:ring-primary ml-4 rounded-md px-4 py-2 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-4 bg-slate-400  text-red-900',
+              'focus:ring-secondary ml-4 rounded-full p-2 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-4 border border-secondary text-secondary',
             )}
             type="button"
             onClick={handleCancelGenerating}
           >
-            <StopIcon className="h-6 w-6 scale-75" />
+            <StopIcon className="h-6 w-6" />
           </button>
         )}
         <button
           className={cn(
-            'focus:ring-primary ml-4 rounded-md px-4 py-2 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-4',
+            'focus:ring-secondary ml-4 rounded-full p-2 text-gray-800 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-4',
             {
               'bg-slate-500  text-slate-800 cursor-not-allowed':
                 sendingMessagesBlocked,
-              'bg-indigo-700 hover:bg-indigo-500': !sendingMessagesBlocked,
+              'bg-secondary-dark hover:bg-secondary': !sendingMessagesBlocked,
             },
           )}
           type="button"

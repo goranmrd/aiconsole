@@ -51,13 +51,13 @@ export const Welcome = () => {
     <div className="flex flex-col items-center justify-center h-full">
       <section className="container mx-auto px-6 py-8">
         <img
-          src="/logo.png"
+          src="/favicon.svg"
           className="filter saturate-200 opacity-75 shadows-lg w-20 h-20 mx-auto m-4"
           alt="Logo"
         />
-        <h2 className="text-4xl font-bold mb-4  text-center">
-          Welcome to AIConsole!
-        </h2>
+<h2 className="text-4xl mb-4 text-center font-extrabold">
+  Welcome to <span className=' text-primary'>AIConsole!</span>
+</h2>
         <p className="text-xl mb-12  text-center">
           The platform to build your AI universe.
         </p>
@@ -67,7 +67,7 @@ export const Welcome = () => {
             <div
               key={index}
               onClick={() => submitCommand(aspect.btnText)}
-              className="bg-black/20 text-left p-4 rounded-lg flex flex-col gap-4 border border-stone-900 shadow-md  hover:text-indigo-500 cursor-pointer"
+              className="bg-black/20 text-left p-4 rounded-lg flex flex-col gap-4 border border-stone-900 shadow-md  hover:text-primary cursor-pointer"
             >
               <h3 className="text-lg font-semibold">{aspect.title}</h3>
               <p className="flex-grow">{aspect.description}</p>

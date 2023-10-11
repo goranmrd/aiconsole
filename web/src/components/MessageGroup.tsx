@@ -14,7 +14,7 @@ export function MessageGroup({
     <div
       className={cn(
         'flex flex-row shadow-md border-t border-gray-900/50 p-5',
-        group.role === 'user' ? 'bg-transparent' : 'bg-[#FFFFFF10]',
+        group.role === 'user' ? 'bg-gray-800/20' : 'bg-gray-700/20',
       )}
     >
       <div className="container flex mx-auto gap-4">
