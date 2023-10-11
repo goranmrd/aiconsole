@@ -12,4 +12,3 @@
 
 - Version:
 - Platform:
-- Subsystem:
