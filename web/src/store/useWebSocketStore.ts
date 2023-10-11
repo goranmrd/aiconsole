@@ -23,7 +23,14 @@ export type NotificationWSMessage = {
   message: string;
 };
 
-export type WSMessage = ErrorWSMessage | NotificationWSMessage;
+export type DebugJSONWSMessage = {
+  type: 'debug_json';
+  message: string;
+  object: object;
+};
+
+
+export type WSMessage = ErrorWSMessage | NotificationWSMessage | DebugJSONWSMessage;
 
 // Create Zustand store
 export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
@@ -37,7 +44,6 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
     ws.onopen = () => console.log('WebSocket connected');
 
     ws.onmessage = (e: MessageEvent) => {
-      console.log('WebSocket message received: ', e.data);
       const data: WSMessage = JSON.parse(e.data);
 
       switch (data.type) {
@@ -55,6 +61,9 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
             title: data.title,
             message: data.message,
           });
+          break;
+        case 'debug_json':
+          console.log(data.message, data.object);
           break;
       }
 

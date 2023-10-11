@@ -1,15 +1,15 @@
 import asyncio
 import logging
-import pprint
 
 import litellm
 from aiconsole.gpt.partial import GPTPartialResponse
 
 from aiconsole.gpt.request import GPTRequest
+from aiconsole.websockets.messages import DebugJSONWSMessage
 
 from .types import CLEAR_STR, GPTChoice, GPTMessage, GPTResponse
 
-log = logging.getLogger(__name__)
+_log = logging.getLogger(__name__)
 
 from litellm.caching import Cache
 litellm.cache = Cache()
@@ -17,6 +17,7 @@ litellm.cache.cache
 
 class GPTExecutor:
     def __init__(self):
+        self.request = {}
         self.response = GPTResponse(
             choices = [
                 GPTChoice(
@@ -44,11 +45,10 @@ class GPTExecutor:
             "presence_penalty": request.presence_penalty,
         }
 
-        log.debug(f"GPT REQUEST:\n{pprint.pformat(request_dict)}")
-
         for attempt in range(3):
             try:
-                response = litellm.completion(
+                self.request = request_dict
+                response = await litellm.acompletion(
                     **request_dict,
                     stream=True,
                     # caching=True,
@@ -56,18 +56,23 @@ class GPTExecutor:
 
                 self.partial_response = GPTPartialResponse()
 
-                for chunk in response:
+                async for chunk in response: # type: ignore - for some reason response is not recognized as an async generator
                     self.partial_response.apply_chunk(chunk)
                     yield chunk
                     await asyncio.sleep(0)
 
                 self.response = self.partial_response.to_final_response()
 
-                log.debug(f"GPT RESPONSE:\n{self.response}")
+                
+                if _log.isEnabledFor(logging.DEBUG):
+                    await DebugJSONWSMessage(message="GPT", object={
+                        'request': self.request,
+                        'response': self.response.model_dump()
+                    }).send_to_all()
 
                 return
             except Exception as error:
-                log.error(f"Error on attempt {attempt}: {error}")
+                _log.error(f"Error on attempt {attempt}: {error}")
                 if attempt == 2:
                     raise error
             yield CLEAR_STR

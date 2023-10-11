@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { AICMessageSection } from '../store/types';
 import { Message } from './Message';
 import { Spinner } from './Spinner';
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/solid';
 import { MessageControls } from './MessageControls';
 import { useAICStore } from '../store/AICStore';
 import { ArrowDownIcon, ArrowUpIcon } from '@heroicons/react/24/outline';

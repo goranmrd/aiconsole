@@ -1,4 +1,3 @@
-from ast import parse
 from typing import List, Optional
 from pydantic import BaseModel
 from aiconsole.gpt.types import GPTChoice, GPTFunctionCall, GPTMessage, GPTResponse, GPTRole

@@ -17,6 +17,11 @@ class NotificationWSMessage(BaseWSMessage):
     title: str
     message: str
 
+class DebugJSONWSMessage(BaseWSMessage):
+    type: Literal["debug_json"] = "debug_json"
+    message: str
+    object: dict
+
 class ErrorWSMessage(BaseWSMessage):
     type: Literal["error"] = "error"
     error: str
