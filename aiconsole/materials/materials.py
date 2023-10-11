@@ -9,7 +9,7 @@ import watchdog.observers
 
 from aiconsole.aic_types import Material
 from aiconsole.utils.BatchingWatchDogHandler import BatchingWatchDogHandler
-from aiconsole.settings import MATERIALS_CORE_RESOURCE, MATERIALS_DIRECTORY
+from aiconsole.settings import settings
 from aiconsole.materials.documentation_from_code import documentation_from_code
 from aiconsole.utils.list_files_in_file_system import list_files_in_file_system
 from aiconsole.utils.list_files_in_resource_path import list_files_in_resource_path
@@ -31,7 +31,7 @@ class Materials:
         observer = watchdog.observers.Observer()
 
 
-        observer.schedule(BatchingWatchDogHandler(self.reload), MATERIALS_DIRECTORY, recursive=True)
+        observer.schedule(BatchingWatchDogHandler(self.reload), settings.MATERIALS_DIRECTORY, recursive=True)
         observer.start()
 
     def all_materials(self):
@@ -54,8 +54,8 @@ class Materials:
         self.materials = {}
 
         paths = [path for paths_yielding_function in [
-            list_files_in_resource_path(MATERIALS_CORE_RESOURCE),
-            list_files_in_file_system(MATERIALS_DIRECTORY)
+            list_files_in_resource_path(settings.MATERIALS_CORE_RESOURCE),
+            list_files_in_file_system(settings.MATERIALS_DIRECTORY)
         ] for path in paths_yielding_function]
 
         for path in paths:

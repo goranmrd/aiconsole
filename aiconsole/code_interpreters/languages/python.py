@@ -38,7 +38,7 @@ import ast
 import re
 from importlib import resources
 
-from aiconsole.settings import AGENTS_DIRECTORY, MATERIALS_DIRECTORY
+from aiconsole.settings import settings
 
 class Python(SubprocessCodeInterpreter):
     file_extension = "py"
@@ -75,8 +75,8 @@ import os
 
 sys.path.append('{materials_core_path}')
 sys.path.append('{agents_core_path}')
-sys.path.append('{MATERIALS_DIRECTORY}')
-sys.path.append('{AGENTS_DIRECTORY}')
+sys.path.append('{settings.MATERIALS_DIRECTORY}')
+sys.path.append('{settings.AGENTS_DIRECTORY}')
         """.strip() + "\n" + code
     
     print(code)
