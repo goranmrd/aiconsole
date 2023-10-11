@@ -15,7 +15,7 @@ import logging
 import os
 import litellm
 
-log = logging.getLogger(__name__)
+_log = logging.getLogger(__name__)
 
 
 def convert_language(file_name, desired_language):
@@ -50,7 +50,7 @@ def convert_language(file_name, desired_language):
         else:
             f.write(f"""/*\n\n{file_contents}\n\n*/\n""")
 
-        log.info(f"Created {file_name}")
+        _log.info(f"Created {file_name}")
 
 
 material = {

@@ -2,8 +2,7 @@ import logging
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from aiconsole.materials.materials import materials
-from aiconsole.aic_types import AgentBase, Material, StaticMaterial
-from aiconsole.gpt.consts import GPTMode
+from aiconsole.aic_types import StaticMaterial
 
 router = APIRouter()
 
