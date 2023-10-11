@@ -13,7 +13,7 @@ export type HeadlinesGroupProps = {
 const HeadlinesGroup = ({title, headlines, currentChatId, onChatDelete}: HeadlinesGroupProps) => {
   return (
     <>
-      <h3 className="p-2 text-slate-400">{title}</h3>
+      <h3 className="uppercase px-6 py-2 text-gray-400 text-xs leading-5">{title}</h3>
       {headlines.map((chat) => {
             const selected = chat.id == currentChatId;
 
@@ -21,8 +21,8 @@ const HeadlinesGroup = ({title, headlines, currentChatId, onChatDelete}: Headlin
               <Link
                 to={`/chats/${chat.id}`}
                 className={cn(
-                  ' hover:bg-white/5 px-6 h-full py-3 cursor-pointer flex flex-row gap-3 items-center',
-                  selected ? 'bg-white/5  font-bold' : '',
+                  ' hover:bg-white/5 px-6 h-full py-3 cursor-pointer flex flex-row gap-3 items-center text-base text-gray-300 leading-[27px]',
+                  selected ? 'bg-white/5  font-bold text-white' : '',
                 )}
                 title={chat.message}
                 key={chat.id}
