@@ -132,7 +132,7 @@ export function Chat({ chatId, autoScrolling, setAutoScrolling }: { chatId: stri
                   <UserInfo agent_id={''} materials={[]} />
                   <div className="flex-grow flex flex-col gap-5">
                     <h3 className="italic">
-                      Assigning agent ... <BlinkingCursor />{' '}
+                      Analysing ... <BlinkingCursor />{' '}
                     </h3>
                   </div>
                 </div>
