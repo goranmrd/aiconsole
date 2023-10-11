@@ -21,7 +21,8 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
     submitCommand,
     historyUp: promptUp,
     historyDown: promptDown,
-    cancelGenerating,
+    stopWork,
+    isWorking,
     messages,
   } = useAICStore((state) => state);
 
@@ -29,7 +30,6 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
     isExecuteRunning ||
     isAnalysisRunning ||
     (command === '' && messages?.length == 0);
-  const canBeStopped = isExecuteRunning;
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -40,8 +40,8 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
   const handleKeyDown = async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      if (canBeStopped) {
-        await handleCancelGenerating();
+      if (isWorking()) {
+        stopWork();
       } else if (!sendingMessagesBlocked) {
         await handleSendMessage();
       }
@@ -73,10 +73,6 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
     if (onSubmit) onSubmit();
   };
 
-  const handleCancelGenerating = async () => {
-    cancelGenerating();
-  };
-
   return (
     <div className={cn(className, 'flex w-full flex-col p-4  bg-gray-800/90 border-t border-white/10')}>
       <div className="flex items-center">
@@ -90,13 +86,13 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
           rows={1}
           style={{ boxSizing: 'border-box', transition: 'height 0.2s' }}
         />
-        {canBeStopped && (
+        {isWorking() && (
           <button
             className={cn(
               'focus:ring-secondary ml-4 rounded-full p-2 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-4 border border-secondary text-secondary',
             )}
             type="button"
-            onClick={handleCancelGenerating}
+            onClick={stopWork}
           >
             <StopIcon className="h-6 w-6" />
           </button>

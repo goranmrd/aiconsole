@@ -7,7 +7,6 @@ import { AICStore } from './AICStore';
 
 export type ActionSlice = {
   doAnalysis: () => Promise<void>;
-  analysisTimeoutId: number | undefined;
   isAnalysisRunning: boolean;
   doExecute: (
     agentId: string,
@@ -22,7 +21,8 @@ export type ActionSlice = {
     code: string,
   ) => Promise<void>;
   isExecuteRunning: boolean;
-  cancelGenerating: () => void;
+  isWorking: () => boolean;
+  stopWork: () => void;
   analysisAbortController: AbortController;
   executeAbortSignal: AbortController;
 };
@@ -42,21 +42,9 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
   executeAbortSignal: new AbortController(),
 
   doAnalysis: async () => {
-    if (get().analysisTimeoutId) {
-      clearTimeout(get().analysisTimeoutId);
-    }
-
-    set(() => ({
-      analysisTimeoutId: undefined,
-    }));
-
-    if (get().analysisAbortController.signal.aborted) {
-      // If the existing fetch operation has been aborted, stop proceeding
-      return;
-    }
-
     try {
       set(() => ({
+        analysisAbortController: new AbortController(),
         isAnalysisRunning: true,
       }));
       const response = await Api.analyse(
@@ -391,7 +379,9 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
     }
   },
 
-  cancelGenerating: () => {
+  isWorking: () => get().isAnalysisRunning || get().isExecuteRunning,
+  stopWork: () => {
     get().executeAbortSignal.abort();
+    get().analysisAbortController.abort();
   },
 });
