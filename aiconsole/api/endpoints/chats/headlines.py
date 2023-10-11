@@ -25,12 +25,14 @@ def get_history_headlines(get_json: Callable = Depends(json_read)):
                 history = get_json(file_path=file.path, empty_obj={})
 
                 if history:
+                    timestamp = history.get("timestamp")
                     for msg in history.get("messages"):
                         if msg.get("role") == "user":
                             first_msg = msg.get("content")
                             headlines.append({
                                 "message": first_msg,
-                                "id": chat_id
+                                "id": chat_id,
+                                "timestamp": timestamp
                             })
                             break  # Exit the loop after finding the first user message
 

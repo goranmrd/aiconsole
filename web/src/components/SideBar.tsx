@@ -1,12 +1,16 @@
 import { Link } from 'react-router-dom';
-import { useAICStore } from '../store/AICStore';
-import { TrashIcon, PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
-import { cn } from '../utils/styles';
+import { PlusIcon } from '@heroicons/react/24/outline';
 import { v4 as uuidv4 } from 'uuid';
+
+import { useAICStore } from '../store/AICStore';
+import useGroupByDate from '../hooks/useGroupByDate';
+import HeadlinesGroup from './HeadlinesGroup';
 
 const SideBar = () => {
   const chatHeadlines = useAICStore((state) => state.chatHeadlines);
   const chatId = useAICStore((state) => state.chatId);
+
+  const {today, yesterday, previous7Days, older} = useGroupByDate(chatHeadlines)
 
   function handleDelete(event: React.MouseEvent, id: string) {
     event.stopPropagation();
@@ -34,35 +38,10 @@ const SideBar = () => {
           </button>
         </Link>
         <div className="overflow-y-auto flex flex-col text-sm">
-          {chatHeadlines.map((chat) => {
-            const selected = chat.id == chatId;
-
-            return (
-              <Link
-                to={`/chats/${chat.id}`}
-                className={cn(
-                  ' hover:bg-white/5 px-6 h-full py-3 cursor-pointer flex flex-row gap-3 items-center',
-                  selected ? 'bg-white/5 text-white  font-bold' : '',
-                )}
-                title={chat.message}
-                key={chat.id}
-              >
-                <div className="truncate flex-grow"> {chat.message}</div>
-                {selected && (
-                  <>
-                    <PencilIcon
-                      className="h-4 w-4 flex-none"
-                      onClick={() => alert('Not implemented')}
-                    />
-                    <TrashIcon
-                      className="h-4 w-4 flex-none"
-                      onClick={(e) => handleDelete(e, chat.id)}
-                    />
-                  </>
-                )}
-              </Link>
-            );
-          })}
+          {!!today.length && <HeadlinesGroup title="Today" headlines={today} currentChatId={chatId} onChatDelete={handleDelete} />}
+          {!!yesterday.length && <HeadlinesGroup title="Yesterday" headlines={yesterday} currentChatId={chatId} onChatDelete={handleDelete} />}
+          {!!previous7Days.length && <HeadlinesGroup title="Previous 7 days" headlines={previous7Days} currentChatId={chatId} onChatDelete={handleDelete} />}
+          {!!older.length && <HeadlinesGroup title="Older than 7 days" headlines={older} currentChatId={chatId} onChatDelete={handleDelete} />}
         </div>
       </div>
   );

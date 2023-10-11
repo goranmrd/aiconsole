@@ -35,6 +35,7 @@ export type Material = {
 export type ChatHeadline = {
   id: string;
   message: string;
+  timestamp: string;
 };
 
 export type Chat = {
