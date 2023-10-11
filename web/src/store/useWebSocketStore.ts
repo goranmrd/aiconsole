@@ -42,6 +42,7 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
 
       switch (data.type) {
         case 'error':
+          console.error(data.error);
           notifications.show({
             title: 'Error',
             message: data.error,
@@ -49,6 +50,7 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
           });
           break;
         case 'notification':
+          console.log('Notification received: ', data);
           notifications.show({
             title: data.title,
             message: data.message,
