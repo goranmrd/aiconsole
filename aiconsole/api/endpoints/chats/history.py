@@ -34,15 +34,28 @@ def get_history(chat_id: str, get_json: Callable = Depends(json_read)):
 
 
 @router.post("/history")
-def save_history(chat: Chat, store_json: Callable = Depends(json_write)):
+def save_history(chat: Chat, store_json: Callable = Depends(json_write), get_json: Callable = Depends(json_read)):
     """
     Saves the history of the chat to <history_dir>/<chat.id>.json
     """
 
+    history_directory = settings.HISTORY_DIRECTORY
+    headline = None
+
+    if os.path.exists(history_directory) and os.path.isdir(history_directory):
+        entries = os.scandir(history_directory)
+        files = [entry for entry in entries if entry.is_file()
+                 and entry.name.endswith(".json")]
+        file = next((file for file in files if file.name.split(".")[0] == chat.id), None)
+        if file:
+            history = get_json(file_path=file.path, empty_obj={})
+            headline = history["headline"] if history and history["headline"] else headline
+
     chat_data = {
         "id": chat.id,
         "timestamp": datetime.now().isoformat(),
-        "messages": [message.model_dump() for message in chat.messages]
+        "messages": [message.model_dump() for message in chat.messages],
+        "headline": headline
     }
     store_json(
         directory=settings.HISTORY_DIRECTORY,
