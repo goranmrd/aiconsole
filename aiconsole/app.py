@@ -47,22 +47,21 @@ def app():
         if not static_path.exists():
             _log.warning(f"Static files directory does not exist: {static_path}")
             _log.warning("Static files will not be served")
-            return app
-        
-        _log.info(f"Static files directory: {static_path}")
-        app.mount("/", StaticFiles(directory=str(static_path)))
+        else:
+            _log.info(f"Static files directory: {static_path}")
 
-        @app.get("/")
-        def root():
-            with resources.path('aiconsole.static', 'index.html') as index_path:
-                return FileResponse(index_path)
+            @app.get("/")
+            def root():
+                with resources.path('aiconsole.static', 'index.html') as index_path:
+                    return FileResponse(index_path)
 
-        @app.get("/chats/{chat_id}")
-        def chats(chat_id: str):
-            with resources.path('aiconsole.static', 'index.html') as index_path:
-                return FileResponse(index_path)
+            @app.get("/chats/{chat_id}")
+            def chats(chat_id: str):
+                with resources.path('aiconsole.static', 'index.html') as index_path:
+                    return FileResponse(index_path)
+                
+            app.mount("/", StaticFiles(directory=static_path))
 
-        
 
     def check_for_update():
         _log.info("Checking for updates...")
