@@ -177,10 +177,11 @@ class MidJourneyAPI:
         password_input.send_keys(self.password)
         password_input.submit()
 
-    def create_image(self, prompt: str) -> None:
+    def create_image(self, prompt: str) -> list[str]:
         if not self.driver:
             raise ValueError("WebDriver not initialized")
 
+        image_paths = []
         try:
             # Find the message input box and type your message
             WebDriverWait(self.driver, settings.MIDJOURNEY_TIMEOUT).until(
@@ -215,11 +216,12 @@ class MidJourneyAPI:
             self.driver.switch_to.active_element.send_keys(Keys.RETURN)
 
             _log.info("Prompt sent, monitoring for results ...")
-            self._wait_for_image(old_message_ids, prompt)
+            image_paths = self._wait_for_image(old_message_ids, prompt)
         finally:
             self.driver.quit()
+            return image_paths
 
-    def _wait_for_image(self, old_message_ids: list[str], prompt: str) -> None:
+    def _wait_for_image(self, old_message_ids: list[str], prompt: str) -> list[str]:
         while True:
             messages = self.extract_messages()
 
@@ -256,12 +258,15 @@ class MidJourneyAPI:
                         )  # Assuming image.info gives metadata in Pillow
 
                         images = self._split_in_four(image)
+                        image_paths = []
                         for i, image in enumerate(images):
-                            image.save(f"{file_name}-{i}.png", **metadata)
+                            image_name = f"{file_name}-{i}.png"
+                            image.save(image_name, **metadata)
+                            image_paths.append(os.path.join(os.getcwd(), image_name))
                             _log.info(f"Saved image: {file_name}-{i}.png")
 
                         _log.info("Image generated: " + str(image))
-                        return image
+                        return image_paths
 
             time.sleep(1)
 
@@ -280,7 +285,6 @@ class MidJourneyAPI:
     def classify_midjourney_message(
         message: DiscordMessage,
     ) -> MidJourneyImageTypeLiteral | None:
-        import re
 
         progress_regexp = r"\((100|[1-9]?\d)%\)"
         image_number_regexp = r"\*\* - Image #(\d+) <@"
