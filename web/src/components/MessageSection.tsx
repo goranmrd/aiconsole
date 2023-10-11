@@ -5,6 +5,7 @@ import { Spinner } from './Spinner';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/solid';
 import { MessageControls } from './MessageControls';
 import { useAICStore } from '../store/AICStore';
+import { ArrowDownIcon, ArrowUpIcon } from '@heroicons/react/24/outline';
 
 interface MessageProps {
   messageSection: AICMessageSection;
@@ -33,21 +34,22 @@ export function MessageSection({ messageSection, isStreaming }: MessageProps) {
   if (messageSection.foldable) {
     return (
       <div className="flex justify-between items-center relative">
-        <div className="p-5 rounded-md flex flex-col gap-5 max-w-4xl ">
+        <div className="p-5 rounded-md flex flex-col gap-5 max-w-4xl bg-gray-300/5 ">
           <div
             className="cursor-pointer"
             onClick={() => setFolded((folded) => !folded)}
           >
-            <div className="flex flex-row gap-2">
+            <div className="flex flex-row gap-2 items-center">
               {isStreaming ? (
                 <div className="flex-grow flex flex-row gap-3 items-center">
                   Working ... <Spinner />
                 </div>
               ) : (
-                <div className="flex-grow">Executed code</div>
+                <div className="flex-grow">{folded ? "Check" : "Hide"} the code</div>
+                
               )}
-              {folded && <ChevronUpIcon className="h-5 w-5" />}
-              {!folded && <ChevronDownIcon className="h-5 w-5" />}
+              {folded && <ArrowDownIcon className="h-5 w-5" />}
+              {!folded && <ArrowUpIcon className="h-5 w-5" />}
             </div>
           </div>
           {!folded && messageComponents}
