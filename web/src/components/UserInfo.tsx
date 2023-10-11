@@ -30,9 +30,9 @@ export function UserInfo({
       </div>
       {materials.length > 0 && <div className="text-xs opacity-40 text-center">+</div>}
       {materials.map((material) => (
-        <Link to={`/materials/${material.id}`}>
+        <Link to={`/materials/${material.id}`} key={material.id}>
           <div
-            key={material.id}
+            
             className="w-32 opacity-80 text-xs text-center overflow-ellipsis overflow-hidden whitespace-nowrap"
             title={`id: ${material.id}\nusage: ${material.usage}\ncontent: ${
               material.content.length > 100

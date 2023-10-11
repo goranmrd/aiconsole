@@ -18,7 +18,7 @@ const useGroupByDate = (data: ChatHeadline[]) => {
   });
 
   useEffect(() => {
-    const date = new Date().toDateString()
+    const date = new Date().toISOString()
     const refDate = moment(date)
     const today = refDate.clone().startOf('day')
     const yesterday = refDate.clone().subtract(1, 'days').startOf('days')
