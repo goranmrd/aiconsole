@@ -10,7 +10,7 @@ from aiconsole.settings import settings
 
 last_system_message = None
 
-def convert_message(message: AICMessage) -> List[GPTMessage]:
+def convert_message(message: AICMessage, is_last: bool) -> List[GPTMessage]:
     global last_system_message
 
     content = message.content
@@ -29,6 +29,11 @@ def convert_message(message: AICMessage) -> List[GPTMessage]:
 
     if message.task:
         system_message = f'Agent: {message.agent_id}\nAvailable materials: {", ".join(m.id for m in message.materials) if message.materials else "None"}'
+
+        # Only provide a task for last message
+        if is_last:
+            system_message += "\n\nYour job: " + message.task
+
         if (last_system_message != system_message):
             result.append(GPTMessage(
                 role='system',
@@ -72,4 +77,4 @@ def convert_messages(messages: List[AICMessage]) -> List[GPTMessage]:
     global last_system_message
     last_system_message = None
     # Flatten
-    return [item for sublist in [convert_message(message) for message in messages] for item in sublist]
+    return [item for sublist in [convert_message(message, is_last=index == len(messages) - 1) for  (index, message)  in enumerate(messages)] for item in sublist]

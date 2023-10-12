@@ -1,53 +1,18 @@
 import random
-
-def get_director_system_prompt(available_agents, available_materials):
-    new_line = "\n"
-
-    random_agents = new_line.join(
-        [
-            f"* {c.id} - {c.usage}"
-            for c in random.sample(available_agents, len(available_agents))
-        ]
-    )
-
-    random_materials = (
-        new_line.join(
-            [
-                f"* {c.id} - {c.usage}"
-                for c in random.sample(available_materials, len(available_materials))
-            ]
-        )
-        if available_materials
-        else ""
-    )
-
-    return f"""
-You are a director of a multiple AI Agents, doing everything to help the user.
-You have multiple AI Agents at your disposal, each with their own unique capabilities.
-Some of them can run code on this local machine in order to perform any tasks that the user needs.
-Your job is to delegate tasks to the agents, and make sure that the user gets the best experience possible.
-Never perform a task that an agent can do, and never ask the user to do something that an agent can do.
-Do not answer other agents when they ask the user for something, allow the user to respond.
-Be proactive, and try to figure out how to help without troubling the user.
-If you spot an error in the work of an agent, suggest curreting it to the agent.
-If an agent struggles with completing a task, experiment with giving him different set of materials.
-If there is no meaningful next step, don't select an agent!
-Your agents can only do things immediatelly, don't ask them to do something in the future.
-Don't write or repeat any code, you don't know how to code.
-Materials are special files that contain instructions for agents, you can choose which materials a given agent will have available, they can only use a limited number due to token limitations.
-
-1. Assess the current situation in the conversation, and who should now respond, the user or an agent?
-2. Establish a full plan to bring value to the user
-3. Briefly describe what the next, atomic, simple step of this conversation is, it can be both an action by a single agent or waiting for user response.
-4. Establish who should handle the next step, it can be one of the following ids:
-{random_agents}
-
-5. Figure out and provide a list of ids of materials that are needed to execute the task, choose among the following ids:
-{random_materials}
-""".strip()
+from aiconsole.aic_types import Agent, Chat, Material
+from aiconsole.gpt.consts import GPTMode
+from aiconsole.gpt.gpt_executor import GPTExecutor
+from aiconsole.gpt.request import GPTRequest
+from aiconsole.gpt.types import EnforcedFunctionCall, GPTMessage
+from aiconsole.settings import Settings
+from aiconsole.utils.convert_messages import convert_messages
+from openai_function_call import OpenAISchema
+from pydantic import Field
+from typing import List
+from aiconsole.settings import settings
 
 
-def get_fixing_prompt(available_agents, available_materials):
+def _initial_system_prompt(available_agents, available_materials):
     new_line = "\n"
 
     random_agents = new_line.join(
@@ -89,8 +54,7 @@ A list of ids of materials that are needed to execute the task, make sure that t
 """.strip()
 
 
-
-def final_message(proposed_solution: str):
+def _last_system_prompt(proposed_solution: str):
     return f"""
 You have following analysis of the current situation:
 
@@ -122,3 +86,75 @@ Your job is to prepare a new better plan.
 
 Now fix the solution.
 """.strip()
+
+
+async def fix_plan_and_convert_to_json(request: Chat, text_plan: str, available_agents: List[Agent], available_materials: List[Material]):
+    gpt_executor = GPTExecutor()
+
+    class Plan(OpenAISchema):
+
+        """
+        Plan what should happen next.
+        """
+
+        thinking_process: str = Field(
+            description="Short description of the thinking process that led to the next step.",
+            json_schema_extra={"type": "string"}
+        )
+
+        next_step: str = Field(
+            description="A short actionable description of the next single atomic task to move this conversation forward.",
+            json_schema_extra={"type": "string"}
+        )
+
+        is_users_turn: bool = Field(
+            ...,
+            description="Whether the initiative is on the user side or on assistant side.",
+            json_schema_extra={"type": "boolean"}
+        )
+
+        agent_id: str = Field(
+            description="Chosen agent to perform the next step.",
+            json_schema_extra={"enum": [s.id for s in available_agents]},
+        )
+
+        needed_material_ids: List[str] = Field(
+            ...,
+            description="Chosen material ids needed for the task",
+            json_schema_extra={
+                "items": {"enum": [k.id for k in available_materials], "type": "string"}
+            },
+        )
+
+        already_happened: bool = Field(
+            ...,
+            description="True if what is described in the 'next_step' have already happened during this conversation.",
+            json_schema_extra={"type": "boolean"}
+        )
+
+    async for chunk in gpt_executor.execute(GPTRequest(
+        system_message=_initial_system_prompt(
+            available_agents=available_agents,
+            available_materials=available_materials,
+        ),
+        gpt_mode=GPTMode.FAST,
+        messages=[*convert_messages(request.messages), GPTMessage(
+            role="system",
+            content=_last_system_prompt(text_plan)
+        )],
+        functions=[Plan.openai_schema],
+        function_call=EnforcedFunctionCall(
+            name="Plan"),
+        presence_penalty=2,
+        min_tokens=settings.DIRECTOR_MIN_TOKENS,
+        preferred_tokens=settings.DIRECTOR_PREFERRED_TOKENS,
+    )):
+        pass
+
+    result = gpt_executor.response
+
+    if result.choices[0].message.function_call is None:
+        raise ValueError(
+            f"Could not find function call in the text: {result}")
+
+    return result.choices[0].message.function_call.arguments

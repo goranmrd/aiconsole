@@ -38,6 +38,11 @@ class Settings(BaseSettings):
     DEFAULT_MODE: str = GPTMode.FAST.value
     FUNCTION_CALL_OUTPUT_LIMIT: int = 2000
 
+
+    DIRECTOR_MIN_TOKENS: int = 250
+    DIRECTOR_PREFERRED_TOKENS: int = 1000
+
+
     MIDJOURNEY_TIMEOUT: int = 100
 
     @validator("LOG_LEVEL", pre=True)
