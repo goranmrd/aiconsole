@@ -4,14 +4,14 @@ include = [
     "aiconsole/static/**/*"
 ]
 name = "aiconsole"
-version = "0.2.0-alpha.3"
+version = "0.2.0-alpha.4"
 description = "Run and expand your personal AI tools"
 authors = ["Maciej Cielecki <maciej.cielecki@10clouds.com>"]
 license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.10"
 tiktoken = "^0.5.1"
 openai-function-call = "^0.2.6"
 watchdog = "^3.0.0"
