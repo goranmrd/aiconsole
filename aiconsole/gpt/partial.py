@@ -24,6 +24,8 @@ def _parse_partial_json(s: str) -> Union[dict, str]:
                 closing_chars_stack.pop()
             elif char == '\\':
                 escaped = not escaped
+            elif char == '\n' and not escaped:
+                char = '\\n'
             else:
                 escaped = False
         else:
@@ -43,7 +45,6 @@ def _parse_partial_json(s: str) -> Union[dict, str]:
     try:
         return json.loads(''.join(completed_string))
     except json.JSONDecodeError:
-        # If it's still not a valid JSON, return the original string.
         return s
 
 

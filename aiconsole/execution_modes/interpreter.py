@@ -13,8 +13,6 @@ from aiconsole.gpt.types import CLEAR_STR
 import logging
 from pydantic import Field
 
-from aiconsole.websockets.messages import DebugJSONWSMessage
-
 
 _log = logging.getLogger(__name__)
 
@@ -60,7 +58,6 @@ async def execution_mode_interpreter(
         )
     ):
 
-
         if chunk == CLEAR_STR:
             yield CLEAR_STR
             continue
@@ -101,8 +98,8 @@ async def execution_mode_interpreter(
                         yield code_delta
 
             else:
-                if language is None and arguments and arguments.get("language", "") in languages:
-                    language = arguments["language"]
+                if language is None and arguments and arguments.get("lang", "") in languages:
+                    language = arguments["lang"]
                     yield f'<<<< START CODE ({language}) >>>>'
 
                 if arguments and "code" in arguments:
@@ -114,7 +111,6 @@ async def execution_mode_interpreter(
 
                     if code_delta:
                         yield code_delta
-                
 
     # If the code starts with a !, that means a shell command
     if language == "python" and code.startswith("!"):
