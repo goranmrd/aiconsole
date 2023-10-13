@@ -1,4 +1,5 @@
-FROM python:3.11
+ARG PYTHON_VERSION
+FROM python:${PYTHON_VERSION}
 
 WORKDIR /app
 
@@ -25,6 +26,4 @@ COPY ../bin /app/bin
 COPY ../tests /app/tests
 COPY ../web/ /app/web
 
-RUN cd /app/web && yarn install
-RUN cd /app/web && yarn build
-RUN cd /app && poetry build
+RUN cd /app && ./bin/build.sh

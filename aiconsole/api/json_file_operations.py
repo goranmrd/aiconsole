@@ -2,15 +2,15 @@ import json
 import os
 from pathlib import Path
 import logging
-from typing import Callable
+from typing import Callable, Union
 
 from fastapi import HTTPException, status
 
 _log = logging.getLogger(__name__)
 
 
-def json_write() -> Callable[[str, str, dict | list], None]:
-    def wrapper(directory: str, file_name: str, content: dict | list):
+def json_write() -> Callable[[str, str, Union[dict, list]], None]:
+    def wrapper(directory: str, file_name: str, content: Union[dict, list]):
         try:
             os.makedirs(directory, exist_ok=True)
             with open(Path(directory) / file_name, "w") as f:
@@ -25,8 +25,8 @@ def json_write() -> Callable[[str, str, dict | list], None]:
     return wrapper
 
 
-def json_read() -> Callable[[str, list | dict], dict | list]:
-    def wrapper(file_path: str, empty_obj: list | dict):
+def json_read() -> Callable[[str, Union[dict, list]], Union[dict, list]]:
+    def wrapper(file_path: str, empty_obj: Union[dict, list]):
         try:
             if not os.path.exists(file_path):
                 return empty_obj

@@ -11,7 +11,7 @@ response = requests.get('https://app.asana.com/api/1.0/tasks', headers=headers, 
 ```
 """
 
-from typing import Literal
+from typing import Literal, Union
 import requests
 
 from aiconsole.materials.tools.credentials import load_credential, save_credential
@@ -56,7 +56,8 @@ def add_task(task: str):
 )
     print(f'Task {response.json()["data"]["gid"]} added' if response.status_code == 201 else f"Error: {response.status_code} {response.json()}")
 
-def get_tasks(assignee_gid: str | Literal['me'] | None = None, completed_since: str | Literal["now"] | None = None, modified_since:str | Literal["now"] | None = None):
+
+def get_tasks(assignee_gid: Union[str, Literal['me'], None] = None, completed_since: Union[str, Literal["now"], None] = None, modified_since: Union[str, Literal["now"], None] = None):
     """
     Each of these parameters is an optional filter.
     Note that parameters are passed directly into the `params` argument of `requests.get`.
