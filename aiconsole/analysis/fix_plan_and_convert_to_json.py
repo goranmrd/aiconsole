@@ -137,7 +137,7 @@ async def fix_plan_and_convert_to_json(request: Chat, text_plan: str, available_
             available_agents=available_agents,
             available_materials=available_materials,
         ),
-        gpt_mode=GPTMode.FAST,
+        gpt_mode=GPTMode.QUALITY,
         messages=[*convert_messages(request.messages), GPTMessage(
             role="system",
             content=_last_system_prompt(text_plan)

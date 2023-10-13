@@ -28,7 +28,7 @@ def convert_message(message: AICMessage, is_last: bool) -> List[GPTMessage]:
     #    system = f'next message by agent={message.agent_id} with access to materials={[(material.id  if message.materials else "None") for material in message.materials]}'
 
     if message.task:
-        system_message = f'Agent: {message.agent_id}\nAvailable materials: {", ".join(m.id for m in message.materials) if message.materials else "None"}'
+        system_message = f'Assigned agent: {message.agent_id}\nSupplied with materials: {", ".join(m.id for m in message.materials) if message.materials else "None"}'
 
         # Only provide a task for last message
         if is_last:

@@ -6,6 +6,7 @@ material = {
     "content": lambda context: f'''
 # List of Materials
 
-Available materials: {newline.join(f'{f"* {material.id} - {material.usage}"}' for material in materials.all_materials())}
+Available materials:
+{newline.join(f'{f"* {material.id} - {material.usage}"}' for material in materials.all_materials())}
 '''
 }

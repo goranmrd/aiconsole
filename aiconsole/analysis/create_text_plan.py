@@ -66,7 +66,7 @@ async def create_text_plan(request: Chat, available_agents: List[Agent], availab
 
     async for chunk in gpt_executor.execute(GPTRequest(
         system_message=_initial_system_prompt(),
-        gpt_mode=GPTMode.FAST,
+        gpt_mode=GPTMode.QUALITY,
         messages=[*convert_messages(request.messages), GPTMessage(
             role="system",
             content=_last_system_prompt(available_agents=available_agents,

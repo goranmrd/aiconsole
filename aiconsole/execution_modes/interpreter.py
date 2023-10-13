@@ -1,6 +1,7 @@
 import logging
 from typing import AsyncGenerator
 from aiconsole.aic_types import ExecutionModeContext
+from aiconsole.execution_modes.get_agent_system_message import get_agent_system_message
 from aiconsole.gpt.create_full_prompt_from_sections import create_full_prompt_from_sections
 from aiconsole.utils.convert_messages import convert_messages
 from typing import AsyncGenerator
@@ -35,7 +36,7 @@ async def execution_mode_interpreter(
     global llm
 
     system_message = create_full_prompt_from_sections(
-        intro=context.agent.system,
+        intro=get_agent_system_message(context.agent),
         sections=context.relevant_materials,
     )
 

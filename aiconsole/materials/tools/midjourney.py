@@ -122,7 +122,7 @@ class MidJourneyAPI:
             if image_element:
                 image_url = image_element[0].get_attribute("href")
 
-        return image_url
+        return image_url or ""
 
     def initialize_webdriver(self) -> None:
         # Setup WebDriverManager
@@ -171,6 +171,9 @@ class MidJourneyAPI:
             self._submit_credentials()
 
     def _submit_credentials(self) -> None:
+        if not self.driver:
+            raise ValueError("WebDriver not initialized")
+        
         email_input = self.driver.find_element(By.NAME, "email")
         email_input.send_keys(self.email)
         password_input = self.driver.find_element(By.NAME, "password")
@@ -271,7 +274,7 @@ class MidJourneyAPI:
             time.sleep(1)
 
     @staticmethod
-    def _split_in_four(image: Image) -> list[Image]:
+    def _split_in_four(image: Image.Image) -> list[Image.Image]:
         width, height = image.size
         images = [
             image.crop((0, 0, math.floor(width / 2), math.floor(height / 2))),
