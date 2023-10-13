@@ -1,20 +1,54 @@
 version: "3.7"
 
+x-app-template: &app_template
+  volumes:
+    - ./aiconsole:/app/aiconsole
+    - ./bin:/app/bin
+    - ./tests:/app/tests
+    - ./web:/app/web
+    - /app/web/node_modules
+  command: "poetry run aiconsole-dev"
+  environment:
+    - OPENAI_API_KEY=${OPENAI_API_KEY}
+
 services:
-  app:
+  app_39:
+    <<: *app_template
     build:
       context: .
       dockerfile: .docker/Dockerfile
-    volumes:
-      - ./aiconsole:/app/aiconsole
-      - ./bin:/app/bin
-      - ./tests:/app/tests
-      - ./web:/app/web
-      - /app/web/node_modules
-
-    command: "poetry run aiconsole-dev"
-    environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      args:
+        PYTHON_VERSION: 3.9
     ports:
       - 3001:3000
       - 8000:8000
+
+  app_310:
+    <<: *app_template
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile
+      args:
+        PYTHON_VERSION: "3.10"
+    ports:
+      - 3002:3000
+
+  app_311:
+    <<: *app_template
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile
+      args:
+        PYTHON_VERSION: 3.11
+    ports:
+      - 3003:3000
+
+  app_312:
+    <<: *app_template
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile
+      args:
+        PYTHON_VERSION: 3.12
+    ports:
+      - 3004:3000
