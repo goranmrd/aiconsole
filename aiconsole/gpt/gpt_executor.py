@@ -6,8 +6,11 @@ from aiconsole.gpt.partial import GPTPartialResponse
 
 from aiconsole.gpt.request import GPTRequest
 from aiconsole.websockets.messages import DebugJSONWSMessage
+from .exceptions import NoOpenAPIKeyException
 
 from .types import CLEAR_STR, GPTChoice, GPTMessage, GPTResponse
+
+from openai.error import AuthenticationError
 
 _log = logging.getLogger(__name__)
 
@@ -71,6 +74,8 @@ class GPTExecutor:
                     }).send_to_all()
 
                 return
+            except AuthenticationError:
+                raise NoOpenAPIKeyException()
             except Exception as error:
                 _log.error(f"Error on attempt {attempt}: {error}")
                 if attempt == 2:

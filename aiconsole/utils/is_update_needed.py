@@ -5,6 +5,7 @@ import logging
 
 _log = logging.getLogger(__name__)
 
+
 def is_update_needed():
     # Fetch all versions from the PyPI API
     response = requests.get(f'https://pypi.org/pypi/aiconsole/json')
@@ -14,8 +15,11 @@ def is_update_needed():
     all_versions.sort(key=version.parse, reverse=True)
     
     # Get the current version using pkg_resources
-    current_version = version.parse(pkg_resources.get_distribution("aiconsole").version)
-    
+    try:
+        current_version = version.parse(pkg_resources.get_distribution("aiconsole").version)
+    except pkg_resources.DistributionNotFound:
+        return False
+
     # If current version is pre-release, compare with all. Else, compare with non pre-releases
     if current_version.is_prerelease:
         latest_version = all_versions[0]  # Since we've sorted in descending order, the first version is the latest
