@@ -32,6 +32,11 @@ export type Material = {
   content: string;
 };
 
+export type MaterialInfo = {
+  id: string;
+  usage: string;
+};
+
 export type ChatHeadline = {
   id: string;
   message: string;
@@ -50,5 +55,3 @@ export type Agent = {
   usage: string;
   system: string;
 };
-
-

@@ -52,12 +52,12 @@ export const Welcome = () => {
       <section className="container mx-auto px-6 py-8">
         <img
           src="/favicon.svg"
-          className="filter saturate-200 opacity-75 shadows-lg w-20 h-20 mx-auto m-4"
+          className="filter opacity-75 shadows-lg w-20 h-20 mx-auto m-4"
           alt="Logo"
         />
-<h2 className="text-4xl mb-4 text-center font-extrabold">
-  Welcome to <span className=' text-primary'>AIConsole!</span>
-</h2>
+        <h2 className="text-4xl mb-4 text-center font-extrabold">
+          Welcome to <span className=" text-primary">AIConsole!</span>
+        </h2>
         <p className="text-xl mb-12  text-center">
           The platform to build your AI universe.
         </p>

@@ -1,17 +1,18 @@
 from fastapi import APIRouter
 
-from aiconsole.api.endpoints import analyse, chats, commands_history, execute, profile, image, agents, run_code, ws, material
+from aiconsole.api.endpoints import analyse, chats, commands_history, execute, profile, image, agents, run_code, ws, materials, projects
 
 
 app_router = APIRouter()
 
-app_router.include_router(image.router, tags=["image"])
-app_router.include_router(analyse.router, tags=["analyse"])
-app_router.include_router(execute.router, tags=["execute"])
-app_router.include_router(run_code.router, tags=["run"])
-app_router.include_router(profile.router, tags=["profile"])
-app_router.include_router(chats.router, prefix="/chats", tags=["chats"])
-app_router.include_router(commands_history.router, tags=["commands_history"])
-app_router.include_router(agents.router, tags=["agents"])
-app_router.include_router(ws.router, tags=["ws"])
-app_router.include_router(material.router, tags=["material"])
+app_router.include_router(image.router)
+app_router.include_router(analyse.router)
+app_router.include_router(execute.router)
+app_router.include_router(run_code.router)
+app_router.include_router(profile.router)
+app_router.include_router(chats.router, prefix="/chats")
+app_router.include_router(materials.router, prefix="/api/materials")
+app_router.include_router(projects.router, prefix="/api/projects")
+app_router.include_router(commands_history.router)
+app_router.include_router(agents.router)
+app_router.include_router(ws.router)

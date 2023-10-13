@@ -9,18 +9,24 @@ When you need to write a material based on a conversation so far, extract key in
 """
 
 import os
-from aiconsole.materials.materials import materials
+from aiconsole import projects
+from aiconsole.materials import materials
 from aiconsole.settings import settings
 
 
 def list_materials():
-    return [{"id": material.id, "usage": material.usage} for material in materials.all_materials()]
+    if not materials.materials:
+        raise Exception("Materials not loaded yet")
+    return [{"id": material.id, "usage": material.usage} for material in materials.materials.all_materials()]
 
 def create_material(id: str, usage: str, header: str, content: str):
+    if not materials.materials:
+        raise Exception("Materials not loaded yet")
+    
     # use lower case letters and underscores for spaces
     id = id.lower().replace(" ", "_").replace("-", "_")
 
-    file_path = os.path.join(settings.MATERIALS_DIRECTORY, f'{id}.md')
+    file_path = os.path.join(materials.materials.user_directory, f'{id}.md')
 
     if os.path.exists(file_path):
         raise Exception(f"Material with id {id} already exists")
@@ -40,7 +46,10 @@ def create_material(id: str, usage: str, header: str, content: str):
     print (f"Material with id {id} created")
         
 def read_material(id: str):
-    path = os.path.join(settings.MATERIALS_DIRECTORY, f'{id}.md')
+    if not materials.materials:
+        raise Exception("Materials not loaded yet")
+    
+    path = os.path.join(materials.materials.user_directory, f'{id}.md')
 
     if not os.path.exists(path):
         raise Exception(f"Material with id {id} does not exist")

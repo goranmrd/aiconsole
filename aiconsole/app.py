@@ -8,19 +8,16 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-from aiconsole.agents.agents import agents
+from aiconsole import projects
 from aiconsole.api.routers import app_router
-from aiconsole.materials.materials import materials
 from aiconsole.settings import settings, log_config
-from aiconsole.utils.initialize_project_directory import initialize_project_directory
 from aiconsole.utils.is_update_needed import is_update_needed
 from aiconsole.websockets.messages import NotificationWSMessage
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await materials.reload()
-    await agents.reload()
+    await projects.reinitialize_project()
     yield
 
 
@@ -30,7 +27,6 @@ _log = logging.getLogger(__name__)
 
 
 def app():
-    initialize_project_directory()
 
     app = FastAPI(title="AI Console", lifespan=lifespan)
 

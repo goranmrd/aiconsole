@@ -4,7 +4,6 @@ from aiconsole.gpt.consts import GPTMode
 from aiconsole.gpt.gpt_executor import GPTExecutor
 from aiconsole.gpt.request import GPTRequest
 from aiconsole.gpt.types import EnforcedFunctionCall, GPTMessage
-from aiconsole.settings import Settings
 from aiconsole.utils.convert_messages import convert_messages
 from openai_function_call import OpenAISchema
 from pydantic import Field

@@ -25,17 +25,9 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = Field("INFO", env=["LOG_LEVEL", "LOGLEVEL"])
     LOG_HANDLERS: list[str] = ["console"]
 
-    AIC_DIRECTORY: str = os.path.join(os.getcwd(), ".aic")
 
     HISTORY_LIMIT: int = 1000
-    HISTORY_DIRECTORY: str = ""
     COMMANDS_HISTORY_JSON: str = "command_history.json"
-
-    MATERIALS_DIRECTORY: str = os.path.join(os.getcwd(), "materials")
-    MATERIALS_CORE_RESOURCE: str = "aiconsole.materials.core"
-    AGENTS_DIRECTORY: str = os.path.join(os.getcwd(), "agents")
-    AGENTS_CORE_RESOURCE: str = "aiconsole.agents.core"
-    CREDENTIALS_DIRECTORY: str = ""
 
     DEFAULT_MODE: str = GPTMode.FAST.value
     FUNCTION_CALL_OUTPUT_LIMIT: int = 2000
@@ -51,13 +43,6 @@ class Settings(BaseSettings):
     def uppercase_log_level(cls, v: str) -> str:
         return v.upper()
 
-    @validator("HISTORY_DIRECTORY", always=True)
-    def set_history_directory(cls, value: str, values) -> str:
-        return os.path.join(values["AIC_DIRECTORY"], "history")
-
-    @validator("CREDENTIALS_DIRECTORY", always=True)
-    def set_credentials_directory(cls, value: str, values) -> str:
-        return os.path.join(values["AIC_DIRECTORY"], "credentials")
 
     class Config(SettingsConfigDict):
         env_file = ".env"

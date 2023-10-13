@@ -1,9 +1,9 @@
 import { StateCreator } from 'zustand';
 
-import { Agent, Material as Material } from './types';
-import { createMessage } from './utils';
 import { Api } from '../api/Api';
 import { AICStore } from './AICStore';
+import { Agent, Material } from './types';
+import { createMessage } from './utils';
 
 export type ActionSlice = {
   doAnalysis: () => Promise<void>;
@@ -25,6 +25,7 @@ export type ActionSlice = {
   stopWork: () => void;
   analysisAbortController: AbortController;
   executeAbortSignal: AbortController;
+
 };
 
 export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (

@@ -4,9 +4,9 @@ import logging
 from datetime import datetime
 from typing import Callable
 from fastapi import APIRouter, status, Response, Depends
+from aiconsole import projects
 from aiconsole.aic_types import Chat
 from aiconsole.api.json_file_operations import json_read, json_write
-from aiconsole.settings import settings
 
 router = APIRouter()
 _log = logging.getLogger(__name__)
@@ -14,7 +14,7 @@ _log = logging.getLogger(__name__)
 
 @router.delete("/history/{chat_id}")
 def delete_history(chat_id: str):
-    file_path = os.path.join(settings.HISTORY_DIRECTORY, f"{chat_id}.json")
+    file_path = os.path.join(projects.get_history_directory(), f"{chat_id}.json")
     if os.path.exists(file_path):
         os.remove(file_path)
         return Response(
@@ -29,7 +29,7 @@ def delete_history(chat_id: str):
 
 @router.get("/history/{chat_id}")
 def get_history(chat_id: str, get_json: Callable = Depends(json_read)):
-    file_path = os.path.join(settings.HISTORY_DIRECTORY, f"{chat_id}.json")
+    file_path = os.path.join(projects.get_history_directory(), f"{chat_id}.json")
 
     return get_json(file_path=file_path, empty_obj={})
 
@@ -43,7 +43,7 @@ async def save_history(chat: Chat, store_json: Callable = Depends(json_write), g
 
     async with history_lock:
 
-        history_directory = settings.HISTORY_DIRECTORY
+        history_directory = projects.get_history_directory()
         headline = None
 
         file_path = os.path.join(history_directory, f"{chat.id}.json")
@@ -59,7 +59,7 @@ async def save_history(chat: Chat, store_json: Callable = Depends(json_write), g
             "headline": headline
         }
         store_json(
-            directory=settings.HISTORY_DIRECTORY,
+            directory=projects.get_history_directory(),
             file_name=f"{chat.id}.json",
             content=chat_data
         )

@@ -33,13 +33,16 @@
 #
 
 import sys
+
+from aiconsole import projects
 from ..subprocess_code_interpreter import SubprocessCodeInterpreter
 import ast
 import re
 from pathlib import Path
 
 from aiconsole.settings import settings
-
+from aiconsole.materials import materials
+from aiconsole.agents import agents
 
 class Python(SubprocessCodeInterpreter):
     file_extension = "py"
@@ -68,8 +71,23 @@ def preprocess_python(code):
     Add end of execution marker
     """
 
-    materials_core_path = Path(__file__).parent.parent / "aiconsole" / "materials" / "core"
-    agents_core_path = Path(__file__).parent.parent / "aiconsole" / "agents" / "core"
+
+    if not materials.materials:
+        raise Exception("Materials not loaded yet")
+    
+    if not agents.agents:
+        raise Exception("Agents not loaded yet")
+    
+    cm = materials.materials.core_resource
+    ca = agents.agents.core_resource
+
+    materials_core_path = Path(__file__).parent.parent
+    for path_segment in cm.split("."):
+        materials_core_path = materials_core_path / path_segment
+
+    agents_core_path = Path(__file__).parent.parent
+    for path_segment in ca.split("."):
+        agents_core_path = agents_core_path / path_segment
 
     code = f"""
 import sys
@@ -77,8 +95,8 @@ import os
 
 sys.path.append('{materials_core_path}')
 sys.path.append('{agents_core_path}')
-sys.path.append('{settings.MATERIALS_DIRECTORY}')
-sys.path.append('{settings.AGENTS_DIRECTORY}')
+sys.path.append('{materials.materials.user_directory}')
+sys.path.append('{agents.agents.user_directory}')
         """.strip() + "\n" + code
 
     print(code)

@@ -2,14 +2,13 @@ import importlib.util
 import logging
 import os
 import re
-from typing import Dict
+from typing import Dict, Union
 
 import watchdog.events
 import watchdog.observers
 
 from aiconsole.aic_types import Material, StaticMaterial
 from aiconsole.utils.BatchingWatchDogHandler import BatchingWatchDogHandler
-from aiconsole.settings import settings
 from aiconsole.materials.documentation_from_code import documentation_from_code
 from aiconsole.utils.list_files_in_file_system import list_files_in_file_system
 from aiconsole.utils.list_files_in_resource_path import list_files_in_resource_path
@@ -25,14 +24,17 @@ class Materials:
 
     materials: Dict[str, Material]
 
-    def __init__(self):
+    def __init__(self, core_resource, user_agents_directory):
+        self.core_resource = core_resource
+        self.user_directory = user_agents_directory
         self.materials = {}
 
-        observer = watchdog.observers.Observer()
+        self.observer = watchdog.observers.Observer()
+        self.observer.schedule(BatchingWatchDogHandler(self.reload), self.user_directory, recursive=True)
+        self.observer.start()
 
-
-        observer.schedule(BatchingWatchDogHandler(self.reload), settings.MATERIALS_DIRECTORY, recursive=True)
-        observer.start()
+    def __del__(self):
+        self.observer.stop()
 
     def all_materials(self):
         """
@@ -50,7 +52,7 @@ class Materials:
         )
 
         # Save to .md file
-        with open(os.path.join(settings.MATERIALS_DIRECTORY, f"{material.id}.md"), "w") as file:
+        with open(os.path.join(self.user_directory, f"{material.id}.md"), "w") as file:
             file.write(f"<!--- {material.usage} -->\n\n{material.content}")
 
     def delete_material(self, name):
@@ -67,8 +69,8 @@ class Materials:
         self.materials = {}
 
         paths = [path for paths_yielding_function in [
-            list_files_in_resource_path(settings.MATERIALS_CORE_RESOURCE),
-            list_files_in_file_system(settings.MATERIALS_DIRECTORY)
+            list_files_in_resource_path(self.core_resource),
+            list_files_in_file_system(self.user_directory)
         ] for path in paths_yielding_function]
 
         for path in paths:
@@ -139,4 +141,4 @@ class Materials:
         
 
 
-materials = Materials()
+materials: Union[Materials, None] = None

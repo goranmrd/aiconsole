@@ -21,6 +21,7 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
+from aiconsole import projects
 
 from aiconsole.materials.tools.credentials import load_credential
 from aiconsole.settings import settings
@@ -130,7 +131,7 @@ class MidJourneyAPI:
 
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_argument(
-            f'--user-data-dir={os.path.join(settings.CREDENTIALS_DIRECTORY, "selenium")}'
+            f'--user-data-dir={os.path.join(projects.get_credentials_directory(), "selenium")}'
         )
         chrome_options.add_argument("--headless")
 

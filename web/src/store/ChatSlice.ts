@@ -23,11 +23,19 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
   agent: undefined,
   materials: [],
   initChatHistory: async () => {
-    const history: ChatHeadline[] = await (await Api.getChatsHistory()).json();
-
-    set(() => ({
-      chatHeadlines: [...history],
-    }));
+    try {
+      const history: ChatHeadline[] = await (await Api.getChatsHistory()).json();
+      console.log(history);
+      set(() => ({
+        chatHeadlines: [...history],
+      }));
+    } catch (e) {
+      set(() => ({
+        chatHeadlines: [],
+      }));
+      console.log(e);
+    }
+    
   },
   deleteChat: async (id: string) => {
     await Api.deleteChat(id);

@@ -1,6 +1,6 @@
 import ky from 'ky';
 
-import { Agent, Chat, Material } from '../store/types';
+import { Agent, Chat, Material, MaterialInfo } from '../store/types';
 
 export const BASE_URL = `http://${window.location.hostname}:8000`;
 
@@ -21,8 +21,12 @@ export const Api = (function () {
 
   const getAgents: () => Promise<Agent[]> = async () => await ky.get(`${BASE_URL}/agents`).json();
 
+  const chooseProject = () => ky.post(`${BASE_URL}/api/projects/choose`);
+  const getCurrentProject = () => ky.get(`${BASE_URL}/api/projects/current`);
+
   const getChat: (id: string) => Promise<Chat> = async (id: string) => await ky.get(`${BASE_URL}/chats/history/${id}`).json();
 
+  const getMaterials = async() => ky.get(`${BASE_URL}/api/materials/`).json() as Promise<MaterialInfo[]>;
   const getMaterial = async(id: string) => ky.get(`${BASE_URL}/api/materials/${id}`).json() as Promise<Material>;
   const saveMaterial = async(material: Material) => ky.post(`${BASE_URL}/api/materials/${material.id}`, { json: { ...material }, timeout: 60000 });
 
@@ -48,6 +52,9 @@ export const Api = (function () {
     analyse,
     getAgents,
     getMaterial,
+    getMaterials,
+    chooseProject,
+    getCurrentProject,
     saveMaterial,
     getCommandHistory,
     getChatsHistory,

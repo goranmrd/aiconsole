@@ -3,7 +3,7 @@ from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
 
 from aiconsole.aic_types import ChatWithAgentAndMaterials, ExecutionModeContext
-from aiconsole.agents.agents import agents
+from aiconsole.agents import agents
 
 import logging
 
@@ -16,7 +16,10 @@ _log = logging.getLogger(__name__)
 
 @router.post("/execute")
 async def execute(chat: ChatWithAgentAndMaterials) -> StreamingResponse:
-    agent = agents.agents[chat.agent_id]
+    if not agents.agents:
+        raise ValueError("Agents not initialized")
+
+    agent = agents.agents.agents[chat.agent_id]
 
     context = ExecutionModeContext(
         messages=chat.messages,

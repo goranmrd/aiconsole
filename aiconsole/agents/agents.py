@@ -1,7 +1,7 @@
 import importlib.util
 import logging
 import os
-from typing import Dict
+from typing import Dict, Union
 from pydantic import ValidationError
 
 import watchdog.events
@@ -10,8 +10,6 @@ import watchdog.observers
 from aiconsole.aic_types import Agent
 from aiconsole.execution_modes.interpreter import execution_mode_interpreter
 from aiconsole.execution_modes.normal import execution_mode_normal
-from aiconsole.gpt.consts import GPTMode
-from aiconsole.settings import settings
 from aiconsole.utils.BatchingWatchDogHandler import BatchingWatchDogHandler
 from aiconsole.utils.list_files_in_file_system import list_files_in_file_system
 from aiconsole.utils.list_files_in_resource_path import list_files_in_resource_path
@@ -30,12 +28,17 @@ class Agents:
 
     agents: Dict[str, Agent]
 
-    def __init__(self):
+    def __init__(self, core_resource, user_agents_directory):
+        self.core_resource = core_resource
+        self.user_directory = user_agents_directory
         self.agents = {}
 
-        observer = watchdog.observers.Observer()
-        observer.schedule(BatchingWatchDogHandler(self.reload), settings.AGENTS_DIRECTORY, recursive=True)
-        observer.start()
+        self.observer = watchdog.observers.Observer()
+        self.observer.schedule(BatchingWatchDogHandler(self.reload), self.user_directory, recursive=True)
+        self.observer.start()
+
+    def __del__(self):
+        self.observer.stop()
 
     def all_agents(self):
         """
@@ -54,8 +57,8 @@ class Agents:
         self.agents = {}
 
         paths = [path for paths_yielding_function in [
-            list_files_in_resource_path(settings.AGENTS_CORE_RESOURCE),
-            list_files_in_file_system(settings.AGENTS_DIRECTORY)
+            list_files_in_resource_path(self.core_resource),
+            list_files_in_file_system(self.user_directory)
         ] for path in paths_yielding_function]
 
         for path in paths:
@@ -100,6 +103,6 @@ class Agents:
         _log.info(f"Reloaded {len(self.agents)} agents")
 
 
-agents = Agents()
+agents: Union[Agents, None] = None
 
 

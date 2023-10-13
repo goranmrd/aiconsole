@@ -1,6 +1,7 @@
 import os
 from fastapi import Depends, Request
 from typing import Callable
+from aiconsole import projects
 from aiconsole.api.endpoints.chats.history import _log, router
 from aiconsole.api.json_file_operations import json_read, json_write
 from aiconsole.settings import settings
@@ -8,7 +9,7 @@ from aiconsole.settings import settings
 
 @router.get("/headlines")
 def get_history_headlines(get_json: Callable = Depends(json_read)):
-    history_directory = settings.HISTORY_DIRECTORY
+    history_directory = projects.get_history_directory()
     headlines = []
     if os.path.exists(history_directory) and os.path.isdir(history_directory):
         entries = os.scandir(history_directory)
@@ -53,8 +54,8 @@ def get_history_headlines(get_json: Callable = Depends(json_read)):
 async def update_chat_headline(chat_id, req: Request, get_json: Callable = Depends(json_read), store_json: Callable = Depends(json_write)):
     data = await req.json()
     new_headline = data["headline"]
-    history_directory = settings.HISTORY_DIRECTORY
-
+    history_directory = projects.get_history_directory()
+    
     if os.path.exists(history_directory) and os.path.isdir(history_directory):
         entries = os.scandir(history_directory)
         files = [entry for entry in entries if entry.is_file()
@@ -66,7 +67,7 @@ async def update_chat_headline(chat_id, req: Request, get_json: Callable = Depen
             if history: 
                 history["headline"] = new_headline
                 store_json(
-                    directory=settings.HISTORY_DIRECTORY,
+                    directory=history_directory,
                     file_name=f"{chat_id}.json",
                     content=history
                 )
