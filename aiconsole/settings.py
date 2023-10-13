@@ -1,4 +1,6 @@
 import os
+from typing import Optional
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import validator, Field
 
@@ -15,7 +17,7 @@ if MAX_BUDGET:
 
 
 class Settings(BaseSettings):
-    OPENAI_API_KEY: str | None = Field(None, env=["OPENAI_API_KEY"])
+    OPENAI_API_KEY: Optional[str] = Field(None, env=["OPENAI_API_KEY"])
     ORIGINS: list[str] = ["http://localhost:3000", "http://localhost:3001", "http://127.0.0.1:3000", "http://127.0.0.1:3001"]
 
     LOG_FORMAT: str = "{asctime} {name} [{levelname}] {message}"

@@ -1,9 +1,9 @@
 import asyncio
-from importlib import resources
 import logging
 from logging import config
 from contextlib import asynccontextmanager
 import threading
+from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
@@ -15,6 +15,7 @@ from aiconsole.settings import settings, log_config
 from aiconsole.utils.initialize_project_directory import initialize_project_directory
 from aiconsole.utils.is_update_needed import is_update_needed
 from aiconsole.websockets.messages import NotificationWSMessage
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -43,31 +44,31 @@ def app():
 
     app.include_router(app_router)
 
-    with resources.path('aiconsole', 'static') as static_path:
-        if not static_path.exists():
-            _log.warning(f"Static files directory does not exist: {static_path}")
-            _log.warning("Static files will not be served")
-        else:
-            _log.info(f"Static files directory: {static_path}")
+    static_path = Path(__file__).parent / "aiconsole" / "static"
+    if not static_path.exists():
+        _log.warning(f"Static files directory does not exist: {static_path}")
+        _log.warning("Static files will not be served")
+    else:
+        _log.info(f"Static files directory: {static_path}")
 
-            @app.get("/")
-            def root():
-                with resources.path('aiconsole.static', 'index.html') as index_path:
-                    return FileResponse(index_path)
+        @app.get("/")
+        def root():
+            index_path = static_path / "index.html"
+            return FileResponse(str(index_path))
 
-            @app.get("/chats/{chat_id}")
-            def chats(chat_id: str):
-                with resources.path('aiconsole.static', 'index.html') as index_path:
-                    return FileResponse(index_path)
-                
-            app.mount("/", StaticFiles(directory=static_path))
+        @app.get("/chats/{chat_id}")
+        def chats(chat_id: str):
+            index_path = static_path / "index.html"
+            return FileResponse(str(index_path))
 
+        app.mount("/", StaticFiles(directory=str(static_path)))
 
     def check_for_update():
         _log.info("Checking for updates...")
         if is_update_needed():
             _log.info("Update available - A new version of AI Console is available!")
-            asyncio.run(NotificationWSMessage(title="Update available", message="A new version of AI Console is available!").send_to_all())
+            asyncio.run(NotificationWSMessage(title="Update available",
+                                              message="A new version of AI Console is available!").send_to_all())
         else:
             _log.info("No update available")
 

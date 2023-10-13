@@ -1,5 +1,6 @@
-from typing import List
+from typing import List, Optional
 from typing_extensions import TypedDict
+
 
 class AgentDict(TypedDict):
     id: str
@@ -8,12 +9,14 @@ class AgentDict(TypedDict):
     system: str
     execution_mode: str
 
+
 class MaterialDict(TypedDict):
     id: str
     usage: str
     content: str
 
+
 class AnalysisResponse(TypedDict):
     next_step: str
-    agent: AgentDict | None
+    agent: Optional[AgentDict]
     materials: List[MaterialDict]

@@ -5,7 +5,7 @@ import re
 import time
 from enum import Enum
 from io import BytesIO
-from typing import List, Literal
+from typing import List, Literal, Optional
 
 import requests
 from PIL import Image
@@ -47,8 +47,8 @@ class DiscordMessage(BaseModel):
 
 
 class MidJourneyAPI:
-    driver: webdriver.Chrome | None = None
-    webdriver_service: Service | None = None
+    driver: Optional[webdriver.Chrome] = None
+    webdriver_service: Optional[Service] = None
 
     def __init__(self):
         self.email = load_credential("midjourney-discord", "email")
@@ -284,7 +284,7 @@ class MidJourneyAPI:
     @staticmethod
     def classify_midjourney_message(
         message: DiscordMessage,
-    ) -> MidJourneyImageTypeLiteral | None:
+    ) -> Optional[MidJourneyImageTypeLiteral]:
 
         progress_regexp = r"\((100|[1-9]?\d)%\)"
         image_number_regexp = r"\*\* - Image #(\d+) <@"
