@@ -102,7 +102,7 @@ class Materials:
                     id=id, usage=material["usage"], content=material["content"]
                 )
             elif filename.endswith(".md"):
-                with open(path, "r") as file:
+                with open(path, "r", encoding="utf-8") as file:
                     lines = file.readlines()
 
                     # Merging all lines into a single string
