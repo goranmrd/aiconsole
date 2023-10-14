@@ -35,14 +35,11 @@
 import sys
 
 from aiconsole import projects
+from aiconsole.utils.resource_to_path import resource_to_path
 from ..subprocess_code_interpreter import SubprocessCodeInterpreter
 import ast
 import re
-from pathlib import Path
 
-from aiconsole.settings import AICONSOLE_PATH, settings
-from aiconsole.materials import materials
-from aiconsole.agents import agents
 
 class Python(SubprocessCodeInterpreter):
     file_extension = "py"
@@ -71,16 +68,13 @@ def preprocess_python(code):
     Add end of execution marker
     """
 
-    cm = projects.get_project_materials().core_resource
-    ca = projects.get_project_agents().core_resource
-
-    materials_core_path = AICONSOLE_PATH.parent
-    for path_segment in cm.split("."):
-        materials_core_path = materials_core_path / path_segment
-
-    agents_core_path = AICONSOLE_PATH.parent
-    for path_segment in ca.split("."):
-        agents_core_path = agents_core_path / path_segment
+    materials_core_path = resource_to_path(
+        projects.get_project_materials().core_resource
+    )
+    
+    agents_core_path = resource_to_path(
+        projects.get_project_agents().core_resource
+    )
 
     code = f"""
 import sys

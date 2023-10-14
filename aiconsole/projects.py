@@ -12,8 +12,6 @@ from aiconsole.websockets.messages import ProjectOpenedWSMessage
 # TODO: useSocket wrapped in React elem
 # TODO: Scrollbar in materials list
 
-# TODO: /profile/user.jpg has wrong paths
-
 # TODO: Rework so I can only edit editable materials
 
 
@@ -34,6 +32,7 @@ def _create_project_message():
         path=get_project_directory(),
         name=get_project_name()
     )
+
 
 def get_project_materials() -> materials.Materials:
     return _materials

@@ -1,15 +1,12 @@
-from pathlib import Path
-
-from aiconsole.settings import AICONSOLE_PATH
+from aiconsole.utils.resource_to_path import resource_to_path
 
 
-def list_files_in_resource_path(path: str):
+def list_files_in_resource_path(resource: str):
     """
     Recursively list all paths to files in path
     """
-    abs_path = AICONSOLE_PATH.parent
-    for path_segment in path.split("."):
-        abs_path = abs_path / path_segment
+
+    abs_path = resource_to_path(resource)
 
 
     if not abs_path.exists():

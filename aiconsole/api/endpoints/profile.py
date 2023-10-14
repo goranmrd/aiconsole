@@ -3,9 +3,7 @@ from pathlib import Path
 from fastapi import APIRouter
 from fastapi.responses import FileResponse
 from aiconsole import projects
-from aiconsole.agents import agents
-
-from aiconsole.settings import settings
+from aiconsole.utils.resource_to_path import resource_to_path
 
 router = APIRouter()
 
@@ -19,9 +17,9 @@ async def profile_image(image: str):
     if image_path.exists():
         return FileResponse(str(image_path))
 
-    static_path = Path(projects.get_project_agents().core_resource) / image
+    static_path = resource_to_path(projects.get_project_agents().core_resource) / image
     if static_path.exists():
         return FileResponse(str(static_path))
 
-    default_path = Path(projects.get_project_agents().core_resource) / 'default.jpg'
+    default_path = resource_to_path(projects.get_project_agents().core_resource) / 'default.jpg'
     return FileResponse(str(default_path))
