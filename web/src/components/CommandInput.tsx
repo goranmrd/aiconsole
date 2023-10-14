@@ -89,7 +89,7 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
         {isWorking() && (
           <button
             className={cn(
-              'focus:ring-secondary ml-4 rounded-full p-2 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-4 border border-secondary text-secondary',
+              'focus:ring-secondary ml-4 rounded-full p-2 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 border border-secondary text-secondary',
             )}
             type="button"
             onClick={stopWork}

@@ -25,7 +25,6 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
   initChatHistory: async () => {
     try {
       const history: ChatHeadline[] = await (await Api.getChatsHistory()).json();
-      console.log(history);
       set(() => ({
         chatHeadlines: [...history],
       }));
