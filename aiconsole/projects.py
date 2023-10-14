@@ -3,16 +3,19 @@ import os
 from fastapi import WebSocket
 
 from aiconsole.agents import agents
+from aiconsole.code_interpreters.code_interpreters import reset_code_interpreters
 from aiconsole.materials import materials
 from aiconsole.utils.initialize_project_directory import initialize_project_directory
-from aiconsole.websockets.messages import DebugJSONWSMessage, ProjectOpenedWSMessage
+from aiconsole.websockets.messages import ProjectOpenedWSMessage
 
 # TODO: Better focus frames for material editing
-# TODO: Rework so I can only edit editable materials
-# TODO: Scrollbar in materials list
 # TODO: useSocket wrapped in React elem
+# TODO: Scrollbar in materials list
+
 # TODO: /profile/user.jpg has wrong paths
-# TOOD: Reset code interpreters when project changes
+
+# TODO: Rework so I can only edit editable materials
+
 
 _materials = materials.Materials(
     "aiconsole.materials.core",
@@ -56,6 +59,8 @@ def get_credentials_directory():
 async def reinitialize_project():
     global _materials
     global _agents
+
+    reset_code_interpreters()
 
     await initialize_project_directory()
     

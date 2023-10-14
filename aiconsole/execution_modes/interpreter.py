@@ -7,7 +7,6 @@ from aiconsole.utils.convert_messages import convert_messages
 from typing import AsyncGenerator
 from openai_function_call import OpenAISchema
 from aiconsole.code_interpreters.language_map import language_map
-from aiconsole.gpt.consts import GPTMode
 from aiconsole.gpt.gpt_executor import GPTExecutor
 from aiconsole.gpt.request import GPTRequest
 from aiconsole.gpt.types import CLEAR_STR

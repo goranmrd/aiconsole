@@ -3,7 +3,7 @@ from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from aiconsole.aic_types import CodeToRun
-from aiconsole.code_interpreters.get_code_interpreter import get_code_interpreter
+from aiconsole.code_interpreters.code_interpreters import get_code_interpreter
 import logging
 from aiconsole.websockets.messages import ErrorWSMessage
 
