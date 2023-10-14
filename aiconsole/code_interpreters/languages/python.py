@@ -40,7 +40,7 @@ import ast
 import re
 from pathlib import Path
 
-from aiconsole.settings import settings
+from aiconsole.settings import AICONSOLE_PATH, settings
 from aiconsole.materials import materials
 from aiconsole.agents import agents
 
@@ -81,11 +81,11 @@ def preprocess_python(code):
     cm = materials.materials.core_resource
     ca = agents.agents.core_resource
 
-    materials_core_path = Path(__file__).parent.parent
+    materials_core_path = AICONSOLE_PATH.parent
     for path_segment in cm.split("."):
         materials_core_path = materials_core_path / path_segment
 
-    agents_core_path = Path(__file__).parent.parent
+    agents_core_path = AICONSOLE_PATH.parent
     for path_segment in ca.split("."):
         agents_core_path = agents_core_path / path_segment
 

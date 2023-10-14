@@ -3,14 +3,13 @@ import logging
 from logging import config
 from contextlib import asynccontextmanager
 import threading
-from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from aiconsole import projects
 from aiconsole.api.routers import app_router
-from aiconsole.settings import settings, log_config
+from aiconsole.settings import AICONSOLE_PATH, settings, log_config
 from aiconsole.utils.is_update_needed import is_update_needed
 from aiconsole.websockets.messages import NotificationWSMessage
 
@@ -40,7 +39,7 @@ def app():
 
     app.include_router(app_router)
 
-    static_path = Path(__file__).parent / "aiconsole" / "static"
+    static_path = AICONSOLE_PATH / "static"
     if not static_path.exists():
         _log.warning(f"Static files directory does not exist: {static_path}")
         _log.warning("Static files will not be served")

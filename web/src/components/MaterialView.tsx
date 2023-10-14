@@ -40,27 +40,24 @@ export function MaterialView() {
       <div className="flex flex-col h-full overflow-y-auto p-6 gap-4">
         {material && (
           <>
-            <div className="flex flex-row">
-              <span className="flex-grow font-bold">Material: {material.id}</span>
-              <button
-                className="bg-primary hover:bg-gray-700/95 text-black hover:bg-primary-light px-4 py-1 rounded-full"
-                onClick={async () => {
-                  await Api.saveMaterial(material);
-                  notifications.show({
-                    title: 'Saved',
-                    message: 'Material saved',
-                    color: 'green',
-                  });
-                }}
-              >
-                Save
-              </button>
-            </div>
+            
+            <label htmlFor="id" className="font-bold">
+              Material:
+            </label>
+            <textarea
+              className="bg-black/20"
+              id="id"
+              value={material.id}
+              onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
+                setMaterial({ ...material, id: e.target.value });
+              }}
+            />
+
             <label htmlFor="usage" className="font-bold">
               Usage:
             </label>
             <textarea
-              className=" bg-black"
+              className=" bg-black/20"
               id="usage"
               value={material.usage}
               onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -71,13 +68,26 @@ export function MaterialView() {
               Content:
             </label>
             <textarea
-              className="flex-grow  bg-black"
+              className="flex-grow  bg-black/20"
               id="content"
               value={material.content}
               onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
                 setMaterial({ ...material, content: e.target.value });
               }}
             />
+            <button
+              className="bg-primary hover:bg-gray-700/95 text-black hover:bg-primary-light px-4 py-1 rounded-full flow-right"
+              onClick={async () => {
+                await Api.saveMaterial(material);
+                notifications.show({
+                  title: 'Saved',
+                  message: 'Material saved',
+                  color: 'green',
+                });
+              }}
+            >
+              Save
+            </button>
           </>
         )}
       </div>

@@ -3,14 +3,19 @@ import os
 from shutil import copy2
 from pathlib import Path
 
+
+from aiconsole.settings import AICONSOLE_PATH
+
 _log = logging.getLogger(__name__)
 
 
 def initialize_project_directory():
+    from aiconsole import projects
+    
     # if .aic does not exist in cwd, copy the entire contents of template to cwd
     if not os.path.exists(".aic"):
         _log.info("Initializing project directory ...")
-        copy_tree(Path("./aiconsole/template"), Path("."))
+        copy_tree(AICONSOLE_PATH / "template", Path(projects.get_project_directory()))
     else:
         _log.info("Project directory already initialized")
 

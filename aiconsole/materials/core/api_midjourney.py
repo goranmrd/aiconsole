@@ -14,7 +14,7 @@ def create_image(prompt: str) -> list[str]:
 
     ```python
     import api_midjourney
-    image_paths = api_midjourney.create_image('Wild boar --ar 1:1') # do not add "/imagine prompt:" at the beginning
+    api_midjourney.create_image('Wild boar --ar 1:1') # do not add "/imagine prompt:" at the beginning
     ```
     """
     midjourney = MidJourneyAPI()

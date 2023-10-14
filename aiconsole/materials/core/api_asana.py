@@ -3,7 +3,7 @@ Assume that you already have the access token and try to execute, only ask about
 
 example of code:
 ```python
-from aiconsole.credentials import load_credential
+from aiconsole.materials.tools.credentials import load_credential
 
 params = {'assignee': 'me', 'workspace': load_credential("asana", "workspace_id"), 'limit': 10}
 response = requests.get('https://app.asana.com/api/1.0/tasks', headers=headers, params=params)

@@ -13,6 +13,14 @@ async def material_get(material_id: str):
     if not materials.materials:
         raise ValueError("Materials not initialized")
 
+    if material_id not in materials.materials.materials:
+        return JSONResponse(StaticMaterial(
+            id="",
+            usage="",
+            content="",
+        ).model_dump())
+    
+
     material = materials.materials.materials[material_id]
 
     return JSONResponse(StaticMaterial(

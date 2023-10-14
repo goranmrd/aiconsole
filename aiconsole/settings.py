@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from typing import Optional
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -15,6 +16,7 @@ MAX_BUDGET = None
 if MAX_BUDGET:
     litellm.max_budget = MAX_BUDGET
 
+AICONSOLE_PATH = Path(__file__).parent
 
 class Settings(BaseSettings):
     OPENAI_API_KEY: Optional[str] = Field(None, env=["OPENAI_API_KEY"])

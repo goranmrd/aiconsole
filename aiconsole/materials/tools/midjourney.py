@@ -26,10 +26,6 @@ from aiconsole import projects
 from aiconsole.materials.tools.credentials import load_credential
 from aiconsole.settings import settings
 
-_log = logging.getLogger(__name__)
-_log.setLevel(settings.LOG_LEVEL)
-
-
 class MidJourneyImageType(str, Enum):
     MIDJOURNEY_UPSCALE = "MIDJOURNEY_UPSCALE"
     MIDJOURNEY_GRID = "MIDJOURNEY_GRID"
@@ -219,7 +215,7 @@ class MidJourneyAPI:
             self.driver.switch_to.active_element.send_keys(prompt)
             self.driver.switch_to.active_element.send_keys(Keys.RETURN)
 
-            _log.info("Prompt sent, monitoring for results ...")
+            print("Prompt sent, monitoring for results ...")
             image_paths = self._wait_for_image(old_message_ids, prompt)
         finally:
             self.driver.quit()
@@ -253,7 +249,7 @@ class MidJourneyAPI:
                     ):
                         download_url = message.images[0]
                         file_name = download_url.split("/")[-1].split("?")[0]
-                        _log.info(f"Downloading image: {file_name}")
+                        print(f"Downloading image: {file_name}")
                         # Assuming it should be a GET request
                         response = requests.get(download_url)
                         image = Image.open(BytesIO(response.content))
@@ -265,11 +261,11 @@ class MidJourneyAPI:
                         image_paths = []
                         for i, image in enumerate(images):
                             image_name = f"{file_name}-{i}.png"
-                            image.save(image_name, **metadata)
-                            image_paths.append(os.path.join(os.getcwd(), image_name))
-                            _log.info(f"Saved image: {file_name}-{i}.png")
+                            image.save(os.path.join(projects.get_project_directory(), image_name), **metadata)
+                            image_paths.append(os.path.join(projects.get_project_directory(), image_name))
+                            print(f"Saved image: ./{file_name}-{i}.png")
 
-                        _log.info("Image generated: " + str(image))
+                        print("Image generated: " + str(image))
                         return image_paths
 
             time.sleep(1)

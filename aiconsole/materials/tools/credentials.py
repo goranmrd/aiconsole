@@ -44,8 +44,8 @@ def load_credential(module: str, credential: str) -> str:
     raise Exception(f'''
 Could not find credential {credential} for module {module}.
 
-Ask the user to give you {credential} and then save it like this:
+Ask the user to give you {credential} and then save it like this, don't use 'getpass' or anything that reads from the console, ask them using text:
 
-from aiconsole.credentials import save_credential
+from aiconsole.materials.tools.credentials import save_credential
 save_credential("{module}", "{credential}", your_value)
     '''.strip())
