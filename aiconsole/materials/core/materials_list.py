@@ -1,4 +1,5 @@
-from aiconsole.materials.materials import materials
+from aiconsole import projects
+
 
 newline = "\n"
 material = {
@@ -7,6 +8,6 @@ material = {
 # List of Materials
 
 Available materials:
-{newline.join(f'{f"* {material.id} - {material.usage}"}' for material in materials.all_materials())}
+{newline.join(f'{f"* {material.id} - {material.usage}"}' for material in projects.get_project_materials().all_materials())}
 '''
 }

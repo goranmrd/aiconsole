@@ -3,7 +3,7 @@ import { MaterialInfo } from '../store/types';
 import { Api } from '../api/Api';
 import { Link } from 'react-router-dom';
 import { TopBar } from './TopBar';
-import { PlusCircleIcon, PlusIcon, PlusSmallIcon } from '@heroicons/react/24/outline';
+import { PlusSmallIcon } from '@heroicons/react/24/outline';
 
 export default function MaterailsView() {
   const [materials, setMaterials] = useState<MaterialInfo[]>();

@@ -1,14 +1,13 @@
 import json
 import logging
 from typing import List
-from aiconsole.agents import agents
+from aiconsole import projects
 from aiconsole.aic_types import Agent, ContentEvaluationContext, Chat
 from aiconsole.analysis.AnalysisResponse import AgentDict, AnalysisResponse
 from aiconsole.analysis.create_text_plan import create_text_plan
 from aiconsole.analysis.fix_plan_and_convert_to_json import fix_plan_and_convert_to_json
 from aiconsole.execution_modes.normal import execution_mode_normal
 from aiconsole.gpt.consts import GPTMode
-from aiconsole.materials import materials
 
 _log = logging.getLogger(__name__)
 
@@ -26,43 +25,39 @@ def pick_agent(arguments: dict, chat: Chat, available_agents: List[Agent]) -> Ag
     picked_agent (Agent): The chosen agent object.
     """
 
-    if not agents.agents:
-        raise ValueError("Agents not initialized")
+    # Try support first
+    default_agent = next((agent for agent in available_agents if agent.id == 'support'), None)
+
+    # Pick any if not available
+    if not default_agent:
+        default_agent = available_agents[0]
 
     already_happened = arguments.get("already_happened", False)
     is_users_turn = arguments.get("is_users_turn", False) or already_happened
 
 
     if is_users_turn:
-        picked_agents = [Agent(id='user', name='User', usage='When a human user needs to respond',
-                                system='', execution_mode=execution_mode_normal, gpt_mode=GPTMode.QUALITY)]
+        picked_agent = Agent(id='user', name='User', usage='When a human user needs to respond',
+                                system='', execution_mode=execution_mode_normal, gpt_mode=GPTMode.QUALITY)
     else:
-        picked_agents = [agent for agent in available_agents if agent.id == arguments.get("agent_id", None)]
-
-    picked_agent = picked_agents[0] if picked_agents else None
+        picked_agent = next((agent for agent in available_agents if agent.id == arguments.get("agent_id", None)), None)
 
     _log.debug(f"Chosen agent: {picked_agent}")
 
-    # The "support" agent is always available
+
     if not picked_agent:
-        picked_agent = agents.agents.agents['support']
+        picked_agent = default_agent
 
     # If it turns out that the user must respond to him self, have the assistant drive the conversation
     if is_users_turn and chat.messages and chat.messages[-1].role == "user":
-        picked_agent = agents.agents.agents['support']
+        picked_agent = default_agent
 
     return picked_agent
 
 
 async def director_analyse(chat: Chat) -> AnalysisResponse:
-    if not agents.agents:
-        raise ValueError("Agents not initialized")
-    
-    if not materials.materials:
-        raise ValueError("Agents not initialized")
-    
-    available_agents = agents.agents.all_agents()
-    available_materials = materials.materials.all_materials()
+    available_agents = projects.get_project_agents().all_agents()
+    available_materials = projects.get_project_materials().all_materials()
 
     plan = await create_text_plan(chat, available_agents, available_materials)
     arguments = await fix_plan_and_convert_to_json(chat, plan, available_agents, available_materials)

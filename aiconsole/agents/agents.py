@@ -1,7 +1,7 @@
 import importlib.util
 import logging
 import os
-from typing import Dict, Union
+from typing import Dict
 from pydantic import ValidationError
 
 import watchdog.events
@@ -101,8 +101,3 @@ class Agents:
 
         await NotificationWSMessage(title="Agents reloaded", message=f"Reloaded {len(self.agents)} agents").send_to_all()
         _log.info(f"Reloaded {len(self.agents)} agents")
-
-
-agents: Union[Agents, None] = None
-
-

@@ -1,6 +1,7 @@
 import asyncio
 from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
+from aiconsole import projects
 
 from aiconsole.aic_types import ChatWithAgentAndMaterials, ExecutionModeContext
 from aiconsole.agents import agents
@@ -16,10 +17,7 @@ _log = logging.getLogger(__name__)
 
 @router.post("/execute")
 async def execute(chat: ChatWithAgentAndMaterials) -> StreamingResponse:
-    if not agents.agents:
-        raise ValueError("Agents not initialized")
-
-    agent = agents.agents.agents[chat.agent_id]
+    agent = projects.get_project_agents().agents[chat.agent_id]
 
     context = ExecutionModeContext(
         messages=chat.messages,

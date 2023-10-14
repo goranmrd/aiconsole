@@ -71,15 +71,8 @@ def preprocess_python(code):
     Add end of execution marker
     """
 
-
-    if not materials.materials:
-        raise Exception("Materials not loaded yet")
-    
-    if not agents.agents:
-        raise Exception("Agents not loaded yet")
-    
-    cm = materials.materials.core_resource
-    ca = agents.agents.core_resource
+    cm = projects.get_project_materials().core_resource
+    ca = projects.get_project_agents().core_resource
 
     materials_core_path = AICONSOLE_PATH.parent
     for path_segment in cm.split("."):
@@ -95,8 +88,8 @@ import os
 
 sys.path.append('{materials_core_path}')
 sys.path.append('{agents_core_path}')
-sys.path.append('{materials.materials.user_directory}')
-sys.path.append('{agents.agents.user_directory}')
+sys.path.append('{projects.get_project_materials().user_directory}')
+sys.path.append('{projects.get_project_agents().user_directory}')
         """.strip() + "\n" + code
 
     print(code)

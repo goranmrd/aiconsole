@@ -138,7 +138,3 @@ class Materials:
                     )
 
         await NotificationWSMessage(title="Materials reloaded", message=f"Reloaded {len(self.materials)} materials").send_to_all()
-        
-
-
-materials: Union[Materials, None] = None

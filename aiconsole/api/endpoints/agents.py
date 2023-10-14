@@ -1,6 +1,7 @@
 import logging
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
+from aiconsole import projects
 from aiconsole.agents import agents
 from aiconsole.aic_types import AgentBase
 from aiconsole.gpt.consts import GPTMode
@@ -11,10 +12,7 @@ _log = logging.getLogger(__name__)
 
 @router.get("/agents")
 async def agents_handler():
-    if not agents.agents:
-        raise Exception("Agents not initialized")
-
-    all_agents = agents.agents.all_agents()
+    all_agents = projects.get_project_agents().all_agents()
 
     all_agents = [
         AgentBase(id= "user", name= "User", gpt_mode=GPTMode.QUALITY, usage= "", system= ""),

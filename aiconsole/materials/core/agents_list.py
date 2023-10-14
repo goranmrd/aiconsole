@@ -1,4 +1,6 @@
-from aiconsole.agents.agents import agents
+
+from aiconsole import projects
+
 
 newline = "\n"
 material = {
@@ -6,6 +8,6 @@ material = {
     "content": lambda context: f'''
 # List of Agents
 
-Available agents: {newline.join(f'{f"* {agent.id} - {agent.usage}"}' for agent in agents.all_agents())}
+Available agents: {newline.join(f'{f"* {agent.id} - {agent.usage}"}' for agent in projects.get_project_agents().all_agents())}
 '''
 }
