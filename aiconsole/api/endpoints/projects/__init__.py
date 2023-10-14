@@ -1,9 +1,8 @@
 
 from fastapi import APIRouter
 
-from . import choose, current
+from . import choose
 
 router = APIRouter()
 
 router.include_router(choose.router)
-router.include_router(current.router)

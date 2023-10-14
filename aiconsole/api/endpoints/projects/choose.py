@@ -3,6 +3,7 @@ import os
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from aiconsole import projects
+from aiconsole.websockets.messages import ProjectOpenedWSMessage
 
 router = APIRouter()
 

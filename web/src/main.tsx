@@ -46,4 +46,3 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 );
 
 useAICStore.getState().initCommandHistory();
-useAICStore.getState().initCurrentProject();

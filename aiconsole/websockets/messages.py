@@ -2,7 +2,8 @@ from typing import Literal
 from pydantic import BaseModel
 
 class BaseWSMessage(BaseModel):
-    type: str
+    def get_type(self):
+        return self.__class__.__name__
 
     def send(self, chat_id: str):
         from aiconsole.websockets.connection_manager import send_message
@@ -11,17 +12,22 @@ class BaseWSMessage(BaseModel):
     def send_to_all(self):
         from aiconsole.websockets.connection_manager import send_message_to_all
         return send_message_to_all(self)
+    
+    def send_to_one(self, websocket):
+        from aiconsole.websockets.connection_manager import send_message_to_one
+        return send_message_to_one(websocket, self)
 
 class NotificationWSMessage(BaseWSMessage):
-    type: Literal["notification"] = "notification"
     title: str
     message: str
 
 class DebugJSONWSMessage(BaseWSMessage):
-    type: Literal["debug_json"] = "debug_json"
     message: str
     object: dict
 
 class ErrorWSMessage(BaseWSMessage):
-    type: Literal["error"] = "error"
     error: str
+
+class ProjectOpenedWSMessage(BaseWSMessage):
+    name: str
+    path: str

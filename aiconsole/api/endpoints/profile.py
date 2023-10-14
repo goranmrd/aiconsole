@@ -14,7 +14,7 @@ log = logging.getLogger(__name__)
 
 @router.get("/profile/{image}")
 async def profile_image(image: str):
-    image_path = projects.get_project_agents().user_directory / image
+    image_path = Path(projects.get_project_agents().user_directory) / image
 
     if image_path.exists():
         return FileResponse(str(image_path))

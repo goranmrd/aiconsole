@@ -1,24 +1,31 @@
+import os
 from pydantic import BaseModel
 from typing import Optional, Any
 import logging
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from aiconsole import projects
 
 from aiconsole.websockets import connection_manager
+from aiconsole.websockets.messages import ProjectOpenedWSMessage
 
 router = APIRouter()
 
 _log = logging.getLogger(__name__)
+
 
 class IncomingMessage(BaseModel):
     type: str
     detail: Any
     error: Optional[str]
 
+
 @router.websocket("/ws/{chat_id}")
 async def websocket_endpoint(websocket: WebSocket, chat_id: str):
     await connection_manager.connect(websocket, chat_id)
 
-    try: 
+    await projects.send_project_init(websocket)
+
+    try:
         while True:
             json_data = await websocket.receive_text()
             message = IncomingMessage.model_validate_json(json_data)

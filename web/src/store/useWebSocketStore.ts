@@ -2,6 +2,7 @@ import { notifications } from '@mantine/notifications';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { create } from 'zustand';
 import { ErrorEvent } from 'reconnecting-websocket/events'
+import { useAICStore } from './AICStore';
 
 export type WebSockeStore = {
   messages: object[];
@@ -13,24 +14,30 @@ export type WebSockeStore = {
 };
 
 export type ErrorWSMessage = {
-  type: 'error';
+  type: 'ErrorWSMessage';
   error: string;
 };
 
 export type NotificationWSMessage = {
-  type: 'notification';
+  type: 'NotificationWSMessage';
   title: string;
   message: string;
 };
 
 export type DebugJSONWSMessage = {
-  type: 'debug_json';
+  type: 'DebugJSONWSMessage';
   message: string;
   object: object;
 };
 
+export type ProjectOpenedWSMessage = {
+  type: 'ProjectOpenedWSMessage';
+  name: string;
+  path: string;
+};
 
-export type WSMessage = ErrorWSMessage | NotificationWSMessage | DebugJSONWSMessage;
+
+export type WSMessage = ErrorWSMessage | NotificationWSMessage | DebugJSONWSMessage | ProjectOpenedWSMessage;
 
 // Create Zustand store
 export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
@@ -45,9 +52,10 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
 
     ws.onmessage = (e: MessageEvent) => {
       const data: WSMessage = JSON.parse(e.data);
+      console.log('WebSocket message received: ', data)
 
       switch (data.type) {
-        case 'error':
+        case 'ErrorWSMessage':
           console.error(data.error);
           notifications.show({
             title: 'Error',
@@ -55,15 +63,21 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
             color: 'red',
           });
           break;
-        case 'notification':
+        case 'NotificationWSMessage':
           console.log('Notification received: ', data);
           notifications.show({
             title: data.title,
             message: data.message,
           });
           break;
-        case 'debug_json':
+        case 'DebugJSONWSMessage':
           console.log(data.message, data.object);
+          break;
+        case 'ProjectOpenedWSMessage':
+          useAICStore.getState().setProject({
+            name: data.name,
+            path: data.path,
+          });
           break;
       }
 
