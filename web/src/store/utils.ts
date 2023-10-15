@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import { Material, AICMessage } from './types';
+import { AICMessage } from './types';
 import { useAICStore } from './AICStore';
 import { useDebouncedValue } from '@mantine/hooks';
 
@@ -9,7 +9,7 @@ export function createMessage({
   role,
   task,
   content,
-  materials,
+  materials_ids,
   language,
   code,
   code_output,
@@ -18,7 +18,7 @@ export function createMessage({
   role: string;
   task?: string;
   content: string;
-  materials: Material[];
+  materials_ids: string[];
   language?: string;
   code?: boolean;
   code_output?: boolean;
@@ -28,7 +28,7 @@ export function createMessage({
     id: uuidv4(),
     role,
     task,
-    materials,
+    materials_ids,
     content,
     language,
     code,

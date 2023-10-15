@@ -80,7 +80,7 @@ export const createCommandSlice: StateCreator<
           ...get().messages || [],
           createMessage({
             agent_id: 'user',
-            materials: [],
+            materials_ids: [],
             role: 'user',
             content: command,
           }),

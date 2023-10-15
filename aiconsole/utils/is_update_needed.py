@@ -8,7 +8,7 @@ _log = logging.getLogger(__name__)
 
 def is_update_needed():
     # Fetch all versions from the PyPI API
-    response = requests.get(f'https://pypi.org/pypi/aiconsole/json')
+    response = requests.get('https://pypi.org/pypi/aiconsole/json')
     all_versions = list(response.json()['releases'].keys())
 
     # Sort the versions

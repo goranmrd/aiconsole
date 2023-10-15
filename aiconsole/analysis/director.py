@@ -87,7 +87,7 @@ async def director_analyse(chat: Chat) -> AnalysisResponse:
     relevant_materials = [
         k
         for k in available_materials
-        if k.id in arguments.get("needed_material_ids", [])
+        if k.id in arguments.get("needed_materials_ids", [])
     ]
 
     # Maximum of 5 materials

@@ -4,7 +4,7 @@ import logging
 _log = logging.getLogger(__name__)
 
 
-def documentation_from_code(module_name: str, path: str):
+def documentation_from_code(source: str):
     """
     Creates content of a material from a python material file.
     """

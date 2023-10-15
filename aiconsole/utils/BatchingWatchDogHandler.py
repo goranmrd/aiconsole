@@ -19,10 +19,7 @@ class BatchingWatchDogHandler(watchdog.events.FileSystemEventHandler):
         return self.on_modified(event)
 
     def on_modified(self, event):
-        if event.is_directory or (
-            not event.src_path.endswith(".py")
-            and not event.src_path.endswith(".md")
-        ):
+        if event.is_directory or not event.src_path.endswith(".toml"):
             return
 
         with self.lock:

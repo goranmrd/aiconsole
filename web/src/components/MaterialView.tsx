@@ -2,13 +2,48 @@ import { notifications } from '@mantine/notifications';
 import { useParams } from 'react-router-dom';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { Api } from '../api/Api';
-import { Material } from '../store/types';
+import { Material, MaterialContentType, MaterialDefinedIn, MaterialStatus, materialContenTypeOptions, materialDefinedInOptions, materialStatusOptions } from '../store/types';
 import { useWebSocketStore } from '../store/useWebSocketStore';
 import { TopBar } from './TopBar';
 import { cn } from '../utils/styles';
+import { Chip, Group } from '@mantine/core';
 
+function EnumInput<T extends string>(props: {
+  label: string;
+  value: T;
+  values: T[];
+  className?: string;
+  onChange: (value: T) => void;
+  placeholder?: string;
+}) {
+  return (
+    <Chip.Group
+      value={props.value}
+      onChange={(value: T) => {
+        props.onChange(value);
+      }}
+    >
+      <div className="flex flex-row gap-4">
+        <label htmlFor={props.label} className="font-bold">
+          {props.label}:
+        </label>
+        <Group justify="center">
+          {props.values.map((value) => (
+            <Chip value={value}>{value}</Chip>
+          ))}
+        </Group>
+      </div>
+    </Chip.Group>
+  );
+}
 
-function SimpleInput(props: { label: string, value: string, className?: string, onChange: (value: string) => void, placeholder?: string }) {
+function SimpleInput(props: {
+  label: string;
+  value: string;
+  className?: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+}) {
   return (
     <>
       <label htmlFor={props.label} className="font-bold">
@@ -21,7 +56,10 @@ function SimpleInput(props: { label: string, value: string, className?: string, 
         onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
           props.onChange(e.target.value);
         }}
-        className={cn(props.className, "resize-none bg-black/20 appearance-none border border-transparent rounded w-full py-2 px-3 leading-tight placeholder-gray-400 focus:outline-none focus:border-primary/50 focus:shadow-outline")}
+        className={cn(
+          props.className,
+          'resize-none bg-black/20 appearance-none border border-transparent rounded w-full py-2 px-3 leading-tight placeholder-gray-400 focus:outline-none focus:border-primary/50 focus:shadow-outline',
+        )}
       ></textarea>
     </>
   );
@@ -61,11 +99,76 @@ export function MaterialView() {
       <div className="flex flex-col h-full overflow-y-auto p-6 gap-4">
         {material && (
           <>
-            
-            <SimpleInput label="Material id" placeholder='some_material_id' value={material.id} onChange={(value) => setMaterial({ ...material, id: value })} /> 
-            <SimpleInput label="Usage"  value={material.usage} onChange={(value) => setMaterial({ ...material, usage: value })} /> 
-            <SimpleInput label="Content source" value={material.content_source} onChange={(value) => setMaterial({ ...material, content_source: value })} className="flex-grow" /> 
-            
+            <SimpleInput
+              label="Material id"
+              placeholder="some_material_id"
+              value={material.id}
+              onChange={(value) => setMaterial({ ...material, id: value })}
+            />
+            <SimpleInput
+              label="Usage"
+              value={material.usage}
+              onChange={(value) => setMaterial({ ...material, usage: value })}
+            />
+
+            <EnumInput<MaterialStatus>
+              label="Status"
+              values={materialStatusOptions}
+              value={material.status}
+              onChange={(value) => setMaterial({ ...material, status: value })}
+            />
+
+            <EnumInput<MaterialDefinedIn>
+              label="Defined in"
+              values={materialDefinedInOptions}
+              value={material.defined_in}
+              onChange={(value) =>
+                setMaterial({ ...material, defined_in: value })
+              }
+            />
+
+            <EnumInput<MaterialContentType>
+              label="Content type"
+              values={materialContenTypeOptions}
+              value={material.content_type}
+              onChange={(value) =>
+                setMaterial({ ...material, content_type: value })
+              }
+            />
+
+            {material.content_type === 'static_text' && (
+              <SimpleInput
+                label="Text"
+                value={material.content_static_text}
+                onChange={(value) =>
+                  setMaterial({ ...material, content_static_text: value })
+                }
+                className="flex-grow"
+              />
+            )}
+
+            {material.content_type === 'dynamic_text' && (
+              <SimpleInput
+                label="Python function returning dynamic text"
+                value={material.content_dynamic_text}
+                onChange={(value) =>
+                  setMaterial({ ...material, content_dynamic_text: value })
+                }
+                className="flex-grow"
+              />
+            )}
+
+            {material.content_type === 'api' && (
+              <SimpleInput
+                label="API Module"
+                value={material.content_api}
+                onChange={(value) =>
+                  setMaterial({ ...material, content_api: value })
+                }
+                className="flex-grow"
+              />
+            )}
+
             <button
               className="bg-primary hover:bg-gray-700/95 text-black hover:bg-primary-light px-4 py-1 rounded-full flow-right"
               onClick={async () => {

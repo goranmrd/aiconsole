@@ -3,7 +3,7 @@ import { Chat, AICMessage, AICMessageGroup } from './types';
 import { AICStore } from './AICStore';
 
 export type MessageSlice = {
-  messages: AICMessage[] | undefined;
+  messages: AICMessage[];
   setMessages: (chat: Chat) => void;
   removeMessage: (id: string) => void;
   editMessageContent: (id: string, content: string) => void;
@@ -50,15 +50,15 @@ export const createMessageSlice: StateCreator<
         groups[groups.length - 1].role !== message.role ||
         groups[groups.length - 1].agent_id !== message.agent_id ||
         groups[groups.length - 1].task !== message.task ||
-        groups[groups.length - 1].materials.map((m) => m.id).join('|') !==
-          message.materials.map((m) => m.id).join('|')
+        groups[groups.length - 1].materials_ids.join('|') !==
+          message.materials_ids.join('|')
       ) {
         groups.push({
           id: message.id,
           agent_id: message.agent_id,
           role: message.role,
           task: message.task || '',
-          materials: message.materials,
+          materials_ids: message.materials_ids,
           sections: [{ id: message.id, foldable: false, messages: [message] }],
         });
       } else {

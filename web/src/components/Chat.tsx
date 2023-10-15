@@ -130,7 +130,7 @@ export function Chat({ chatId, autoScrolling, setAutoScrolling }: { chatId: stri
             {isAnalysisRunning && (
               <div className={cn('flex flex-row  p-5')}>
                 <div className="container flex mx-auto gap-4">
-                  <UserInfo agent_id={''} materials={[]} />
+                  <UserInfo agent_id={''} materials_ids={[]} />
                   <div className="flex-grow flex flex-col gap-5">
                     <h3 className="italic">
                       Analysing ... <BlinkingCursor />{' '}

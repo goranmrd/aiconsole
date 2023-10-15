@@ -124,7 +124,7 @@ async def fix_plan_and_convert_to_json(
             json_schema_extra={"enum": [s.id for s in available_agents]},
         )
 
-        needed_material_ids: List[str] = Field(
+        needed_materials_ids: List[str] = Field(
             ...,
             description="Chosen material ids needed for the task",
             json_schema_extra={

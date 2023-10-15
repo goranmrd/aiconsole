@@ -10,7 +10,7 @@ class AICMessage(BaseModel):
     task: Optional[str] = None
     content: str
     timestamp: str
-    material_ids: List[str]
+    materials_ids: List[str]
 
     language: Optional[str] = None
     code: Optional[bool] = False

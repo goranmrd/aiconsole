@@ -1,14 +1,13 @@
 import { Link } from 'react-router-dom';
 import { useAICStore } from '../store/AICStore';
-import { Material } from '../store/types';
 
 export function UserInfo({
   agent_id,
-  materials,
+  materials_ids,
   task,
 }: {
   agent_id: string;
-  materials: Material[];
+  materials_ids: string[];
   task?: string;
 }) {
   const agent = useAICStore((state) => state.getAgent(agent_id));
@@ -28,19 +27,13 @@ export function UserInfo({
       >
         {agent?.name || agent?.id}
       </div>
-      {materials.length > 0 && <div className="text-xs opacity-40 text-center">+</div>}
-      {materials.map((material) => (
-        <Link to={`/materials/${material.id}`} key={material.id}>
+      {materials_ids.length > 0 && <div className="text-xs opacity-40 text-center">+</div>}
+      {materials_ids.map((material_id) => (
+        <Link to={`/materials/${material_id}`} key={material_id}>
           <div
-            
             className="w-32 opacity-80 text-xs text-center overflow-ellipsis overflow-hidden whitespace-nowrap"
-            title={`id: ${material.id}\nusage: ${material.usage}\ncontent: ${
-              material.content.length > 100
-                ? material.content.substring(0, 100) + '...'
-                : material.content
-            }`}
           >
-            {material.id}
+            {material_id}
           </div>
         </Link>
       ))}

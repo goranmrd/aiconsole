@@ -52,9 +52,9 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
     const chat = await Api.getChat(id);
 
     set(() => ({
-      messages: (chat.messages || []).map(({ materials, ...rest }) => {
+      messages: (chat.messages || []).map(({ materials_ids, ...rest }) => {
         return {
-          materials: materials ? materials : [],
+          materials_ids: materials_ids ? materials_ids : [],
           ...rest,
         };
       }),

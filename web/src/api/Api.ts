@@ -9,7 +9,7 @@ export const BASE_URL = `http://${window.location.hostname}:8000`;
 
 // TODO: Better types for method parameters
 export const Api = (function () {
-  const execute = (body: object, signal?: AbortSignal) =>
+  const execute = (body: Chat & { relevant_materials_ids: string[], agent_id: string }, signal?: AbortSignal) =>
   ky.post(`${BASE_URL}/execute`, { json: { ...body }, signal, timeout: 60000 });
 
   const run_code = ({chatId, signal, ...rest }: { chatId: string, language: string, code: string, signal?: AbortSignal }) =>
@@ -38,7 +38,7 @@ export const Api = (function () {
   const saveHistory = (body: object) =>
     ky.post(`${BASE_URL}/chats/history`, { json: { ...body }, timeout: 60000 });
 
-  const analyse = (body: object, signal?: AbortSignal) =>
+  const analyse = (body: Chat, signal?: AbortSignal) =>
     ky.post(`${BASE_URL}/analyse`, { json: { ...body }, signal, timeout: 60000 });
 
   const updateChatHeadline = (id: string, headline: string) =>

@@ -43,7 +43,6 @@ export default function MaterailsView() {
               </Link>
             ))}
         </div>
-        
       </div>
     </div>
   );
