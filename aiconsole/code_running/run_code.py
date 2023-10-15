@@ -1,4 +1,5 @@
-from aiconsole.code_interpreters.language_map import language_map
+
+from aiconsole.code_running.code_interpreters.language_map import language_map
 
 
 code_interpreters = {}

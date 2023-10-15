@@ -1,8 +1,10 @@
-from aiconsole.aic_types import Agent, Chat, Material
+from aiconsole.agents.types import Agent
+from aiconsole.chat.types import Chat
 from aiconsole.gpt.consts import GPTMode
 from aiconsole.gpt.gpt_executor import GPTExecutor
 from aiconsole.gpt.request import GPTRequest
 from aiconsole.gpt.types import GPTMessage
+from aiconsole.materials.material import Material
 from aiconsole.utils.convert_messages import convert_messages
 from typing import List
 import random
@@ -10,8 +12,7 @@ from aiconsole.settings import settings
 
 
 def _initial_system_prompt():
-
-    return f"""
+    return """
 You are a director of a multiple AI Agents, doing everything to help the user.
 You have multiple AI Agents at your disposal, each with their own unique capabilities.
 Some of them can run code on this local machine in order to perform any tasks that the user needs.
@@ -61,21 +62,30 @@ def _last_system_prompt(available_agents, available_materials):
 """.strip()
 
 
-async def create_text_plan(request: Chat, available_agents: List[Agent], available_materials: List[Material]):
+async def create_text_plan(
+    request: Chat, available_agents: List[Agent], available_materials: List[Material]
+):
     gpt_executor = GPTExecutor()
 
-    async for chunk in gpt_executor.execute(GPTRequest(
-        system_message=_initial_system_prompt(),
-        gpt_mode=GPTMode.QUALITY,
-        messages=[*convert_messages(request.messages), GPTMessage(
-            role="system",
-            content=_last_system_prompt(available_agents=available_agents,
-                                  available_materials=available_materials,)
-        )],
-        presence_penalty=2,
-        min_tokens=settings.DIRECTOR_MIN_TOKENS,
-        preferred_tokens=settings.DIRECTOR_PREFERRED_TOKENS,
-    )):
+    async for chunk in gpt_executor.execute(
+        GPTRequest(
+            system_message=_initial_system_prompt(),
+            gpt_mode=GPTMode.QUALITY,
+            messages=[
+                *convert_messages(request.messages),
+                GPTMessage(
+                    role="system",
+                    content=_last_system_prompt(
+                        available_agents=available_agents,
+                        available_materials=available_materials,
+                    ),
+                ),
+            ],
+            presence_penalty=2,
+            min_tokens=settings.DIRECTOR_MIN_TOKENS,
+            preferred_tokens=settings.DIRECTOR_PREFERRED_TOKENS,
+        )
+    ):
         pass
 
-    return gpt_executor.response.choices[0].message.content or ''
+    return gpt_executor.response.choices[0].message.content or ""

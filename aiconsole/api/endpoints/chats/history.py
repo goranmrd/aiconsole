@@ -5,8 +5,8 @@ from datetime import datetime
 from typing import Callable
 from fastapi import APIRouter, status, Response, Depends
 from aiconsole import projects
-from aiconsole.aic_types import Chat
 from aiconsole.api.json_file_operations import json_read, json_write
+from aiconsole.chat.types import Chat
 
 router = APIRouter()
 _log = logging.getLogger(__name__)

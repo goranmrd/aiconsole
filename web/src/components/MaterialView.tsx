@@ -5,6 +5,27 @@ import { Api } from '../api/Api';
 import { Material } from '../store/types';
 import { useWebSocketStore } from '../store/useWebSocketStore';
 import { TopBar } from './TopBar';
+import { cn } from '../utils/styles';
+
+
+function SimpleInput(props: { label: string, value: string, className?: string, onChange: (value: string) => void, placeholder?: string }) {
+  return (
+    <>
+      <label htmlFor={props.label} className="font-bold">
+        {props.label}:
+      </label>
+      <textarea
+        placeholder={props.placeholder}
+        id={props.label}
+        value={props.value}
+        onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
+          props.onChange(e.target.value);
+        }}
+        className={cn(props.className, "resize-none bg-black/20 appearance-none border border-transparent rounded w-full py-2 px-3 leading-tight placeholder-gray-400 focus:outline-none focus:border-primary/50 focus:shadow-outline")}
+      ></textarea>
+    </>
+  );
+}
 
 export function MaterialView() {
   const { material_id } = useParams<{ material_id: string | undefined }>();
@@ -40,43 +61,11 @@ export function MaterialView() {
       <div className="flex flex-col h-full overflow-y-auto p-6 gap-4">
         {material && (
           <>
-            <label htmlFor="id" className="font-bold">
-              Material id:
-            </label>
-            <textarea
-              placeholder="some_material_id"
-              id="id"
-              value={material.id}
-              onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                setMaterial({ ...material, id: e.target.value });
-              }}
-              className="resize-none bg-black/20 appearance-none border border-transparent rounded w-full py-2 px-3 leading-tight placeholder-gray-400 focus:outline-none focus:border-primary/50 focus:shadow-outline"
-            ></textarea>
-
-            <label htmlFor="usage" className="font-bold">
-              Usage:
-            </label>
-            <textarea
-              placeholder="some_material_id"
-              id="usage"
-              value={material.usage}
-              onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                setMaterial({ ...material, usage: e.target.value });
-              }}
-              className="resize-none bg-black/20 appearance-none border border-transparent rounded w-full py-2 px-3 leading-tight placeholder-gray-400 focus:outline-none focus:border-primary/50 focus:shadow-outline"
-            ></textarea>
-            <label htmlFor="content" className="font-bold">
-              Content:
-            </label>
-            <textarea
-              placeholder="some_material_id"
-              id="content"
-              value={material.content}
-              onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                setMaterial({ ...material, content: e.target.value });
-              }}
-              className="flex-grow resize-none bg-black/20 appearance-none border border-transparent rounded w-full py-2 px-3 leading-tight placeholder-gray-400 focus:outline-none focus:border-primary/50 focus:shadow-outline"
-            ></textarea>
+            
+            <SimpleInput label="Material id" placeholder='some_material_id' value={material.id} onChange={(value) => setMaterial({ ...material, id: value })} /> 
+            <SimpleInput label="Usage"  value={material.usage} onChange={(value) => setMaterial({ ...material, usage: value })} /> 
+            <SimpleInput label="Content source" value={material.content_source} onChange={(value) => setMaterial({ ...material, content_source: value })} className="flex-grow" /> 
+            
             <button
               className="bg-primary hover:bg-gray-700/95 text-black hover:bg-primary-light px-4 py-1 rounded-full flow-right"
               onClick={async () => {

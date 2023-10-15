@@ -29,7 +29,12 @@ export type AICMessageGroup = {
 export type Material = {
   id: string;
   usage: string;
-  content: string;
+  defined_in: "core" | "project";
+  status: "disabled" | "enabled" | "forced";
+  python_module?: string;
+  python_code?: string;
+  content_type: "static" | "python";
+  content_source: string;
 };
 
 export type MaterialInfo = {

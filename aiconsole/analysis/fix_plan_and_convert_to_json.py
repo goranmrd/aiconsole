@@ -1,9 +1,11 @@
 import random
-from aiconsole.aic_types import Agent, Chat, Material
+from aiconsole.agents.types import Agent
+from aiconsole.chat.types import Chat
 from aiconsole.gpt.consts import GPTMode
 from aiconsole.gpt.gpt_executor import GPTExecutor
 from aiconsole.gpt.request import GPTRequest
 from aiconsole.gpt.types import EnforcedFunctionCall, GPTMessage
+from aiconsole.materials.material import Material
 from aiconsole.utils.convert_messages import convert_messages
 from openai_function_call import OpenAISchema
 from pydantic import Field
@@ -87,7 +89,12 @@ Now fix the solution.
 """.strip()
 
 
-async def fix_plan_and_convert_to_json(request: Chat, text_plan: str, available_agents: List[Agent], available_materials: List[Material]):
+async def fix_plan_and_convert_to_json(
+    request: Chat,
+    text_plan: str,
+    available_agents: List[Agent],
+    available_materials: List[Material]
+):
     gpt_executor = GPTExecutor()
 
     class Plan(OpenAISchema):

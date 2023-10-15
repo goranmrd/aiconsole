@@ -1,16 +1,14 @@
 import logging
 from typing import AsyncGenerator
-from aiconsole.aic_types import ExecutionModeContext
+from aiconsole.agents.types import ExecutionModeContext
+from aiconsole.code_running.code_interpreters.language_map import language_map
 from aiconsole.execution_modes.get_agent_system_message import get_agent_system_message
-from aiconsole.gpt.create_full_prompt_from_sections import create_full_prompt_from_sections
+from aiconsole.gpt.create_full_prompt_with_materials import create_full_prompt_with_materials
 from aiconsole.utils.convert_messages import convert_messages
-from typing import AsyncGenerator
 from openai_function_call import OpenAISchema
-from aiconsole.code_interpreters.language_map import language_map
 from aiconsole.gpt.gpt_executor import GPTExecutor
 from aiconsole.gpt.request import GPTRequest
 from aiconsole.gpt.types import CLEAR_STR
-import logging
 from pydantic import Field
 
 
@@ -34,9 +32,9 @@ async def execution_mode_interpreter(
 ) -> AsyncGenerator[str, None]:
     global llm
 
-    system_message = create_full_prompt_from_sections(
+    system_message = create_full_prompt_with_materials(
         intro=get_agent_system_message(context.agent),
-        sections=context.relevant_materials,
+        materials=context.relevant_materials,
     )
 
     _log.debug(f"System message:\n{system_message}")
@@ -121,5 +119,5 @@ async def execution_mode_interpreter(
         yield code[1:]
 
     if language:
-        yield f"<<<< END CODE >>>>"
+        yield "<<<< END CODE >>>>"
         language = None

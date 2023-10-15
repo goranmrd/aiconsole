@@ -24,6 +24,10 @@ beautifulsoup4 = "^4.12.2"
 selenium = "^4.14.0"
 webdriver-manager = "^4.0.1"
 pillow = "^10.0.1"
+tomlkit = "^0.12.1"
+
+[tool.ruff]
+line-length = 120
 
 [build-system]
 requires = ["poetry-core"]

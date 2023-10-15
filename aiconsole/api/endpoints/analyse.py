@@ -1,10 +1,10 @@
 import logging
 
 from fastapi import APIRouter
-from aiconsole.aic_types import Chat
 from aiconsole.analysis.AnalysisResponse import AnalysisResponse
 
 from aiconsole.analysis.director import director_analyse
+from aiconsole.chat.types import Chat
 from aiconsole.websockets.messages import ErrorWSMessage
 
 router = APIRouter()

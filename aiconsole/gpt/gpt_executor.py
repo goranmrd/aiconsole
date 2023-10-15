@@ -1,20 +1,17 @@
 import asyncio
 import logging
-
 import litellm
 from aiconsole.gpt.partial import GPTPartialResponse
-
 from aiconsole.gpt.request import GPTRequest
 from aiconsole.websockets.messages import DebugJSONWSMessage
 from .exceptions import NoOpenAPIKeyException
-
 from .types import CLEAR_STR, GPTChoice, GPTMessage, GPTResponse
-
 from openai.error import AuthenticationError
+from litellm.caching import Cache
 
 _log = logging.getLogger(__name__)
 
-from litellm.caching import Cache
+
 litellm.cache = Cache()
 litellm.cache.cache
 

@@ -1,10 +1,9 @@
 import traceback
 from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
-from aiconsole.aic_types import CodeToRun
-from aiconsole.code_interpreters.code_interpreters import get_code_interpreter
 import logging
+from aiconsole.code_running.run_code import get_code_interpreter
+from aiconsole.code_running.types import CodeToRun
 from aiconsole.websockets.messages import ErrorWSMessage
 
 router = APIRouter()
@@ -20,7 +19,7 @@ async def run_code(chat_id: str, codeToRun: CodeToRun) -> StreamingResponse:
             try:
                 for chunk in get_code_interpreter(codeToRun.language).run(codeToRun.code):
                     yield chunk
-            except:
+            except Exception:
                 await ErrorWSMessage(error=traceback.format_exc().strip()).send(chat_id)
                 yield traceback.format_exc().strip()
         except Exception as e:

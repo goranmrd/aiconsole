@@ -1,6 +1,6 @@
-import asyncio
 from typing import List
-from aiconsole.aic_types import AICMessage, Agent
+from aiconsole.agents.types import Agent
+from aiconsole.chat.types import AICMessage
 from aiconsole.utils.convert_messages import convert_messages
 from aiconsole.gpt.consts import GPTMode
 from aiconsole.gpt.gpt_executor import GPTExecutor

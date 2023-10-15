@@ -3,17 +3,10 @@ import os
 from fastapi import WebSocket
 
 from aiconsole.agents import agents
-from aiconsole.code_interpreters.code_interpreters import reset_code_interpreters
+from aiconsole.code_running.run_code import reset_code_interpreters
 from aiconsole.materials import materials
 from aiconsole.utils.initialize_project_directory import initialize_project_directory
 from aiconsole.websockets.messages import ProjectOpenedWSMessage
-
-# TODO: Better focus frames for material editing
-# TODO: useSocket wrapped in React elem
-# TODO: Scrollbar in materials list
-
-# TODO: Rework so I can only edit editable materials
-
 
 _materials = materials.Materials(
     "aiconsole.materials.core",

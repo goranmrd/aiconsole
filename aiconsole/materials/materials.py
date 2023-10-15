@@ -1,17 +1,17 @@
-import importlib.util
 import logging
 import os
-import re
-from typing import Dict, Union
+from pathlib import Path
+import tomlkit
+from typing import Dict
 
 import watchdog.events
 import watchdog.observers
 
-from aiconsole.aic_types import Material, StaticMaterial
+from aiconsole.materials.material import MaterialLocation, Material
 from aiconsole.utils.BatchingWatchDogHandler import BatchingWatchDogHandler
-from aiconsole.materials.documentation_from_code import documentation_from_code
 from aiconsole.utils.list_files_in_file_system import list_files_in_file_system
 from aiconsole.utils.list_files_in_resource_path import list_files_in_resource_path
+from aiconsole.utils.resource_to_path import resource_to_path
 from aiconsole.websockets.messages import NotificationWSMessage
 
 _log = logging.getLogger(__name__)
@@ -22,15 +22,17 @@ class Materials:
     Materials' class is for managing the .md and .py material files.
     """
 
-    materials: Dict[str, Material]
+    _materials: Dict[str, Material]
 
     def __init__(self, core_resource, user_agents_directory):
         self.core_resource = core_resource
         self.user_directory = user_agents_directory
-        self.materials = {}
+        self._materials = {}
 
         self.observer = watchdog.observers.Observer()
-        self.observer.schedule(BatchingWatchDogHandler(self.reload), self.user_directory, recursive=True)
+        self.observer.schedule(
+            BatchingWatchDogHandler(self.reload), self.user_directory, recursive=True
+        )
         self.observer.start()
 
     def __del__(self):
@@ -40,101 +42,99 @@ class Materials:
         """
         Return all loaded materials.
         """
-        return list(self.materials.values())
-    
+        return list(self._materials.values())
 
-    def save_static(self, material: StaticMaterial):
-        """
-        Save a static material.
-        """
-        self.materials[material.id] = Material(
-            id=material.id, usage=material.usage, content=lambda context, content=material.content: content
-        )
+    def save_material(self, material: Material):
+        self._materials[material.id] = material
 
-        # Save to .md file
-        with open(os.path.join(self.user_directory, f"{material.id}.md"), "w") as file:
-            file.write(f"<!--- {material.usage} -->\n\n{material.content}")
+        # Save to .toml file
+        with open(os.path.join(self.user_directory, f"{material.id}.toml"), "w") as file:
+            #FIXME: preserve formatting and comments in the file using tomlkit
+
+
+            # Ignore None values in model_dump
+            model_dump = material.model_dump()
+            for key in list(model_dump.keys()):
+                if model_dump[key] is None:
+                    del model_dump[key]
+            file.write(tomlkit.dumps(model_dump))
+
+    def load_material(self, material_id: str, location: MaterialLocation):
+        """
+        Load a specific material.
+        """
+
+        source_path = {
+            MaterialLocation.PROJECT_DIR: Path(self.user_directory),
+            MaterialLocation.AICONSOLE_CORE: resource_to_path(self.core_resource),
+        }[location]
+
+        path = source_path / f"{material_id}.toml"
+
+        if not path.exists():
+            raise KeyError(f"Material {material_id} not found")
+
+        with path.open("r") as file:
+            material = tomlkit.loads(file.read())
+
+        self._materials[material_id] = Material.model_validate(material)
+        
+
+    def get_material(self, name):
+        """
+        Get a specific material.
+        """
+        if name not in self._materials:
+            raise KeyError(f"Material {name} not found")
+        return self._materials[name]
 
     def delete_material(self, name):
         """
         Delete a specific material.
         """
-        if name not in self.materials:
+        if name not in self._materials:
             raise KeyError(f"Material {name} not found")
-        del self.materials[name]
+        del self._materials[name]
 
     async def reload(self):
         _log.info("Reloading materials ...")
 
-        self.materials = {}
+        self._materials = {}
 
-        paths = [path for paths_yielding_function in [
-            list_files_in_resource_path(self.core_resource),
-            list_files_in_file_system(self.user_directory)
-        ] for path in paths_yielding_function]
+        paths = [
+            path
+            for paths_yielding_function in [
+                list_files_in_resource_path(self.core_resource),
+                list_files_in_file_system(self.user_directory),
+            ]
+            for path in paths_yielding_function
+        ]
 
         for path in paths:
             filename = os.path.basename(path)
-            if filename.endswith(".py"):
-                # Import the file and execute material function to get the material
-                module_name = os.path.splitext(filename)[0]
-                spec = importlib.util.spec_from_file_location(
-                    module_name, path)
-                if not spec or spec.loader is None:
-                    await NotificationWSMessage(title="Material not loaded", message=f"Skipping invalid material in file {filename}").send_to_all()
-                    continue
-
-                module = importlib.util.module_from_spec(spec)
-                spec.loader.exec_module(module)
-                material = module.material
-
-                if not material or not isinstance(material, dict) or "usage" not in material:
-                    await NotificationWSMessage(title="Material not loaded", message=f"Skipping invalid material in file {filename}").send_to_all()
-                    continue
-
-                id = filename[:-3]
-                if id in self.materials:
-                    await NotificationWSMessage(title="Material not loaded", message=f"Skipping duplicate material {id} in file {filename}").send_to_all()
-                    continue
-
-                if "content" not in material:
-                    material["content"] = documentation_from_code(module_name, path)
-            
-                self.materials[id] = Material(
-                    id=id, usage=material["usage"], content=material["content"]
-                )
-            elif filename.endswith(".md"):
-                with open(path, "r", encoding="utf-8") as file:
-                    lines = file.readlines()
-
-                    # Merging all lines into a single string
-                    text = "".join(lines)
-
-                    pattern = r"\s*(<!---|<!--)\s*(.*?)\s*(-->)\s*(.*)\s*"
-
-                    match = re.match(pattern, text.strip(), re.DOTALL)
-
-                    if not match:
-                        await NotificationWSMessage(title="Material not loaded", message=f"Skipping invalid material in file {filename}").send_to_all()
+            if filename.endswith(".toml"):
+                # Load the material from the .toml file
+                with open(path, "r") as file:
+                    material = tomlkit.loads(file.read())
+                    try:
+                        material = Material.model_validate(material)
+                    except Exception:
+                        await NotificationWSMessage(
+                            title="Material not loaded",
+                            message=f"Skipping invalid material in file {filename}",
+                        ).send_to_all()
                         continue
 
-                    # Extracting 'usage' and 'content' based on matched groups
-                    usage = match.group(2)
-                    content = match.group(4)
+                if material.id in self._materials:
+                    await NotificationWSMessage(
+                        title="Material not loaded",
+                        message=f"Skipping duplicate material {material.id} in file {filename}",
+                    ).send_to_all()
+                    continue
 
-                    # Pruning leading/trailing spaces and newlines (if any)
-                    usage = usage.strip()
-                    content = content.strip()
+                self._materials[material.id] = material
 
-                    material_id = os.path.splitext(filename)[0]
-                    if material_id in self.materials:
-                        await NotificationWSMessage(title="Material not loaded", message=f"Skipping duplicate material {material_id} in file {filename}").send_to_all()
-                        continue
-
-                    self.materials[material_id] = Material(
-                        id=material_id,
-                        usage=usage,
-                        content=lambda context, content=content: content,
-                    )
-
-        await NotificationWSMessage(title="Materials reloaded", message=f"Reloaded {len(self.materials)} materials").send_to_all()
+        await NotificationWSMessage(
+            title="Materials reloaded",
+            message=f"Reloaded {len(self._materials)} materials",
+        ).send_to_all()

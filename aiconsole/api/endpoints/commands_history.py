@@ -5,8 +5,8 @@ from typing import Callable
 
 from fastapi import APIRouter, Depends
 from aiconsole import projects
+from aiconsole.chat.types import Command
 from aiconsole.settings import settings
-from aiconsole.aic_types import Command
 
 from aiconsole.api.json_file_operations import json_read, json_write
 

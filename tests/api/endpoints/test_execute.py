@@ -1,8 +1,6 @@
 from fastapi.testclient import TestClient
 from pytest_mock import MockFixture
-from aiconsole.aic_types import ChatWithAgentAndMaterials
-
-from aiconsole.gpt.consts import GPTMode
+from aiconsole.chat.types import ChatWithAgentAndMaterials
 
 
 # TODO move it to common testing tools
@@ -29,7 +27,7 @@ def test_gpt_endpoint_streaming(client: TestClient, mocker: MockFixture):
     payload = ChatWithAgentAndMaterials(
         agent_id="test_agent",
         messages=[],
-        relevant_materials=[],
+        relevant_materials_ids=[],
         id="test_chat_id",
     )
 
