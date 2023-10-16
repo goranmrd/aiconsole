@@ -96,8 +96,8 @@ def list()
             return self.content_static_text
         elif self.content_type == MaterialContentType.API:
             return documentation_from_code(self, self.content_api)(context)
-        else:
-            raise ValueError("Material has no content")
+
+        raise ValueError("Material has no content")
         
     async def render(self, context: 'ContentEvaluationContext'):
         content = await self.content(context)
