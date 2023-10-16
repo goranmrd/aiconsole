@@ -1,13 +1,21 @@
 import { useEffect, useRef, useState } from 'react';
 import { MessageGroup } from './MessageGroup';
 import { Welcome } from './Welcome';
-import { useAICStore } from '../store/AICStore';
-import { useWebSocketStore } from '../store/useWebSocketStore';
+import { useAICStore } from '@/store/AICStore';
+import { useWebSocketStore } from '@/store/useWebSocketStore';
 import { BlinkingCursor } from './BlinkingCursor';
-import { cn } from '../utils/styles';
+import { cn } from '@/utils/styles';
 import { UserInfo } from './UserInfo';
 
-export function Chat({ chatId, autoScrolling, setAutoScrolling }: { chatId: string, autoScrolling: boolean, setAutoScrolling: (value: boolean) => void }) {
+export function Chat({
+  chatId,
+  autoScrolling,
+  setAutoScrolling,
+}: {
+  chatId: string;
+  autoScrolling: boolean;
+  setAutoScrolling: (value: boolean) => void;
+}) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [scrolling, setScrolling] = useState<boolean>(false);
   const timerIdRef = useRef<number | null>(null);
@@ -63,8 +71,8 @@ export function Chat({ chatId, autoScrolling, setAutoScrolling }: { chatId: stri
         setAutoScrolling(true);
       }
     }
-  // intentional trigger when scrolling changes
-  }, [scrolling]); // eslint-disable-line react-hooks/exhaustive-deps 
+    // intentional trigger when scrolling changes
+  }, [scrolling]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     const { current } = messagesEndRef;

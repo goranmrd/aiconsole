@@ -5,11 +5,11 @@ import TextareaAutosize from 'react-textarea-autosize';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { darcula } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
 
-import { AICMessage } from '../store/types';
+import { AICMessage } from '@/store/types';
 import { MessageControls } from './MessageControls';
-import { useAICStore } from '../store/AICStore';
+import { useAICStore } from '@/store/AICStore';
 import { BlinkingCursor } from './BlinkingCursor';
-import { BASE_URL } from '../api/Api';
+import { BASE_URL } from '@/api/Api';
 
 interface MessageProps {
   message: AICMessage;

@@ -1,69 +1,20 @@
 import { notifications } from '@mantine/notifications';
 import { useParams } from 'react-router-dom';
-import { ChangeEvent, useEffect, useState } from 'react';
-import { Api } from '../api/Api';
-import { Material, MaterialContentType, MaterialDefinedIn, MaterialStatus, materialContenTypeOptions, materialDefinedInOptions, materialStatusOptions } from '../store/types';
-import { useWebSocketStore } from '../store/useWebSocketStore';
+import { useEffect, useState } from 'react';
+import { Api } from '@/api/Api';
+import {
+  Material,
+  MaterialContentType,
+  MaterialDefinedIn,
+  MaterialStatus,
+  materialContenTypeOptions,
+  materialDefinedInOptions,
+  materialStatusOptions,
+} from '@/store/types';
 import { TopBar } from './TopBar';
-import { cn } from '../utils/styles';
-import { Chip, Group } from '@mantine/core';
 
-function EnumInput<T extends string>(props: {
-  label: string;
-  value: T;
-  values: T[];
-  className?: string;
-  onChange: (value: T) => void;
-  placeholder?: string;
-}) {
-  return (
-    <Chip.Group
-      value={props.value}
-      onChange={(value: T) => {
-        props.onChange(value);
-      }}
-    >
-      <div className="flex flex-row gap-4">
-        <label htmlFor={props.label} className="font-bold">
-          {props.label}:
-        </label>
-        <Group justify="center">
-          {props.values.map((value) => (
-            <Chip key={value} value={value}>{value}</Chip>
-          ))}
-        </Group>
-      </div>
-    </Chip.Group>
-  );
-}
-
-function SimpleInput(props: {
-  label: string;
-  value: string;
-  className?: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-}) {
-  return (
-    <>
-      <label htmlFor={props.label} className="font-bold">
-        {props.label}:
-      </label>
-      <textarea
-        placeholder={props.placeholder}
-        id={props.label}
-        value={props.value}
-        onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-          props.onChange(e.target.value);
-        }}
-        className={cn(
-          props.className,
-          'resize-none bg-black/20 appearance-none border border-transparent rounded w-full py-2 px-3 leading-tight placeholder-gray-400 focus:outline-none focus:border-primary/50 focus:shadow-outline',
-        )}
-      ></textarea>
-    </>
-  );
-}
+import { EnumInput } from './EnumInput';
+import { SimpleInput } from './SimpleInput';
 
 export function MaterialView() {
   const { material_id } = useParams<{ material_id: string | undefined }>();
@@ -80,17 +31,14 @@ export function MaterialView() {
     });
   }, [material_id]);
 
-  //HACK: This is a copy from App, and also with an ugly twist of fake chatId
-  {
-    const { initWebSocket, disconnect } = useWebSocketStore();
-
-    useEffect(() => {
-      initWebSocket('non-existant-chat-id');
-
-      // add return cleanup function to disconnect on unmount
-      return () => disconnect();
-    }, [initWebSocket, disconnect]);
-  }
+  const handleSaveClick = (material: Material) => async () => {
+    await Api.saveMaterial(material);
+    notifications.show({
+      title: 'Saved',
+      message: 'Material saved',
+      color: 'green',
+    });
+  };
 
   return (
     <div className="App flex flex-col h-screen fixed top-0 left-0 bottom-0 right-0 bg-gray-800/95 text-stone-400">
@@ -171,14 +119,7 @@ export function MaterialView() {
 
             <button
               className="bg-primary hover:bg-gray-700/95 text-black hover:bg-primary-light px-4 py-1 rounded-full flow-right"
-              onClick={async () => {
-                await Api.saveMaterial(material);
-                notifications.show({
-                  title: 'Saved',
-                  message: 'Material saved',
-                  color: 'green',
-                });
-              }}
+              onClick={handleSaveClick(material)}
             >
               Save
             </button>

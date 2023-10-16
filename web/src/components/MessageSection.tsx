@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { AICMessageSection } from '../store/types';
+import { AICMessageSection } from '@/store/types';
 import { Message } from './Message';
 import { Spinner } from './Spinner';
 import { MessageControls } from './MessageControls';
-import { useAICStore } from '../store/AICStore';
+import { useAICStore } from '@/store/AICStore';
 import { ArrowDownIcon, ArrowUpIcon } from '@heroicons/react/24/outline';
 
 interface MessageProps {
@@ -13,7 +13,7 @@ interface MessageProps {
 
 export function MessageSection({ messageSection, isStreaming }: MessageProps) {
   const removeMessage = useAICStore((state) => state.removeMessage);
-  
+
   const [folded, setFolded] = useState(messageSection.foldable);
 
   const messageComponents = messageSection.messages.map((message, index) => (
@@ -44,8 +44,9 @@ export function MessageSection({ messageSection, isStreaming }: MessageProps) {
                   Working ... <Spinner />
                 </div>
               ) : (
-                <div className="flex-grow">{folded ? "Check" : "Hide"} the code</div>
-                
+                <div className="flex-grow">
+                  {folded ? 'Check' : 'Hide'} the code
+                </div>
               )}
               {folded && <ArrowDownIcon className="h-5 w-5" />}
               {!folded && <ArrowUpIcon className="h-5 w-5" />}
@@ -53,11 +54,7 @@ export function MessageSection({ messageSection, isStreaming }: MessageProps) {
           </div>
           {!folded && messageComponents}
         </div>
-        {!isStreaming && (
-          <MessageControls
-            onRemoveClick={handleRemoveClick}
-          />
-        )}
+        {!isStreaming && <MessageControls onRemoveClick={handleRemoveClick} />}
       </div>
     );
   } else {

@@ -1,6 +1,6 @@
 import { StateCreator } from 'zustand';
 import { AICStore } from './AICStore';
-import { Api } from '../api/Api';
+import { Api } from '@/api/Api';
 import { createMessage } from './utils';
 
 export type CommandSlice = {
@@ -11,7 +11,10 @@ export type CommandSlice = {
   newCommand: () => void;
   editCommand: (prompt: string) => void;
   getCommand: () => string;
-  saveCommandAndMessagesToHistory: (command: string, isUserCommand: boolean) => Promise<void>;
+  saveCommandAndMessagesToHistory: (
+    command: string,
+    isUserCommand: boolean,
+  ) => Promise<void>;
   submitCommand: (prompt: string) => void;
   initCommandHistory: () => void;
 };
@@ -25,7 +28,7 @@ export const createCommandSlice: StateCreator<
   commandHistory: [''],
   commandIndex: 0,
   initCommandHistory: async () => {
-    const history:string[] = await (await Api.getCommandHistory()).json();
+    const history: string[] = await (await Api.getCommandHistory()).json();
 
     set(() => ({
       commandHistory: [...history, ''],
@@ -63,9 +66,14 @@ export const createCommandSlice: StateCreator<
   getCommand: () => {
     return get().commandHistory[get().commandIndex];
   },
-  saveCommandAndMessagesToHistory: async (command: string, isUserCommand: boolean) => {
+  saveCommandAndMessagesToHistory: async (
+    command: string,
+    isUserCommand: boolean,
+  ) => {
     if (isUserCommand) {
-      const history: string[] = await (await Api.saveCommandToHistory({command})).json();
+      const history: string[] = await (
+        await Api.saveCommandToHistory({ command })
+      ).json();
       set(() => ({
         commandHistory: [...history, ''],
         commandIndex: history.length,
@@ -77,7 +85,7 @@ export const createCommandSlice: StateCreator<
     if (command.trim() !== '') {
       set(() => ({
         messages: [
-          ...get().messages || [],
+          ...(get().messages || []),
           createMessage({
             agent_id: 'user',
             materials_ids: [],

@@ -2,8 +2,8 @@ import { PaperAirplaneIcon, StopIcon } from '@heroicons/react/24/solid';
 import TextareaAutosize from 'react-textarea-autosize';
 import { useRef } from 'react';
 
-import { cn } from '../utils/styles';
-import { useAICStore } from '../store/AICStore';
+import { cn } from '@/utils/styles';
+import { useAICStore } from '@/store/AICStore';
 
 interface MessageInputProps {
   className?: string;
@@ -11,7 +11,9 @@ interface MessageInputProps {
 }
 
 export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
-  const command = useAICStore((state) => state.commandHistory[state.commandIndex]);
+  const command = useAICStore(
+    (state) => state.commandHistory[state.commandIndex],
+  );
 
   const {
     editCommand: setCommand,
@@ -74,7 +76,12 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
   };
 
   return (
-    <div className={cn(className, 'flex w-full flex-col p-4  bg-gray-800/90 border-t border-white/10')}>
+    <div
+      className={cn(
+        className,
+        'flex w-full flex-col p-4  bg-gray-800/90 border-t border-white/10',
+      )}
+    >
       <div className="flex items-center">
         <TextareaAutosize
           ref={textAreaRef}

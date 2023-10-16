@@ -1,5 +1,5 @@
-import { AICMessageGroup } from '../store/types';
-import { cn } from '../utils/styles';
+import { AICMessageGroup } from '@/store/types';
+import { cn } from '@/utils/styles';
 import { MessageSection } from './MessageSection';
 import { UserInfo } from './UserInfo';
 
@@ -18,7 +18,11 @@ export function MessageGroup({
       )}
     >
       <div className="container flex mx-auto gap-5">
-        <UserInfo agent_id={group.agent_id} materials_ids={group.materials_ids} task={group.task} />
+        <UserInfo
+          agent_id={group.agent_id}
+          materials_ids={group.materials_ids}
+          task={group.task}
+        />
         <div className="flex-grow flex flex-col gap-5">
           {group.sections.map((section, index) => (
             <MessageSection

@@ -1,7 +1,7 @@
 import { StateCreator } from 'zustand';
 
 import { Agent } from './types';
-import { Api } from '../api/Api';
+import { Api } from '@/api/Api';
 import { AICStore } from './AICStore';
 
 export type AgentsSlice = {
@@ -17,11 +17,11 @@ export const createAgentsSlice: StateCreator<AICStore, [], [], AgentsSlice> = (
   agents: [],
   initAgents: async () => {
     const agents = await Api.getAgents();
-    set(() => ( {
+    set(() => ({
       agents: agents,
     }));
   },
   getAgent: (id: string) => {
     return get().agents.find((agent) => agent.id === id);
-  }
+  },
 });

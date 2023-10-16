@@ -1,6 +1,6 @@
 import { StateCreator } from 'zustand';
 
-import { Api } from '../api/Api';
+import { Api } from '@/api/Api';
 import { AICStore } from './AICStore';
 import { createMessage } from './utils';
 
@@ -24,7 +24,6 @@ export type ActionSlice = {
   stopWork: () => void;
   analysisAbortController: AbortController;
   executeAbortSignal: AbortController;
-
 };
 
 export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
@@ -308,7 +307,7 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
             .split(regexPattern)
             .filter((text) => text !== '');
 
-          console.log(splitText)
+          console.log(splitText);
           for (const text of splitText) {
             let consumed = false;
             TOKEN_PROCESSORS.forEach((tokenProcessor) => {
@@ -342,7 +341,7 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
       }
     } finally {
       //If the message is still empty, remove it
-      
+
       set(({ messages }) => {
         if (messages !== undefined) {
           if (messages[messages.length - 1].content === '') {

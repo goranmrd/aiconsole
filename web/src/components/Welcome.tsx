@@ -1,4 +1,4 @@
-import { useAICStore } from '../store/AICStore';
+import { useAICStore } from '@/store/AICStore';
 
 const keyAspects = [
   {
