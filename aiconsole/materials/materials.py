@@ -3,10 +3,9 @@ import os
 from pathlib import Path
 import tomlkit
 from typing import Dict
-
 import watchdog.events
 import watchdog.observers
-
+from aiconsole.materials.material import MaterialContentType
 from aiconsole.materials.material import MaterialLocation, Material
 from aiconsole.utils.BatchingWatchDogHandler import BatchingWatchDogHandler
 from aiconsole.utils.list_files_in_file_system import list_files_in_file_system
@@ -47,38 +46,98 @@ class Materials:
     def save_material(self, material: Material):
         self._materials[material.id] = material
 
-        # Save to .toml file
-        with open(os.path.join(self.user_directory, f"{material.id}.toml"), "w") as file:
-            #FIXME: preserve formatting and comments in the file using tomlkit
+        path = {
+            MaterialLocation.PROJECT_DIR: Path(self.user_directory),
+            MaterialLocation.AICONSOLE_CORE: resource_to_path(self.core_resource),   
+        }[material.defined_in]
 
+        if str(path.absolute()).find("site-packages") != -1:
+            raise Exception("Cannot save to core materials")
+
+        # Save to .toml file
+        with (path / f"{material.id}.toml").open("w") as file:
+            # FIXME: preserve formatting and comments in the file using tomlkit
 
             # Ignore None values in model_dump
             model_dump = material.model_dump()
             for key in list(model_dump.keys()):
                 if model_dump[key] is None:
                     del model_dump[key]
-            file.write(tomlkit.dumps(model_dump))
 
-    def load_material(self, material_id: str, location: MaterialLocation):
+            def make_sure_starts_and_ends_with_newline(s: str):
+                if not s.startswith('\n'):
+                    s = '\n' + s
+
+                if not s.endswith('\n'):
+                    s = s + '\n'
+
+                return s
+
+            doc = tomlkit.document()
+            doc.append("usage", tomlkit.string(material.usage))
+            doc.append("content_type", tomlkit.string(material.content_type))
+
+            {
+                MaterialContentType.STATIC_TEXT: lambda:
+                    doc.append("content_static_text", tomlkit.string(
+                        make_sure_starts_and_ends_with_newline(
+                            material.content_static_text),
+                        multiline=True)
+                    ),
+                MaterialContentType.DYNAMIC_TEXT: lambda:
+                    doc.append("content_dynamic_text", tomlkit.string(
+                        make_sure_starts_and_ends_with_newline(
+                            material.content_dynamic_text),
+                        multiline=True)
+                    ),
+                MaterialContentType.API: lambda:
+                    doc.append("content_api", tomlkit.string(
+                        make_sure_starts_and_ends_with_newline(
+                            material.content_api),
+                        multiline=True)
+                    ),
+            }[material.content_type]()
+
+            file.write(doc.as_string())
+
+    def load_material(self, material_id: str):
         """
         Load a specific material.
         """
 
-        source_path = {
-            MaterialLocation.PROJECT_DIR: Path(self.user_directory),
-            MaterialLocation.AICONSOLE_CORE: resource_to_path(self.core_resource),
-        }[location]
+        project_dir_path = Path(self.user_directory)
+        core_resource_path = resource_to_path(self.core_resource)
 
-        path = source_path / f"{material_id}.toml"
-
-        if not path.exists():
+        if (project_dir_path / f"{material_id}.toml").exists():
+            location = MaterialLocation.PROJECT_DIR
+            path = project_dir_path / f"{material_id}.toml"
+        elif (core_resource_path / f"{material_id}.toml").exists():
+            location = MaterialLocation.AICONSOLE_CORE
+            path = core_resource_path / f"{material_id}.toml"
+        else:
             raise KeyError(f"Material {material_id} not found")
 
         with path.open("r") as file:
-            material = tomlkit.loads(file.read())
+            tomldoc = dict(tomlkit.loads(file.read()))
 
-        self._materials[material_id] = Material.model_validate(material)
-        
+        self._materials[material_id] = Material(
+            id=os.path.splitext(os.path.basename(path))[0],
+            defined_in=location,
+            usage=str(tomldoc["usage"]).strip(),
+            content_type=MaterialContentType(str(tomldoc["content_type"]).strip())
+        )
+
+        if "content_static_text" in tomldoc:
+            self._materials[material_id].content_static_text = \
+                str(tomldoc["content_static_text"]).strip()
+            
+        if "content_dynamic_text" in tomldoc:
+            self._materials[material_id].content_dynamic_text = \
+                str(tomldoc["content_dynamic_text"]).strip()
+            
+        if "content_api" in tomldoc:
+            self._materials[material_id].content_api = \
+                str(tomldoc["content_api"]).strip()
 
     def get_material(self, name):
         """
@@ -101,38 +160,24 @@ class Materials:
 
         self._materials = {}
 
-        paths = [
-            path
+        material_ids = set([
+            os.path.splitext(os.path.basename(path))[0]
             for paths_yielding_function in [
                 list_files_in_resource_path(self.core_resource),
                 list_files_in_file_system(self.user_directory),
             ]
-            for path in paths_yielding_function
-        ]
+            for path in paths_yielding_function if os.path.splitext(Path(path))[-1] == ".toml"
+        ])
 
-        for path in paths:
-            filename = os.path.basename(path)
-            if filename.endswith(".toml"):
-                # Load the material from the .toml file
-                with open(path, "r") as file:
-                    material = tomlkit.loads(file.read())
-                    try:
-                        material = Material.model_validate(material)
-                    except Exception:
-                        await NotificationWSMessage(
-                            title="Material not loaded",
-                            message=f"Skipping invalid material in file {filename}",
-                        ).send_to_all()
-                        continue
-
-                if material.id in self._materials:
-                    await NotificationWSMessage(
-                        title="Material not loaded",
-                        message=f"Skipping duplicate material {material.id} in file {filename}",
-                    ).send_to_all()
-                    continue
-
-                self._materials[material.id] = material
+        for id in material_ids:
+            try:
+                self.load_material(id)
+            except Exception as e:
+                await NotificationWSMessage(
+                    title="Material not loaded",
+                    message=f"Skipping invalid material {id} {e}",
+                ).send_to_all()
+                continue
 
         await NotificationWSMessage(
             title="Materials reloaded",

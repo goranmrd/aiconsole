@@ -1,8 +1,6 @@
-
-<!---
-Use this to get to know how to get weather information.
--->
-
+usage = "Use this to get to know how to get weather information."
+content_type = "static_text"
+content_static_text = """
 # How to get weather information
 
 In order to get weather data use the following python script:
@@ -21,3 +19,4 @@ https://geocoding-api.open-meteo.com/v1/search?name=WARSAW&count=5&language=en&f
 to get such info:
 
 {"results":[{"id":756135,"name":"Warsaw","latitude":52.22977,"longitude":21.01178,"elevation":113.0,"feature_code":"PPLC","country_code":"PL","admin1_id":858787,"admin2_id":6695624,"admin3_id":7531926,"timezone":"Europe/Warsaw","population":1702139,"country_id":798544,"country":"Poland","admin1":"Masovian","admin2":"Warszawa","admin3":"Warsaw"}, ...],"generationtime_ms":0.62298775}
+"""

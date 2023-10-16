@@ -1,4 +1,7 @@
-"""
+usage = "Use this when you need to access my asana"
+content_type = "api"
+content_api = """
+""\"
 Assume that you already have the access token and try to execute, only ask about setup if it fails.
 
 example of code:
@@ -9,7 +12,7 @@ params = {'assignee': 'me', 'workspace': load_credential("asana", "workspace_id"
 response = requests.get('https://app.asana.com/api/1.0/tasks', headers=headers, params=params)
 (response.status_code, response.json())
 ```
-"""
+""\"
 
 from typing import Literal, Union
 import requests
@@ -38,14 +41,14 @@ def setup(personal_token: str):
 
 
 def add_task(task: str):
-    """
+    ""\"
     Example usage:
 
     ```python
     import api_asana
     api_asana.add_task('Do dishes')
     ```
-    """
+    ""\"
     response = requests.post('https://app.asana.com/api/1.0/tasks', headers=_get_headers(), json={
         'data': {
             'assignee': 'me',
@@ -58,11 +61,11 @@ def add_task(task: str):
 
 
 def get_tasks(assignee_gid: Union[str, Literal['me'], None] = None, completed_since: Union[str, Literal["now"], None] = None, modified_since: Union[str, Literal["now"], None] = None):
-    """
+    ""\"
     Each of these parameters is an optional filter.
     Note that parameters are passed directly into the `params` argument of `requests.get`.
     Remember that for the Asana API, 'now' means tasks that are either incomplete or were completed in the last week. 
-    """
+    ""\"
     params = {
         'assignee': assignee_gid,
         'completed_since': completed_since,
@@ -83,10 +86,10 @@ def delete_task(task_id: str):
     return response.json()
 
 def update_task(task_id: str, update: dict):
-    """
+    ""\"
     The `update` parameter should be a dictionary containing fields that you want to update
     For example: update = {"name": "New task name", assignee: 'newuser'}
-    """
+    ""\"
     data = {"data": update}
     response = requests.put(f'https://app.asana.com/api/1.0/tasks/{task_id}', headers=_get_headers(), json=data)
     return response.json()
@@ -97,7 +100,4 @@ def mark_task_completed(task_id: str):
 def assign_task_to(task_id: str, assignee: str):
     return update_task(task_id, {"assignee": assignee})
 
-
-material = {
-    "usage": "Use this when you need to access my asana",
-}
+"""

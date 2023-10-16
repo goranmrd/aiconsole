@@ -95,7 +95,7 @@ def list()
         elif self.content_type == MaterialContentType.STATIC_TEXT:
             return self.content_static_text
         elif self.content_type == MaterialContentType.API:
-            return documentation_from_code(self.content_api)(context)
+            return documentation_from_code(self, self.content_api)(context)
         else:
             raise ValueError("Material has no content")
         

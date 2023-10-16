@@ -1,7 +1,6 @@
-<!---
-Notes on what AIConsole is and what it can do.
--->
-
+usage = "Notes on what AIConsole is and what it can do."
+content_type = "static_text"
+content_static_text = """
 # Notes on what AIConsole is and what it can do.
 
 AIConsole can be used as a personal assistant in your various projects.
@@ -60,3 +59,4 @@ aiconsole will create a bunch of working files like standard materials and agent
 1. Assuming you have description of your company services among your materials, a second material containing top clients and a module to access company org structure (or a text material containing it) - write an email containing a poem about usage of my company services for our top clients and send it to our CTO
 2. Write a linkedin post by myself (works really well if you provide it with materials on how to write good linkedin posts, and who are you and what is important to you when talkint with the world)
 3. Reject all of my calendar events for tomorrow (assuming you have a material contaning information on how to access your calendar by an API and what are your credentials)
+"""

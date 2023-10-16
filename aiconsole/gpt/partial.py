@@ -90,7 +90,7 @@ class GPTPartialResponse(BaseModel):
     choices: List[GPTPartialChoice] = []
 
     def to_final_response(self):
-        _log.debug(f"Partial response: {self.model_dump()}")
+       # _log.debug(f"Partial response: {self.model_dump()}")
         return GPTResponse(
             id=self.id,
             object=self.object,

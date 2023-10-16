@@ -33,8 +33,10 @@
 # 
 
 import platform
+from typing import List
+
+from aiconsole.materials.material import Material
 from ..subprocess_code_interpreter import SubprocessCodeInterpreter
-import ast
 import os
 
 class Shell(SubprocessCodeInterpreter):
@@ -50,7 +52,7 @@ class Shell(SubprocessCodeInterpreter):
         else:
             self.start_cmd = os.environ.get('SHELL', 'bash')
 
-    def preprocess_code(self, code):
+    def preprocess_code(self, code, materials: List[Material]):
         return preprocess_shell(code)
     
     def line_postprocessor(self, line):

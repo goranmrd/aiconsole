@@ -12,7 +12,7 @@ export const Api = (function () {
   const execute = (body: Chat & { relevant_materials_ids: string[], agent_id: string }, signal?: AbortSignal) =>
   ky.post(`${BASE_URL}/execute`, { json: { ...body }, signal, timeout: 60000 });
 
-  const run_code = ({chatId, signal, ...rest }: { chatId: string, language: string, code: string, signal?: AbortSignal }) =>
+  const runCode = ({chatId, signal, ...rest }: { chatId: string, language: string, code: string, materials_ids: string[], signal?: AbortSignal }) =>
   ky.post(`${BASE_URL}/chats/${chatId}/run_code`, { json: rest, signal, timeout: 60000 });
 
   const getCommandHistory = () => ky.get(`${BASE_URL}/commands/history`);
@@ -48,7 +48,7 @@ export const Api = (function () {
 
   return {
     execute,
-    run_code,
+    runCode,
     analyse,
     getAgents,
     getMaterial,

@@ -1,3 +1,6 @@
+usage = "Use this always when code is about to be executed. Execution environment information, like operating system, shell, current working directory and Python packages will be collected."
+content_type = "dynamic_text"
+content_dynamic_text = """
 from datetime import datetime
 import getpass
 import os
@@ -11,14 +14,14 @@ import datetime
 def collect_python_packages():
     try:
         output = subprocess.check_output(['pip', 'freeze']).decode('utf-8')
-        package_lines = output.split('\n')
+        package_lines = output.split('\\n')
         package_names = [line.split("==")[0] for line in package_lines]
         return ' '.join(package_names)
     except subprocess.CalledProcessError:
         return ''
 
 def content(context):
-    return f"""
+    return f""\"
 # Execution environment
 
 os: {platform.system()}
@@ -38,10 +41,5 @@ memory:: {subprocess.check_output(['sysctl', '-n', 'hw.memsize']).decode('utf-8'
 ## Network Information:
 ip: {subprocess.check_output(['ipconfig', 'getifaddr', 'en0']).decode('utf-8')}
 connection_status: {subprocess.check_output(['ping', '-c', '1', '-W', '100', '8.8.8.8']).decode('utf-8')}
+""\"
 """
-
-
-material = {
-    "usage": "Use this always when code is about to be executed. Execution environment information, like operating system, shell, current working directory and Python packages will be collected.",
-    "content": content,
-}

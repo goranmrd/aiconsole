@@ -118,10 +118,11 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
     }));
 
     try {
-      const response = await Api.run_code({
+      const response = await Api.runCode({
         chatId: get().chatId,
         language,
         code,
+        materials_ids: materials_ids,
         signal: get().executeAbortSignal.signal,
       });
 

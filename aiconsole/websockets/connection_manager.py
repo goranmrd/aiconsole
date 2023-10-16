@@ -38,18 +38,18 @@ async def _send(socket: WebSocket, msg: BaseWSMessage):
     })
 
 async def send_message(chat_id: str, msg: BaseWSMessage):
-    _log.info(f"Sending message to {chat_id}: {msg}")
+    # _log.debug(f"Sending message to {chat_id}: {msg}")
     for connection in _active_connections[chat_id]:
         await _send(connection, msg)
 
 
 async def send_message_to_all(msg: BaseWSMessage):
-    _log.info(f"Sending message to all: {msg}")
+    # _log.debug(f"Sending message to all: {msg}")
     for connections in _active_connections.values():
         for connection in connections:
             await _send(connection, msg)
 
 
 async def send_message_to_one(websocket: WebSocket, msg: BaseWSMessage):
-    _log.info(f"Sending message to one: {msg}")
+    # _log.debug(f"Sending message to one: {msg}")
     await _send(websocket, msg)

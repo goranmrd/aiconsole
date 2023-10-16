@@ -37,7 +37,9 @@ import threading
 import queue
 import time
 import traceback
-from typing import Generator
+from typing import Generator, List
+
+from aiconsole.materials.material import Material
 from .base_code_interpreter import BaseCodeInterpreter
 import logging
 
@@ -57,7 +59,7 @@ class SubprocessCodeInterpreter(BaseCodeInterpreter):
     def line_postprocessor(self, line):
         return line
     
-    def preprocess_code(self, code):
+    def preprocess_code(self, code, materials: List[Material]):
         """
         This needs to insert an end_of_execution marker of some kind,
         which can be detected by detect_end_of_execution.
@@ -90,13 +92,13 @@ class SubprocessCodeInterpreter(BaseCodeInterpreter):
                             args=(self.process.stderr, True),
                             daemon=True).start()
 
-    def run(self, code) -> Generator[str, None, None]:
+    def run(self, code: str, materials: List[Material]) -> Generator[str, None, None]:
         retry_count = 0
         max_retries = 3
 
         # Setup
         try:
-            code = self.preprocess_code(code)
+            code = self.preprocess_code(code, materials)
             if not self.process:
                 self.start_process()
         except:

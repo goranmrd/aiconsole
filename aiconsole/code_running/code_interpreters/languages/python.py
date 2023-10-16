@@ -33,13 +33,17 @@
 #
 
 import sys
+from typing import List
 
 from aiconsole import projects
+from aiconsole.materials.material import Material
 from aiconsole.utils.resource_to_path import resource_to_path
 from ..subprocess_code_interpreter import SubprocessCodeInterpreter
 import ast
 import re
+import logging
 
+_log = logging.getLogger(__name__)
 
 class Python(SubprocessCodeInterpreter):
     file_extension = "py"
@@ -49,8 +53,8 @@ class Python(SubprocessCodeInterpreter):
         super().__init__()
         self.start_cmd = sys.executable + " -i -q -u"
 
-    def preprocess_code(self, code):
-        return preprocess_python(code)
+    def preprocess_code(self, code: str, materials: List[Material]):
+        return preprocess_python(code, materials)
 
     def line_postprocessor(self, line):
         if re.match(r'^(\s*>>>\s*|\s*\.\.\.\s*)', line):
@@ -61,32 +65,21 @@ class Python(SubprocessCodeInterpreter):
         return "## end_of_execution ##" in line
 
 
-def preprocess_python(code):
+def preprocess_python(code: str, materials: List[Material]):
     """
     Add active line markers
     Wrap in a try except
     Add end of execution marker
     """
 
-    materials_core_path = resource_to_path(
-        projects.get_project_materials().core_resource
-    )
-    
-    agents_core_path = resource_to_path(
-        projects.get_project_agents().core_resource
-    )
+    api_materials = [material for material in materials if material.content_type == "api"]
 
+    separator = '\n\n\n'
     code = f"""
-import sys
-import os
+{separator.join([material.content_api for material in api_materials])}
+""".strip() + "\n\n" + code
 
-sys.path.append('{materials_core_path}')
-sys.path.append('{agents_core_path}')
-sys.path.append('{projects.get_project_materials().user_directory}')
-sys.path.append('{projects.get_project_agents().user_directory}')
-        """.strip() + "\n" + code
-
-    print(code)
+    _log.debug(code)
 
     # Wrap in a try except
     code = wrap_in_try_except(code)

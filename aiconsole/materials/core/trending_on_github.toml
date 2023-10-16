@@ -1,12 +1,14 @@
+usage = "When you need to know what are the top trending repos on GitHub"
+content_type = "api"
+content_api = """
 from typing import List, Literal, Dict
 import requests
 from bs4 import BeautifulSoup
 
 def get_top_trending_repos_information() -> List[Dict[Literal["name", "description"], str]]:
-    """
+    ""\"
     Can be used to get top trending repos on Github
-
-    """
+    ""\"
     url = "https://github.com/trending"
     response = requests.get(url)
     soup = BeautifulSoup(response.content, 'html.parser')
@@ -29,9 +31,4 @@ def get_top_trending_repos_information() -> List[Dict[Literal["name", "descripti
             pass
 
     return repos
-
-
-material = {
-    "usage": "When you need to know what are the top trending repos on github",
-}
-
+"""

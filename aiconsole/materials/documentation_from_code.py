@@ -1,24 +1,34 @@
 import importlib.util
 import logging
+import inspect
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from aiconsole.materials.material import Material
 
 _log = logging.getLogger(__name__)
 
 
-def documentation_from_code(source: str):
+def documentation_from_code(material: 'Material', source: str):
     """
     Creates content of a material from a python material file.
     """
 
     def create_content(context):
-        import inspect
-        spec = importlib.util.spec_from_file_location(
-            module_name, path)
+        # Create a new module
+        spec = importlib.util.spec_from_loader('temp_module', loader=None)
 
-        if not spec or spec.loader is None:
-            raise Exception(f'Could not load module {module_name} from {path}')
+        if not spec:
+            raise Exception('Could not create spec for temp_module')
 
+        # Load the new module into memory
         python_module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(python_module)
+
+        # Compile the source into a code object that can be executed by exec()
+        code_object = compile(source, 'temp_module', 'exec')
+
+        # Define a new, blank namespace and execute the code object within it
+        exec(code_object, python_module.__dict__)
 
         function_list = []
         for name, obj in inspect.getmembers(python_module):
@@ -45,9 +55,9 @@ def documentation_from_code(source: str):
 
         newline = '\n'
         final_doc = f'''
-# Python Module '{module_name}'
+# {material.id} API
+{material.usage}
 
-{python_module.material["usage"]}
 {docstring + newline + newline if docstring else ''}
 {(newline + newline).join(function_list)}
 '''.strip()

@@ -33,6 +33,9 @@
 # 
 
 import os
+from typing import List
+
+from aiconsole.materials.materials import Materials
 from ..subprocess_code_interpreter import SubprocessCodeInterpreter
 
 class AppleScript(SubprocessCodeInterpreter):
@@ -43,7 +46,7 @@ class AppleScript(SubprocessCodeInterpreter):
         super().__init__()
         self.start_cmd = os.environ.get('SHELL', '/bin/zsh')
 
-    def preprocess_code(self, code):
+    def preprocess_code(self, code, materials: List[Materials]):
         """
         Inserts an end_of_execution marker and adds active line indicators.
         """

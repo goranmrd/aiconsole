@@ -29,7 +29,7 @@ function EnumInput<T extends string>(props: {
         </label>
         <Group justify="center">
           {props.values.map((value) => (
-            <Chip value={value}>{value}</Chip>
+            <Chip key={value} value={value}>{value}</Chip>
           ))}
         </Group>
       </div>
