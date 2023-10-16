@@ -6,6 +6,7 @@ import { AICStore } from './AICStore';
 
 export type ChatSlice = {
   chatId: string;
+  alwaysExecuteCode: boolean;
   chatHeadlines: ChatHeadline[];
   setChatId: (id: string) => void;
   deleteChat: (id: string) => Promise<void>;
@@ -19,6 +20,7 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
   get,
 ) => ({
   chatId: '',
+  alwaysExecuteCode: true,
   chatHeadlines: [],
   agent: undefined,
   materials: [],
@@ -48,6 +50,7 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
     set(() => ({
       chatId: id,
       messages: undefined,
+      alwaysExecuteCode: true,
     }));
 
     const chat = await Api.getChat(id);

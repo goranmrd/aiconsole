@@ -365,7 +365,13 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
 
     const messages = get().messages || [];
     const language = messages[messages.length - 1].language;
-    if (messages.length > 0 && messages[messages.length - 1].code && language) {
+    const executeCode = get().alwaysExecuteCode;
+    if (
+      messages.length > 0 &&
+      messages[messages.length - 1].code &&
+      language &&
+      executeCode
+    ) {
       console.log('Running code');
       await get().doRun(
         agentId,
