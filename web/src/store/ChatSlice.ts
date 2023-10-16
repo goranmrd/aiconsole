@@ -13,6 +13,7 @@ export type ChatSlice = {
   initChatHistory: () => Promise<void>;
   saveCurrentChatHistory: () => Promise<void>;
   updateChatHeadline: (id: string, headline: string) => Promise<void>;
+  enableAutoCodeExecution: () => void;
 };
 
 export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
@@ -24,6 +25,9 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
   chatHeadlines: [],
   agent: undefined,
   materials: [],
+  enableAutoCodeExecution: () => {
+    set({ alwaysExecuteCode: true });
+  },
   initChatHistory: async () => {
     try {
       const history: ChatHeadline[] = await (
