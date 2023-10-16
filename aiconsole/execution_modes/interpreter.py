@@ -14,18 +14,38 @@ from pydantic import Field
 
 _log = logging.getLogger(__name__)
 
+class python(OpenAISchema):
+    """
+    When you send a message containing Python code to python, it will be executed in a stateful Jupyter notebook environment
+    """
 
-class Run(OpenAISchema):
+    code: str = Field(
+        ...,
+        description="python code to execute, it will be executed in a stateful Jupyter notebook environment",
+        json_schema_extra={"type": "string"}
+    )
+
+class bash(OpenAISchema):
     """
     This function executes the given code on the user's system using the local environment and returns the output.
     """
 
-    lang: str = Field(..., json_schema_extra={"type": "string", "enum": [
-        language for language in language_map.keys()
-    ]})
+    code: str = Field(..., json_schema_extra={"type": "string"})
+
+class shell(OpenAISchema):
+    """
+    This function executes the given code on the user's system using the local environment and returns the output.
+    """
 
     code: str = Field(..., json_schema_extra={"type": "string"})
 
+
+class applescript(OpenAISchema):
+    """
+    This function executes the given code on the user's system using the local environment and returns the output.
+    """
+
+    code: str = Field(..., json_schema_extra={"type": "string"})
 
 async def execution_mode_interpreter(
     context: ExecutionModeContext,
@@ -50,7 +70,12 @@ async def execution_mode_interpreter(
             gpt_mode=context.agent.gpt_mode,
             messages=[message for message in convert_messages(
                 context.messages)],
-            functions=[Run.openai_schema],
+            functions=[
+                python.openai_schema,
+                bash.openai_schema,
+                shell.openai_schema,
+                applescript.openai_schema
+            ],
             min_tokens=250,
             preferred_tokens=2000
         )
@@ -76,14 +101,13 @@ async def execution_mode_interpreter(
             arguments = function_call.arguments
             languages = language_map.keys()
 
-            # We need to handle incorrect OpenAI responses, sometmes arguments is a string containing the code
+            if language is None and function_call.name in languages:
+                # Languge is in the name of the function call
+                language = function_call.name
+                yield f'<<<< START CODE ({language}) >>>>'
+
             if isinstance(arguments, str):
-
-                if language is None and function_call.name in languages:
-                    # Languge is in the name of the function call
-                    language = function_call.name
-                    yield f'<<<< START CODE ({language}) >>>>'
-
+                # We need to handle incorrect OpenAI responses, sometmes arguments is a string containing the code
                 if arguments and not arguments.startswith("{"):
                     if language is None:
                         language = "python"
@@ -94,12 +118,7 @@ async def execution_mode_interpreter(
 
                     if code_delta:
                         yield code_delta
-
             else:
-                if language is None and arguments and arguments.get("lang", "") in languages:
-                    language = arguments["lang"]
-                    yield f'<<<< START CODE ({language}) >>>>'
-
                 if arguments and "code" in arguments:
                     if language is None:
                         language = "python"

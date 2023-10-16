@@ -45,8 +45,7 @@ def add_task(task: str):
     Example usage:
 
     ```python
-    import api_asana
-    api_asana.add_task('Do dishes')
+    add_task('Do dishes')
     ```
     ""\"
     response = requests.post('https://app.asana.com/api/1.0/tasks', headers=_get_headers(), json={
@@ -99,5 +98,4 @@ def mark_task_completed(task_id: str):
 
 def assign_task_to(task_id: str, assignee: str):
     return update_task(task_id, {"assignee": assignee})
-
 """

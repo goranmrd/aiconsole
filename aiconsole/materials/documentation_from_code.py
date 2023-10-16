@@ -44,10 +44,9 @@ def documentation_from_code(material: 'Material', source: str):
                 function_declaration = f"{async_prefix}def {name}{signature}"
                 doc = inspect.getdoc(obj) or ''
                 function_list.append(f'''
-## {function_declaration}
-
+{function_declaration}
 {doc}
-'''.strip() + '\n')
+'''.strip() + '\n\n\n')
 
         
         # get main docstring
@@ -55,7 +54,7 @@ def documentation_from_code(material: 'Material', source: str):
 
         newline = '\n'
         final_doc = f'''
-# {material.id} API
+# variables and functions available when executing python code
 {material.usage}
 
 {docstring + newline + newline if docstring else ''}

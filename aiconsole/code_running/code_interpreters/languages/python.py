@@ -73,13 +73,29 @@ def preprocess_python(code: str, materials: List[Material]):
     """
 
     api_materials = [material for material in materials if material.content_type == "api"]
+    apis = [material.content_api for material in api_materials]
 
     separator = '\n\n\n'
     code = f"""
-{separator.join([material.content_api for material in api_materials])}
+{separator.join(apis)}
 """.strip() + "\n\n" + code
 
     _log.debug(code)
+
+    # Strip doc strings from apis
+
+    # Parse the input code into an AST
+    parsed_code = ast.parse(code)
+
+    # Remove doc strings (entirelly from the AST)
+    parsed_code.body = [b for b in parsed_code.body if not isinstance(b, ast.Expr) or not isinstance(b.value, ast.Str)]
+
+
+    # Convert the modified AST back to source code
+    code = ast.unparse(parsed_code)
+
+    
+
 
     # Wrap in a try except
     code = wrap_in_try_except(code)
