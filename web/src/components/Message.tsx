@@ -10,6 +10,7 @@ import { MessageControls } from './MessageControls';
 import { useAICStore } from '@/store/AICStore';
 import { BlinkingCursor } from './BlinkingCursor';
 import { BASE_URL } from '@/api/Api';
+import { Button } from './Button';
 
 interface MessageProps {
   message: AICMessage;
@@ -21,6 +22,11 @@ export function Message({ message, isStreaming }: MessageProps) {
   const [content, setContent] = useState(message.content);
   const removeMessage = useAICStore((state) => state.removeMessage);
   const updateMessage = useAICStore((state) => state.editMessageContent);
+  const executeCode = useAICStore((state) => state.alwaysExecuteCode);
+  const doRun = useAICStore((state) => state.doRun);
+  const enableAutoCodeExecution = useAICStore(
+    (state) => state.enableAutoCodeExecution,
+  );
 
   const handleEditClick = () => {
     if (isStreaming) {
@@ -48,6 +54,25 @@ export function Message({ message, isStreaming }: MessageProps) {
     setTimeout(handleSaveClick, 0);
   }, [handleSaveClick]);
 
+  const runCode = () => {
+    if (!message.task || !message.language) {
+      return;
+    }
+
+    doRun(
+      message.agent_id,
+      message.task,
+      message.materials_ids,
+      message.language,
+      message.content,
+    );
+  };
+
+  const handleAlwaysRunClick = () => {
+    enableAutoCodeExecution();
+    runCode();
+  };
+
   return (
     <div className="flex flex-grow items-start">
       {isEditing ? (
@@ -64,12 +89,24 @@ export function Message({ message, isStreaming }: MessageProps) {
           {message.code && (
             <>
               <span className="w-20 flex-none">Code:</span>
-              <SyntaxHighlighter
-                style={darcula}
-                children={message.content}
-                language={message.language}
-                className="overflow-scroll max-w-2xl"
-              />
+              <div>
+                <SyntaxHighlighter
+                  style={darcula}
+                  children={message.content}
+                  language={message.language}
+                  className="overflow-scroll max-w-2xl"
+                />
+                {!message.code_output && !executeCode && (
+                  <div className="flex gap-4 pt-4">
+                    <Button label="Run" onClick={runCode} />
+                    <Button
+                      label="Always Run"
+                      onClick={handleAlwaysRunClick}
+                      variant="secondary"
+                    />
+                  </div>
+                )}
+              </div>
             </>
           )}
 

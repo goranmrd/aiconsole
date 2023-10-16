@@ -21,7 +21,7 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
   get,
 ) => ({
   chatId: '',
-  alwaysExecuteCode: true,
+  alwaysExecuteCode: false,
   chatHeadlines: [],
   agent: undefined,
   materials: [],
@@ -54,7 +54,7 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
     set(() => ({
       chatId: id,
       messages: undefined,
-      alwaysExecuteCode: true,
+      alwaysExecuteCode: false,
     }));
 
     const chat = await Api.getChat(id);
