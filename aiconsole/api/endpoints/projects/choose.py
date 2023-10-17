@@ -3,6 +3,7 @@ import logging
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from aiconsole import projects
+from aiconsole.websockets.outgoing_messages import NotificationWSMessage
 
 router = APIRouter()
 
@@ -24,12 +25,16 @@ def ask_directory():
 
     return directory
 
+
 @router.post("/choose")
 async def choose_project():
     # Show a system select directory dialog
-    directory = ask_directory()
+    try:
+        directory = ask_directory()
 
-    if directory:
-        await projects.change_project_directory(directory)
+        if directory:
+            await projects.change_project_directory(directory)
+    except Exception as e:
+        await NotificationWSMessage(title="Error", message=e.__str__()).send_to_all()
 
     return JSONResponse({})
