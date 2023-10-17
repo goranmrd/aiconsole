@@ -9,6 +9,7 @@ from aiconsole.utils.convert_messages import convert_messages
 from typing import List
 import random
 from aiconsole.settings import settings
+from aiconsole.websockets.outgoing_messages import AnalysisUpdatedWSMessage
 
 
 def _initial_system_prompt():
@@ -63,7 +64,7 @@ def _last_system_prompt(available_agents, available_materials):
 
 
 async def create_text_plan(
-    request: Chat, available_agents: List[Agent], available_materials: List[Material]
+    chat: Chat, available_agents: List[Agent], available_materials: List[Material]
 ):
     gpt_executor = GPTExecutor()
 
@@ -72,7 +73,7 @@ async def create_text_plan(
             system_message=_initial_system_prompt(),
             gpt_mode=GPTMode.QUALITY,
             messages=[
-                *convert_messages(request.messages),
+                *convert_messages(chat.messages),
                 GPTMessage(
                     role="system",
                     content=_last_system_prompt(
@@ -86,6 +87,11 @@ async def create_text_plan(
             preferred_tokens=settings.DIRECTOR_PREFERRED_TOKENS,
         )
     ):
-        pass
+        await AnalysisUpdatedWSMessage(
+            agent_id=None,
+            relevant_material_ids=None,
+            next_step=None,
+            thinking_process=gpt_executor.partial_response.choices[0].message.content,
+        ).send_to_chat(chat.id)
 
     return gpt_executor.response.choices[0].message.content or ""

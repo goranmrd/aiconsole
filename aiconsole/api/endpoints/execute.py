@@ -1,11 +1,12 @@
 import asyncio
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 from fastapi.responses import StreamingResponse
 from aiconsole import projects
 import logging
 from aiconsole.agents.types import ExecutionModeContext
 from aiconsole.chat.types import ChatWithAgentAndMaterials
 from aiconsole.materials.content_evaluation_context import ContentEvaluationContext
+from aiconsole.utils.cancel_on_disconnect import cancelable_endpoint
 from aiconsole.websockets.outgoing_messages import ErrorWSMessage
 
 
@@ -14,7 +15,8 @@ _log = logging.getLogger(__name__)
 
 
 @router.post("/execute")
-async def execute(chat: ChatWithAgentAndMaterials) -> StreamingResponse:
+@cancelable_endpoint
+async def execute(request: Request, chat: ChatWithAgentAndMaterials) -> StreamingResponse:
     agent = projects.get_project_agents().agents[chat.agent_id]
 
     content_context = ContentEvaluationContext(

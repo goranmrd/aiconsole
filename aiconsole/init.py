@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import os
 import threading
@@ -10,8 +11,8 @@ from aiconsole.utils.initialize_project_directory import initialize_project_dire
 log = logging.getLogger(__name__)
 
 
-def run_aiconsole(dev: bool):
-    initialize_project_directory()
+async def run_aiconsole(dev: bool):
+    await initialize_project_directory()
 
     threads = []
 
@@ -39,13 +40,13 @@ def run_aiconsole(dev: bool):
             thread.join()
 
 
-def aiconsole_dev():
-    run_aiconsole(dev=True)
+async def aiconsole_dev():
+    await run_aiconsole(dev=True)
 
 
-def aiconsole():
-    run_aiconsole(dev=False)
+async def aiconsole():
+    await run_aiconsole(dev=False)
 
 
 if __name__ == "__main__":
-    aiconsole_dev()
+    asyncio.run(aiconsole_dev())

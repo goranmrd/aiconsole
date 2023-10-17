@@ -25,13 +25,6 @@ class python(OpenAISchema):
         json_schema_extra={"type": "string"}
     )
 
-class bash(OpenAISchema):
-    """
-    This function executes the given code on the user's system using the local environment and returns the output.
-    """
-
-    code: str = Field(..., json_schema_extra={"type": "string"})
-
 class shell(OpenAISchema):
     """
     This function executes the given code on the user's system using the local environment and returns the output.
@@ -72,7 +65,6 @@ async def execution_mode_interpreter(
                 context.messages)],
             functions=[
                 python.openai_schema,
-                bash.openai_schema,
                 shell.openai_schema,
                 applescript.openai_schema
             ],

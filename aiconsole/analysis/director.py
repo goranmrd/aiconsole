@@ -1,4 +1,3 @@
-import json
 import logging
 from typing import List
 from aiconsole import projects
@@ -13,7 +12,7 @@ from aiconsole.gpt.consts import GPTMode
 _log = logging.getLogger(__name__)
 
 
-def pick_agent(arguments: dict, chat: Chat, available_agents: List[Agent]) -> Agent:
+def pick_agent(arguments, chat: Chat, available_agents: List[Agent]) -> Agent:
     """
     The function pick_agent picks an agent based on the given arguments and availability of the agents.
 
@@ -35,8 +34,8 @@ def pick_agent(arguments: dict, chat: Chat, available_agents: List[Agent]) -> Ag
     if not default_agent:
         default_agent = available_agents[0]
 
-    already_happened = arguments.get("already_happened", False)
-    is_users_turn = arguments.get("is_users_turn", False) or already_happened
+    already_happened = arguments.already_happened
+    is_users_turn = arguments.is_users_turn or already_happened
 
     if is_users_turn:
         picked_agent = Agent(
@@ -52,7 +51,7 @@ def pick_agent(arguments: dict, chat: Chat, available_agents: List[Agent]) -> Ag
             (
                 agent
                 for agent in available_agents
-                if agent.id == arguments.get("agent_id", None)
+                if agent.id == arguments.agent_id
             ),
             None,
         )
@@ -78,23 +77,19 @@ async def director_analyse(chat: Chat) -> AnalysisResponse:
         chat, plan, available_agents, available_materials
     )
 
-    # if arguments is a string retry to parse it as json
-    if isinstance(arguments, str):
-        arguments = json.loads(arguments)
-
     picked_agent = pick_agent(arguments, chat, available_agents)
 
     relevant_materials = [
         k
         for k in available_materials
-        if k.id in arguments.get("needed_materials_ids", [])
+        if k.id in arguments.relevant_material_ids
     ]
 
     # Maximum of 5 materials
     relevant_materials = relevant_materials[:5]
 
     return {
-        "next_step": arguments.get("next_step", ""),
+        "next_step": arguments.next_step,
         "agent_id": picked_agent.id if picked_agent else None,
         "materials_ids": [material.id for material in relevant_materials],
     }

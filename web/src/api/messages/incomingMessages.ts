@@ -21,8 +21,17 @@ export type ProjectOpenedWSMessage = {
   path: string;
 };
 
+export type AnalysisUpdatedWSMessage = {
+  type: 'AnalysisUpdatedWSMessage';
+  agent_id?: string;
+  relevant_material_ids?: string[];
+  next_step?: string;
+  thinking_process?: string;
+};
+
 export type IncomingWSMessage =
   | ErrorWSMessage
   | NotificationWSMessage
   | DebugJSONWSMessage
-  | ProjectOpenedWSMessage;
+  | ProjectOpenedWSMessage
+  | AnalysisUpdatedWSMessage

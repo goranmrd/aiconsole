@@ -11,6 +11,7 @@ from openai_function_call import OpenAISchema
 from pydantic import Field
 from typing import List
 from aiconsole.settings import settings
+from aiconsole.websockets.outgoing_messages import AnalysisUpdatedWSMessage
 
 
 def _initial_system_prompt(available_agents, available_materials):
@@ -90,7 +91,7 @@ Now fix the solution.
 
 
 async def fix_plan_and_convert_to_json(
-    request: Chat,
+    chat: Chat,
     text_plan: str,
     available_agents: List[Agent],
     available_materials: List[Material]
@@ -124,9 +125,9 @@ async def fix_plan_and_convert_to_json(
             json_schema_extra={"enum": [s.id for s in available_agents]},
         )
 
-        needed_materials_ids: List[str] = Field(
+        relevant_material_ids: List[str] = Field(
             ...,
-            description="Chosen material ids needed for the task",
+            description="Chosen material ids relevant for the task",
             json_schema_extra={
                 "items": {"enum": [k.id for k in available_materials], "type": "string"}
             },
@@ -144,7 +145,7 @@ async def fix_plan_and_convert_to_json(
             available_materials=available_materials,
         ),
         gpt_mode=GPTMode.QUALITY,
-        messages=[*convert_messages(request.messages), GPTMessage(
+        messages=[*convert_messages(chat.messages), GPTMessage(
             role="system",
             content=_last_system_prompt(text_plan)
         )],
@@ -155,7 +156,16 @@ async def fix_plan_and_convert_to_json(
         min_tokens=settings.DIRECTOR_MIN_TOKENS,
         preferred_tokens=settings.DIRECTOR_PREFERRED_TOKENS,
     )):
-        pass
+        function_call = gpt_executor.partial_response.choices[0].message.function_call
+        if function_call is not None:
+            arguments = function_call.arguments
+            if not isinstance(arguments, str):
+                await AnalysisUpdatedWSMessage(
+                    agent_id=arguments.get("agent_id", None),
+                    relevant_material_ids=arguments.get("relevant_material_ids", None),
+                    next_step=arguments.get("next_step", None),
+                    thinking_process=arguments.get("thinking_process", None),
+                ).send_to_chat(chat.id)
 
     result = gpt_executor.response
 
@@ -163,4 +173,9 @@ async def fix_plan_and_convert_to_json(
         raise ValueError(
             f"Could not find function call in the text: {result}")
 
-    return result.choices[0].message.function_call.arguments
+    arguments = result.choices[0].message.function_call.arguments
+
+    if isinstance(arguments, str):
+        raise ValueError(f"Could not parse arguments from the text: {arguments}")
+
+    return Plan(**arguments)

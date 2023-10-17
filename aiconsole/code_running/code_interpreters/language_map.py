@@ -39,7 +39,6 @@ from .languages.applescript import AppleScript
 
 language_map = {
     "python": Python,
-    "bash": Shell,
     "shell": Shell,
     "applescript": AppleScript,
 }

@@ -5,6 +5,7 @@ import { ErrorEvent } from 'reconnecting-websocket/events'
 import { useAICStore } from '../../store/AICStore';
 import { OutgoingWSMessage } from './outgoingMessages';
 import { IncomingWSMessage } from './incomingMessages';
+import { useAnalysisStore } from '@/store/useAnalysisStore';
 
 export type WebSockeStore = {
   ws: ReconnectingWebSocket | null;
@@ -50,6 +51,14 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
           useAICStore.getState().setProject({
             name: data.name,
             path: data.path,
+          });
+          break;
+        case 'AnalysisUpdatedWSMessage':
+          useAnalysisStore.setState({
+            agent_id: data.agent_id,
+            relevant_material_ids: data.relevant_material_ids,
+            next_step: data.next_step,
+            thinking_process: data.thinking_process,
           });
           break;
       }

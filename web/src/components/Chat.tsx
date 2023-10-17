@@ -5,6 +5,7 @@ import { useAICStore } from '@/store/AICStore';
 import { BlinkingCursor } from './BlinkingCursor';
 import { cn } from '@/utils/styles';
 import { UserInfo } from './UserInfo';
+import { useAnalysisStore } from '@/store/useAnalysisStore';
 
 export function Chat({
   chatId,
@@ -23,7 +24,7 @@ export function Chat({
     (state) => state.groupedMessages,
   );
   const setChatId = useAICStore((state) => state.setChatId);
-  const isAnalysisRunning = useAICStore((state) => state.isAnalysisRunning);
+  const isAnalysisRunning = useAnalysisStore((state) => state.isAnalysisRunning);
   const isExecuteRunning = useAICStore((state) => state.isExecuteRunning);
   const messages = useAICStore((state) => state.messages);
   const stopWork = useAICStore((state) => state.stopWork);
@@ -113,6 +114,8 @@ export function Chat({
 
   const groupedMessages = calculateGroupedMessages();
 
+  const analysis = useAnalysisStore();
+
   return (
     <div className="h-full overflow-y-auto flex flex-col" ref={messagesEndRef}>
       {messages?.length === 0 ? (
@@ -132,10 +135,12 @@ export function Chat({
             {isAnalysisRunning && (
               <div className={cn('flex flex-row  p-5')}>
                 <div className="container flex mx-auto gap-4">
-                  <UserInfo agent_id={''} materials_ids={[]} />
+                  <UserInfo agent_id={analysis.agent_id || ''} materials_ids={analysis.relevant_material_ids || []} />
                   <div className="flex-grow flex flex-col gap-5">
                     <h3 className="italic">
-                      Analysing ... <BlinkingCursor />{' '}
+                      Analysing ... <BlinkingCursor />{' '}<br/>
+                      {analysis.next_step}<br/>
+                      {analysis.thinking_process}<br/>
                     </h3>
                   </div>
                 </div>

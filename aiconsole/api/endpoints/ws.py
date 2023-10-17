@@ -10,7 +10,6 @@ router = APIRouter()
 _log = logging.getLogger(__name__)
 
 
-
 @router.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     connection = await connection_manager.connect(websocket)

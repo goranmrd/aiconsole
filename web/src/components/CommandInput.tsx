@@ -4,6 +4,7 @@ import { useRef } from 'react';
 
 import { cn } from '@/utils/styles';
 import { useAICStore } from '@/store/AICStore';
+import { useAnalysisStore } from '@/store/useAnalysisStore';
 
 interface MessageInputProps {
   className?: string;
@@ -19,7 +20,6 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
     editCommand: setCommand,
     newCommand,
     isExecuteRunning,
-    isAnalysisRunning,
     submitCommand,
     historyUp: promptUp,
     historyDown: promptDown,
@@ -28,6 +28,8 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
     messages,
     hasPendingCode,
   } = useAICStore((state) => state);
+
+  const isAnalysisRunning = useAnalysisStore((state) => state.isAnalysisRunning);
 
   const sendingMessagesBlocked =
     isExecuteRunning ||

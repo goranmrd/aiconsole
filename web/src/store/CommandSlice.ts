@@ -2,6 +2,7 @@ import { StateCreator } from 'zustand';
 import { AICStore } from './AICStore';
 import { Api } from '@/api/Api';
 import { createMessage } from './utils';
+import { useAnalysisStore } from './useAnalysisStore';
 
 export type CommandSlice = {
   commandHistory: string[];
@@ -98,6 +99,6 @@ export const createCommandSlice: StateCreator<
       get().saveCommandAndMessagesToHistory(command, true);
     }
 
-    await get().doAnalysis();
+    await useAnalysisStore.getState().doAnalysis();
   },
 });

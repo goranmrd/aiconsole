@@ -3,10 +3,9 @@ import { StateCreator } from 'zustand';
 import { Api } from '@/api/Api';
 import { AICStore } from './AICStore';
 import { createMessage } from './utils';
+import { useAnalysisStore } from './useAnalysisStore';
 
 export type ActionSlice = {
-  doAnalysis: () => Promise<void>;
-  isAnalysisRunning: boolean;
   doExecute: (
     agentId: string,
     task: string,
@@ -22,7 +21,6 @@ export type ActionSlice = {
   isExecuteRunning: boolean;
   isWorking: () => boolean;
   stopWork: () => void;
-  analysisAbortController: AbortController;
   executeAbortSignal: AbortController;
 };
 
@@ -30,80 +28,9 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
   set,
   get,
 ) => ({
-  isAnalysisRunning: false,
-
   isExecuteRunning: false,
-
-  analysisTimeoutId: undefined,
-
-  analysisAbortController: new AbortController(), // Initialize fetchAbortController as undefined
-
+  
   executeAbortSignal: new AbortController(),
-
-  doAnalysis: async () => {
-    try {
-      set(() => ({
-        analysisAbortController: new AbortController(),
-        isAnalysisRunning: true,
-      }));
-      const response = await Api.analyse(
-        {
-          id: get().chatId,
-          messages: get().messages,
-          auto_run: get().alwaysExecuteCode,
-        },
-        get().analysisAbortController.signal,
-      );
-
-      const data = await response.json<{
-        agent_id: string;
-        materials_ids: string[];
-        used_tokens: number;
-        available_tokens: number;
-        next_step: string;
-      }>();
-
-      if (get().analysisAbortController.signal.aborted) {
-        // If existing fetch operation has been aborted, stop proceeding
-        return;
-      }
-
-      if (data.agent_id !== 'user' && data.next_step) {
-        set(() => {
-          const newMessages = (get().messages || []).slice();
-          //push next step
-          newMessages.push(
-            createMessage({
-              agent_id: data.agent_id,
-              task: data.next_step,
-              materials_ids: data.materials_ids,
-              role: 'assistant',
-              content: '',
-            }),
-          );
-          return {
-            messages: newMessages,
-          };
-        });
-
-        if (data.agent_id !== 'user') {
-          console.log('Executing');
-          get().doExecute(data.agent_id, data.next_step, data.materials_ids);
-        }
-      }
-    } catch (err) {
-      if ((err as Error).name === 'AbortError') {
-        console.log('Analysis aborted');
-        return;
-      } else {
-        throw err;
-      }
-    } finally {
-      set(() => ({
-        isAnalysisRunning: false,
-      }));
-    }
-  },
 
   doRun: async (
     agentId: string,
@@ -277,12 +204,8 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
           const TOKEN_PROCESSORS = [
             ...[
               'python',
-              'bash',
               'shell',
-              'javascript',
-              'html',
               'applescript',
-              'r',
             ].map((language) => ({
               token: `<<<< START CODE (${language}) >>>>`,
               processor: () => {
@@ -394,13 +317,13 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
       );
     } else {
       console.log('Analysing');
-      await get().doAnalysis();
+      await useAnalysisStore.getState().doAnalysis();
     }
   },
 
-  isWorking: () => get().isAnalysisRunning || get().isExecuteRunning,
+  isWorking: () => useAnalysisStore.getState().isAnalysisRunning || get().isExecuteRunning,
   stopWork: () => {
     get().executeAbortSignal.abort();
-    get().analysisAbortController.abort();
+    useAnalysisStore.getState().reset();
   },
 });
