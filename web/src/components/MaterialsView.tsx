@@ -7,11 +7,14 @@ import { useAICStore } from '@/store/AICStore';
 
 export default function MaterailsView() {
   const fetchMaterials = useAICStore((state) => state.fetchMaterials);
+  const deleteMaterial = useAICStore((state) => state.deleteMaterial);
   const materials = useAICStore((state) => state.materials);
 
   useEffect(() => {
     fetchMaterials();
   }, []);
+
+  const handleDeleteClick = (id: string) => () => deleteMaterial(id);
 
   return (
     <div className="App flex flex-col h-screen fixed top-0 left-0 bottom-0 right-0 bg-gray-800/95 text-stone-400">
@@ -31,6 +34,7 @@ export default function MaterailsView() {
                 id={material.id}
                 usage={material.usage}
                 key={material.id}
+                onDeleteClick={handleDeleteClick(material.id)}
               />
             ))}
         </div>

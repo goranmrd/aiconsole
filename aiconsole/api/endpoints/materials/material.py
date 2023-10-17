@@ -1,5 +1,5 @@
 import logging
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 from aiconsole import projects
 from aiconsole.materials.material import MaterialLocation, Material
@@ -29,3 +29,11 @@ async def material_post(material_id: str, material: Material):
     projects.get_project_materials().save_material(material)
 
     return JSONResponse({"status": "ok"})
+
+@router.delete("/{material_id}")
+async def delete_material(material_id: str):
+    try:
+        projects.get_project_materials().delete_material(material_id)
+        return JSONResponse({"status": "ok"})
+    except KeyError:
+        raise HTTPException(status_code=404, detail="Material not found")

@@ -147,13 +147,29 @@ class Materials:
             raise KeyError(f"Material {name} not found")
         return self._materials[name]
 
-    def delete_material(self, name):
+    def delete_material(self, material_id):
         """
         Delete a specific material.
         """
-        if name not in self._materials:
-            raise KeyError(f"Material {name} not found")
-        del self._materials[name]
+        if material_id in self._materials:
+            material = self._materials[material_id]
+
+            path = {
+                MaterialLocation.PROJECT_DIR: Path(self.user_directory),
+                MaterialLocation.AICONSOLE_CORE: resource_to_path(self.core_resource),
+            }[material.defined_in]
+
+            if str(path.absolute()).find("site-packages") != -1:
+                raise Exception("Cannot delete core materials")
+            
+            material_file_path = path / f"{material_id}.toml"
+            if material_file_path.exists():
+                os.remove(material_file_path)
+
+            del self._materials[material_id]
+        
+        else:
+            raise KeyError(f"Material with ID {material_id} not found")
 
     async def reload(self):
         _log.info("Reloading materials ...")
