@@ -35,11 +35,11 @@ default_shell: {os.environ.get('SHELL')}
 {collect_python_packages()}
 
 ## Hardware Statistics:
-# cpu: {subprocess.check_output(['sysctl', '-n', 'machdep.cpu.brand_string']).decode('utf-8')}
-# memory:: {subprocess.check_output(['sysctl', '-n', 'hw.memsize']).decode('utf-8')}
+cpu: {subprocess.check_output(['sysctl', '-n', 'machdep.cpu.brand_string']).decode('utf-8')}
+memory:: {subprocess.check_output(['sysctl', '-n', 'hw.memsize']).decode('utf-8')}
 
 ## Network Information:
-# ip: {subprocess.check_output(['ipconfig', 'getifaddr', 'en0']).decode('utf-8')}
+ip: {subprocess.check_output(['ipconfig', 'getifaddr', 'en0']).decode('utf-8')}
 connection_status: {subprocess.check_output(['ping', '-c', '1', '-W', '100', '8.8.8.8']).decode('utf-8')}
 ""\"
 """
