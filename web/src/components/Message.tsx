@@ -27,6 +27,7 @@ export function Message({ message, isStreaming }: MessageProps) {
   const enableAutoCodeExecution = useAICStore(
     (state) => state.enableAutoCodeExecution,
   );
+  const markMessageAsRan = useAICStore((state) => state.markMessageAsRan);
 
   const handleEditClick = () => {
     if (isStreaming) {
@@ -73,6 +74,10 @@ export function Message({ message, isStreaming }: MessageProps) {
     runCode();
   };
 
+  const handleNoClick = () => {
+    markMessageAsRan(message.id);
+  };
+
   return (
     <div className="flex flex-grow items-start">
       {isEditing ? (
@@ -96,9 +101,14 @@ export function Message({ message, isStreaming }: MessageProps) {
                   language={message.language}
                   className="overflow-scroll max-w-2xl"
                 />
-                {!message.code_output && !executeCode && (
+                {!message.code_output && !message.code_ran && !executeCode && (
                   <div className="flex gap-4 pt-4">
                     <Button label="Run" onClick={runCode} />
+                    <Button
+                      label="Don't Run"
+                      variant="danger"
+                      onClick={handleNoClick}
+                    />
                     <Button
                       label="Always Run"
                       onClick={handleAlwaysRunClick}

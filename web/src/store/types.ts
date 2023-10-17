@@ -8,6 +8,7 @@ export type AICMessage = {
   materials_ids: string[];
   language?: string;
   code?: boolean;
+  code_ran?: boolean;
   code_output?: boolean;
 };
 
@@ -26,12 +27,23 @@ export type AICMessageGroup = {
   sections: AICMessageSection[];
 };
 
-export type MaterialDefinedIn = "aiconsole" | "project";
-export const materialDefinedInOptions: MaterialDefinedIn[] = ["aiconsole", "project"];
-export type MaterialStatus = "disabled" | "enabled" | "forced";
-export const materialStatusOptions: MaterialStatus[] = ["disabled", "enabled", "forced"];
-export type MaterialContentType = "static_text" | "dynamic_text" | "api";
-export const materialContenTypeOptions: MaterialContentType[] = ["static_text", "dynamic_text", "api"];
+export type MaterialDefinedIn = 'aiconsole' | 'project';
+export const materialDefinedInOptions: MaterialDefinedIn[] = [
+  'aiconsole',
+  'project',
+];
+export type MaterialStatus = 'disabled' | 'enabled' | 'forced';
+export const materialStatusOptions: MaterialStatus[] = [
+  'disabled',
+  'enabled',
+  'forced',
+];
+export type MaterialContentType = 'static_text' | 'dynamic_text' | 'api';
+export const materialContenTypeOptions: MaterialContentType[] = [
+  'static_text',
+  'dynamic_text',
+  'api',
+];
 
 export type Material = {
   id: string;
@@ -57,6 +69,7 @@ export type ChatHeadline = {
 
 export type Chat = {
   id: string;
+  auto_run: boolean;
   messages: AICMessage[];
 };
 

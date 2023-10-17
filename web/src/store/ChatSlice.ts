@@ -8,6 +8,7 @@ import { useWebSocketStore } from '@/api/messages/useWebSocketStore';
 export type ChatSlice = {
   chatId: string;
   alwaysExecuteCode: boolean;
+  hasPendingCode: boolean;
   chatHeadlines: ChatHeadline[];
   setChatId: (id: string) => void;
   deleteChat: (id: string) => Promise<void>;
@@ -23,6 +24,7 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
 ) => ({
   chatId: '',
   alwaysExecuteCode: false,
+  hasPendingCode: false,
   chatHeadlines: [],
   agent: undefined,
   materials: [],
@@ -56,6 +58,7 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
       chatId: id,
       messages: undefined,
       alwaysExecuteCode: false,
+      hasPendingCode: false,
     }));
 
     useWebSocketStore.getState().sendMessage({
@@ -68,12 +71,11 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
       chat = {
         id: '',
         messages: [],
-      }
+        auto_run: false,
+      };
     } else {
       chat = await Api.getChat(id);
     }
-
-    
 
     set(() => ({
       messages: (chat.messages || []).map(({ materials_ids, ...rest }) => {
@@ -82,11 +84,13 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
           ...rest,
         };
       }),
+      alwaysExecuteCode: chat.auto_run,
     }));
   },
   saveCurrentChatHistory: async () => {
     await Api.saveHistory({
       id: get().chatId,
+      auto_run: get().alwaysExecuteCode,
       messages: get().messages,
     });
 

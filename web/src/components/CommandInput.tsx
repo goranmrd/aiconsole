@@ -26,11 +26,13 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
     stopWork,
     isWorking,
     messages,
+    hasPendingCode,
   } = useAICStore((state) => state);
 
   const sendingMessagesBlocked =
     isExecuteRunning ||
     isAnalysisRunning ||
+    hasPendingCode ||
     (command === '' && messages?.length == 0);
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -84,6 +86,7 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
     >
       <div className="flex items-center">
         <TextareaAutosize
+          disabled={hasPendingCode}
           ref={textAreaRef}
           className="border-white/20 ring-secondary/30 bg-black flex-grow resize-none overflow-hidden rounded-3xl border px-4 py-2 focus:outline-none focus:ring-2"
           value={command}

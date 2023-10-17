@@ -6,6 +6,7 @@ export type MessageSlice = {
   messages: AICMessage[];
   setMessages: (chat: Chat) => void;
   removeMessage: (id: string) => void;
+  markMessageAsRan: (id: string) => void;
   editMessageContent: (id: string, content: string) => void;
   groupedMessages: () => AICMessageGroup[];
 };
@@ -20,30 +21,39 @@ export const createMessageSlice: StateCreator<
   setMessages: (chat: Chat) => {
     set(() => ({
       messages: [...chat.messages],
-    }))
+    }));
   },
   removeMessage: (id: string) => {
     set((state) => ({
       messages: (state.messages || []).filter((message) => message.id !== id),
-    }))
-    get().saveCurrentChatHistory()
+    }));
+    get().saveCurrentChatHistory();
   },
-    
+  markMessageAsRan: (id: string) => {
+    set((state) => ({
+      messages: (state.messages || []).map((message) =>
+        message.id === id ? { ...message, code_ran: true } : message,
+      ),
+      hasPendingCode: false,
+    }));
+    get().saveCurrentChatHistory();
+  },
   editMessageContent: (id: string, content: string) => {
-    const isUserMessage = get().messages?.find((message) => message.id === id)?.role === 'user'
+    const isUserMessage =
+      get().messages?.find((message) => message.id === id)?.role === 'user';
 
     set((state) => ({
       messages: (state.messages || []).map((message) =>
         message.id === id ? { ...message, content } : message,
       ),
-    }))
+    }));
 
-    get().saveCommandAndMessagesToHistory(content, isUserMessage)
+    get().saveCommandAndMessagesToHistory(content, isUserMessage);
   },
   groupedMessages: () => {
     const groups: AICMessageGroup[] = [];
 
-    //Group messages 
+    //Group messages
     for (const message of get().messages || []) {
       if (
         groups.length === 0 ||
@@ -97,5 +107,4 @@ export const createMessageSlice: StateCreator<
 
     return groups;
   },
-  
 });

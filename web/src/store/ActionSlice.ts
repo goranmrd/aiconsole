@@ -50,6 +50,7 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
         {
           id: get().chatId,
           messages: get().messages,
+          auto_run: get().alwaysExecuteCode,
         },
         get().analysisAbortController.signal,
       );
@@ -116,6 +117,14 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
       isExecuteRunning: true,
     }));
 
+    let messages = get().messages || [];
+
+    messages[messages.length - 1].code_ran = true;
+
+    set(() => ({
+      messages: messages.slice(),
+    }));
+
     try {
       const response = await Api.runCode({
         chatId: get().chatId,
@@ -149,9 +158,9 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
             done: true,
           };
 
-          const messages = get().messages || [];
-
           const textChunk = decoder.decode(value);
+
+          messages = get().messages || [];
 
           messages[messages.length - 1].content += textChunk;
 
@@ -175,6 +184,7 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
       get().saveCurrentChatHistory();
 
       set(() => ({
+        hasPendingCode: false,
         isExecuteRunning: false,
       }));
     }
@@ -228,6 +238,7 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
           messages: [...(get().messages || [])],
           relevant_materials_ids: materials_ids,
           agent_id: agentId,
+          auto_run: get().alwaysExecuteCode,
         },
         get().executeAbortSignal.signal,
       );
@@ -365,13 +376,14 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
 
     const messages = get().messages || [];
     const language = messages[messages.length - 1].language;
+    const code = messages[messages.length - 1].code;
     const executeCode = get().alwaysExecuteCode;
-    if (
-      messages.length > 0 &&
-      messages[messages.length - 1].code &&
-      language &&
-      executeCode
-    ) {
+
+    if (code) {
+      set({ hasPendingCode: true });
+    }
+
+    if (messages.length > 0 && code && language && executeCode) {
       console.log('Running code');
       await get().doRun(
         agentId,
