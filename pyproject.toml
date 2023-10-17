@@ -4,7 +4,7 @@ include = [
     "aiconsole/static/**/*"
 ]
 name = "aiconsole"
-version = "0.2.0-alpha.6"
+version = "0.2.0-alpha.7"
 description = "Run and expand your personal AI tools"
 authors = ["Maciej Cielecki <maciej.cielecki@10clouds.com>"]
 license = "MIT"
@@ -25,6 +25,7 @@ selenium = "^4.14.0"
 webdriver-manager = "^4.0.1"
 pillow = "^10.0.1"
 tomlkit = "^0.12.1"
+easygui = "^0.98.3"
 
 [tool.ruff]
 line-length = 120
