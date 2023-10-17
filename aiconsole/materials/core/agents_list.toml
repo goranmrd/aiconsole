@@ -1,10 +1,15 @@
-usage = 'Contains info about all the agents in AIConsole, useful when you want to know what agents are available and what they can do.'
-content_type = 'dynamic_text'
-content_dynamic_text = '''
+usage = "Contains info about all the agents in AIConsole, useful when you want to know what agents are available and what they can do."
+content_type = "dynamic_text"
+content_dynamic_text = """
 from aiconsole import projects
 
 def content(context):
     newline = "\\n"
     agents_list = newline.join(f"* {agent.id} - {agent.usage}" for agent in projects.get_project_agents().all_agents())
-    return f"# List of Agents{newline}{newline}Available agents: {agents_list}"
-'''
+    return f""\"
+# List of Agents
+
+Available agents: {agents_list}
+
+""\".strip()
+"""
