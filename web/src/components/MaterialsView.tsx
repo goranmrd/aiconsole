@@ -1,18 +1,16 @@
-import { useEffect, useState } from 'react';
-import { MaterialInfo } from '@/store/types';
-import { Api } from '@/api/Api';
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { TopBar } from './TopBar';
 import { PlusSmallIcon } from '@heroicons/react/24/outline';
 import { MaterialItem } from './MaterialItem';
+import { useAICStore } from '@/store/AICStore';
 
 export default function MaterailsView() {
-  const [materials, setMaterials] = useState<MaterialInfo[]>();
+  const fetchMaterials = useAICStore((state) => state.fetchMaterials);
+  const materials = useAICStore((state) => state.materials);
 
   useEffect(() => {
-    Api.getMaterials().then((materials) => {
-      setMaterials(materials);
-    });
+    fetchMaterials();
   }, []);
 
   return (

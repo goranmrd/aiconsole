@@ -11,14 +11,15 @@ import { CommandSlice } from './CommandSlice';
 import { ChatSlice } from './ChatSlice';
 import { MessageSlice } from './MessageSlice';
 import { AgentsSlice, createAgentsSlice } from './AgentsSlice';
+import { MaterialSlice, createMaterialSlice } from './MetarialSlice';
 
-export type AICStore =
-  MessageSlice &
+export type AICStore = MessageSlice &
   CommandSlice &
   ChatSlice &
   ActionSlice &
   AgentsSlice &
-  ProjectSlice
+  ProjectSlice &
+  MaterialSlice;
 
 export const useAICStore = create<AICStore>()((...a) => ({
   ...createMessageSlice(...a),
@@ -27,4 +28,5 @@ export const useAICStore = create<AICStore>()((...a) => ({
   ...createActionSlice(...a),
   ...createAgentsSlice(...a),
   ...createProjectSlice(...a),
+  ...createMaterialSlice(...a),
 }));

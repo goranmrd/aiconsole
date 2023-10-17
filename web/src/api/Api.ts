@@ -57,6 +57,9 @@ export const Api = (function () {
       json: { ...material },
       timeout: 60000,
     });
+  const deleteMaterial = async (id: string) => {
+    ky.delete(`${BASE_URL}/api/materials/${id}`);
+  };
 
   const deleteChat = (id: string) =>
     ky.delete(`${BASE_URL}/chats/history/${id}`);
@@ -92,6 +95,7 @@ export const Api = (function () {
     chooseProject,
     getCurrentProject,
     saveMaterial,
+    deleteMaterial,
     getCommandHistory,
     getChatsHistory,
     getChat,
