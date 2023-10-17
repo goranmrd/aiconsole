@@ -11,8 +11,8 @@ from aiconsole.utils.initialize_project_directory import initialize_project_dire
 log = logging.getLogger(__name__)
 
 
-async def run_aiconsole(dev: bool):
-    await initialize_project_directory()
+def run_aiconsole(dev: bool):
+    asyncio.run(initialize_project_directory())
 
     threads = []
 
@@ -41,11 +41,11 @@ async def run_aiconsole(dev: bool):
 
 
 def aiconsole_dev():
-    asyncio.run(run_aiconsole(dev=True))
+    run_aiconsole(dev=True)
 
 
 def aiconsole():
-    asyncio.run(run_aiconsole(dev=False))
+    run_aiconsole(dev=False)
 
 
 if __name__ == "__main__":
