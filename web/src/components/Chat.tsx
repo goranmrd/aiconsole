@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { MessageGroup } from './MessageGroup';
 import { Welcome } from './Welcome';
 import { useAICStore } from '@/store/AICStore';
-import { useWebSocketStore } from '@/store/useWebSocketStore';
 import { BlinkingCursor } from './BlinkingCursor';
 import { cn } from '@/utils/styles';
 import { UserInfo } from './UserInfo';
@@ -27,22 +26,10 @@ export function Chat({
   const isAnalysisRunning = useAICStore((state) => state.isAnalysisRunning);
   const isExecuteRunning = useAICStore((state) => state.isExecuteRunning);
   const messages = useAICStore((state) => state.messages);
-
-  {
-    const { initWebSocket, disconnect } = useWebSocketStore();
-
-    useEffect(() => {
-      if (chatId) {
-        initWebSocket(chatId);
-      }
-
-      // add return cleanup function to disconnect on unmount
-      return () => disconnect();
-    }, [initWebSocket, disconnect, chatId]);
-  }
+  const stopWork = useAICStore((state) => state.stopWork);
 
   useEffect(() => {
-    if (chatId) setChatId(chatId);
+    setChatId(chatId);
 
     //if there is exactly one text area focus on it
     const textAreas = document.getElementsByTagName('textarea');
@@ -51,6 +38,11 @@ export function Chat({
     }
 
     setAutoScrolling(true);
+
+    return () => {
+      stopWork();
+      setChatId('');
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatId]); //Initentional trigger when chat_id changes
 

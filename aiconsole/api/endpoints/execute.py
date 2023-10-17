@@ -6,7 +6,7 @@ import logging
 from aiconsole.agents.types import ExecutionModeContext
 from aiconsole.chat.types import ChatWithAgentAndMaterials
 from aiconsole.materials.content_evaluation_context import ContentEvaluationContext
-from aiconsole.websockets.messages import ErrorWSMessage
+from aiconsole.websockets.outgoing_messages import ErrorWSMessage
 
 
 router = APIRouter()
@@ -41,7 +41,7 @@ async def execute(chat: ChatWithAgentAndMaterials) -> StreamingResponse:
         except asyncio.CancelledError:
             _log.warning("Cancelled execution_mode_interpreter")
         except Exception as e:
-            await ErrorWSMessage(error=str(e)).send(chat.id)
+            await ErrorWSMessage(error=str(e)).send_to_chat(chat.id)
             raise e
 
     return StreamingResponse(

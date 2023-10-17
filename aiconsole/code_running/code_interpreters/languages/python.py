@@ -35,9 +35,7 @@
 import sys
 from typing import List
 
-from aiconsole import projects
 from aiconsole.materials.material import Material
-from aiconsole.utils.resource_to_path import resource_to_path
 from ..subprocess_code_interpreter import SubprocessCodeInterpreter
 import ast
 import re

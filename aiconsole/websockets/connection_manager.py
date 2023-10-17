@@ -6,50 +6,48 @@ Connection manager for websockets. Keeps track of all active connections
 
 import logging
 from fastapi import WebSocket
-from typing import Dict, List
-from collections import defaultdict
-
-from aiconsole.websockets.messages import BaseWSMessage
-
+from typing import List
+from aiconsole.websockets.outgoing_messages import BaseWSMessage
 
 _log = logging.getLogger(__name__)
-_active_connections: Dict[str, List[WebSocket]] = defaultdict(list)
+_active_connections: List['AICConnection'] = []
 
 
-async def connect(websocket: WebSocket, chat_id: str):
+class AICConnection:
+    _websocket: WebSocket
+    chat_id: str = ""
+
+    def __init__(self, websocket: WebSocket):
+        self._websocket = websocket
+
+    async def send(self, msg: BaseWSMessage):
+        await self._websocket.send_json({
+            "type": msg.get_type(),
+            **msg.model_dump()
+        })
+
+
+async def connect(websocket: WebSocket):
     await websocket.accept()
-    _log.info(f"Connected to chat {chat_id}")
-
-    _active_connections[chat_id].append(websocket)
-
-
-def disconnect(websocket: WebSocket):
-    for chat_id, connections in _active_connections.items():
-        if websocket in connections:
-            connections.remove(websocket)
-            _log.info(f"Disconnected from chat {chat_id}")
-            break
+    connection = AICConnection(websocket)
+    _active_connections.append(connection)
+    _log.info("Connected")
+    return connection
 
 
-async def _send(socket: WebSocket, msg: BaseWSMessage):
-    await socket.send_json({
-        "type": msg.get_type(),
-        **msg.model_dump()
-    })
+def disconnect(connection: AICConnection):
+    _active_connections.remove(connection)
+    _log.info("Disconnected")
 
-async def send_message(chat_id: str, msg: BaseWSMessage):
+
+async def send_message_to_chat(chat_id: str, msg: BaseWSMessage):
     # _log.debug(f"Sending message to {chat_id}: {msg}")
-    for connection in _active_connections[chat_id]:
-        await _send(connection, msg)
+    for connection in _active_connections:
+        if connection.chat_id == chat_id:
+            await connection.send(msg)
 
 
 async def send_message_to_all(msg: BaseWSMessage):
     # _log.debug(f"Sending message to all: {msg}")
-    for connections in _active_connections.values():
-        for connection in connections:
-            await _send(connection, msg)
-
-
-async def send_message_to_one(websocket: WebSocket, msg: BaseWSMessage):
-    # _log.debug(f"Sending message to one: {msg}")
-    await _send(websocket, msg)
+    for connection in _active_connections:
+        await connection.send(msg)

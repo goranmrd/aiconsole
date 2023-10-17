@@ -5,7 +5,7 @@ import logging
 from aiconsole import projects
 from aiconsole.code_running.run_code import get_code_interpreter
 from aiconsole.code_running.types import CodeToRun
-from aiconsole.websockets.messages import ErrorWSMessage
+from aiconsole.websockets.outgoing_messages import ErrorWSMessage
 
 router = APIRouter()
 
@@ -23,10 +23,10 @@ async def run_code(chat_id: str, codeToRun: CodeToRun) -> StreamingResponse:
                 for chunk in get_code_interpreter(codeToRun.language).run(codeToRun.code, mats):
                     yield chunk
             except Exception:
-                await ErrorWSMessage(error=traceback.format_exc().strip()).send(chat_id)
+                await ErrorWSMessage(error=traceback.format_exc().strip()).send_to_chat(chat_id)
                 yield traceback.format_exc().strip()
         except Exception as e:
-            await ErrorWSMessage(error=str(e)).send(chat_id)
+            await ErrorWSMessage(error=str(e)).send_to_chat(chat_id)
             raise e
 
     return StreamingResponse(

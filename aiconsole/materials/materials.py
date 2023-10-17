@@ -11,7 +11,7 @@ from aiconsole.utils.BatchingWatchDogHandler import BatchingWatchDogHandler
 from aiconsole.utils.list_files_in_file_system import list_files_in_file_system
 from aiconsole.utils.list_files_in_resource_path import list_files_in_resource_path
 from aiconsole.utils.resource_to_path import resource_to_path
-from aiconsole.websockets.messages import NotificationWSMessage
+from aiconsole.websockets.outgoing_messages import NotificationWSMessage
 
 _log = logging.getLogger(__name__)
 

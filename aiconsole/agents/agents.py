@@ -13,7 +13,7 @@ from aiconsole.execution_modes.normal import execution_mode_normal
 from aiconsole.utils.BatchingWatchDogHandler import BatchingWatchDogHandler
 from aiconsole.utils.list_files_in_file_system import list_files_in_file_system
 from aiconsole.utils.list_files_in_resource_path import list_files_in_resource_path
-from aiconsole.websockets.messages import NotificationWSMessage
+from aiconsole.websockets.outgoing_messages import NotificationWSMessage
 
 _log = logging.getLogger(__name__)
 

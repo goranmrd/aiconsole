@@ -12,6 +12,7 @@ import { MaterialView } from './components/MaterialView.tsx';
 import MaterialsView from './components/MaterialsView.tsx';
 import { MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
+import { SocketInitiator } from './api/messages/SocketInitiator.tsx';
 
 const router = createBrowserRouter([
   {
@@ -40,7 +41,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <MantineProvider>
       <Notifications position="top-right" />
-      <RouterProvider router={router} />
+      <SocketInitiator>
+        <RouterProvider router={router} />
+      </SocketInitiator>
     </MantineProvider>
   </React.StrictMode>,
 );

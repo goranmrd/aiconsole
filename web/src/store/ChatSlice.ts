@@ -1,8 +1,9 @@
 import { StateCreator } from 'zustand';
 
-import { ChatHeadline } from './types';
+import { Chat, ChatHeadline } from './types';
 import { Api } from '@/api/Api';
 import { AICStore } from './AICStore';
+import { useWebSocketStore } from '@/api/messages/useWebSocketStore';
 
 export type ChatSlice = {
   chatId: string;
@@ -57,7 +58,22 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
       alwaysExecuteCode: false,
     }));
 
-    const chat = await Api.getChat(id);
+    useWebSocketStore.getState().sendMessage({
+      type: 'SetChatIdWSMessage',
+      chat_id: id,
+    });
+
+    let chat: Chat;
+    if (id === '') {
+      chat = {
+        id: '',
+        messages: [],
+      }
+    } else {
+      chat = await Api.getChat(id);
+    }
+
+    
 
     set(() => ({
       messages: (chat.messages || []).map(({ materials_ids, ...rest }) => {

@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 
 from aiconsole.settings import AICONSOLE_PATH
-from aiconsole.websockets.messages import NotificationWSMessage
+from aiconsole.websockets.outgoing_messages import NotificationWSMessage
 
 _log = logging.getLogger(__name__)
 

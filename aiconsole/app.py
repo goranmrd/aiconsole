@@ -11,7 +11,7 @@ from aiconsole import projects
 from aiconsole.api.routers import app_router
 from aiconsole.settings import AICONSOLE_PATH, settings, log_config
 from aiconsole.utils.is_update_needed import is_update_needed
-from aiconsole.websockets.messages import NotificationWSMessage
+from aiconsole.websockets.outgoing_messages import NotificationWSMessage
 
 
 @asynccontextmanager

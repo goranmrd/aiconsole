@@ -1,12 +1,11 @@
 import os
 
-from fastapi import WebSocket
-
 from aiconsole.agents import agents
 from aiconsole.code_running.run_code import reset_code_interpreters
 from aiconsole.materials import materials
 from aiconsole.utils.initialize_project_directory import initialize_project_directory
-from aiconsole.websockets.messages import ProjectOpenedWSMessage
+from aiconsole.websockets.connection_manager import AICConnection
+from aiconsole.websockets.outgoing_messages import ProjectOpenedWSMessage
 
 _materials = materials.Materials(
     "aiconsole.materials.core",
@@ -64,8 +63,8 @@ async def reinitialize_project():
 
     await _create_project_message().send_to_all()
 
-async def send_project_init(ws: WebSocket):
-    await _create_project_message().send_to_one(ws)
+async def send_project_init(connection: AICConnection):
+    await connection.send(_create_project_message())
 
 async def change_project_directory(path):
     if not os.path.exists(path):
