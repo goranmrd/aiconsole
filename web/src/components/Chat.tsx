@@ -18,7 +18,7 @@ export function Chat({
 }) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [scrolling, setScrolling] = useState<boolean>(false);
-  const timerIdRef = useRef<number | null>(null);
+  const [timerIdRef, setTimerIdRef] = useState<NodeJS.Timeout | null>(null);
 
   const calculateGroupedMessages = useAICStore(
     (state) => state.groupedMessages,
@@ -79,19 +79,21 @@ export function Chat({
     if (!current) return;
 
     const handleScroll = () => {
-      if (timerIdRef.current) {
-        clearTimeout(timerIdRef.current);
+      if (timerIdRef) {
+        clearTimeout(timerIdRef);
+        setTimerIdRef(null);
       }
       setScrolling(true);
-      timerIdRef.current = setTimeout(() => setScrolling(false), 1000); // Reset scrolling after 1 second.
+      setTimerIdRef(setTimeout(() => setScrolling(false), 1000)); // Reset scrolling after 1 second.
     };
 
     current.addEventListener('scroll', handleScroll);
     return () => {
       current.removeEventListener('scroll', handleScroll);
       // It's important to also clear the timer when the component unmounts.
-      if (timerIdRef.current) {
-        clearTimeout(timerIdRef.current);
+      if (timerIdRef) {
+        clearTimeout(timerIdRef);
+        setTimerIdRef(null);
       }
     };
   }, []);
