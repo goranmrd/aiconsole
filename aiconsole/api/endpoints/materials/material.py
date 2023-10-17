@@ -37,3 +37,4 @@ async def delete_material(material_id: str):
         return JSONResponse({"status": "ok"})
     except KeyError:
         raise HTTPException(status_code=404, detail="Material not found")
+    

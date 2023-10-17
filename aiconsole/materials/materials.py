@@ -194,3 +194,4 @@ class Materials:
             title="Materials reloaded",
             message=f"Reloaded {len(self._materials)} materials",
         ).send_to_all()
+        
