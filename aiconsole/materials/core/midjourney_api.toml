@@ -7,9 +7,10 @@ Always prefer this to other discord libraries and access methods.
 
 
 from aiconsole.materials.tools.midjourney import MidJourneyAPI
+from typing import List
 
 
-def create_image(prompt: str) -> list[str]:
+def create_image(prompt: str) -> List[str]:
     ""\"
     This will wait for images to be generated and download them for display.
 
@@ -21,5 +22,4 @@ def create_image(prompt: str) -> list[str]:
     ""\"
     midjourney = MidJourneyAPI()
     return midjourney.create_image(prompt)
-
 """

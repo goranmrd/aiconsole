@@ -78,20 +78,14 @@ def list()
 
     async def content(self, context: 'ContentEvaluationContext') -> str:
         if self.content_type == MaterialContentType.DYNAMIC_TEXT:
-            try:
-                # Try compiling the python code and run it
-                source_code = compile(self.content_dynamic_text, '<string>', 'exec')
-                local_vars = {}
-                exec(source_code, local_vars)
-                content_func = local_vars.get('content')
-                if callable(content_func):
-                    return content_func(context)
-                else:
-                    raise Exception('No callable content function found!')
-            except Exception as e:
-                # If there is any error while compiling or running the code, return an empty string
-                # and add log (or notify about error).
-                raise Exception(f'Error in content source: {e}')
+            # Try compiling the python code and run it
+            source_code = compile(self.content_dynamic_text, '<string>', 'exec')
+            local_vars = {}
+            exec(source_code, local_vars)
+            content_func = local_vars.get('content')
+            if callable(content_func):
+                return content_func(context)
+            raise Exception('No callable content function found!')
         elif self.content_type == MaterialContentType.STATIC_TEXT:
             return self.content_static_text
         elif self.content_type == MaterialContentType.API:
