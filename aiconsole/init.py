@@ -40,13 +40,13 @@ async def run_aiconsole(dev: bool):
             thread.join()
 
 
-async def aiconsole_dev():
-    await run_aiconsole(dev=True)
+def aiconsole_dev():
+    asyncio.run(run_aiconsole(dev=True))
 
 
-async def aiconsole():
-    await run_aiconsole(dev=False)
+def aiconsole():
+    asyncio.run(run_aiconsole(dev=False))
 
 
 if __name__ == "__main__":
-    asyncio.run(aiconsole_dev())
+    aiconsole_dev()
