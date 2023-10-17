@@ -1,5 +1,5 @@
 import logging
-from tkinter import Tk, filedialog
+
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from aiconsole import projects
@@ -11,6 +11,8 @@ _log = logging.getLogger(__name__)
 root = None
 
 def ask_directory():
+    from tkinter import Tk, filedialog
+    
     global root
 
     if not root:
