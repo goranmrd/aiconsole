@@ -156,20 +156,15 @@ class Materials:
 
             path = {
                 MaterialLocation.PROJECT_DIR: Path(self.user_directory),
-                MaterialLocation.AICONSOLE_CORE: resource_to_path(self.core_resource),
             }[material.defined_in]
 
-            if str(path.absolute()).find("site-packages") != -1:
-                raise Exception("Cannot delete core materials")
-            
             material_file_path = path / f"{material_id}.toml"
             if material_file_path.exists():
-                os.remove(material_file_path)
+                material_file_path.unlink()
 
             del self._materials[material_id]
-        
-        else:
-            raise KeyError(f"Material with ID {material_id} not found")
+    
+        raise KeyError(f"Material with ID {material_id} not found")
 
     async def reload(self):
         _log.info("Reloading materials ...")
