@@ -79,6 +79,7 @@ async def director_analyse(chat: Chat) -> AnalysisResponse:
     )
 
     # if arguments is a string retry to parse it as json
+    _log.debug(arguments)
     if isinstance(arguments, str):
         arguments = json.loads(arguments)
 

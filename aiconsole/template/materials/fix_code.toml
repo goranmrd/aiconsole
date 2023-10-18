@@ -1,15 +1,17 @@
-"""
+usage = "When you need to fix, refactor or convert code to another language"
+content_type = "api"
+content_api = """
+""\"
+Use this function to fix, refactor or convert code to another language, do not use any other method of doing this.
 
-## How to fix code
+1. If a directory is specified, list and convert all the files in the directory structure recursively.
+2. For each file run this code and attach the output at the begining of the file:
 
-1. Search for the file containing the code you want to fix.
-2. Read the file
-3. Develop a concept of what you want to change
-4. Change the code
-5. See if the code is working
-6. If not, repeat steps 2-5
-
-"""
+example of code:
+```python
+convert_language(FILE_PATH, DESIRED_LANGUAGE)
+```
+""\"
 
 import logging
 import os
@@ -19,16 +21,6 @@ _log = logging.getLogger(__name__)
 
 
 def convert_language(file_name, desired_language):
-    """
-    How to convert files to another programing language
-
-    1. If a directory is specified, list and convert all the files in the directory structure recursively.
-    2. For each file run this code and attach the output at the begining of the file:
-
-    import fix_code
-    fix_code.convert_language(FILE_PATH, DESIRED_LANGUAGE)
-
-    """
     file_contents = open(file_name).read()
 
     completion = litellm.completion(
@@ -43,16 +35,13 @@ def convert_language(file_name, desired_language):
     file_name = os.path.splitext(file_name)[0] + ".py"
     with open(file_name, "w") as f:
         f.write(completion.choices[0]["message"]["content"])
-        f.write("\n")
+        f.write("\\n")
         # Write existing code into multiline comment
         if desired_language == "python":
-            f.write(f"""'''\n\n{file_contents}\n\n'''\n""")
+            f.write(f"'''\\n\\n{file_contents}\\n\\n'''\\n")
         else:
-            f.write(f"""/*\n\n{file_contents}\n\n*/\n""")
+            f.write(f"/*\\n\\n{file_contents}\\n\\n*/\\n")
 
-        _log.info(f"Created {file_name}")
-
-
-material = {
-    "usage": "When you need to fix code or translate it to another language",
-}
+    _log.info(f"Created {file_name}")
+    print(file_name)
+"""

@@ -17,8 +17,8 @@ services:
       - ./tests:/app/tests
       - ./web:/app/web
       - /app/web/node_modules
-      - /app/agents
-      - /app/materials
+      - ./agents:/app/agents
+      - ./materials:/app/materials
       - ./poetry.lock:/app/poetry.lock
       - ./pyproject.toml:/app/pyproject.toml
     command: "poetry run aiconsole-dev"
