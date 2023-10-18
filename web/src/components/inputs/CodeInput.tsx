@@ -38,13 +38,15 @@ export function CodeInput({
       <div className="overflow-y-auto font-mono text-sm">
       <Editor
           value={value}
+          textareaId={label}
           onValueChange={code => onChange(code)}
           highlight={code => onHighlight(code)}
           padding={10}
           className={cn(
             className,
-            'resize-none bg-black/20 appearance-none border border-transparent rounded w-full py-2 px-3 leading-tight placeholder-gray-400 focus:outline-none focus:border-primary/50 focus:shadow-outline',
+            'resize-none bg-black/20 appearance-none border border-transparent rounded w-full py-2 px-3 leading-tight placeholder-gray-400',
           )}
+          textareaClassName='focus:!outline-primary/50 focus:!shadow-outline'
         />
       </div>
 

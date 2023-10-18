@@ -86,13 +86,14 @@ export function MaterialPage() {
             />
 
             {material.content_type === 'static_text' && (
-              <SimpleInput
+              <CodeInput
                 label="Text"
                 value={material.content_static_text}
                 onChange={(value) =>
                   setMaterial({ ...material, content_static_text: value })
                 }
                 className="flex-grow"
+                codeLanguage='markdown'
               />
             )}
 

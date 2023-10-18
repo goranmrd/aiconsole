@@ -1,4 +1,4 @@
-import { Chip, Group } from '@mantine/core';
+import { cn } from '@/utils/styles';
 
 interface EnumInputProps<T extends string> {
   label: string;
@@ -15,24 +15,22 @@ export function EnumInput<T extends string>({
   onChange,
 }: EnumInputProps<T>) {
   return (
-    <Chip.Group
-      value={value}
-      onChange={(value: T) => {
-        onChange(value);
-      }}
-    >
-      <div className="flex flex-row gap-4">
-        <label htmlFor={label} className="font-bold">
-          {label}:
-        </label>
-        <Group justify="center">
-          {values.map((value) => (
-            <Chip key={value} value={value}>
-              {value}
-            </Chip>
-          ))}
-        </Group>
+    <div className="flex items-center gap-4">
+      <label className="font-bold">{label}:</label>
+      <div className="flex gap-2">
+        {values.map((val) => (
+          <button
+            className={cn(
+              'bg-white/5 border border-white/10 hover:text-black text-sm hover:bg-primary-light px-3 py-1 rounded-full flow-right',
+              val === value && 'bg-primary border-primary text-black',
+            )}
+            onClick={() => onChange(val)}
+            key={val}
+          >
+            {val}
+          </button>
+        ))}
       </div>
-    </Chip.Group>
+    </div>
   );
 }
