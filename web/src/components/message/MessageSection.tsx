@@ -14,8 +14,9 @@ interface MessageProps {
 
 export function MessageSection({ messageSection, isStreaming }: MessageProps) {
   const removeMessage = useAICStore((state) => state.removeMessage);
+  const alwaysExecuteCode = useAICStore((state) => state.alwaysExecuteCode);
 
-  const [folded, setFolded] = useState(false);
+  const [folded, setFolded] = useState(alwaysExecuteCode);
 
   const messageComponents = messageSection.messages.map((message, index) => (
     <Message
