@@ -34,6 +34,8 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
     });
   },
   doAnalysis: async () => {
+    get().reset();
+
     try {
       set(() => ({
         analysisAbortController: new AbortController(),
@@ -99,8 +101,6 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
       set(() => ({
         isAnalysisRunning: false,
       }));
-
-      useAnalysisStore.getState().reset();
     }
   },
 }));

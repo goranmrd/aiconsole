@@ -151,6 +151,8 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
       role: 'assistant',
       content: '',
     };
+    
+    useAnalysisStore.getState().reset();
 
     set(() => ({
       executeAbortSignal: new AbortController(),
@@ -237,7 +239,6 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
             .split(regexPattern)
             .filter((text) => text !== '');
 
-          console.log(splitText);
           for (const text of splitText) {
             let consumed = false;
             TOKEN_PROCESSORS.forEach((tokenProcessor) => {
@@ -321,6 +322,5 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
     useAnalysisStore.getState().isAnalysisRunning || get().isExecuteRunning,
   stopWork: () => {
     get().executeAbortSignal.abort();
-    useAnalysisStore.getState().reset();
   },
 });
