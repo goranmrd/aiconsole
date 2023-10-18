@@ -161,8 +161,6 @@ class Materials:
             material_file_path = path / f"{material_id}.toml"
             if material_file_path.exists():
                 material_file_path.unlink()
-
-            del self._materials[material_id]
     
         raise KeyError(f"Material with ID {material_id} not found")
 
