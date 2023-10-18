@@ -147,13 +147,22 @@ class Materials:
             raise KeyError(f"Material {name} not found")
         return self._materials[name]
 
-    def delete_material(self, name):
+    def delete_material(self, material_id):
         """
         Delete a specific material.
         """
-        if name not in self._materials:
-            raise KeyError(f"Material {name} not found")
-        del self._materials[name]
+        if material_id in self._materials:
+            material = self._materials[material_id]
+
+            path = {
+                MaterialLocation.PROJECT_DIR: Path(self.user_directory),
+            }[material.defined_in]
+
+            material_file_path = path / f"{material_id}.toml"
+            if material_file_path.exists():
+                material_file_path.unlink()
+    
+        raise KeyError(f"Material with ID {material_id} not found")
 
     async def reload(self):
         _log.info("Reloading materials ...")
@@ -183,3 +192,4 @@ class Materials:
             title="Materials reloaded",
             message=f"Reloaded {len(self._materials)} materials",
         ).send_to_all()
+        
