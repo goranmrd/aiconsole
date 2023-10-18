@@ -33,7 +33,7 @@ const SideBar = () => {
     <div
       className={`min-w-[240px] w-[240px] h-full bg-gray-900/30 p-1 drop-shadow-md flex flex-col border-r border-white/10`}
     >
-      <Link to="/" className="cursor-pointer p-6 flex font-bold text-sm">
+      <Link to={`/chats/${uuidv4()}`} className="cursor-pointer p-6 flex font-bold text-sm">
         <button className=" bg-white/5 w-full hover:bg-white/10 p-2 h-10 rounded-full flex flex-row gap-2 items-center border border-white/10 pl-3 pr-2">
           <span className="flex-grow text-left">New Chat</span>{' '}
           <PlusIcon className="w-5 h-5" />

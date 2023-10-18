@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
 import { notifications } from '@mantine/notifications';
 
 import { BASE_URL } from '@/api/Api';
@@ -13,7 +14,7 @@ export function TopBar() {
       <div className="flex gap-2 items-center">
         <div className="cursor-pointer flex font-bold text-sm gap-2 items-center pr-5">
           <img src={`/favicon.svg`} className="h-9 w-9 cursor-pointer filter" />
-          <Link className="hover:animate-pulse" to="/">
+          <Link className="hover:animate-pulse" to={`/chats/${uuidv4()}`}>
             <h1 className="text-lg font-bold text-white">AIConsole</h1>
           </Link>
           <span className="hover:animate-pulse" onClick={chooseProject}>
