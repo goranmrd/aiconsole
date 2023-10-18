@@ -2,9 +2,9 @@ import { notifications } from '@mantine/notifications';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { create } from 'zustand';
 import { ErrorEvent } from 'reconnecting-websocket/events'
-import { useAICStore } from '../../store/AICStore';
-import { OutgoingWSMessage } from './outgoingMessages';
-import { IncomingWSMessage } from './incomingMessages';
+import { useAICStore } from './AICStore';
+import { OutgoingWSMessage } from '../types/outgoingMessages';
+import { IncomingWSMessage } from '../types/incomingMessages';
 import { useAnalysisStore } from '@/store/useAnalysisStore';
 
 export type WebSockeStore = {
@@ -26,7 +26,6 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
 
     ws.onmessage = (e: MessageEvent) => {
       const data: IncomingWSMessage = JSON.parse(e.data);
-      console.log('WebSocket message received: ', data)
 
       switch (data.type) {
         case 'ErrorWSMessage':

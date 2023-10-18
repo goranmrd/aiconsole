@@ -1,5 +1,5 @@
 import React from 'react';
-import { useWebSocketStore } from './useWebSocketStore.ts';
+import { useWebSocketStore } from '../store/useWebSocketStore.ts';
 
 export function SocketInitiator({ children }: { children: React.ReactNode; }) {
   const { initWebSocket, disconnect } = useWebSocketStore();
