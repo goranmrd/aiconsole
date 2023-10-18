@@ -141,7 +141,7 @@ export function Chat({
               <div className={cn('flex flex-row  p-5')}>
                 <div className="container flex mx-auto gap-4">
                   <UserInfo
-                    agent_id={analysis.agent_id || ''}
+                    agent_id={analysis.agent_id !== 'user' ? (analysis.agent_id || '') : ''}
                     materials_ids={analysis.relevant_material_ids || []}
                   />
                   <div className="flex-grow flex flex-col gap-5">
