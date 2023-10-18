@@ -29,7 +29,7 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
   get,
 ) => ({
   isExecuteRunning: false,
-  
+
   executeAbortSignal: new AbortController(),
 
   doRun: async (
@@ -136,6 +136,8 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
         messages: newMessages,
       };
     });
+
+    await get().doExecute(agentId, task, materials_ids);
   },
 
   /**
@@ -200,11 +202,7 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
           };
 
           const TOKEN_PROCESSORS = [
-            ...[
-              'python',
-              'shell',
-              'applescript',
-            ].map((language) => ({
+            ...['python', 'shell', 'applescript'].map((language) => ({
               token: `<<<< START CODE (${language}) >>>>`,
               processor: () => {
                 finishMessage({ language, code: true }, true);
@@ -319,7 +317,8 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
     }
   },
 
-  isWorking: () => useAnalysisStore.getState().isAnalysisRunning || get().isExecuteRunning,
+  isWorking: () =>
+    useAnalysisStore.getState().isAnalysisRunning || get().isExecuteRunning,
   stopWork: () => {
     get().executeAbortSignal.abort();
     useAnalysisStore.getState().reset();

@@ -61,7 +61,9 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
         return;
       }
 
-      if (data.agent_id !== 'user' && data.next_step) {
+      const { hasPendingCode } = useAICStore.getState();
+
+      if (data.agent_id !== 'user' && data.next_step && !hasPendingCode) {
         useAICStore.setState(() => {
           const newMessages = (useAICStore.getState().messages || []).slice();
           //push next step
@@ -79,7 +81,7 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
           };
         });
 
-        if (data.agent_id !== 'user') {
+        if (data.agent_id !== 'user' && !hasPendingCode) {
           console.log('Executing');
           useAICStore
             .getState()
