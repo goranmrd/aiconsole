@@ -136,8 +136,6 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
         messages: newMessages,
       };
     });
-
-    await get().doExecute(agentId, task, materials_ids);
   },
 
   /**
