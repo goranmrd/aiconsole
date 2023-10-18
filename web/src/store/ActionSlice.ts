@@ -311,7 +311,9 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
         language,
         messages[messages.length - 1].content,
       );
-    } else {
+    }
+
+    if (!code) {
       console.log('Analysing');
       await useAnalysisStore.getState().doAnalysis();
     }

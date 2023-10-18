@@ -1,5 +1,4 @@
 import { StateCreator } from 'zustand';
-
 import { Chat, AICMessage, AICMessageGroup } from './types';
 import { AICStore } from './AICStore';
 
