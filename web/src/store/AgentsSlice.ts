@@ -1,6 +1,6 @@
 import { StateCreator } from 'zustand';
 
-import { Agent } from './types';
+import { Agent } from '../types/types';
 import { Api } from '@/api/Api';
 import { AICStore } from './AICStore';
 

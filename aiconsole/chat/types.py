@@ -14,11 +14,13 @@ class AICMessage(BaseModel):
 
     language: Optional[str] = None
     code: Optional[bool] = False
+    code_ran: Optional[bool] = False
     code_output: Optional[bool] = False
 
 
 class Chat(BaseModel):
     id: str
+    auto_run: Optional[bool] = False
     messages: List[AICMessage]
 
 

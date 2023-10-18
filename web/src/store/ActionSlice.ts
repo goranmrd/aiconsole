@@ -3,10 +3,9 @@ import { StateCreator } from 'zustand';
 import { Api } from '@/api/Api';
 import { AICStore } from './AICStore';
 import { createMessage } from './utils';
+import { useAnalysisStore } from './useAnalysisStore';
 
 export type ActionSlice = {
-  doAnalysis: () => Promise<void>;
-  isAnalysisRunning: boolean;
   doExecute: (
     agentId: string,
     task: string,
@@ -22,7 +21,6 @@ export type ActionSlice = {
   isExecuteRunning: boolean;
   isWorking: () => boolean;
   stopWork: () => void;
-  analysisAbortController: AbortController;
   executeAbortSignal: AbortController;
 };
 
@@ -30,79 +28,9 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
   set,
   get,
 ) => ({
-  isAnalysisRunning: false,
-
   isExecuteRunning: false,
 
-  analysisTimeoutId: undefined,
-
-  analysisAbortController: new AbortController(), // Initialize fetchAbortController as undefined
-
   executeAbortSignal: new AbortController(),
-
-  doAnalysis: async () => {
-    try {
-      set(() => ({
-        analysisAbortController: new AbortController(),
-        isAnalysisRunning: true,
-      }));
-      const response = await Api.analyse(
-        {
-          id: get().chatId,
-          messages: get().messages,
-        },
-        get().analysisAbortController.signal,
-      );
-
-      const data = await response.json<{
-        agent_id: string;
-        materials_ids: string[];
-        used_tokens: number;
-        available_tokens: number;
-        next_step: string;
-      }>();
-
-      if (get().analysisAbortController.signal.aborted) {
-        // If existing fetch operation has been aborted, stop proceeding
-        return;
-      }
-
-      if (data.agent_id !== 'user' && data.next_step) {
-        set(() => {
-          const newMessages = (get().messages || []).slice();
-          //push next step
-          newMessages.push(
-            createMessage({
-              agent_id: data.agent_id,
-              task: data.next_step,
-              materials_ids: data.materials_ids,
-              role: 'assistant',
-              content: '',
-            }),
-          );
-          return {
-            messages: newMessages,
-          };
-        });
-
-        if (data.agent_id !== 'user') {
-          console.log('Executing');
-          get().doExecute(data.agent_id, data.next_step, data.materials_ids);
-        }
-      }
-    } catch (err) {
-      if ((err as Error).name === 'AbortError') {
-        console.log('Analysis aborted');
-        return;
-      } else {
-        throw err;
-      }
-    } finally {
-      set(() => ({
-        isAnalysisRunning: false,
-      }));
-    }
-  },
 
   doRun: async (
     agentId: string,
@@ -114,6 +42,14 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
     set(() => ({
       executeAbortSignal: new AbortController(),
       isExecuteRunning: true,
+    }));
+
+    let messages = get().messages || [];
+
+    messages[messages.length - 1].code_ran = true;
+
+    set(() => ({
+      messages: messages.slice(),
     }));
 
     try {
@@ -149,9 +85,9 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
             done: true,
           };
 
-          const messages = get().messages || [];
-
           const textChunk = decoder.decode(value);
+
+          messages = get().messages || [];
 
           messages[messages.length - 1].content += textChunk;
 
@@ -175,6 +111,7 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
       get().saveCurrentChatHistory();
 
       set(() => ({
+        hasPendingCode: false,
         isExecuteRunning: false,
       }));
     }
@@ -228,6 +165,7 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
           messages: [...(get().messages || [])],
           relevant_materials_ids: materials_ids,
           agent_id: agentId,
+          auto_run: get().alwaysExecuteCode,
         },
         get().executeAbortSignal.signal,
       );
@@ -264,15 +202,7 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
           };
 
           const TOKEN_PROCESSORS = [
-            ...[
-              'python',
-              'bash',
-              'shell',
-              'javascript',
-              'html',
-              'applescript',
-              'r',
-            ].map((language) => ({
+            ...['python', 'shell', 'applescript'].map((language) => ({
               token: `<<<< START CODE (${language}) >>>>`,
               processor: () => {
                 finishMessage({ language, code: true }, true);
@@ -307,7 +237,6 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
             .split(regexPattern)
             .filter((text) => text !== '');
 
-          console.log(splitText);
           for (const text of splitText) {
             let consumed = false;
             TOKEN_PROCESSORS.forEach((tokenProcessor) => {
@@ -365,13 +294,16 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
 
     const messages = get().messages || [];
     const language = messages[messages.length - 1].language;
+    const code = messages[messages.length - 1].code;
     const executeCode = get().alwaysExecuteCode;
-    if (
-      messages.length > 0 &&
-      messages[messages.length - 1].code &&
-      language &&
-      executeCode
-    ) {
+
+    if (code) {
+      set({ hasPendingCode: true });
+    } else {
+      useAnalysisStore.getState().doAnalysis();
+    }
+    
+    if (messages.length > 0 && code && language && executeCode) {
       console.log('Running code');
       await get().doRun(
         agentId,
@@ -380,15 +312,12 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
         language,
         messages[messages.length - 1].content,
       );
-    } else {
-      console.log('Analysing');
-      await get().doAnalysis();
     }
   },
 
-  isWorking: () => get().isAnalysisRunning || get().isExecuteRunning,
+  isWorking: () =>
+    useAnalysisStore.getState().isAnalysisRunning || get().isExecuteRunning,
   stopWork: () => {
     get().executeAbortSignal.abort();
-    get().analysisAbortController.abort();
   },
 });

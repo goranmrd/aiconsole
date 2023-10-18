@@ -1,6 +1,6 @@
 import ky from 'ky';
 
-import { Agent, Chat, Material, MaterialInfo } from '@/store/types';
+import { Agent, Chat, Material, MaterialInfo } from '@/types/types';
 
 export const BASE_URL = `http://${window.location.hostname}:8000`;
 
@@ -57,6 +57,9 @@ export const Api = (function () {
       json: { ...material },
       timeout: 60000,
     });
+  const deleteMaterial = async (id: string) => {
+    ky.delete(`${BASE_URL}/api/materials/${id}`);
+  };
 
   const deleteChat = (id: string) =>
     ky.delete(`${BASE_URL}/chats/history/${id}`);
@@ -92,6 +95,7 @@ export const Api = (function () {
     chooseProject,
     getCurrentProject,
     saveMaterial,
+    deleteMaterial,
     getCommandHistory,
     getChatsHistory,
     getChat,

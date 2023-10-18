@@ -54,6 +54,7 @@ async def save_history(chat: Chat, store_json: Callable = Depends(json_write), g
 
         chat_data = {
             "id": chat.id,
+            "auto_run": chat.auto_run,
             "timestamp": datetime.now().isoformat(),
             "messages": [message.model_dump() for message in chat.messages],
             "headline": headline

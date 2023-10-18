@@ -1,6 +1,7 @@
 import moment from 'moment';
 import { useEffect, useState } from 'react';
-import { ChatHeadline } from '@/store/types';
+
+import { ChatHeadline } from '@/types/types';
 
 type Groups = {
   today: ChatHeadline[];
