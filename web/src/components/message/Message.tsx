@@ -3,7 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import TextareaAutosize from 'react-textarea-autosize';
 import SyntaxHighlighter from 'react-syntax-highlighter';
-import { darcula } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
+import { vs2015 } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
 
 import { AICMessage } from '@/store/types';
 import { MessageControls } from './MessageControls';
@@ -96,7 +96,7 @@ export function Message({ message, isStreaming }: MessageProps) {
               <span className="w-20 flex-none">Code:</span>
               <div>
                 <SyntaxHighlighter
-                  style={darcula}
+                  style={vs2015}
                   children={message.content}
                   language={message.language}
                   className="overflow-scroll max-w-2xl"
@@ -124,7 +124,7 @@ export function Message({ message, isStreaming }: MessageProps) {
             <>
               <span className="w-20 flex-none">Output:</span>
               <SyntaxHighlighter
-                style={darcula}
+                style={vs2015}
                 children={message.content}
                 language={'text'}
                 className="basis-0 flex-grow overflow-scroll max-w-2xl"
@@ -161,7 +161,7 @@ export function Message({ message, isStreaming }: MessageProps) {
                       return !inline && match ? (
                         <SyntaxHighlighter
                           {...rest}
-                          style={darcula}
+                          style={vs2015}
                           children={String(children).replace(/\n$/, '')}
                           language={match[1]}
                           PreTag="div"
