@@ -9,7 +9,7 @@ export function Analysis() {
 
   if (analysis.isAnalysisRunning || analysis.thinking_process) {
     return <div
-      className={cn('flex flex-row shadow-md border-t border-gray-900/50 py-10 text-stone-400/50',)}
+      className={cn('flex flex-row py-10 text-stone-400/50',)}
     >
       <div className="container flex mx-auto gap-5">
         <UserInfo

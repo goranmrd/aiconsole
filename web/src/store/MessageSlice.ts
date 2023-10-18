@@ -23,7 +23,6 @@ export const createMessageSlice: StateCreator<
       messages: (state.messages || []).filter((message) => message.id !== id),
     }));
     get().saveCurrentChatHistory();
-    useAnalysisStore.getState().reset();
   },
   markMessageAsRan: (id: string) => {
     set((state) => ({
@@ -33,7 +32,6 @@ export const createMessageSlice: StateCreator<
       hasPendingCode: false,
     }));
     get().saveCurrentChatHistory();
-    useAnalysisStore.getState().reset();
   },
   editMessageContent: (id: string, content: string) => {
     const isUserMessage =

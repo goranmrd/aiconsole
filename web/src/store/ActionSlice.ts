@@ -151,8 +151,6 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
       role: 'assistant',
       content: '',
     };
-    
-    useAnalysisStore.getState().reset();
 
     set(() => ({
       executeAbortSignal: new AbortController(),
@@ -301,8 +299,10 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
 
     if (code) {
       set({ hasPendingCode: true });
+    } else {
+      useAnalysisStore.getState().doAnalysis();
     }
-
+    
     if (messages.length > 0 && code && language && executeCode) {
       console.log('Running code');
       await get().doRun(
@@ -312,11 +312,6 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
         language,
         messages[messages.length - 1].content,
       );
-    }
-
-    if (!code) {
-      console.log('Analysing');
-      await useAnalysisStore.getState().doAnalysis();
     }
   },
 

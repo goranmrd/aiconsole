@@ -13,10 +13,20 @@ export type AnalysisStore = {
   doAnalysis: () => Promise<void>;
   isAnalysisRunning: boolean;
   analysisAbortController: AbortController;
+  init(): void;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
+  init: () => {
+    useAICStore.subscribe((state, prevState) => {
+      if (prevState.chatId !== state.chatId ||
+        prevState.messages?.length !== state.messages?.length ||
+        (state.isExecuteRunning &&  !prevState.isExecuteRunning)) {
+        useAnalysisStore.getState().reset();
+      }
+    });
+  },
   isAnalysisRunning: false,
   analysisAbortController: new AbortController(), // Initialize fetchAbortController as undefined
   agent_id: undefined,
@@ -24,6 +34,7 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
   next_step: undefined,
   thinking_process: undefined,
   reset: () => {
+    console.log('resetting analysis')
     get().analysisAbortController.abort();
 
     set({
@@ -34,13 +45,14 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
     });
   },
   doAnalysis: async () => {
-    get().reset();
-
     try {
+      useAnalysisStore.getState().reset();
+
       set(() => ({
-        analysisAbortController: new AbortController(),
         isAnalysisRunning: true,
+        analysisAbortController: new AbortController(),
       }));
+
       const response = await Api.analyse(
         {
           id: useAICStore.getState().chatId,
@@ -63,9 +75,8 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
         return;
       }
 
-      const { hasPendingCode } = useAICStore.getState();
-
-      if (data.agent_id !== 'user' && data.next_step && !hasPendingCode) {
+      console.log('Analysis done', data);
+      if (data.agent_id !== 'user' && data.next_step) {
         useAICStore.setState(() => {
           const newMessages = (useAICStore.getState().messages || []).slice();
           //push next step
@@ -83,12 +94,10 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
           };
         });
 
-        if (data.agent_id !== 'user' && !hasPendingCode) {
-          console.log('Executing');
-          useAICStore
-            .getState()
-            .doExecute(data.agent_id, data.next_step, data.materials_ids);
-        }
+        console.log('Executing');
+        useAICStore
+          .getState()
+          .doExecute(data.agent_id, data.next_step, data.materials_ids);
       }
     } catch (err) {
       if ((err as Error).name === 'AbortError') {
@@ -104,3 +113,5 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
     }
   },
 }));
+
+

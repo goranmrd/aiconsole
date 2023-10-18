@@ -14,6 +14,7 @@ import { MaterialsPage } from '@/components/pages/MaterialsPage.tsx';
 import { MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import { SocketInitiator } from '@/components/SocketInitiator.tsx';
+import { useAnalysisStore } from './store/useAnalysisStore.ts';
 
 const router = createBrowserRouter([
   {
@@ -50,3 +51,4 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 );
 
 useAICStore.getState().initCommandHistory();
+useAnalysisStore.getState().init();
