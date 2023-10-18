@@ -1,7 +1,7 @@
 import { AICMessageGroup } from '@/store/types';
 import { cn } from '@/utils/styles';
 import { MessageSection } from './MessageSection';
-import { UserInfo } from './UserInfo';
+import { UserInfo } from '@/components/UserInfo';
 
 export function MessageGroup({
   group,

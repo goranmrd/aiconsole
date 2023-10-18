@@ -1,13 +1,13 @@
-import { Chat } from './Chat';
+import { Chat } from '../Chat';
 
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-import SideBar from './SideBar';
-import { CommandInput } from './CommandInput';
-import { TopBar } from './TopBar';
+import SideBar from '../SideBar';
+import { CommandInput } from '../CommandInput';
+import { TopBar } from '../TopBar';
 
-function App() {
+export function ChatPage() {
   const { chat_id } = useParams<{ chat_id: string | undefined }>();
   const navigate = useNavigate();
   const [autoScrolling, setAutoScrolling] = useState<boolean>(false);
@@ -42,5 +42,3 @@ function App() {
     </div>
   );
 }
-
-export default App;

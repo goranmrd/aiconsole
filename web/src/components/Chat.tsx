@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { MessageGroup } from './MessageGroup';
-import { Welcome } from './Welcome';
+import { MessageGroup } from '@/components/message/MessageGroup';
+import { Welcome } from '@/components/Welcome';
 import { useAICStore } from '@/store/AICStore';
-import { BlinkingCursor } from './BlinkingCursor';
+import { BlinkingCursor } from '@/components/BlinkingCursor';
 import { cn } from '@/utils/styles';
-import { UserInfo } from './UserInfo';
 import { useAnalysisStore } from '@/store/useAnalysisStore';
+import { UserInfo } from '@/components/UserInfo';
 
 export function Chat({
   chatId,
@@ -18,13 +18,17 @@ export function Chat({
 }) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [scrolling, setScrolling] = useState<boolean>(false);
-  const [timerIdRef, setTimerIdRef] = useState<NodeJS.Timeout | null>(null);
+  const [timerIdRef, setTimerIdRef] = useState<ReturnType<
+    typeof setTimeout
+  > | null>(null);
 
   const calculateGroupedMessages = useAICStore(
     (state) => state.groupedMessages,
   );
   const setChatId = useAICStore((state) => state.setChatId);
-  const isAnalysisRunning = useAnalysisStore((state) => state.isAnalysisRunning);
+  const isAnalysisRunning = useAnalysisStore(
+    (state) => state.isAnalysisRunning,
+  );
   const isExecuteRunning = useAICStore((state) => state.isExecuteRunning);
   const messages = useAICStore((state) => state.messages);
   const stopWork = useAICStore((state) => state.stopWork);
@@ -43,7 +47,7 @@ export function Chat({
     return () => {
       stopWork();
       setChatId('');
-    }
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatId]); //Initentional trigger when chat_id changes
 
@@ -135,12 +139,17 @@ export function Chat({
             {isAnalysisRunning && (
               <div className={cn('flex flex-row  p-5')}>
                 <div className="container flex mx-auto gap-4">
-                  <UserInfo agent_id={analysis.agent_id || ''} materials_ids={analysis.relevant_material_ids || []} />
+                  <UserInfo
+                    agent_id={analysis.agent_id || ''}
+                    materials_ids={analysis.relevant_material_ids || []}
+                  />
                   <div className="flex-grow flex flex-col gap-5">
                     <h3 className="italic">
-                      Analysing ... <BlinkingCursor />{' '}<br/>
-                      {analysis.next_step}<br/>
-                      {analysis.thinking_process}<br/>
+                      Analysing ... <BlinkingCursor /> <br />
+                      {analysis.next_step}
+                      <br />
+                      {analysis.thinking_process}
+                      <br />
                     </h3>
                   </div>
                 </div>

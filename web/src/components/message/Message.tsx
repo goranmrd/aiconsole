@@ -8,9 +8,9 @@ import { darcula } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
 import { AICMessage } from '@/store/types';
 import { MessageControls } from './MessageControls';
 import { useAICStore } from '@/store/AICStore';
-import { BlinkingCursor } from './BlinkingCursor';
+import { BlinkingCursor } from '@/components/BlinkingCursor';
 import { BASE_URL } from '@/api/Api';
-import { Button } from './Button';
+import { Button } from '@/components/Button';
 
 interface MessageProps {
   message: AICMessage;

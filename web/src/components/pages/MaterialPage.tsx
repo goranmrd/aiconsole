@@ -11,12 +11,12 @@ import {
   materialDefinedInOptions,
   materialStatusOptions,
 } from '@/store/types';
-import { TopBar } from './TopBar';
+import { TopBar } from '@/components/TopBar';
 
-import { EnumInput } from './EnumInput';
-import { SimpleInput } from './SimpleInput';
+import { EnumInput } from '@/components/EnumInput';
+import { SimpleInput } from '@/components/SimpleInput';
 
-export function MaterialView() {
+export function MaterialPage() {
   const { material_id } = useParams<{ material_id: string | undefined }>();
 
   const [material, setMaterial] = useState<Material | undefined>(undefined);

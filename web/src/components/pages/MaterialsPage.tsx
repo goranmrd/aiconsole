@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { TopBar } from './TopBar';
+import { TopBar } from '@/components/TopBar';
 import { PlusSmallIcon } from '@heroicons/react/24/outline';
-import { MaterialItem } from './MaterialItem';
+import { MaterialItem } from '@/components/MaterialItem';
 import { useAICStore } from '@/store/AICStore';
 
-export default function MaterailsView() {
+export function MaterialsPage() {
   const fetchMaterials = useAICStore((state) => state.fetchMaterials);
   const materials = useAICStore((state) => state.materials);
 

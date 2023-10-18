@@ -6,33 +6,33 @@ import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 import { useAICStore } from './store/AICStore.ts';
 
-import ErrorPage from './components/ErrorPage.tsx';
-import App from './components/App.tsx';
-import { MaterialView } from './components/MaterialView.tsx';
-import MaterialsView from './components/MaterialsView.tsx';
+import { ErrorPage } from '@/components/pages/ErrorPage.tsx';
+import { ChatPage } from '@/components/pages/ChatPage.tsx';
+import { MaterialPage } from '@/components/pages/MaterialPage.tsx';
+import { MaterialsPage } from '@/components/pages/MaterialsPage.tsx';
 import { MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
-import { SocketInitiator } from './api/messages/SocketInitiator.tsx';
+import { SocketInitiator } from '@/api/messages/SocketInitiator.tsx';
 
 const router = createBrowserRouter([
   {
     path: '/materials/:material_id',
-    element: <MaterialView />,
+    element: <MaterialPage />,
     errorElement: <ErrorPage />,
   },
   {
     path: '/materials',
-    element: <MaterialsView />,
+    element: <MaterialsPage />,
     errorElement: <ErrorPage />,
   },
   {
     path: '/',
-    element: <App />,
+    element: <ChatPage />,
     errorElement: <ErrorPage />,
   },
   {
     path: '/chats/:chat_id',
-    element: <App />,
+    element: <ChatPage />,
     errorElement: <ErrorPage />,
   },
 ]);
