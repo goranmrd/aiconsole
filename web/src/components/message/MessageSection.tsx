@@ -15,7 +15,7 @@ interface MessageProps {
 export function MessageSection({ messageSection, isStreaming }: MessageProps) {
   const removeMessage = useAICStore((state) => state.removeMessage);
 
-  const [folded, setFolded] = useState(messageSection.foldable);
+  const [folded, setFolded] = useState(false);
 
   const messageComponents = messageSection.messages.map((message, index) => (
     <Message
