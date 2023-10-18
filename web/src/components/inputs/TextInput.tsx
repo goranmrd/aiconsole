@@ -1,4 +1,5 @@
 import { ChangeEvent } from 'react';
+
 import { cn } from '@/utils/styles';
 
 interface SimpleInputProps {

@@ -1,11 +1,11 @@
-import { Chat } from '../Chat';
-
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-import SideBar from '../SideBar';
-import { CommandInput } from '../CommandInput';
-import { TopBar } from '../TopBar';
+
+import SideBar from '@/components/SideBar';
+import { CommandInput } from '@/components/inputs/CommandInput';
+import { TopBar } from '@/components/TopBar';
+import { Chat } from '@/components//Chat';
 
 export function ChatPage() {
   const { chat_id } = useParams<{ chat_id: string | undefined }>();

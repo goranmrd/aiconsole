@@ -1,19 +1,19 @@
 import { create } from 'zustand';
+
 import { useAICStore } from './AICStore';
 import { Api } from '@/api/Api';
 import { createMessage } from './utils';
 
 export type AnalysisStore = {
-  agent_id?: string,
-  relevant_material_ids? : string[],
-  next_step?: string,
-  thinking_process?: string,
-  reset: () => void,
+  agent_id?: string;
+  relevant_material_ids?: string[];
+  next_step?: string;
+  thinking_process?: string;
+  reset: () => void;
   doAnalysis: () => Promise<void>;
   isAnalysisRunning: boolean;
   analysisAbortController: AbortController;
 };
-
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
@@ -25,7 +25,7 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
   thinking_process: undefined,
   reset: () => {
     get().analysisAbortController.abort();
-    
+
     set({
       agent_id: undefined,
       relevant_material_ids: undefined,
@@ -81,7 +81,9 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
 
         if (data.agent_id !== 'user') {
           console.log('Executing');
-          useAICStore.getState().doExecute(data.agent_id, data.next_step, data.materials_ids);
+          useAICStore
+            .getState()
+            .doExecute(data.agent_id, data.next_step, data.materials_ids);
         }
       }
     } catch (err) {

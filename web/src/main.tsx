@@ -1,11 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+
 import './index.css';
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
-import { useAICStore } from './store/AICStore.ts';
 
+import { useAICStore } from './store/AICStore.ts';
 import { ErrorPage } from '@/components/pages/ErrorPage.tsx';
 import { ChatPage } from '@/components/pages/ChatPage.tsx';
 import { MaterialPage } from '@/components/pages/MaterialPage.tsx';

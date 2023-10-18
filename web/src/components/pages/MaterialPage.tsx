@@ -1,6 +1,7 @@
 import { notifications } from '@mantine/notifications';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+
 import { Api } from '@/api/Api';
 import {
   Material,
@@ -12,9 +13,8 @@ import {
   materialStatusOptions,
 } from '@/store/types';
 import { TopBar } from '@/components/TopBar';
-
-import { EnumInput } from '@/components/EnumInput';
-import { SimpleInput } from '@/components/SimpleInput';
+import { EnumInput } from '@/components/inputs/EnumInput';
+import { SimpleInput } from '@/components/inputs/TextInput';
 
 export function MaterialPage() {
   const { material_id } = useParams<{ material_id: string | undefined }>();

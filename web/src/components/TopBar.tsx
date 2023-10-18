@@ -1,6 +1,7 @@
-import { notifications } from '@mantine/notifications';
-import { BASE_URL } from '@/api/Api';
 import { Link } from 'react-router-dom';
+import { notifications } from '@mantine/notifications';
+
+import { BASE_URL } from '@/api/Api';
 import { useAICStore } from '@/store/AICStore';
 
 export function TopBar() {

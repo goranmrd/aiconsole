@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+
 import { ChatHeadline } from '@/store/types';
 import { cn } from '@/utils/styles';
 import {
@@ -7,7 +9,6 @@ import {
   CheckIcon,
   XMarkIcon,
 } from '@heroicons/react/24/solid';
-import { useState } from 'react';
 
 export type HeadlinesGroupProps = {
   title: string;

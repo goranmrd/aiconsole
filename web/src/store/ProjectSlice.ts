@@ -1,4 +1,5 @@
 import { StateCreator } from 'zustand';
+
 import { Api } from '@/api/Api';
 import { AICStore } from './AICStore';
 
