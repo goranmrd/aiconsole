@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import { ChatHeadline } from '@/store/types';
+import { ChatHeadline } from '@/types/types';
 import { cn } from '@/utils/styles';
 import {
   TrashIcon,

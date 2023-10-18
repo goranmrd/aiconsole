@@ -11,7 +11,7 @@ import {
   materialContenTypeOptions,
   materialDefinedInOptions,
   materialStatusOptions,
-} from '@/store/types';
+} from '@/types/types';
 import { TopBar } from '@/components/TopBar';
 import { EnumInput } from '@/components/inputs/EnumInput';
 import { SimpleInput } from '@/components/inputs/TextInput';

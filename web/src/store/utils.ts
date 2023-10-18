@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import { AICMessage } from './types';
+import { AICMessage } from '../types/types';
 import { useAICStore } from './AICStore';
 import { useDebouncedValue } from '@mantine/hooks';
 

@@ -1,7 +1,7 @@
 import { StateCreator } from 'zustand';
 
 import { AICStore } from './AICStore';
-import { MaterialInfo } from './types';
+import { MaterialInfo } from '../types/types';
 import { Api } from '@/api/Api';
 
 export type MaterialSlice = {

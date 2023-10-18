@@ -1,7 +1,6 @@
 import { StateCreator } from 'zustand';
-import { Chat, AICMessage, AICMessageGroup } from './types';
+import { AICMessage, AICMessageGroup } from '../types/types';
 import { AICStore } from './AICStore';
-import { useAnalysisStore } from './useAnalysisStore';
 
 export type MessageSlice = {
   messages: AICMessage[];

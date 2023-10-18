@@ -92,6 +92,7 @@ export function Chat({
         setTimerIdRef(null);
       }
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const lastContent =

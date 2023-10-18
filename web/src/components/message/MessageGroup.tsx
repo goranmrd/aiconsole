@@ -1,4 +1,4 @@
-import { AICMessageGroup } from '@/store/types';
+import { AICMessageGroup } from '@/types/types';
 import { cn } from '@/utils/styles';
 import { MessageSection } from './MessageSection';
 import { UserInfo } from '@/components/UserInfo';

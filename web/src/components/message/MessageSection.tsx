@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { AICMessageSection } from '@/store/types';
+import { AICMessageSection } from '@/types/types';
 import { Message } from './Message';
 import { Spinner } from '@/components/Spinner';
 import { MessageControls } from './MessageControls';

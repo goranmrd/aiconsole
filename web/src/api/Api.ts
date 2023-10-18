@@ -1,6 +1,6 @@
 import ky from 'ky';
 
-import { Agent, Chat, Material, MaterialInfo } from '@/store/types';
+import { Agent, Chat, Material, MaterialInfo } from '@/types/types';
 
 export const BASE_URL = `http://${window.location.hostname}:8000`;
 

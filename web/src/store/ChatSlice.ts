@@ -1,6 +1,6 @@
 import { StateCreator } from 'zustand';
 
-import { Chat, ChatHeadline } from './types';
+import { Chat, ChatHeadline } from '../types/types';
 import { Api } from '@/api/Api';
 import { AICStore } from './AICStore';
 import { useWebSocketStore } from '@/store/useWebSocketStore';
