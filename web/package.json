@@ -17,12 +17,14 @@
     "@mantine/notifications": "^7.1.2",
     "@tailwindcss/typography": "^0.5.10",
     "clsx": "^2.0.0",
+    "highlight.js": "^11.9.0",
     "ky": "^1.0.1",
     "moment": "^2.29.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-markdown": "^8.0.7",
     "react-router-dom": "^6.16.0",
+    "react-simple-code-editor": "^0.13.1",
     "react-syntax-highlighter": "^15.5.0",
     "react-textarea-autosize": "^8.5.3",
     "reconnecting-websocket": "^4.4.0",
@@ -32,6 +34,7 @@
     "zustand": "^4.4.1"
   },
   "devDependencies": {
+    "@types/node": "^20.8.6",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
     "@types/react-syntax-highlighter": "^15.5.7",

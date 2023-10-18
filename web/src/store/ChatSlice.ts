@@ -3,7 +3,7 @@ import { StateCreator } from 'zustand';
 import { Chat, ChatHeadline } from './types';
 import { Api } from '@/api/Api';
 import { AICStore } from './AICStore';
-import { useWebSocketStore } from '@/api/messages/useWebSocketStore';
+import { useWebSocketStore } from '@/store/useWebSocketStore';
 
 export type ChatSlice = {
   chatId: string;

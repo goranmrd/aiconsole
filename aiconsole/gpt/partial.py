@@ -1,12 +1,8 @@
 from typing import List, Optional
 from pydantic import BaseModel
 from aiconsole.gpt.types import GPTChoice, GPTFunctionCall, GPTMessage, GPTResponse, GPTRole
-import logging
 import json
 from typing import Union
-
-_log = logging.getLogger(__name__)
-
 
 def _parse_partial_json(s: str) -> Union[dict, str]:
     try:
@@ -67,7 +63,6 @@ class GPTPartialMessage(BaseModel):
 
     @property
     def content(self):
-        _log.debug(f"Content builder: {self.content_builder}")
         if not self.content_builder:
             return None
     
@@ -90,7 +85,6 @@ class GPTPartialResponse(BaseModel):
     choices: List[GPTPartialChoice] = []
 
     def to_final_response(self):
-       # _log.debug(f"Partial response: {self.model_dump()}")
         return GPTResponse(
             id=self.id,
             object=self.object,

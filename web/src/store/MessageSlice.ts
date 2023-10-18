@@ -1,10 +1,10 @@
 import { StateCreator } from 'zustand';
 import { Chat, AICMessage, AICMessageGroup } from './types';
 import { AICStore } from './AICStore';
+import { useAnalysisStore } from './useAnalysisStore';
 
 export type MessageSlice = {
   messages: AICMessage[];
-  setMessages: (chat: Chat) => void;
   removeMessage: (id: string) => void;
   markMessageAsRan: (id: string) => void;
   editMessageContent: (id: string, content: string) => void;
@@ -18,16 +18,12 @@ export const createMessageSlice: StateCreator<
   MessageSlice
 > = (set, get) => ({
   messages: [],
-  setMessages: (chat: Chat) => {
-    set(() => ({
-      messages: [...chat.messages],
-    }));
-  },
   removeMessage: (id: string) => {
     set((state) => ({
       messages: (state.messages || []).filter((message) => message.id !== id),
     }));
     get().saveCurrentChatHistory();
+    useAnalysisStore.getState().reset();
   },
   markMessageAsRan: (id: string) => {
     set((state) => ({
@@ -37,6 +33,7 @@ export const createMessageSlice: StateCreator<
       hasPendingCode: false,
     }));
     get().saveCurrentChatHistory();
+    useAnalysisStore.getState().reset();
   },
   editMessageContent: (id: string, content: string) => {
     const isUserMessage =

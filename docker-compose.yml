@@ -11,6 +11,7 @@ services:
       - 3001:3000
       - 8000:8000
     volumes:
+      - ./.aic:/app/.aic
       - ./aiconsole:/app/aiconsole
       - ./bin:/app/bin
       - ./tests:/app/tests

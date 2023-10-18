@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import { MessageGroup } from './MessageGroup';
-import { Welcome } from './Welcome';
+
+import { MessageGroup } from '@/components/message/MessageGroup';
+import { Welcome } from '@/components/Welcome';
 import { useAICStore } from '@/store/AICStore';
-import { BlinkingCursor } from './BlinkingCursor';
-import { cn } from '@/utils/styles';
-import { UserInfo } from './UserInfo';
+import { useAnalysisStore } from '@/store/useAnalysisStore';
+import { Analysis } from './Analysis';
 
 export function Chat({
   chatId,
@@ -17,13 +17,17 @@ export function Chat({
 }) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [scrolling, setScrolling] = useState<boolean>(false);
-  const [timerIdRef, setTimerIdRef] = useState<NodeJS.Timeout | null>(null);
+  const [timerIdRef, setTimerIdRef] = useState<ReturnType<
+    typeof setTimeout
+  > | null>(null);
 
   const calculateGroupedMessages = useAICStore(
     (state) => state.groupedMessages,
   );
   const setChatId = useAICStore((state) => state.setChatId);
-  const isAnalysisRunning = useAICStore((state) => state.isAnalysisRunning);
+  const isAnalysisRunning = useAnalysisStore(
+    (state) => state.isAnalysisRunning,
+  );
   const isExecuteRunning = useAICStore((state) => state.isExecuteRunning);
   const messages = useAICStore((state) => state.messages);
   const stopWork = useAICStore((state) => state.stopWork);
@@ -42,7 +46,7 @@ export function Chat({
     return () => {
       stopWork();
       setChatId('');
-    }
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatId]); //Initentional trigger when chat_id changes
 
@@ -129,18 +133,7 @@ export function Chat({
                 }
               />
             ))}
-            {isAnalysisRunning && (
-              <div className={cn('flex flex-row  p-5')}>
-                <div className="container flex mx-auto gap-4">
-                  <UserInfo agent_id={''} materials_ids={[]} />
-                  <div className="flex-grow flex flex-col gap-5">
-                    <h3 className="italic">
-                      Analysing ... <BlinkingCursor />{' '}
-                    </h3>
-                  </div>
-                </div>
-              </div>
-            )}
+            <Analysis />
             {!isAnalysisRunning && <div className="flex flex-row h-4"></div>}
           </div>
         </>

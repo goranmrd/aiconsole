@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import os
 import threading
@@ -11,7 +12,7 @@ log = logging.getLogger(__name__)
 
 
 def run_aiconsole(dev: bool):
-    initialize_project_directory()
+    asyncio.run(initialize_project_directory())
 
     threads = []
 
