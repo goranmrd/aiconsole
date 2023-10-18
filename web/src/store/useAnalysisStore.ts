@@ -65,10 +65,14 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
       const data = await response.json<{
         agent_id: string;
         materials_ids: string[];
-        used_tokens: number;
-        available_tokens: number;
         next_step: string;
       }>();
+
+      set(() => ({
+        agent_id: data.agent_id,
+        relevant_material_ids: data.materials_ids,
+        next_step: data.next_step,
+      }));
 
       if (get().analysisAbortController.signal.aborted) {
         // If existing fetch operation has been aborted, stop proceeding
