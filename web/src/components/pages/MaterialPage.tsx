@@ -15,6 +15,7 @@ import {
 import { TopBar } from '@/components/TopBar';
 import { EnumInput } from '@/components/inputs/EnumInput';
 import { SimpleInput } from '@/components/inputs/TextInput';
+import { CodeInput } from '@/components/inputs/CodeInput';
 
 export function MaterialPage() {
   const { material_id } = useParams<{ material_id: string | undefined }>();
@@ -96,18 +97,19 @@ export function MaterialPage() {
             )}
 
             {material.content_type === 'dynamic_text' && (
-              <SimpleInput
+              <CodeInput
                 label="Python function returning dynamic text"
                 value={material.content_dynamic_text}
                 onChange={(value) =>
                   setMaterial({ ...material, content_dynamic_text: value })
                 }
                 className="flex-grow"
+                codeLanguage='python'
               />
             )}
 
             {material.content_type === 'api' && (
-              <SimpleInput
+              <CodeInput
                 label="API Module"
                 value={material.content_api}
                 onChange={(value) =>
