@@ -101,21 +101,24 @@ export function Message({ message, isStreaming }: MessageProps) {
                   language={message.language}
                   className="overflow-scroll max-w-2xl"
                 />
-                {!message.code_output && !message.code_ran && !executeCode && (
-                  <div className="flex gap-4 pt-4">
-                    <Button label="Run" onClick={runCode} />
-                    <Button
-                      label="Don't Run"
-                      variant="danger"
-                      onClick={handleNoClick}
-                    />
-                    <Button
-                      label="Always Run"
-                      onClick={handleAlwaysRunClick}
-                      variant="secondary"
-                    />
-                  </div>
-                )}
+                {!message.code_output &&
+                  !message.code_ran &&
+                  !executeCode &&
+                  !isStreaming && (
+                    <div className="flex gap-4 pt-4">
+                      <Button label="Run" onClick={runCode} />
+                      <Button
+                        label="Don't Run"
+                        variant="danger"
+                        onClick={handleNoClick}
+                      />
+                      <Button
+                        label="Always Run"
+                        onClick={handleAlwaysRunClick}
+                        variant="secondary"
+                      />
+                    </div>
+                  )}
               </div>
             </>
           )}
