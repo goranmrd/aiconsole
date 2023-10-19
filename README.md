@@ -18,7 +18,7 @@ In order to run your own AIConsole:
 
 1. CD into the project folder `/ai-console`
 2. Install dependencies `poetry install` and `cd aiconsole/web && yarn`
-3. In two distinct terminal windows run: `poetry run aiconsole-dev`
+3. In `/ai-console` run: `poetry run aiconsole-dev`
 
 Requires OPENAI_API_KEY env variable to be set.
 
