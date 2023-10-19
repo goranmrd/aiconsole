@@ -29,6 +29,8 @@ class Materials:
         self._materials = {}
 
         self.observer = watchdog.observers.Observer()
+
+        os.makedirs(self.user_directory, exist_ok=True)
         self.observer.schedule(BatchingWatchDogHandler(self.reload),
                                self.user_directory,
                                recursive=True)
@@ -145,7 +147,7 @@ class Materials:
 
         self._materials[material_id] = Material(
             id=material_id,
-            version=str(tomldoc.get("version", "0.0,1")).strip(),
+            version=str(tomldoc.get("version", "0.0.1")).strip(),
             name=str(tomldoc.get("name", material_id)).strip(),
             defined_in=location,
             usage=str(tomldoc["usage"]).strip(),
