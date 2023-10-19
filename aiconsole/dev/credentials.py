@@ -58,11 +58,11 @@ This module ({module}) requires following credentials: {','.join(credentials)}.
 
 Could not find credentials: {','.join(missing_credentials)}.
 
-The user should provide those credentials, explain to them how to do it.
+The user should provide those credentials, explain to them how to do it, and what they are.
 Don't use 'getpass' or anything that reads from the console, ask them using text,
-and then save the credentials using the following code:
+When they provide you with credentials, save the credentials for the user, using the following code:
 
-from aiconsole.materials.tools.credentials import save_credential
+from aiconsole.dev.credentials import save_credential
 save_credential("{module}", "{missing_credentials[0]}", your_value)
     ...
         '''.strip())
