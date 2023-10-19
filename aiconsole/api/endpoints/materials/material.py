@@ -17,6 +17,7 @@ async def material_get(material_id: str):
         #A new material
         return JSONResponse(Material(
             id="",
+            name="",
             usage="",
             defined_in=MaterialLocation.PROJECT_DIR,
         ).model_dump())
