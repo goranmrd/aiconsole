@@ -20,9 +20,9 @@ def ask_directory():
         root = Tk()
     else:
         root.deiconify()
-    directory = filedialog.askdirectory(initialdir=projects.get_project_directory())
     root.withdraw()
-
+    directory = filedialog.askdirectory(initialdir=projects.get_project_directory())
+    
     return directory
 
 
