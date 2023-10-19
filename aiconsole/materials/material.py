@@ -7,26 +7,30 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from aiconsole.materials.content_evaluation_context import ContentEvaluationContext
 
+
 class MaterialStatus(str, Enum):
     DISABLED = "disabled"
     ENABLED = "enabled"
     FORCED = "forced"
+
 
 class MaterialContentType(str, Enum):
     STATIC_TEXT = "static_text"
     DYNAMIC_TEXT = "dynamic_text"
     API = "api"
 
+
 class MaterialLocation(str, Enum):
     AICONSOLE_CORE = "aiconsole"
     PROJECT_DIR = "project"
+
 
 class Material(BaseModel):
     id: str
     name: str
     usage: str
     defined_in: MaterialLocation
-    status: MaterialStatus = MaterialStatus.ENABLED
+    status: MaterialStatus
     
     # Content, either static or dynamic
     content_type: MaterialContentType = MaterialContentType.STATIC_TEXT
@@ -97,4 +101,3 @@ def list()
     async def render(self, context: 'ContentEvaluationContext'):
         content = await self.content(context)
         return RenderedMaterial(id=self.id, content=content)
-

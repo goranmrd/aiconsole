@@ -1,6 +1,7 @@
 import importlib.util
 import logging
 import os
+from pathlib import Path
 from typing import Dict
 from pydantic import ValidationError
 
@@ -71,43 +72,44 @@ class Agents:
 
         for path in paths:
             filename = os.path.basename(path)
-            if filename.endswith(".py"):
-                # Import the file and execute material function to get the material
-                module_name = os.path.splitext(filename)[0]
-                spec = importlib.util.spec_from_file_location(module_name, path)
-                if not spec or spec.loader is None:
-                    await _notify_and_log(f"Skipping invalid agent in file {filename}")
-                    continue
+            if not filename.endswith(".py") or filename == '__init__.py':
+                continue
+            # Import the file and execute material function to get the material
+            module_name = os.path.splitext(filename)[0]
+            spec = importlib.util.spec_from_file_location(module_name, path)
+            if not spec or spec.loader is None:
+                await _notify_and_log(f"Skipping invalid agent in file {filename}")
+                continue
 
-                module = importlib.util.module_from_spec(spec)
-                spec.loader.exec_module(module)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
 
-                # check if is dict
-                if not isinstance(module.agent, dict):
-                    await _notify_and_log(f"Skipping invalid agent in file {filename}")
-                    continue
+            # check if is dict
+            if not isinstance(module.agent, dict):
+                await _notify_and_log(f"Skipping invalid agent in file {filename}")
+                continue
 
-                agent = module.agent.copy()
-                id = filename[:-3]
-                if id in self.agents:
-                    await _notify_and_log(
-                        f"Skipping duplicate agent {id} in file {filename}"
-                    )
-                    continue
+            agent = module.agent.copy()
+            id = filename[:-3]
+            if id in self.agents:
+                await _notify_and_log(
+                    f"Skipping duplicate agent {id} in file {filename}"
+                )
+                continue
 
-                execution_mode_name = agent.pop("execution_mode", "")
+            execution_mode_name = agent.pop("execution_mode", "")
 
-                try:
-                    self.agents[id] = Agent(
-                        id=id,
-                        execution_mode=execution_modes[execution_mode_name],
-                        **agent,
-                    )
-                except ValidationError as e:
-                    await _notify_and_log(
-                        f"Skipping invalid agent in file {filename}: {e}"
-                    )
-                    continue
+            try:
+                self.agents[id] = Agent(
+                    id=id,
+                    execution_mode=execution_modes[execution_mode_name],
+                    **agent,
+                )
+            except ValidationError as e:
+                await _notify_and_log(
+                    f"Skipping invalid agent in file {filename}: {e}"
+                )
+                continue
 
         await NotificationWSMessage(
             title="Agents reloaded", message=f"Reloaded {len(self.agents)} agents"

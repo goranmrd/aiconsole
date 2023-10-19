@@ -5,8 +5,9 @@ import tomlkit
 from typing import Dict
 import watchdog.events
 import watchdog.observers
-from aiconsole.materials.material import MaterialContentType
+from aiconsole.materials.material import MaterialContentType, MaterialStatus
 from aiconsole.materials.material import MaterialLocation, Material
+from aiconsole.project_settings.settings import Settings
 from aiconsole.utils.BatchingWatchDogHandler import BatchingWatchDogHandler
 from aiconsole.utils.list_files_in_file_system import list_files_in_file_system
 from aiconsole.utils.list_files_in_resource_path import list_files_in_resource_path
@@ -23,10 +24,11 @@ class Materials:
 
     _materials: Dict[str, Material]
 
-    def __init__(self, core_resource, user_agents_directory):
+    def __init__(self, core_resource: str, user_agents_directory: str):
         self.core_resource = core_resource
         self.user_directory = user_agents_directory
         self._materials = {}
+        self._settings = Settings()
 
         self.observer = watchdog.observers.Observer()
         self.observer.schedule(BatchingWatchDogHandler(self.reload),
@@ -46,14 +48,12 @@ class Materials:
     def save_material(self, material: Material):
         self._materials[material.id] = material
 
-        path = {
-            MaterialLocation.PROJECT_DIR: Path(self.user_directory),
-            MaterialLocation.AICONSOLE_CORE:
-            resource_to_path(self.core_resource),
-        }[material.defined_in]
-
-        if str(path.absolute()).find("site-packages") != -1:
-            raise Exception("Cannot save to core materials")
+        try:
+            path = {
+                MaterialLocation.PROJECT_DIR: Path(self.user_directory),
+            }[material.defined_in]
+        except KeyError:
+            raise Exception("Material need to be defined in project.")
 
         # Save to .toml file
         with (path / f"{material.id}.toml").open("w") as file:
@@ -102,6 +102,16 @@ class Materials:
 
             file.write(doc.as_string())
 
+    def save_material_status(self, material_id: str, status: int):
+        status_mapping = {
+            -1: MaterialStatus.FORCED,
+            0: MaterialStatus.DISABLED,
+            1: MaterialStatus.ENABLED,
+        }
+
+        status_value = status_mapping.get(status, MaterialStatus.ENABLED.value)
+        self._settings.set_material_status(material_id, status_value)
+
     def load_material(self, material_id: str):
         """
         Load a specific material.
@@ -130,7 +140,10 @@ class Materials:
             defined_in=location,
             usage=str(tomldoc["usage"]).strip(),
             content_type=MaterialContentType(
-                str(tomldoc["content_type"]).strip()))
+                str(tomldoc["content_type"]).strip()
+            ),
+            status=self._settings.get_material_status(material_id)
+        )
 
         if "content_static_text" in tomldoc:
             self._materials[material_id].content_static_text = \
