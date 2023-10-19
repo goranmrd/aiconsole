@@ -26,6 +26,9 @@ export const createProjectSlice: StateCreator<
 
     await get().initChatHistory();
     await get().initAgents();
+
+    //reset url to /
+    window.history.pushState({}, '', '/');
   },
   chooseProject: async () => {
     (await Api.chooseProject().json()) as { name: string; path: string };
