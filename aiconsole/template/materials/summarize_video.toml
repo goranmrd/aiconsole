@@ -1,0 +1,24 @@
+usage = "Use this when you need to extract insights from a YouTube video"
+content_type = "static_text"
+content_static_text = """
+
+If there will be an error "ModuleNotFoundError: No module named 'youtube_transcript_api'" say command to install it:
+pip install youtube-transcript-api
+
+```python
+from youtube_transcript_api import YouTubeTranscriptApi
+
+
+# Replace 'video_id' with the actual YouTube video ID
+video_id = 'your_video_id_here'
+
+# Get the transcript for the video
+transcript = YouTubeTranscriptApi.get_transcript(video_id)
+
+# Extract the text content from the transcript
+transcript_text = ' '.join([entry['text'] for entry in transcript])
+
+# Print the transcript text
+transcript_text
+```
+"""
