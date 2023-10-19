@@ -16,7 +16,6 @@ services:
       - ./bin:/app/bin
       - ./tests:/app/tests
       - ./web:/app/web
-      - /app/web/node_modules
       - ./agents:/app/agents
       - ./materials:/app/materials
       - ./poetry.lock:/app/poetry.lock
