@@ -30,7 +30,7 @@ export function MaterialPage() {
   //After 3 seconds of inactivity after change query /preview to get rendered material
   useEffect(() => {
     console.log('material changed');
-    setPreview(undefined)
+    setPreview(undefined);
     if (!material) {
       return;
     }
@@ -175,8 +175,19 @@ export function MaterialPage() {
                 />
               )}
               <div className="flex-grow">
-                {!preview?.error && (preview?.content || 'Preview will be shown here')}
-                <span className='text-red-300'>{preview?.error}</span>
+                {!preview?.error &&
+                  (preview?.content || 'Preview will be shown here')
+                    .split('\n')
+                    .map((line, index) => (
+                      <span
+                        key={`line-${index}`}
+                        style={{ whiteSpace: 'pre-wrap' }}
+                      >
+                        {line}
+                        <br />
+                      </span>
+                    ))}
+                <span className="text-red-300">{preview?.error}</span>
               </div>
             </div>
 
