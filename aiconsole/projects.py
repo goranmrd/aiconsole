@@ -1,4 +1,5 @@
 import os
+import sys
 
 from aiconsole.agents import agents
 from aiconsole.code_running.run_code import reset_code_interpreters
@@ -73,8 +74,9 @@ async def change_project_directory(path):
     if not os.path.exists(path):
         raise ValueError(f"Path {path} does not exist")
     
-    # Change cwd
+    # Change cwd and import path
     os.chdir(path)
+    sys.path[0] = path
 
     await reinitialize_project()
 
