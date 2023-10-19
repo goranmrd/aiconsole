@@ -29,9 +29,9 @@ class Materials:
         self._materials = {}
 
         self.observer = watchdog.observers.Observer()
-        self.observer.schedule(
-            BatchingWatchDogHandler(self.reload), self.user_directory, recursive=True
-        )
+        self.observer.schedule(BatchingWatchDogHandler(self.reload),
+                               self.user_directory,
+                               recursive=True)
         self.observer.start()
 
     def __del__(self):
@@ -48,7 +48,8 @@ class Materials:
 
         path = {
             MaterialLocation.PROJECT_DIR: Path(self.user_directory),
-            MaterialLocation.AICONSOLE_CORE: resource_to_path(self.core_resource),   
+            MaterialLocation.AICONSOLE_CORE:
+            resource_to_path(self.core_resource),
         }[material.defined_in]
 
         if str(path.absolute()).find("site-packages") != -1:
@@ -74,28 +75,29 @@ class Materials:
                 return s
 
             doc = tomlkit.document()
+            doc.append("name", tomlkit.string(material.name))
             doc.append("usage", tomlkit.string(material.usage))
             doc.append("content_type", tomlkit.string(material.content_type))
 
             {
-                MaterialContentType.STATIC_TEXT: lambda:
-                    doc.append("content_static_text", tomlkit.string(
-                        make_sure_starts_and_ends_with_newline(
-                            material.content_static_text),
-                        multiline=True)
-                    ),
-                MaterialContentType.DYNAMIC_TEXT: lambda:
-                    doc.append("content_dynamic_text", tomlkit.string(
-                        make_sure_starts_and_ends_with_newline(
-                            material.content_dynamic_text),
-                        multiline=True)
-                    ),
-                MaterialContentType.API: lambda:
-                    doc.append("content_api", tomlkit.string(
-                        make_sure_starts_and_ends_with_newline(
-                            material.content_api),
-                        multiline=True)
-                    ),
+                MaterialContentType.STATIC_TEXT:
+                lambda: doc.append(
+                    "content_static_text",
+                    tomlkit.string(make_sure_starts_and_ends_with_newline(
+                        material.content_static_text),
+                                   multiline=True)),
+                MaterialContentType.DYNAMIC_TEXT:
+                lambda: doc.append(
+                    "content_dynamic_text",
+                    tomlkit.string(make_sure_starts_and_ends_with_newline(
+                        material.content_dynamic_text),
+                                   multiline=True)),
+                MaterialContentType.API:
+                lambda: doc.append(
+                    "content_api",
+                    tomlkit.string(make_sure_starts_and_ends_with_newline(
+                        material.content_api),
+                                   multiline=True)),
             }[material.content_type]()
 
             file.write(doc.as_string())
@@ -120,21 +122,24 @@ class Materials:
         with path.open("r") as file:
             tomldoc = dict(tomlkit.loads(file.read()))
 
+        material_id = os.path.splitext(os.path.basename(path))[0]
+
         self._materials[material_id] = Material(
-            id=os.path.splitext(os.path.basename(path))[0],
+            id=material_id,
+            name=str(tomldoc.get("name", material_id)).strip(),
             defined_in=location,
             usage=str(tomldoc["usage"]).strip(),
-            content_type=MaterialContentType(str(tomldoc["content_type"]).strip())
-        )
+            content_type=MaterialContentType(
+                str(tomldoc["content_type"]).strip()))
 
         if "content_static_text" in tomldoc:
             self._materials[material_id].content_static_text = \
                 str(tomldoc["content_static_text"]).strip()
-            
+
         if "content_dynamic_text" in tomldoc:
             self._materials[material_id].content_dynamic_text = \
                 str(tomldoc["content_dynamic_text"]).strip()
-            
+
         if "content_api" in tomldoc:
             self._materials[material_id].content_api = \
                 str(tomldoc["content_api"]).strip()
@@ -162,7 +167,7 @@ class Materials:
             if material_file_path.exists():
                 material_file_path.unlink()
                 return
-    
+
         raise KeyError(f"Material with ID {material_id} not found")
 
     async def reload(self):
@@ -175,8 +180,8 @@ class Materials:
             for paths_yielding_function in [
                 list_files_in_resource_path(self.core_resource),
                 list_files_in_file_system(self.user_directory),
-            ]
-            for path in paths_yielding_function if os.path.splitext(Path(path))[-1] == ".toml"
+            ] for path in paths_yielding_function
+            if os.path.splitext(Path(path))[-1] == ".toml"
         ])
 
         for id in material_ids:
@@ -193,4 +198,3 @@ class Materials:
             title="Materials reloaded",
             message=f"Reloaded {len(self._materials)} materials",
         ).send_to_all()
-        

@@ -47,6 +47,7 @@ export const materialContenTypeOptions: MaterialContentType[] = [
 
 export type Material = {
   id: string;
+  name: string;
   usage: string;
   defined_in: MaterialDefinedIn;
   status: MaterialStatus;

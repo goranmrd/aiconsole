@@ -35,7 +35,7 @@ export function CodeInput({
       <label htmlFor={label} className="font-bold">
         {label}:
       </label>
-      <div className="overflow-y-auto font-mono text-sm">
+      <div className={cn(className, "overflow-y-auto font-mono text-sm")}>
       <Editor
           value={value}
           textareaId={label}
@@ -43,8 +43,7 @@ export function CodeInput({
           highlight={code => onHighlight(code)}
           padding={10}
           className={cn(
-            className,
-            'resize-none bg-black/20 appearance-none border border-transparent rounded w-full py-2 px-3 leading-tight placeholder-gray-400',
+            'h-full resize-none bg-black/20 appearance-none border border-transparent rounded w-full py-2 px-3 leading-tight placeholder-gray-400',
           )}
           textareaClassName='focus:!outline-primary/50 focus:!shadow-outline'
         />

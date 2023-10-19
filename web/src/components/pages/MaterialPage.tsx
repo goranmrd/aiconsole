@@ -22,6 +22,34 @@ export function MaterialPage() {
 
   const [material, setMaterial] = useState<Material | undefined>(undefined);
 
+
+  useEffect(() => {
+    // Auto generate id based on name
+    if (material?.name) {
+      setMaterial(
+        (material: Material | undefined) => {
+          if (!material) return material;
+
+          //to lower
+          let name = material?.name.toLowerCase() || ''
+
+          //replace white space with underscore
+          name = name.replace(/\s/g, '_')
+
+          //remove special characters
+          name = name.replace(/[^a-zA-Z0-9_]/g, '')
+
+          //remove duplicate underscores
+          name = name.replace(/_+/g, '_')
+
+          //remove leading and trailing underscores
+          name = name.replace(/^_+|_+$/g, '')
+
+          return { ...(material), id: name}
+        });
+    }
+  }, [material, material?.name])
+
   useEffect(() => {
     if (!material_id) {
       return;
@@ -46,14 +74,16 @@ export function MaterialPage() {
       <TopBar />
 
       <div className="flex flex-col h-full overflow-y-auto p-6 gap-4">
+        <p><span className="font-bold">Material id:</span> {material?.id}</p>
         {material && (
           <>
             <SimpleInput
-              label="Material id"
-              placeholder="some_material_id"
-              value={material.id}
-              onChange={(value) => setMaterial({ ...material, id: value })}
+              label="Material name"
+              placeholder=""
+              value={material.name}
+              onChange={(value) => setMaterial({ ...material, name: value })}
             />
+
             <SimpleInput
               label="Usage"
               value={material.usage}
