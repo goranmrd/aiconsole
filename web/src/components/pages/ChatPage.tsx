@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import SideBar from '@/components/SideBar';
 import { CommandInput } from '@/components/inputs/CommandInput';
 import { TopBar } from '@/components/TopBar';
-import { Chat } from '@/components//Chat';
+import { Chat } from '@/components/Chat';
 
 export function ChatPage() {
   const { chat_id } = useParams<{ chat_id: string | undefined }>();
