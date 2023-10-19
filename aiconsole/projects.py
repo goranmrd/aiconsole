@@ -51,6 +51,9 @@ async def reinitialize_project():
     global _materials
     global _agents
 
+    _materials.stop()
+    _agents.stop()
+
     reset_code_interpreters()
 
     await initialize_project_directory()

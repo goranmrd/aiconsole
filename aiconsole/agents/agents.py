@@ -41,7 +41,7 @@ class Agents:
         )
         self.observer.start()
 
-    def __del__(self):
+    def stop(self):
         self.observer.stop()
 
     def all_agents(self):

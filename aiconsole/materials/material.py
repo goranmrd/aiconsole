@@ -29,6 +29,7 @@ class MaterialLocation(str, Enum):
 class Material(BaseModel):
     id: str
     name: str
+    version: str = "0.0.1"
     usage: str
     defined_in: MaterialLocation
     status: MaterialStatus = MaterialStatus.ENABLED
