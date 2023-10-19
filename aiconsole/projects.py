@@ -4,7 +4,6 @@ import sys
 from aiconsole.agents import agents
 from aiconsole.code_running.run_code import reset_code_interpreters
 from aiconsole.materials import materials
-from aiconsole.utils.initialize_project_directory import initialize_project_directory
 from aiconsole.websockets.connection_manager import AICConnection
 from aiconsole.websockets.outgoing_messages import ProjectOpenedWSMessage
 
@@ -56,8 +55,6 @@ async def reinitialize_project():
     _agents.stop()
 
     reset_code_interpreters()
-
-    await initialize_project_directory()
     
     _agents = agents.Agents("aiconsole.agents.core",  os.path.join(get_project_directory(), "agents"))
     _materials = materials.Materials("aiconsole.materials.core", os.path.join(get_project_directory(), "materials"))
