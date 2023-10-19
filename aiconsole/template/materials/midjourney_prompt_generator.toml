@@ -1,3 +1,4 @@
+name = "Midjourney Prompt Generator"
 usage = "Use this guide when creating prompts for Midjourney, an AI text-to-image tool."
 content_type = "static_text"
 content_static_text = """
@@ -25,4 +26,3 @@ Key Points:
 
 In summary, the Midjourney Prompting Guide offers valuable insights and tips for creating prompts that produce aesthetically pleasing and creative images with Midjourney, emphasizing clarity, specificity, and creativity in your instructions.
 """
-
