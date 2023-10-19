@@ -7,10 +7,12 @@ import threading
 
 class BatchingWatchDogHandler(watchdog.events.FileSystemEventHandler):
     def __init__(self, reload):
-        self.modified_files = set()
         self.lock = threading.Lock()
         self.timer = None
         self.reload = reload
+
+    def on_moved(self, event):
+        return self.on_modified(event)
 
     def on_created(self, event):
         return self.on_modified(event)
@@ -23,10 +25,10 @@ class BatchingWatchDogHandler(watchdog.events.FileSystemEventHandler):
             return
 
         with self.lock:
-            self.modified_files.add(event.src_path)
-
             def reload():
                 with self.lock:
+                    if self.timer is not None:
+                        self.timer.cancel()
                     self.timer = None
                     asyncio.run(self.reload())
 
