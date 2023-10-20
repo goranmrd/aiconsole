@@ -125,6 +125,7 @@ class Materials:
 
     def save_material_status(self, material_id: str, status: MaterialStatus):
         self._settings.set_material_status(material_id, status)
+        self._materials[material_id].status = status
 
     def load_material(self, material_id: str):
         """

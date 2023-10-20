@@ -58,7 +58,7 @@ async def material_status_change(
     try:
         projects.get_project_materials().get_material(material_id)
         projects.get_project_materials().save_material_status(material_id, body.status)
-        return JSONResponse({"status": "okss"})
+        return JSONResponse({"status": "ok"})
     except KeyError:
         raise HTTPException(status_code=404, detail="Material not found")
     except ValueError as e:
