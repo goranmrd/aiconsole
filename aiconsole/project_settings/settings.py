@@ -32,7 +32,6 @@ class Settings:
         return {key: MaterialStatus(section[key]) for key in section.keys()}
 
     def __save_toml_data(self) -> None:
-        # Przygotuj dane materials i agents w formacie do zapisu w obiekcie TOML
         materials_table = tomlkit.table()
         agents_table = tomlkit.table()
 
@@ -42,11 +41,9 @@ class Settings:
         for key, value in self.__agents.items():
             agents_table[key] = tomlkit.string(value)
 
-        # Aktualizuj sekcje 'materials' i 'agents' w obiekcie toml_data
         self.__toml_data["materials"] = materials_table
         self.__toml_data["agents"] = agents_table
 
-        # Zapisz zmieniony obiekt toml_data do pliku TOML
         with self.__file_path.open('w') as file:
             file.write(self.__toml_data.as_string())
 
