@@ -25,6 +25,7 @@ webdriver-manager = "^4.0.1"
 pillow = "^10.0.1"
 tomlkit = "^0.12.1"
 youtube-transcript-api = "^0.6.1"
+python-multipart = "^0.0.6"
 
 [tool.ruff]
 line-length = 120

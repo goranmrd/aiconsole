@@ -1,0 +1,71 @@
+import unittest
+from unittest.mock import mock_open, patch
+from aiconsole.project_settings.settings import Settings
+
+
+class TestSettings(unittest.TestCase):
+
+    def setUp(self):
+        self.settings = Settings()
+
+    def test_get_material_status_default(self):
+        # Testing the default material status
+        self.assertEqual(self.settings.get_material_status('material1'), 'enable')
+
+    def test_get_agent_status_default(self):
+        # Testing the default agent status
+        self.assertEqual(self.settings.get_agent_status('agent1'), 'enable')
+
+    def test_set_material_status(self):
+        # Testing setting the material status
+        self.settings.set_material_status('material1', 'disable')
+        self.assertEqual(self.settings.get_material_status('material1'), 'disable')
+
+    def test_set_agent_status(self):
+        # Testing setting the agent status
+        self.settings.set_agent_status('agent1', 'force')
+        self.assertEqual(self.settings.get_agent_status('agent1'), 'force')
+
+    @patch("builtins.open", new_callable=mock_open)
+    def test_load_empty_settings_file(self, mock_file_open):
+        # Testing loading an empty settings file
+        mock_file_open.return_value.read.return_value = ""
+        with patch('builtins.open', mock_file_open):
+            settings = Settings()
+        self.assertEqual(settings.get_material_status('material1'), 'enable')
+        self.assertEqual(settings.get_agent_status('agent1'), 'enable')
+
+    @patch("builtins.open", new_callable=mock_open)
+    def test_create_empty_settings_file(self, mock_file_open):
+        # Testing creating an empty settings file when it doesn't exist
+        mock_file_open.side_effect = FileNotFoundError
+        with patch('builtins.open', mock_file_open):
+            settings = Settings()
+        self.assertEqual(settings.get_material_status('material1'), 'enable')
+        self.assertEqual(settings.get_agent_status('agent1'), 'enable')
+
+    @patch("builtins.open", new_callable=mock_open)
+    def test_load_existing_settings_file(self, mock_file_open):
+        # Testing loading an existing settings file
+        toml_data = """
+        [materials]
+        material1 = "disable"
+        [agents]
+        agent1 = "force"
+        """
+        mock_file_open.return_value.read.return_value = toml_data
+        with patch('builtins.open', mock_file_open):
+            settings = Settings()
+        self.assertEqual(settings.get_material_status('material1'), 'disable')
+        self.assertEqual(settings.get_agent_status('agent1'), 'force')
+
+    @patch("builtins.open", new_callable=mock_open)
+    def test_save_settings(self, mock_file_open):
+        # Testing saving settings to a file
+        settings = Settings()
+        settings.set_material_status('material1', 'disable')
+        settings.set_agent_status('agent1', 'force')
+        with patch('builtins.open', mock_file_open) as m:
+            settings._Settings__save_toml_data()
+            m.assert_called_with(settings._Settings__file_path, 'w')
+            m().write.assert_called_once()

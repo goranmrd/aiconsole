@@ -9,15 +9,14 @@ from aiconsole.websockets.outgoing_messages import ProjectOpenedWSMessage
 
 _materials = materials.Materials(
     "aiconsole.materials.core",
-    os.path.join(os.getcwd(),
-    "materials")
+    os.path.join(os.getcwd(), "materials")
 )
 
 _agents = agents.Agents(
     "aiconsole.agents.core",
-    os.path.join(os.getcwd(),
-    "agents")
+    os.path.join(os.getcwd(), "agents")
 )
+
 
 def _create_project_message():
     return ProjectOpenedWSMessage(
@@ -29,23 +28,30 @@ def _create_project_message():
 def get_project_materials() -> materials.Materials:
     return _materials
 
+
 def get_project_agents() -> agents.Agents:
     return _agents
+
 
 def get_history_directory():
     return os.path.join(get_aic_directory(), "history")
 
+
 def get_aic_directory():
     return os.path.join(get_project_directory(),  ".aic")
+
 
 def get_project_directory():
     return os.getcwd()
 
+
 def get_project_name():
     return os.path.basename(get_project_directory())
 
+
 def get_credentials_directory():
     return os.path.join(get_aic_directory(), "credentials")
+
 
 async def reinitialize_project():
     global _materials
@@ -64,8 +70,10 @@ async def reinitialize_project():
 
     await _create_project_message().send_to_all()
 
+
 async def send_project_init(connection: AICConnection):
     await connection.send(_create_project_message())
+
 
 async def change_project_directory(path):
     if not os.path.exists(path):
@@ -76,5 +84,3 @@ async def change_project_directory(path):
     sys.path[0] = path
 
     await reinitialize_project()
-
-

@@ -32,8 +32,8 @@ class Material(BaseModel):
     version: str = "0.0.1"
     usage: str
     defined_in: MaterialLocation
-    status: MaterialStatus = MaterialStatus.ENABLED
-
+    status: MaterialStatus
+    
     # Content, either static or dynamic
     content_type: MaterialContentType = MaterialContentType.STATIC_TEXT
     content_static_text: str = """
