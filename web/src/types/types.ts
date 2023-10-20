@@ -63,9 +63,12 @@ export type RenderedMaterial = {
   error: string;
 };
 
+export type MaterialDefinitionSource = 'aiconsole' | 'project';
+
 export type MaterialInfo = {
   id: string;
   usage: string;
+  defined_in: MaterialDefinitionSource;
 };
 
 export type ChatHeadline = {

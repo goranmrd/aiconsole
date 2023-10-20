@@ -8,6 +8,7 @@ interface SimpleInputProps {
   className?: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  disabled?: boolean;
 }
 
 export function SimpleInput({
@@ -16,6 +17,7 @@ export function SimpleInput({
   className,
   onChange,
   placeholder,
+  disabled = false,
 }: SimpleInputProps) {
   return (
     <>
@@ -23,6 +25,7 @@ export function SimpleInput({
         {label}:
       </label>
       <textarea
+        disabled={disabled}
         placeholder={placeholder}
         id={label}
         value={value}
