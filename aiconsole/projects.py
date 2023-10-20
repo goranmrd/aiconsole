@@ -1,9 +1,9 @@
 import os
+import sys
 
 from aiconsole.agents import agents
 from aiconsole.code_running.run_code import reset_code_interpreters
 from aiconsole.materials import materials
-from aiconsole.utils.initialize_project_directory import initialize_project_directory
 from aiconsole.websockets.connection_manager import AICConnection
 from aiconsole.websockets.outgoing_messages import ProjectOpenedWSMessage
 
@@ -57,9 +57,10 @@ async def reinitialize_project():
     global _materials
     global _agents
 
-    reset_code_interpreters()
+    _materials.stop()
+    _agents.stop()
 
-    await initialize_project_directory()
+    reset_code_interpreters()
     
     _agents = agents.Agents("aiconsole.agents.core",  os.path.join(get_project_directory(), "agents"))
     _materials = materials.Materials("aiconsole.materials.core", os.path.join(get_project_directory(), "materials"))
@@ -78,7 +79,8 @@ async def change_project_directory(path):
     if not os.path.exists(path):
         raise ValueError(f"Path {path} does not exist")
     
-    # Change cwd
+    # Change cwd and import path
     os.chdir(path)
+    sys.path[0] = path
 
     await reinitialize_project()

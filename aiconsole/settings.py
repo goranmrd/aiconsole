@@ -37,9 +37,6 @@ class Settings(BaseSettings):
     DIRECTOR_MIN_TOKENS: int = 250
     DIRECTOR_PREFERRED_TOKENS: int = 1000
 
-
-    MIDJOURNEY_TIMEOUT: int = 100
-
     @validator("LOG_LEVEL", pre=True)
     def uppercase_log_level(cls, v: str) -> str:
         return v.upper()

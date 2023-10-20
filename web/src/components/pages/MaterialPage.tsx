@@ -8,6 +8,7 @@ import {
   MaterialContentType,
   MaterialDefinedIn,
   MaterialStatus,
+  RenderedMaterial,
   materialContenTypeOptions,
   materialDefinedInOptions,
   materialStatusOptions,
@@ -22,33 +23,54 @@ export function MaterialPage() {
 
   const [material, setMaterial] = useState<Material | undefined>(undefined);
 
+  const [preview, setPreview] = useState<RenderedMaterial | undefined>(
+    undefined,
+  );
+
+  //After 3 seconds of inactivity after change query /preview to get rendered material
+  useEffect(() => {
+    console.log('material changed');
+    setPreview(undefined);
+    if (!material) {
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      Api.previewMaterial(material).then((preview) => {
+        setPreview(preview);
+      });
+    }, 3000);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [material]);
 
   useEffect(() => {
     // Auto generate id based on name
     if (material?.name) {
-      setMaterial(
-        (material: Material | undefined) => {
-          if (!material) return material;
+      setMaterial((material: Material | undefined) => {
+        if (!material) return material;
 
-          //to lower
-          let name = material?.name.toLowerCase() || ''
+        //to lower
+        let name = material?.name.toLowerCase() || '';
 
-          //replace white space with underscore
-          name = name.replace(/\s/g, '_')
+        //replace white space with underscore
+        name = name.replace(/\s/g, '_');
 
-          //remove special characters
-          name = name.replace(/[^a-zA-Z0-9_]/g, '')
+        //remove special characters
+        name = name.replace(/[^a-zA-Z0-9_]/g, '');
 
-          //remove duplicate underscores
-          name = name.replace(/_+/g, '_')
+        //remove duplicate underscores
+        name = name.replace(/_+/g, '_');
 
-          //remove leading and trailing underscores
-          name = name.replace(/^_+|_+$/g, '')
+        //remove leading and trailing underscores
+        name = name.replace(/^_+|_+$/g, '');
 
-          return { ...(material), id: name}
-        });
+        return { ...material, id: name };
+      });
     }
-  }, [material, material?.name])
+  }, [material?.name]);
 
   useEffect(() => {
     if (!material_id) {
@@ -74,7 +96,9 @@ export function MaterialPage() {
       <TopBar />
 
       <div className="flex flex-col h-full overflow-y-auto p-6 gap-4">
-        <p><span className="font-bold">Material id:</span> {material?.id}</p>
+        <p>
+          <span className="font-bold">Material id:</span> {material?.id}
+        </p>
         {material && (
           <>
             <SimpleInput
@@ -115,40 +139,57 @@ export function MaterialPage() {
               }
             />
 
-            {material.content_type === 'static_text' && (
-              <CodeInput
-                label="Text"
-                value={material.content_static_text}
-                onChange={(value) =>
-                  setMaterial({ ...material, content_static_text: value })
-                }
-                className="flex-grow"
-                codeLanguage='markdown'
-              />
-            )}
+            <div className="flex flex-row gap-4 overflow-y-auto ">
+              {material.content_type === 'static_text' && (
+                <CodeInput
+                  label="Text"
+                  value={material.content_static_text}
+                  onChange={(value) =>
+                    setMaterial({ ...material, content_static_text: value })
+                  }
+                  className="flex-grow"
+                  codeLanguage="markdown"
+                />
+              )}
 
-            {material.content_type === 'dynamic_text' && (
-              <CodeInput
-                label="Python function returning dynamic text"
-                value={material.content_dynamic_text}
-                onChange={(value) =>
-                  setMaterial({ ...material, content_dynamic_text: value })
-                }
-                className="flex-grow"
-                codeLanguage='python'
-              />
-            )}
+              {material.content_type === 'dynamic_text' && (
+                <CodeInput
+                  label="Python function returning dynamic text"
+                  value={material.content_dynamic_text}
+                  onChange={(value) =>
+                    setMaterial({ ...material, content_dynamic_text: value })
+                  }
+                  className="flex-grow"
+                  codeLanguage="python"
+                />
+              )}
 
-            {material.content_type === 'api' && (
-              <CodeInput
-                label="API Module"
-                value={material.content_api}
-                onChange={(value) =>
-                  setMaterial({ ...material, content_api: value })
-                }
-                className="flex-grow"
-              />
-            )}
+              {material.content_type === 'api' && (
+                <CodeInput
+                  label="API Module"
+                  value={material.content_api}
+                  onChange={(value) =>
+                    setMaterial({ ...material, content_api: value })
+                  }
+                  className="flex-grow"
+                />
+              )}
+              <div className="flex-grow">
+                {!preview?.error &&
+                  (preview?.content || 'Preview will be shown here')
+                    .split('\n')
+                    .map((line, index) => (
+                      <span
+                        key={`line-${index}`}
+                        style={{ whiteSpace: 'pre-wrap' }}
+                      >
+                        {line}
+                        <br />
+                      </span>
+                    ))}
+                <span className="text-red-300">{preview?.error}</span>
+              </div>
+            </div>
 
             <button
               className="bg-primary hover:bg-gray-700/95 text-black hover:bg-primary-light px-4 py-1 rounded-full flow-right"

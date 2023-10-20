@@ -22,7 +22,14 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
   initWebSocket: () => {
     const ws = new ReconnectingWebSocket(`ws://localhost:8000/ws`);
 
-    ws.onopen = () => console.log('WebSocket connected');
+    ws.onopen = () => {
+      set({ ws });
+
+      get().sendMessage({
+        type: 'SetChatIdWSMessage',
+        chat_id: useAICStore.getState().chatId,
+      });
+    };
 
     ws.onmessage = (e: MessageEvent) => {
       const data: IncomingWSMessage = JSON.parse(e.data);
@@ -72,13 +79,6 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
       console.log('WebSocket connection closed');
       set({ ws: null });
     };
-
-    set({ ws });
-
-    get().sendMessage({
-      type: 'SetChatIdWSMessage',
-      chat_id: useAICStore.getState().chatId,
-    });
   },
 
   disconnect: () => {

@@ -31,12 +31,14 @@ class Materials:
         self._settings = Settings()
 
         self.observer = watchdog.observers.Observer()
+
+        os.makedirs(self.user_directory, exist_ok=True)
         self.observer.schedule(BatchingWatchDogHandler(self.reload),
                                self.user_directory,
                                recursive=True)
         self.observer.start()
 
-    def __del__(self):
+    def stop(self):
         self.observer.stop()
 
     def all_materials(self):
@@ -46,6 +48,24 @@ class Materials:
         return list(self._materials.values())
 
     def save_material(self, material: Material):
+
+        current_version = self._materials.get(material.id, Material(
+            id="unknown",
+            version="0.0.1",
+            name="",
+            defined_in=MaterialLocation.PROJECT_DIR,
+            usage="",
+        )).version
+
+        #Parse version number
+        current_version = current_version.split(".")
+
+        #Increment version number
+        current_version[-1] = str(int(current_version[-1]) + 1)
+
+        #Join version number
+        material.version = ".".join(current_version)
+        
         self._materials[material.id] = material
 
         try:
@@ -76,6 +96,7 @@ class Materials:
 
             doc = tomlkit.document()
             doc.append("name", tomlkit.string(material.name))
+            doc.append("version", tomlkit.string(material.version))
             doc.append("usage", tomlkit.string(material.usage))
             doc.append("content_type", tomlkit.string(material.content_type))
 
@@ -129,6 +150,7 @@ class Materials:
 
         self._materials[material_id] = Material(
             id=material_id,
+            version=str(tomldoc.get("version", "0.0.1")).strip(),
             name=str(tomldoc.get("name", material_id)).strip(),
             defined_in=location,
             usage=str(tomldoc["usage"]).strip(),

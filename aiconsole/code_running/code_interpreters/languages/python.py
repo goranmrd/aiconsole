@@ -73,75 +73,30 @@ def preprocess_python(code: str, materials: List[Material]):
     api_materials = [material for material in materials if material.content_type == "api"]
     apis = [material.content_api for material in api_materials]
 
-    separator = '\n\n\n'
-    code = f"""
-{separator.join(apis)}
-""".strip() + "\n\n" + code
-
-    _log.debug(code)
-
-    # Strip doc strings from apis
-
-    # Parse the input code into an AST
-    parsed_code = ast.parse(code)
-
-    # Remove doc strings (entirelly from the AST)
+    parsed_code = ast.parse('\n\n\n'.join(apis))
     parsed_code.body = [b for b in parsed_code.body if not isinstance(b, ast.Expr) or not isinstance(b.value, ast.Str)]
+    apis = ast.unparse(parsed_code)
+
+    newline = '\n'
+    code = f"""
+{apis}
 
 
-    # Convert the modified AST back to source code
-    code = ast.unparse(parsed_code)
+import traceback
+from aiconsole.dev.credentials import MissingCredentialException
 
-    
+try:
+    {newline.join(("    " + line) for line in code.split(newline))}
+except MissingCredentialException as e:
+    print(e)
+except Exception:
+    traceback.print_exc()
 
 
-    # Wrap in a try except
-    code = wrap_in_try_except(code)
+print("## end_of_execution ##")
 
-    # Remove any whitespace lines, as this will break indented blocks
-    # (are we sure about this? test this)
-    code_lines = code.split("\n")
-    code_lines = [c for c in code_lines if c.strip() != ""]
-    code = "\n".join(code_lines)
-
-    # Add end command (we'll be listening for this so we know when it ends)
-    code += '\n\nprint("## end_of_execution ##")'
+""".strip()
 
     return code
 
 
-def wrap_in_try_except(code):
-    # Add import traceback
-    code = "import traceback\n" + code
-
-    # Parse the input code into an AST
-    parsed_code = ast.parse(code)
-
-    # Wrap the entire code's AST in a single try-except block
-    try_except = ast.Try(
-        body=parsed_code.body,
-        handlers=[
-            ast.ExceptHandler(
-                type=ast.Name(id="Exception", ctx=ast.Load()),
-                name=None,
-                body=[
-                    ast.Expr(
-                        value=ast.Call(
-                            func=ast.Attribute(value=ast.Name(id="traceback", ctx=ast.Load()), attr="print_exc",
-                                               ctx=ast.Load()),
-                            args=[],
-                            keywords=[]
-                        )
-                    ),
-                ]
-            )
-        ],
-        orelse=[],
-        finalbody=[]
-    )
-
-    # Assign the try-except block as the new body
-    parsed_code.body = [try_except]
-
-    # Convert the modified AST back to source code
-    return ast.unparse(parsed_code)

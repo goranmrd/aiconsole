@@ -150,7 +150,7 @@ export function Message({ message, isStreaming }: MessageProps) {
                           <img
                             src={`${BASE_URL}/image?path=${src}`}
                             {...props}
-                            className=" max-w-xs rounded-md float-left mr-5 "
+                            className=" max-w-xs rounded-md mr-5"
                             alt={props.alt}
                           />
                         </a>

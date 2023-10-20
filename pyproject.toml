@@ -1,10 +1,9 @@
 [tool.poetry]
 include = [
-    "aiconsole/template/**/*",
     "aiconsole/static/**/*"
 ]
 name = "aiconsole"
-version = "0.2.0-alpha.11"
+version = "0.2.0-alpha.12"
 description = "Run and expand your personal AI tools"
 authors = ["Maciej Cielecki <maciej.cielecki@10clouds.com>"]
 license = "MIT"

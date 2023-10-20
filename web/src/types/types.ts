@@ -57,6 +57,12 @@ export type Material = {
   content_api: string;
 };
 
+export type RenderedMaterial = {
+  id: string;
+  content: string;
+  error: string;
+};
+
 export type MaterialInfo = {
   id: string;
   usage: string;

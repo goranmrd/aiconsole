@@ -31,11 +31,11 @@ export function CodeInput({
 
 
   return (
-    <>
+    <div>
       <label htmlFor={label} className="font-bold">
         {label}:
       </label>
-      <div className={cn(className, "overflow-y-auto font-mono text-sm")}>
+      <div className={cn(className, "font-mono text-sm")}>
       <Editor
           value={value}
           textareaId={label}
@@ -49,6 +49,6 @@ export function CodeInput({
         />
       </div>
 
-    </>
+    </div>
   );
 }

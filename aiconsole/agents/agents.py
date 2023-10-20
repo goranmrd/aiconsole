@@ -37,12 +37,13 @@ class Agents:
         self.agents = {}
 
         self.observer = watchdog.observers.Observer()
+        os.makedirs(self.user_directory, exist_ok=True)
         self.observer.schedule(
             BatchingWatchDogHandler(self.reload), self.user_directory, recursive=True
         )
         self.observer.start()
 
-    def __del__(self):
+    def stop(self):
         self.observer.stop()
 
     def all_agents(self):
