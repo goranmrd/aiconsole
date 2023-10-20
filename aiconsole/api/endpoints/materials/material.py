@@ -26,6 +26,7 @@ async def material_get(material_id: str):
             id="",
             name="",
             usage="",
+            status=MaterialStatus.ENABLED.value,
             defined_in=MaterialLocation.PROJECT_DIR,
         ).model_dump())
 
