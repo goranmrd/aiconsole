@@ -319,5 +319,6 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
     useAnalysisStore.getState().isAnalysisRunning || get().isExecuteRunning,
   stopWork: () => {
     get().executeAbortSignal.abort();
+    useAnalysisStore.getState().analysisAbortController.abort();
   },
 });
