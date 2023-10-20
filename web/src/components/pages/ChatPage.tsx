@@ -10,7 +10,6 @@ import { Chat } from '@/components/Chat';
 export function ChatPage() {
   const { chat_id } = useParams<{ chat_id: string | undefined }>();
   const navigate = useNavigate();
-  const [autoScrolling, setAutoScrolling] = useState<boolean>(false);
 
   useEffect(() => {
     if (!chat_id) {
@@ -26,16 +25,9 @@ export function ChatPage() {
         <SideBar />
         {chat_id && (
           <div className="flex w-full flex-col justify-between downlight">
-            <Chat
-              chatId={chat_id}
-              autoScrolling={autoScrolling}
-              setAutoScrolling={setAutoScrolling}
-            />
+            <Chat chatId={chat_id} />
 
-            <CommandInput
-              className="flex-none"
-              onSubmit={() => setAutoScrolling(true)}
-            />
+            <CommandInput className="flex-none" />
           </div>
         )}
       </div>
