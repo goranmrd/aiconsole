@@ -8,7 +8,7 @@ interface CodeInputProps {
   label: string;
   value: string;
   className?: string;
-  onChange: (value: string) => void;
+  onChange?: (value: string) => void;
   codeLanguage?: string;
   disabled?: boolean;
 }
@@ -30,23 +30,29 @@ export function CodeInput({
     return hljs.highlight(code, { language: lang || 'python' }).value;
   };
 
+  const handleValueChange = (code: string) => {
+    if (onChange) {
+      onChange(code);
+    }
+  };
+
   return (
-    <div>
+    <div className="w-1/2 h-full">
       <label htmlFor={label} className="font-bold">
         {label}:
       </label>
-      <div className={cn(className, 'font-mono text-sm')}>
+      <div className={cn(className, 'font-mono text-sm mt-4 h-full pb-10')}>
         <Editor
           value={value}
           disabled={disabled}
           textareaId={label}
-          onValueChange={(code) => onChange(code)}
+          onValueChange={handleValueChange}
           highlight={(code) => onHighlight(code)}
           padding={10}
           className={cn(
             'h-full resize-none bg-black/20 appearance-none border border-transparent rounded w-full py-2 px-3 leading-tight placeholder-gray-400',
           )}
-          textareaClassName="focus:!outline-primary/50 focus:!shadow-outline"
+          textareaClassName="focus:!outline-primary/50 focus:!shadow-outline "
         />
       </div>
     </div>
