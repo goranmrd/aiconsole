@@ -102,15 +102,8 @@ class Materials:
 
             file.write(doc.as_string())
 
-    def save_material_status(self, material_id: str, status: int):
-        status_mapping = {
-            -1: MaterialStatus.FORCED,
-            0: MaterialStatus.DISABLED,
-            1: MaterialStatus.ENABLED,
-        }
-
-        status_value = status_mapping.get(status, MaterialStatus.ENABLED.value)
-        self._settings.set_material_status(material_id, status_value)
+    def save_material_status(self, material_id: str, status: MaterialStatus):
+        self._settings.set_material_status(material_id, status)
 
     def load_material(self, material_id: str):
         """
