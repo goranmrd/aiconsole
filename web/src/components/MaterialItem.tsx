@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { TrashIcon } from '@heroicons/react/24/outline';
+import { ConfirmationModal } from './ConfirmationModal';
 
 interface MaterialItemProps {
   id: string;
@@ -10,7 +11,7 @@ interface MaterialItemProps {
 export function MaterialItem({ id, usage, onDeleteClick }: MaterialItemProps) {
   return (
     <div className="group">
-      <div className="flex flex-row gap-2">
+      <div className="flex items-center flex-row gap-2">
         <Link to={`/materials/${id}`} key={id}>
           <div className="flex gap-2 items-center">
             <img
@@ -21,9 +22,17 @@ export function MaterialItem({ id, usage, onDeleteClick }: MaterialItemProps) {
             <span className="text-sm">{usage}</span>
           </div>
         </Link>
-        <button className="hidden group-hover:block" onClick={onDeleteClick}>
-          <TrashIcon className="h-5 w-5" />{' '}
-        </button>
+        <ConfirmationModal
+          confirmButtonText="yes"
+          cancelButtonText="no"
+          onConfirm={onDeleteClick}
+          title={`Are you sure you want to remove ${id} material?`}
+          openModalButton={
+            <button className="hidden group-hover:block">
+              <TrashIcon className="h-5 w-5" />
+            </button>
+          }
+        />
       </div>
     </div>
   );
