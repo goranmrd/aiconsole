@@ -35,7 +35,7 @@ You have the following agents available to handle the next step of this conversa
 
 # Materials
 A list of ids of materials that are needed to execute the task, make sure that the agent has a prioritised list of those materials to look at, agents are not able to read all of them nor change your choice:
-{create_materials_str}
+{create_materials_str()}
 
 """.strip(),
         last_system_prompt=f"""

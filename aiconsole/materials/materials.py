@@ -2,7 +2,7 @@ import logging
 import os
 from pathlib import Path
 import tomlkit
-from typing import Dict
+from typing import Dict, List
 import watchdog.events
 import watchdog.observers
 from aiconsole.materials.material import MaterialContentType, MaterialStatus
@@ -46,6 +46,24 @@ class Materials:
         Return all loaded materials.
         """
         return list(self._materials.values())
+
+    def available_materials(self) -> List[Material]:
+        """
+        Return all available loaded materials.
+        """
+        return [material for material in self._materials.values() if material.status in [MaterialStatus.ENABLED, MaterialStatus.FORCED]]
+
+    def enabled_materials(self) -> List[Material]:
+        """
+        Return all available loaded materials.
+        """
+        return [material for material in self._materials.values() if material.status == MaterialStatus.ENABLED]
+
+    def forced_materials(self) -> List[Material]:
+        """
+        Return all available loaded materials.
+        """
+        return [material for material in self._materials.values() if material.status == MaterialStatus.FORCED]
 
     def save_material(self, material: Material):
 

@@ -13,7 +13,8 @@ async def materials_get():
     return JSONResponse(
         [
             {
-                "id": material.id,"name": material.name,
+                "id": material.id,
+                "name": material.name,
                 "defined_in": material.defined_in,
                 "status": material.status,
                 "usage": material.usage
