@@ -19,12 +19,15 @@ export const createMaterialSlice: StateCreator<
   materials: [],
   fetchMaterials: async () => {
     const materials = await Api.getMaterials();
+    const sortedByDefinedInMaterials = [...materials].sort((a, b) =>
+      a.defined_in.localeCompare(b.defined_in),
+    );
     set({
-      materials,
+      materials: sortedByDefinedInMaterials,
     });
   },
   deleteMaterial: async (id: string) => {
-    await Api.deleteMaterial(id);
+      await Api.deleteMaterial(id);
     set((state) => ({
       materials: (state.materials || []).filter(
         (material) => material.id !== id,

@@ -6,11 +6,9 @@ import { Api } from '@/api/Api';
 import {
   Material,
   MaterialContentType,
-  MaterialDefinedIn,
   MaterialStatus,
   RenderedMaterial,
   materialContenTypeOptions,
-  materialDefinedInOptions,
   materialStatusOptions,
 } from '@/types/types';
 import { TopBar } from '@/components/TopBar';
@@ -90,6 +88,7 @@ export function MaterialPage() {
       color: 'green',
     });
   };
+  const readOnly = material?.defined_in === 'aiconsole';
 
   return (
     <div className="App flex flex-col h-screen fixed top-0 left-0 bottom-0 right-0 bg-gray-800/95 text-stone-400">
@@ -105,12 +104,14 @@ export function MaterialPage() {
               label="Material name"
               placeholder=""
               value={material.name}
+              disabled={readOnly}
               onChange={(value) => setMaterial({ ...material, name: value })}
             />
 
             <SimpleInput
               label="Usage"
               value={material.usage}
+              disabled={readOnly}
               onChange={(value) => setMaterial({ ...material, usage: value })}
             />
 
@@ -121,19 +122,11 @@ export function MaterialPage() {
               onChange={(value) => setMaterial({ ...material, status: value })}
             />
 
-            <EnumInput<MaterialDefinedIn>
-              label="Defined in"
-              values={materialDefinedInOptions}
-              value={material.defined_in}
-              onChange={(value) =>
-                setMaterial({ ...material, defined_in: value })
-              }
-            />
-
             <EnumInput<MaterialContentType>
               label="Content type"
               values={materialContenTypeOptions}
               value={material.content_type}
+              disabled={readOnly}
               onChange={(value) =>
                 setMaterial({ ...material, content_type: value })
               }
@@ -148,6 +141,7 @@ export function MaterialPage() {
                     setMaterial({ ...material, content_static_text: value })
                   }
                   className="flex-grow"
+                  disabled={readOnly}
                   codeLanguage="markdown"
                 />
               )}
@@ -160,6 +154,7 @@ export function MaterialPage() {
                     setMaterial({ ...material, content_dynamic_text: value })
                   }
                   className="flex-grow"
+                  disabled={readOnly}
                   codeLanguage="python"
                 />
               )}
@@ -171,6 +166,7 @@ export function MaterialPage() {
                   onChange={(value) =>
                     setMaterial({ ...material, content_api: value })
                   }
+                  disabled={readOnly}
                   className="flex-grow"
                 />
               )}

@@ -35,6 +35,7 @@ export function MaterialsPage() {
                 id={material.id}
                 usage={material.usage}
                 key={material.id}
+                type={material.defined_in}
                 onDeleteClick={handleDeleteClick(material.id)}
               />
             ))}
