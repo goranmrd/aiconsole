@@ -89,9 +89,12 @@ export function MaterialPage() {
     });
   };
   const readOnly = material?.defined_in === 'aiconsole';
-
+  const { content, error } = preview || {};
+  const previewValue = preview
+    ? error || content || ''
+    : 'Generating preview...';
   return (
-    <div className="App flex flex-col h-screen fixed top-0 left-0 bottom-0 right-0 bg-gray-800/95 text-stone-400">
+    <div className="App flex flex-col h-screen fixed top-0 left-0 bottom-0 right-0 bg-gray-800/95 text-stone-400 ">
       <TopBar />
 
       <div className="flex flex-col h-full overflow-y-auto p-6 gap-4">
@@ -132,7 +135,7 @@ export function MaterialPage() {
               }
             />
 
-            <div className="flex flex-row gap-4 overflow-y-auto ">
+            <div className="flex flex-row w-full gap-4 overflow-y-auto ">
               {material.content_type === 'static_text' && (
                 <CodeInput
                   label="Text"
@@ -158,7 +161,6 @@ export function MaterialPage() {
                   codeLanguage="python"
                 />
               )}
-
               {material.content_type === 'api' && (
                 <CodeInput
                   label="API Module"
@@ -170,21 +172,12 @@ export function MaterialPage() {
                   className="flex-grow"
                 />
               )}
-              <div className="flex-grow">
-                {!preview?.error &&
-                  (preview?.content || 'Preview will be shown here')
-                    .split('\n')
-                    .map((line, index) => (
-                      <span
-                        key={`line-${index}`}
-                        style={{ whiteSpace: 'pre-wrap' }}
-                      >
-                        {line}
-                        <br />
-                      </span>
-                    ))}
-                <span className="text-red-300">{preview?.error}</span>
-              </div>
+              <CodeInput
+                label="Preview"
+                value={previewValue}
+                disabled={true}
+                className="flex-grow"
+              />
             </div>
 
             <button
