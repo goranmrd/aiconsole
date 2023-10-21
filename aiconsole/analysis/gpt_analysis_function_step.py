@@ -75,10 +75,25 @@ def pick_agent(arguments, chat: Chat) -> Agent:
 
     return picked_agent
 
+
 class AnalysisStepWithFunctionReturnValue(BaseModel):
     next_step: str
     picked_agent: Optional[Agent] = None
     relevant_materials: List[Material] = []
+
+
+def _get_relevant_materials(relevant_material_ids: List[str]) -> List[Material]:
+    # Maximum of 5 materials
+    relevant_materials = [
+        k
+        for k in projects.get_project_materials().enabled_materials()
+        if k.id in relevant_material_ids
+    ][:5]
+
+    relevant_materials += projects.get_project_materials().forced_materials()
+
+    return relevant_materials
+
 
 async def gpt_analysis_function_step(
     chat: Chat,
@@ -144,14 +159,7 @@ async def gpt_analysis_function_step(
     
     picked_agent = pick_agent(arguments, chat)
 
-    relevant_materials = [
-        k
-        for k in projects.get_project_materials().all_materials()
-        if k.id in arguments.relevant_material_ids
-    ]
-
-    # Maximum of 5 materials
-    relevant_materials = relevant_materials[:5]
+    relevant_materials = _get_relevant_materials(arguments.relevant_material_ids)
 
     return AnalysisStepWithFunctionReturnValue(
         next_step=arguments.next_step,

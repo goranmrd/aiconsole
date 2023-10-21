@@ -25,5 +25,6 @@ COPY ../aiconsole /app/aiconsole
 COPY ../bin /app/bin
 COPY ../tests /app/tests
 COPY ../web/ /app/web
+RUN touch /app/settings.toml
 
 RUN cd /app && ./bin/build.sh

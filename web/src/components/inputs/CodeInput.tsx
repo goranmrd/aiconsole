@@ -52,7 +52,7 @@ export function CodeInput({
           className={cn(
             'h-full resize-none bg-black/20 appearance-none border border-transparent rounded w-full py-2 px-3 leading-tight placeholder-gray-400',
           )}
-          textareaClassName="focus:!outline-primary/50 focus:!shadow-outline "
+          textareaClassName="focus:!outline-primary/50 focus:!shadow-outline"
         />
       </div>
     </div>

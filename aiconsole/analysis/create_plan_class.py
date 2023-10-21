@@ -10,7 +10,7 @@ from typing import List
 
 
 def create_plan_class():
-    available_materials = projects.get_project_materials().all_materials()
+    available_materials = projects.get_project_materials().available_materials()
     available_agents = projects.get_project_agents().all_agents()
 
     class Plan(OpenAISchema):

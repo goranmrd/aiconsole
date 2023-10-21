@@ -7,7 +7,7 @@ import random
 def create_materials_str() -> str:
     new_line = "\n"
 
-    available_materials = projects.get_project_materials().all_materials()
+    available_materials = projects.get_project_materials().available_materials()
 
     random_materials = (
         new_line.join(
