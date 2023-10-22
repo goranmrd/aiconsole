@@ -86,7 +86,7 @@ import traceback
 from aiconsole.dev.credentials import MissingCredentialException
 
 try:
-    {newline.join(("    " + line) for line in code.split(newline))}
+{newline.join(("    " + line) for line in code.split(newline) if line.strip())}
 except MissingCredentialException as e:
     print(e)
 except Exception:
