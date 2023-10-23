@@ -20,9 +20,11 @@ export type AnalysisStore = {
 export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
   init: () => {
     useAICStore.subscribe((state, prevState) => {
-      if (prevState.chatId !== state.chatId ||
+      if (
+        prevState.chatId !== state.chatId ||
         prevState.messages?.length !== state.messages?.length ||
-        (state.isExecuteRunning &&  !prevState.isExecuteRunning)) {
+        (state.isExecuteRunning && !prevState.isExecuteRunning)
+      ) {
         useAnalysisStore.getState().reset();
       }
     });
@@ -34,7 +36,7 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
   next_step: undefined,
   thinking_process: undefined,
   reset: () => {
-    console.log('resetting analysis')
+    console.log('resetting analysis');
     get().analysisAbortController.abort();
 
     set({
@@ -57,7 +59,6 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
         {
           id: useAICStore.getState().chatId,
           messages: useAICStore.getState().messages,
-          auto_run: useAICStore.getState().alwaysExecuteCode,
         },
         get().analysisAbortController.signal,
       );
@@ -117,5 +118,3 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
     }
   },
 }));
-
-

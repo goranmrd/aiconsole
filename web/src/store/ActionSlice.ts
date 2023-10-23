@@ -165,7 +165,6 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
           messages: [...(get().messages || [])],
           relevant_materials_ids: materials_ids,
           agent_id: agentId,
-          auto_run: get().alwaysExecuteCode,
         },
         get().executeAbortSignal.signal,
       );
@@ -302,7 +301,7 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
     } else {
       useAnalysisStore.getState().doAnalysis();
     }
-    
+
     if (messages.length > 0 && code && language && executeCode) {
       console.log('Running code');
       await get().doRun(
