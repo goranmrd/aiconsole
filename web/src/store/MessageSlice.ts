@@ -1,4 +1,7 @@
 import { StateCreator } from 'zustand';
+import { SHA256 } from 'crypto-js';
+import { v4 as uuidv4 } from 'uuid';
+
 import { AICMessage, AICMessageGroup } from '../types/types';
 import { AICStore } from './AICStore';
 
@@ -58,7 +61,7 @@ export const createMessageSlice: StateCreator<
           message.materials_ids.join('|')
       ) {
         groups.push({
-          id: message.id,
+          id: SHA256(message.task || uuidv4()).toString(), // we don't group user messages, so a uuid is fine
           agent_id: message.agent_id,
           role: message.role,
           task: message.task || '',
