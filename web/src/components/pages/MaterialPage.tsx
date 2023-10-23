@@ -15,15 +15,23 @@ import { TopBar } from '@/components/TopBar';
 import { EnumInput } from '@/components/inputs/EnumInput';
 import { SimpleInput } from '@/components/inputs/TextInput';
 import { CodeInput } from '@/components/inputs/CodeInput';
+import { useAICStore } from '@/store/AICStore';
+
+const removeCopySuffix = (materialId: string) => {
+  return materialId.replace(/_copy$/, ''); // Removes "_copy" from the end of the string
+};
 
 export function MaterialPage() {
   const { material_id } = useParams<{ material_id: string | undefined }>();
-
+  const materialIdCopy = material_id;
   const [material, setMaterial] = useState<Material | undefined>(undefined);
-
+  const isDuplicate = material_id?.includes('_copy');
+  const materialId =
+    isDuplicate && material_id ? removeCopySuffix(material_id) : material_id;
   const [preview, setPreview] = useState<RenderedMaterial | undefined>(
     undefined,
   );
+  const deleteMaterial = useAICStore((state) => state.deleteMaterial);
 
   //After 3 seconds of inactivity after change query /preview to get rendered material
   useEffect(() => {
@@ -71,16 +79,26 @@ export function MaterialPage() {
   }, [material?.name]);
 
   useEffect(() => {
-    if (!material_id) {
+    if (!materialId) {
       return;
     }
 
-    Api.getMaterial(material_id).then((material) => {
+    Api.getMaterial(materialId).then((material) => {
+      if (isDuplicate) {
+        const parsedMaterialId = (material.id + '_copy').replace(/_/g, ' ');
+        material.name = parsedMaterialId;
+        material.defined_in = 'project';
+        material.id = material_id || '';
+      }
+
       setMaterial(material);
     });
-  }, [material_id]);
+  }, [materialId, isDuplicate, material_id]);
 
   const handleSaveClick = (material: Material) => async () => {
+    if (materialIdCopy && materialIdCopy !== material.id) {
+      deleteMaterial(materialIdCopy);
+    }
     await Api.saveMaterial(material);
     notifications.show({
       title: 'Saved',

@@ -1,6 +1,12 @@
 import ky from 'ky';
 
-import { Agent, Chat, Material, MaterialInfo, RenderedMaterial } from '@/types/types';
+import {
+  Agent,
+  Chat,
+  Material,
+  MaterialInfo,
+  RenderedMaterial,
+} from '@/types/types';
 
 export const BASE_URL = `http://${window.location.hostname}:8000`;
 
@@ -61,12 +67,15 @@ export const Api = (function () {
     ky.delete(`${BASE_URL}/api/materials/${id}`);
   };
 
-
-  const previewMaterial: (material: Material) => Promise<RenderedMaterial> = async (material: Material) =>
-    ky.post(`${BASE_URL}/api/materials/preview`, {
-      json: { ...material },
-      timeout: 60000,
-    }).json();
+  const previewMaterial: (
+    material: Material,
+  ) => Promise<RenderedMaterial> = async (material: Material) =>
+    ky
+      .post(`${BASE_URL}/api/materials/preview`, {
+        json: { ...material },
+        timeout: 60000,
+      })
+      .json();
 
   const deleteChat = (id: string) =>
     ky.delete(`${BASE_URL}/chats/history/${id}`);
