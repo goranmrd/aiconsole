@@ -33,6 +33,8 @@ aiconsole
 
 In your project directory, aiconsole will create a bunch of working files like standard materials and agents
 
+On a Mac you might be prompted to install developer tools in order to install aiconsole.
+
 ## Running Your AIConsole Dev Mode
 
 In order to run your own AIConsole:
