@@ -16,6 +16,9 @@ import { EnumInput } from '@/components/inputs/EnumInput';
 import { SimpleInput } from '@/components/inputs/TextInput';
 import { CodeInput } from '@/components/inputs/CodeInput';
 import { useAICStore } from '@/store/AICStore';
+import { EyeIcon } from '@heroicons/react/24/outline';
+import { cn } from '@/utils/styles';
+import MarkdownPreview from '../MarkdownPreview';
 
 const removeCopySuffix = (materialId: string) => {
   return materialId.replace(/_copy$/, ''); // Removes "_copy" from the end of the string
@@ -25,17 +28,30 @@ export function MaterialPage() {
   const { material_id } = useParams<{ material_id: string | undefined }>();
   const materialIdCopy = material_id;
   const [material, setMaterial] = useState<Material | undefined>(undefined);
+  const [materialInitial, setMaterialInitial] = useState<Material | undefined>(
+    undefined,
+  );
   const isDuplicate = material_id?.includes('_copy');
   const materialId =
     isDuplicate && material_id ? removeCopySuffix(material_id) : material_id;
   const [preview, setPreview] = useState<RenderedMaterial | undefined>(
     undefined,
   );
+
+  const isMaterialChanged = () => {
+    if (material && materialInitial) {
+      const changedFields = Object.entries(material).filter(([key, value]) => {
+        return value !== materialInitial[key as keyof Material];
+      });
+
+      return Boolean(!changedFields.length);
+    }
+  };
+
   const deleteMaterial = useAICStore((state) => state.deleteMaterial);
 
   //After 3 seconds of inactivity after change query /preview to get rendered material
   useEffect(() => {
-    console.log('material changed');
     setPreview(undefined);
     if (!material) {
       return;
@@ -90,7 +106,7 @@ export function MaterialPage() {
         material.defined_in = 'project';
         material.id = material_id || '';
       }
-
+      setMaterialInitial(material);
       setMaterial(material);
     });
   }, [materialId, isDuplicate, material_id]);
@@ -107,18 +123,28 @@ export function MaterialPage() {
     });
   };
   const readOnly = material?.defined_in === 'aiconsole';
-  const { content, error } = preview || {};
   const previewValue = preview
-    ? error || content || ''
+    ? preview?.content.split('\\n').join('\n')
     : 'Generating preview...';
+
+  const disableSubmit = isMaterialChanged() && !isDuplicate;
+
   return (
     <div className="App flex flex-col h-screen fixed top-0 left-0 bottom-0 right-0 bg-gray-800/95 text-stone-400 ">
       <TopBar />
 
       <div className="flex flex-col h-full overflow-y-auto p-6 gap-4">
-        <p>
-          <span className="font-bold">Material id:</span> {material?.id}
-        </p>
+        <div className="flex gap-5">
+          <p>
+            <span className="font-bold">Material id: </span> {material?.id}
+          </p>
+          {readOnly && (
+            <div className="flex gap-2 items-center text-sm ml-auto">
+              <EyeIcon className="w-4 h-4" />
+              This is a system material. It can’t be edited.
+            </div>
+          )}
+        </div>
         {material && (
           <>
             <SimpleInput
@@ -128,21 +154,18 @@ export function MaterialPage() {
               disabled={readOnly}
               onChange={(value) => setMaterial({ ...material, name: value })}
             />
-
             <SimpleInput
               label="Usage"
               value={material.usage}
               disabled={readOnly}
               onChange={(value) => setMaterial({ ...material, usage: value })}
             />
-
             <EnumInput<MaterialStatus>
               label="Status"
               values={materialStatusOptions}
               value={material.status}
               onChange={(value) => setMaterial({ ...material, status: value })}
             />
-
             <EnumInput<MaterialContentType>
               label="Content type"
               values={materialContenTypeOptions}
@@ -152,8 +175,7 @@ export function MaterialPage() {
                 setMaterial({ ...material, content_type: value })
               }
             />
-
-            <div className="flex flex-row w-full gap-4 overflow-y-auto ">
+            <div className="flex flex-row w-full gap-4 h-full">
               {material.content_type === 'static_text' && (
                 <CodeInput
                   label="Text"
@@ -190,16 +212,33 @@ export function MaterialPage() {
                   className="flex-grow"
                 />
               )}
-              <CodeInput
-                label="Preview"
-                value={previewValue}
-                disabled={true}
-                className="flex-grow"
-              />
-            </div>
 
+              {preview?.error ? (
+                <CodeInput
+                  label="Preview"
+                  value={preview.error}
+                  disabled={readOnly}
+                  readOnly={true}
+                  className="flex-grow"
+                />
+              ) : (
+                <div className="w-1/2">
+                  <p className="font-bold mb-4">Preview</p>
+                  <div className="bg-black/20 p-3 w-full h-full max-h-[540px] overflow-y-auto">
+                    <MarkdownPreview text={previewValue} />
+                  </div>
+                </div>
+              )}
+            </div>
             <button
-              className="bg-primary hover:bg-gray-700/95 text-black hover:bg-primary-light px-4 py-1 rounded-full flow-right"
+              disabled={disableSubmit}
+              className={cn(
+                'bg-primary hover:bg-gray-700/95 text-black hover:bg-primary-light px-4 py-1 rounded-full flow-right',
+                {
+                  'opacity-[0.3] cursor-default hover:bg-initial':
+                    disableSubmit,
+                },
+              )}
               onClick={handleSaveClick(material)}
             >
               Save
