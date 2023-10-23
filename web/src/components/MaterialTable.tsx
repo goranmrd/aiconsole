@@ -4,6 +4,7 @@ import {
   PencilSquareIcon,
   TrashIcon,
   LockClosedIcon,
+  EyeIcon,
 } from '@heroicons/react/24/solid';
 import { useAICStore } from '@/store/AICStore';
 import { ConfirmationModal } from './ConfirmationModal';
@@ -43,7 +44,11 @@ export function MaterialTable({ materials }: MaterialTableProps) {
               <td className="p-4">{material.usage}</td>
               <td className="p-4 text-center">
                 <Link to={`/materials/${material.id}`} key={material.id}>
-                  <PencilSquareIcon className="w-5 h-5 inline-block" />
+                  {material.defined_in === 'project' ? (
+                    <PencilSquareIcon className="w-5 h-5 inline-block" />
+                  ) : (
+                    <EyeIcon className="w-5 h-5 inline-block" />
+                  )}
                 </Link>
                 {material.defined_in === 'project' && (
                   <ConfirmationModal
