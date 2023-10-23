@@ -51,7 +51,7 @@ export function ConfirmationModal({
         </div>
       </Modal>
 
-      <div onClick={open}>{openModalButton}</div>
+      <span onClick={open}>{openModalButton}</span>
     </>
   );
 }

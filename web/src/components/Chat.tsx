@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+
 import { MessageGroup } from '@/components/message/MessageGroup';
 import { Welcome } from '@/components/Welcome';
 import { useAICStore } from '@/store/AICStore';

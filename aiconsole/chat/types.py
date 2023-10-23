@@ -20,7 +20,7 @@ class AICMessage(BaseModel):
 
 class Chat(BaseModel):
     id: str
-    auto_run: Optional[bool] = False
+
     messages: List[AICMessage]
 
 

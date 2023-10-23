@@ -7,7 +7,6 @@ import { useWebSocketStore } from '@/store/useWebSocketStore';
 
 export type ChatSlice = {
   chatId: string;
-  alwaysExecuteCode: boolean;
   hasPendingCode: boolean;
   chatHeadlines: ChatHeadline[];
   setChatId: (id: string) => void;
@@ -15,7 +14,6 @@ export type ChatSlice = {
   initChatHistory: () => Promise<void>;
   saveCurrentChatHistory: () => Promise<void>;
   updateChatHeadline: (id: string, headline: string) => Promise<void>;
-  enableAutoCodeExecution: () => void;
 };
 
 export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
@@ -23,14 +21,10 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
   get,
 ) => ({
   chatId: '',
-  alwaysExecuteCode: false,
   hasPendingCode: false,
   chatHeadlines: [],
   agent: undefined,
   materials: [],
-  enableAutoCodeExecution: () => {
-    set({ alwaysExecuteCode: true });
-  },
   initChatHistory: async () => {
     try {
       const history: ChatHeadline[] = await (
@@ -71,7 +65,6 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
       chat = {
         id: '',
         messages: [],
-        auto_run: false,
       };
     } else {
       chat = await Api.getChat(id);
@@ -84,13 +77,11 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
           ...rest,
         };
       }),
-      alwaysExecuteCode: chat.auto_run,
     }));
   },
   saveCurrentChatHistory: async () => {
     await Api.saveHistory({
       id: get().chatId,
-      auto_run: get().alwaysExecuteCode,
       messages: get().messages,
     });
 

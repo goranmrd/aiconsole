@@ -79,7 +79,6 @@ export type ChatHeadline = {
 
 export type Chat = {
   id: string;
-  auto_run: boolean;
   messages: AICMessage[];
 };
 
@@ -88,4 +87,8 @@ export type Agent = {
   name: string;
   usage: string;
   system: string;
+};
+
+export type Settings = {
+  code_autorun?: number;
 };

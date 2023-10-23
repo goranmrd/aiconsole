@@ -6,7 +6,7 @@ import './index.css';
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 
-import { useAICStore } from './store/AICStore.ts';
+import { initStore } from './store/AICStore.ts';
 import { ErrorPage } from '@/components/pages/ErrorPage.tsx';
 import { ChatPage } from '@/components/pages/ChatPage.tsx';
 import { MaterialPage } from '@/components/pages/MaterialPage.tsx';
@@ -14,7 +14,6 @@ import { MaterialsPage } from '@/components/pages/MaterialsPage.tsx';
 import { MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import { SocketInitiator } from '@/components/SocketInitiator.tsx';
-import { useAnalysisStore } from './store/useAnalysisStore.ts';
 
 const router = createBrowserRouter([
   {
@@ -50,5 +49,4 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   </React.StrictMode>,
 );
 
-useAICStore.getState().initCommandHistory();
-useAnalysisStore.getState().init();
+initStore();

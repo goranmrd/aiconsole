@@ -12,6 +12,7 @@ import { ChatSlice } from './ChatSlice';
 import { MessageSlice } from './MessageSlice';
 import { AgentsSlice, createAgentsSlice } from './AgentsSlice';
 import { MaterialSlice, createMaterialSlice } from './MetarialSlice';
+import { useAnalysisStore } from './useAnalysisStore';
 
 export type AICStore = MessageSlice &
   CommandSlice &
@@ -30,3 +31,9 @@ export const useAICStore = create<AICStore>()((...a) => ({
   ...createProjectSlice(...a),
   ...createMaterialSlice(...a),
 }));
+
+export const initStore = () => {
+  useAICStore.getState().initCommandHistory();
+  useAICStore.getState().getSettings();
+  useAnalysisStore.getState().init();
+};
