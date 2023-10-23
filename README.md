@@ -30,10 +30,18 @@ cd your_project_dir
 export OPENAI_API_KEY=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 aiconsole
 ```
+On a Mac you might be prompted to install developer tools in order to install aiconsole.
+
+If during installation you get errors like:
+
+```
+WARNING: The script aiconsole is installed in '/Users/user/Library/Python/3.9/bin' which is not on PATH.
+Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+```
+
+Run aiconsole like this: `/Users/user/Library/Python/3.9/bin/aiconsole` (replace the path with a path that you see in the warnings) instead of `aiconsole`.
 
 In your project directory, aiconsole will create a bunch of working files like standard materials and agents
-
-On a Mac you might be prompted to install developer tools in order to install aiconsole.
 
 ## Running Your AIConsole Dev Mode
 
