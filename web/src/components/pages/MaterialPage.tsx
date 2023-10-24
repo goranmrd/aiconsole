@@ -37,22 +37,23 @@ import { cn } from '@/utils/styles';
 import MarkdownPreview from '../MarkdownPreview';
 import { BoltIcon } from '@heroicons/react/24/solid';
 
-//TODO: This is such an ugly solution, there should be explicit /materials/new route with new?copy=material_id query param
-
-const removeCopySuffix = (materialId: string) => {
-  return materialId.replace(/_copy$/, ''); // Removes "_copy" from the end of the string
-};
 
 export function MaterialPage() {
-  const { material_id } = useParams<{ material_id: string | undefined }>();
-  const materialIdCopy = material_id;
+  let { material_id } = useParams<{ material_id: string | undefined }>();
+
+  const isNew = material_id === 'new';
+
+  if (isNew) {
+    material_id = undefined;
+  }
+
+  const copyId = new URLSearchParams(window.location.search).get('copy');
+
   const [material, setMaterial] = useState<Material | undefined>(undefined);
   const [materialInitial, setMaterialInitial] = useState<Material | undefined>(
     undefined,
   );
-  const isDuplicate = material_id?.includes('_copy');
-  const materialId =
-    isDuplicate && material_id ? removeCopySuffix(material_id) : material_id;
+
   const [preview, setPreview] = useState<RenderedMaterial | undefined>(
     undefined,
   );
@@ -117,26 +118,40 @@ export function MaterialPage() {
   }, [material?.name]);
 
   useEffect(() => {
-    if (!materialId) {
-      return;
+    if (copyId) {
+      Api.getMaterial(copyId).then((materialToCopy) => {
+        materialToCopy.name += ' Copy';
+        materialToCopy.defined_in = 'project';
+        materialToCopy.id = material_id || '';
+        setMaterialInitial(materialToCopy);
+        setMaterial(materialToCopy);
+      });
+    } else if (material_id) {
+      Api.getMaterial(material_id).then((material) => {
+        setMaterialInitial(material);
+        setMaterial(material);
+      });
+    } else {
+      //HACK: This will get a default new material
+      Api.getMaterial('new').then((material) => {
+        setMaterialInitial(material);
+        setMaterial(material);
+      });
     }
-
-    Api.getMaterial(materialId).then((material) => {
-      if (isDuplicate) {
-        material.name += ' Copy';
-        material.defined_in = 'project';
-        material.id = material_id || '';
-      }
-      setMaterialInitial(material);
-      setMaterial(material);
-    });
-  }, [materialId, isDuplicate, material_id]);
+  }, [copyId, isNew, material_id]);
 
   const handleSaveClick = (material: Material) => async () => {
-    
-    if (materialIdCopy && materialIdCopy !== material.id) {
+    if (isNew) {
       await Api.saveNewMaterial(material);
-      await deleteMaterial(materialIdCopy);
+
+      notifications.show({
+        title: 'Saved',
+        message: 'Material saved',
+        color: 'green',
+      });
+    } else if (materialInitial && materialInitial.id !== material.id) {
+      await Api.saveNewMaterial(material);
+      await deleteMaterial(materialInitial.id);
 
       notifications.show({
         title: 'Renamed',
@@ -158,7 +173,7 @@ export function MaterialPage() {
     ? '```md\n' + preview?.content.split('\\n').join('\n') + '\n```'
     : 'Generating preview...';
 
-  const disableSubmit = (isMaterialChanged() && !isDuplicate) || isError;
+  const disableSubmit = (isMaterialChanged() && !(isNew && copyId)) || isError;
 
   return (
     <div className="App flex flex-col h-screen fixed top-0 left-0 bottom-0 right-0 bg-gray-800/95 text-stone-400 ">

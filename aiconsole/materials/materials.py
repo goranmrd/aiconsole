@@ -116,11 +116,14 @@ class Materials:
         if material.defined_in != MaterialLocation.PROJECT_DIR:
             raise Exception("Cannot save material not defined in project.")
 
-        if new and material.id in self.materials_project_dir:
-            raise Exception("Material already exists.")
+        path = Path(self.user_directory)
+        file_path = path / f"{material.id}.toml"
 
-        if not new and material.id not in self.materials_project_dir:
-            raise Exception("Material does not exist.")
+        if new and file_path.exists():
+            raise Exception(f"Material {material.id} already exists.")
+
+        if not new and not file_path.exists():
+            raise Exception(f"Material {material.id} does not exist.")
 
         current_version = self.materials_project_dir.get(
             material.id,
@@ -143,7 +146,6 @@ class Materials:
 
         self._materials[material.id] = material
 
-        path = Path(self.user_directory)
 
         # Save to .toml file
         with (path / f"{material.id}.toml").open("w") as file:
