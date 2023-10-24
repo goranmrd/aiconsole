@@ -58,7 +58,6 @@ const getChat: (id: string) => Promise<Chat> = async (id: string) =>
   await ky.get(`${BASE_URL}/chats/history/${id}`).json();
 
 const deleteChat = (id: string) => ky.delete(`${BASE_URL}/chats/history/${id}`);
-
 const updateChatHeadline = (id: string, headline: string) =>
   ky.post(`${BASE_URL}/chats/headlines/${id}`, {
     json: { headline },
