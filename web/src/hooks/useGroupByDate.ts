@@ -1,5 +1,5 @@
-import moment from 'moment';
 import { useEffect, useState } from 'react';
+import { sub, isYesterday, isToday, isWithinInterval } from 'date-fns';
 
 import { ChatHeadline } from '@/types/types';
 
@@ -19,12 +19,6 @@ const useGroupByDate = (data: ChatHeadline[]) => {
   });
 
   useEffect(() => {
-    const date = new Date().toISOString();
-    const refDate = moment(date);
-    const today = refDate.clone().startOf('day');
-    const yesterday = refDate.clone().subtract(1, 'days').startOf('days');
-    const weekOld = refDate.clone().subtract(7, 'days').startOf('days');
-
     const groups: Groups = {
       today: [],
       yesterday: [],
@@ -33,14 +27,17 @@ const useGroupByDate = (data: ChatHeadline[]) => {
     };
 
     data.forEach((item) => {
-      const itemDate = moment(new Date(item.timestamp));
-      const isToday = itemDate.isSame(today, 'd');
-      const isYesterday = itemDate.isSame(yesterday, 'd');
-      const isWithinAWeek = itemDate.isSameOrAfter(weekOld, 'd');
+      const itemDate = new Date(item.timestamp);
+      const isToDay = isToday(itemDate);
+      const isYesterDay = isYesterday(itemDate);
+      const isWithinAWeek = isWithinInterval(itemDate, {
+        start: sub(itemDate, { days: 7 }),
+        end: itemDate,
+      });
 
-      if (isToday) {
+      if (isToDay) {
         groups.today.push(item);
-      } else if (isYesterday) {
+      } else if (isYesterDay) {
         groups.yesterday.push(item);
       } else if (isWithinAWeek) {
         groups.previous7Days.push(item);

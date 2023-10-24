@@ -24,6 +24,7 @@ export function Chat({ chatId }: { chatId: string }) {
 
     //if there is exactly one text area focus on it
     const textAreas = document.getElementsByTagName('textarea');
+    console.log(textAreas);
     if (textAreas.length === 1) {
       textAreas[0].focus();
     }

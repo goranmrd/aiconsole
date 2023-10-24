@@ -12,6 +12,7 @@ export function MaterialsPage() {
 
   useEffect(() => {
     fetchMaterials();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
