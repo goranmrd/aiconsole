@@ -26,7 +26,7 @@ export default function AutoScroll({ children, className }: Props) {
   const containerElement = useRef<HTMLDivElement>(null);
   const style = {
     overflow: 'auto',
-    scrollBehavior: 'smooth',
+    scrollBehavior: 'auto',
     pointerEvents: 'auto',
   } as const;
 
@@ -45,7 +45,7 @@ export default function AutoScroll({ children, className }: Props) {
       const { current } = containerElement;
 
       if (current) {
-        current.style.scrollBehavior = 'smooth';
+        current.style.scrollBehavior = 'auto';
       }
     }, 0);
   }, [containerElement]);
@@ -55,11 +55,13 @@ export default function AutoScroll({ children, className }: Props) {
       return;
     }
 
-    const { current } = containerElement;
+    setTimeout(() => {
+      const { current } = containerElement;
 
-    if (current) {
-      current.scrollTop = current.scrollHeight;
-    }
+      if (current) {
+        current.scrollTop = current.scrollHeight;
+      }
+    }, 10);
   }, [children, containerElement, autoScroll]);
 
   return (

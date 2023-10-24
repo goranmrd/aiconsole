@@ -67,7 +67,6 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
     set(() => ({
       chatId: id,
       messages: undefined,
-      alwaysExecuteCode: false,
       hasPendingCode: false,
     }));
 
