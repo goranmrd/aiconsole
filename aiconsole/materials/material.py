@@ -54,8 +54,6 @@ class Material(BaseModel):
     content_type: MaterialContentType = MaterialContentType.STATIC_TEXT
     content_static_text: str = """
 
-# Header
-
 content, content content
 
 ## Sub header
@@ -89,13 +87,13 @@ def create():
     '''
     Use this function to print 'Created'
     '''
-    print "Created"
+    print("Created")
 
 def list()
     '''
     Use this function to print 'list'
     '''
-    print "List"
+    print("List")
 
 """.strip()
 
