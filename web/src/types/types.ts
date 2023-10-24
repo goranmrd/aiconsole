@@ -83,6 +83,7 @@ export type MaterialDefinitionSource = 'aiconsole' | 'project';
 
 export type MaterialInfo = {
   id: string;
+  name: string;
   usage: string;
   defined_in: MaterialDefinitionSource;
 };

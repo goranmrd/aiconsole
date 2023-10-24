@@ -41,7 +41,7 @@ export function MaterialsPage() {
         </button>
       </Link>
 
-      <div className="flex flex-row h-full overflow-y-auto">
+      <div className="flex flex-row h-full overflow-y-auto justify-center">
         <div className="flex flex-col p-6 gap-4">
           {materials && <MaterialTable materials={materials} />}
         </div>

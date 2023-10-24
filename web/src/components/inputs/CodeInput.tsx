@@ -74,9 +74,14 @@ export function CodeInput({
           padding={10}
           className={cn(
             'min-h-full resize-none bg-black/20 appearance-none border border-transparent rounded w-full py-2 px-3 leading-tight placeholder-gray-400 bottom-0',
-            { 'opacity-[0.7]': disabled },
+            { 'opacity-[0.7] ': disabled },
           )}
-          textareaClassName="focus:!outline-primary/50 focus:!shadow-outline"
+          textareaClassName={cn(
+            'focus:!outline-primary/50 focus:!shadow-outline',
+            {
+              'cursor-not-allowed': disabled,
+            },
+          )}
         />
       </div>
     </div>

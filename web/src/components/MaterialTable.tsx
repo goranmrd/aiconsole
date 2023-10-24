@@ -14,8 +14,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { MouseEvent } from 'react';
 import { MaterialInfo } from '@/types/types';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import {
   PencilSquareIcon,
@@ -32,13 +33,19 @@ interface MaterialTableProps {
 }
 
 export function MaterialTable({ materials }: MaterialTableProps) {
+  const navigate = useNavigate();
   const deleteMaterial = useAICStore((state) => state.deleteMaterial);
+
+  const redirectToMaterialPage = (id: string) => (event: MouseEvent) => {
+    event.stopPropagation();
+    navigate(`/materials/${id}`);
+  };
 
   const handleDeleteClick = (id: string) => () => deleteMaterial(id);
 
   return (
-    <div className="card">
-      <table className="w-full table-auto text-left">
+    <div className="card ">
+      <table className="w-full table-auto text-left ">
         <thead className="font-bold border-b border-white/20">
           <tr>
             <td className="p-4">Name</td>
@@ -48,7 +55,10 @@ export function MaterialTable({ materials }: MaterialTableProps) {
         </thead>
         <tbody>
           {materials.map((material) => (
-            <tr className="border-b border-white/10 hover:bg-white/5 cursor-pointer">
+            <tr
+              className="border-b border-white/10 hover:bg-white/5 cursor-pointer"
+              onClick={redirectToMaterialPage(material.id)}
+            >
               <td className="p-4">
                 <div className="flex items-center">
                   <Link to={`/materials/${material.id}`} key={material.id}>
@@ -61,13 +71,16 @@ export function MaterialTable({ materials }: MaterialTableProps) {
               </td>
               <td className="p-4">{material.usage}</td>
               <td className="p-4 text-center flex items-center justify-end gap-1">
-                <Link to={`/materials/${material.id}`} key={material.id}>
+                <div onClick={redirectToMaterialPage(material.id)}>
                   {material.defined_in === 'project' ? (
                     <PencilSquareIcon className="w-5 h-5 inline-block" />
                   ) : (
                     <EyeIcon className="w-5 h-5 inline-block" />
                   )}
-                </Link>
+                </div>
+                <div onClick={redirectToMaterialPage(`${material.id}_copy`)}>
+                  <DocumentDuplicateIcon className="h-5 w-5 inline-block" />
+                </div>
                 {material.defined_in === 'project' && (
                   <ConfirmationModal
                     confirmButtonText="Yes"
@@ -79,9 +92,6 @@ export function MaterialTable({ materials }: MaterialTableProps) {
                     }
                   />
                 )}
-                <Link to={`/materials/${material.id}_copy`} key={material.id}>
-                  <DocumentDuplicateIcon className="h-5 w-5 inline-block" />
-                </Link>
               </td>
             </tr>
           ))}
