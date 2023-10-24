@@ -51,7 +51,7 @@ export function UserInfo({
       )}
       {materials_ids.map((material_id) => (
         <Link to={`/materials/${material_id}`} key={material_id}>
-          <div className="w-32 opacity-80 text-xs text-center overflow-ellipsis overflow-hidden whitespace-nowrap">
+          <div className="w-32 opacity-80 text-xs text-center overflow-ellipsis overflow-hidden whitespace-nowrap pb-1 px-4" title={material_id}>
             {material_id}
           </div>
         </Link>

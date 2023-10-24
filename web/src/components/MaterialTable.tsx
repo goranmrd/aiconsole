@@ -16,7 +16,7 @@
 
 import { MouseEvent } from 'react';
 import { MaterialInfo } from '@/types/types';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import {
   BoltIcon,
@@ -91,7 +91,7 @@ export function MaterialTable({ materials }: MaterialTableProps) {
             </td>
             <td className="p-4 cursor-pointer" onClick={redirectToMaterialPage(material.id)}>{material.usage}</td>
             <td className="p-4">
-              <div className=" flex flex-row items-center justify-center w-full h-full">
+              <div className=" flex flex-row items-center justify-center w-full h-full gap-2">
                 <DocumentDuplicateIcon
                   onClick={redirectToMaterialPage(`${material.id}_copy`)}
                   className="h-5 w-5 cursor-pointer"
