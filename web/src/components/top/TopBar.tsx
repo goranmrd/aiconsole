@@ -28,13 +28,13 @@ export function TopBar() {
   return (
     <div className="flex w-full flex-col p-6 border-b drop-shadow-md bg-gray-900/30 border-white/10">
       <div className="flex gap-2 items-center">
-        <div className="cursor-pointer flex font-bold text-sm gap-2 items-center pr-5">
-          <img src={`/favicon.svg`} className="h-9 w-9 cursor-pointer filter" />
-          <Link className="hover:animate-pulse" to={`/chats/${uuidv4()}`}>
-            <h1 className="text-lg font-bold text-white">AIConsole</h1>
+        <div className="flex font-bold text-sm gap-2 items-center pr-5">
+          <Link className="hover:animate-pulse cursor-pointer flex gap-2 items-center" to={`/chats/${uuidv4()}`}>
+            <img src={`/favicon.svg`} className="h-9 w-9 cursor-pointer filter" />
+            <h1 className="text-lg  text-white">AIConsole</h1>
           </Link>
-          <span className="hover:animate-pulse" onClick={chooseProject}>
-            <span className="text-sm"> / </span>
+          <span className=""> / </span>
+          <span className="hover:animate-pulse cursor-pointer" onClick={chooseProject}>
             {projectName}
           </span>
         </div>
