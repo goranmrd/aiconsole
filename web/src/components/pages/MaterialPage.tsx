@@ -124,7 +124,7 @@ export function MaterialPage() {
   };
   const readOnly = material?.defined_in === 'aiconsole';
   const previewValue = preview
-    ? preview?.content.split('\\n').join('\n')
+    ? '```md\n' + preview?.content.split('\\n').join('\n') + '\n```'
     : 'Generating preview...';
 
   const disableSubmit = isMaterialChanged() && !isDuplicate;

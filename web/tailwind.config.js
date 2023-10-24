@@ -19,8 +19,9 @@ export default {
               a: {
                 color: "#1f6feb",
               },
-              pre: {
-                background: "#282c34",
+              'pre, code': {
+                padding:0,
+                background: "transparent",
               }
             },
         },

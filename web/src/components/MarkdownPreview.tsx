@@ -26,6 +26,18 @@ interface MarkdownPreviewProps {
   text: string;
 }
 
+const customDoccoStyle = {
+  ...oneDark,
+  'code[class*="language-"]': {
+    backgroundColor: 'transparent',
+  },
+};
+
+const customDivStyle = {
+  backgroundColor: 'transparent',
+  padding: 0,
+};
+
 const MarkdownPreview = ({ text }: MarkdownPreviewProps) => {
   return (
     <div className="prose prose-default w-full">
@@ -37,10 +49,11 @@ const MarkdownPreview = ({ text }: MarkdownPreviewProps) => {
 
             return match ? (
               <SyntaxHighlighter
-                style={oneDark}
+                style={customDoccoStyle}
                 PreTag="div"
                 language={match[1]}
                 children={String(children).replace(/\n$/, '')}
+                customStyle={customDivStyle}
               />
             ) : (
               <code className={className ? className : ''} {...props}>
