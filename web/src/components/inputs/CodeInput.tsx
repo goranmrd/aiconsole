@@ -41,7 +41,7 @@ export function CodeInput({
       <label htmlFor={label} className="font-bold">
         {label}:
       </label>
-      <div className={cn(className, 'font-mono text-sm mt-4 h-full pb-10')}>
+      <div className={cn(className, 'font-mono text-sm mt-4 h-full ')}>
         <Editor
           value={value}
           disabled={disabled}
