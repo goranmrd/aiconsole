@@ -18,10 +18,10 @@ import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 
-import SideBar from '@/components/SideBar';
-import { CommandInput } from '@/components/inputs/CommandInput';
-import { TopBar } from '@/components/TopBar';
-import { Chat } from '@/components/Chat';
+import SideBar from '@/components/history/SideBar';
+import { CommandInput } from '@/components/materials/CommandInput';
+import { TopBar } from '@/components/top/TopBar';
+import { Chat } from '@/components/chat/Chat';
 import { useAICStore } from '@/store/AICStore';
 
 export function ChatPage() {

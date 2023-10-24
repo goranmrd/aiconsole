@@ -27,14 +27,14 @@ import {
   materialContenTypeOptions,
   materialStatusOptions,
 } from '@/types/types';
-import { TopBar } from '@/components/TopBar';
-import { EnumInput } from '@/components/inputs/EnumInput';
-import { ErrorObject, SimpleInput } from '@/components/inputs/TextInput';
-import { CodeInput } from '@/components/inputs/CodeInput';
+import { TopBar } from '@/components/top/TopBar';
+import { EnumInput } from '@/components/materials/EnumInput';
+import { ErrorObject, SimpleInput } from '@/components/materials/TextInput';
+import { CodeInput } from '@/components/materials/CodeInput';
 import { useAICStore } from '@/store/AICStore';
 import { EyeIcon, NoSymbolIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { cn } from '@/utils/styles';
-import MarkdownPreview from '../MarkdownPreview';
+import MarkdownPreview from './MarkdownPreview';
 import { BoltIcon } from '@heroicons/react/24/solid';
 
 

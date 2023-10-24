@@ -25,7 +25,7 @@ import {
   DocumentDuplicateIcon,
 } from '@heroicons/react/24/solid';
 import { useAICStore } from '@/store/AICStore';
-import { ConfirmationModal } from './ConfirmationModal';
+import { ConfirmationModal } from '../system/ConfirmationModal';
 import { NoSymbolIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { cn } from '@/utils/styles';
 

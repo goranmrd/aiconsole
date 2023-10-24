@@ -17,10 +17,10 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
-import { TopBar } from '@/components/TopBar';
+import { TopBar } from '@/components/top/TopBar';
 import { PlusSmallIcon } from '@heroicons/react/24/outline';
 import { useAICStore } from '@/store/AICStore';
-import { MaterialTable } from '../MaterialTable';
+import { MaterialTable } from './MaterialTable';
 
 export function MaterialsPage() {
   const fetchMaterials = useAICStore((state) => state.fetchMaterials);

@@ -14,10 +14,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { BlinkingCursor } from '@/components/BlinkingCursor';
+import { BlinkingCursor } from '@/components/chat/BlinkingCursor';
 import { cn } from '@/utils/styles';
 import { useAnalysisStore } from '@/store/useAnalysisStore';
-import { UserInfo } from '@/components/UserInfo';
+import { UserInfo } from '@/components/chat/UserInfo';
 
 export function Analysis() {
   const analysis = useAnalysisStore();

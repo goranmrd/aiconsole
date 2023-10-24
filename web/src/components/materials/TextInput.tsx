@@ -17,7 +17,7 @@
 import { ChangeEvent } from 'react';
 import { cn } from '@/utils/styles';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
-import { Tooltip } from '../Tooltip';
+import { Tooltip } from '../system/Tooltip';
 
 const REQUIRED_ERROR_MESSAGE = 'This field is required.';
 

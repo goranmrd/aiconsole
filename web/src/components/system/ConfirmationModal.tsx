@@ -17,7 +17,7 @@
 import { useDisclosure } from '@mantine/hooks';
 import { Modal } from '@mantine/core';
 import { Button } from './Button';
-import { MouseEventHandler } from 'react';
+import { MouseEventHandler, MouseEvent } from 'react';
 
 interface ConfirmationModalProps {
   onConfirm: MouseEventHandler<HTMLButtonElement>;
@@ -36,10 +36,10 @@ export function ConfirmationModal({
 }: ConfirmationModalProps) {
   const [opened, { open, close }] = useDisclosure(false);
 
-  const handleConfirm = (event) => {
+  const handleConfirm = (event: MouseEvent<HTMLButtonElement>) => {
     onConfirm(event);
     close();
-  };
+  };  
 
   return (
     <>

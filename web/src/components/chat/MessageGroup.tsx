@@ -17,7 +17,7 @@
 import { AICMessageGroup } from '@/types/types';
 import { cn } from '@/utils/styles';
 import { MessageSection } from './MessageSection';
-import { UserInfo } from '@/components/UserInfo';
+import { UserInfo } from '@/components/chat/UserInfo';
 
 export function MessageGroup({
   group,

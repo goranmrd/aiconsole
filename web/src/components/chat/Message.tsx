@@ -25,9 +25,9 @@ import { vs2015 } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
 import { AICMessage } from '@/types/types';
 import { MessageControls } from './MessageControls';
 import { useAICStore } from '@/store/AICStore';
-import { BlinkingCursor } from '@/components/BlinkingCursor';
+import { BlinkingCursor } from '@/components/chat/BlinkingCursor';
 import { BASE_URL } from '@/api/Api';
-import { Button } from '@/components/Button';
+import { Button } from '@/components/system/Button';
 
 interface MessageProps {
   message: AICMessage;

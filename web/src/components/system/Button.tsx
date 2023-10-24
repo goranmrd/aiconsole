@@ -15,7 +15,7 @@
 // limitations under the License.
 
 import { MouseEventHandler } from 'react';
-import { cn } from '../utils/styles';
+import { cn } from '../../utils/styles';
 
 interface ButtonProps {
   label: string;

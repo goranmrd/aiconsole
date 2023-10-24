@@ -23,13 +23,13 @@ import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 
 import { initStore } from './store/AICStore.ts';
-import { ErrorPage } from '@/components/pages/ErrorPage.tsx';
-import { ChatPage } from '@/components/pages/ChatPage.tsx';
-import { MaterialPage } from '@/components/pages/MaterialPage.tsx';
-import { MaterialsPage } from '@/components/pages/MaterialsPage.tsx';
+import { ErrorPage } from '@/components/system/ErrorPage.tsx';
+import { ChatPage } from '@/components/chat/ChatPage.tsx';
+import { MaterialPage } from '@/components/materials/MaterialPage.tsx';
+import { MaterialsPage } from '@/components/materials/MaterialsPage.tsx';
 import { MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
-import { SocketInitiator } from '@/components/SocketInitiator.tsx';
+import { SocketInitiator } from '@/components/system/SocketInitiator.tsx';
 
 const router = createBrowserRouter([
   {

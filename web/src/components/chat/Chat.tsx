@@ -16,8 +16,8 @@
 
 import { useEffect } from 'react';
 
-import { MessageGroup } from '@/components/message/MessageGroup';
-import { Welcome } from '@/components/Welcome';
+import { MessageGroup } from '@/components/chat/MessageGroup';
+import { Welcome } from '@/components/chat/Welcome';
 import { useAICStore } from '@/store/AICStore';
 import { useAnalysisStore } from '@/store/useAnalysisStore';
 import { Analysis } from './Analysis';

@@ -20,7 +20,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { useAICStore } from '@/store/AICStore';
 import useGroupByDate from '@/hooks/useGroupByDate';
-import HeadlinesGroup from '@/components/HeadlinesGroup';
+import HeadlinesGroup from '@/components/history/HeadlinesGroup';
 
 const SideBar = () => {
   const chatHeadlines = useAICStore((state) => state.chatHeadlines);

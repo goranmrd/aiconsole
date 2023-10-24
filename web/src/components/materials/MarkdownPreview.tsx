@@ -11,7 +11,7 @@ import markdown from 'react-syntax-highlighter/dist/cjs/languages/prism/markdown
 import python from 'react-syntax-highlighter/dist/cjs/languages/prism/python';
 import json from 'react-syntax-highlighter/dist/cjs/languages/prism/json';
 import applescript from 'react-syntax-highlighter/dist/cjs/languages/prism/applescript';
-import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
+import { dracula } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { cn } from '@/utils/styles';
 
 SyntaxHighlighter.registerLanguage('tsx', tsx);
@@ -29,7 +29,7 @@ interface MarkdownPreviewProps {
 }
 
 const customDoccoStyle = {
-  ...oneDark,
+  ...dracula,
   'code[class*="language-"]': {
     backgroundColor: 'transparent',
   },

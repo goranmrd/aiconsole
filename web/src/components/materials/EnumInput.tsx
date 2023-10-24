@@ -15,7 +15,7 @@
 // limitations under the License.
     
 import { cn } from '@/utils/styles';
-import { Tooltip } from '../Tooltip';
+import { Tooltip } from '../system/Tooltip';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
 
 interface EnumInputProps<T extends string> {
