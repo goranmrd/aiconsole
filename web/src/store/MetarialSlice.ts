@@ -23,7 +23,7 @@ import { Api } from '@/api/Api';
 export type MaterialSlice = {
   materials: MaterialInfo[];
   fetchMaterials: () => void;
-  deleteMaterial: (id: string) => void;
+  deleteMaterial: (id: string) => Promise<void>;
 };
 
 export const createMaterialSlice: StateCreator<

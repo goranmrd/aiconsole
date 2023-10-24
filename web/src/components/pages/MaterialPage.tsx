@@ -37,6 +37,8 @@ import { cn } from '@/utils/styles';
 import MarkdownPreview from '../MarkdownPreview';
 import { BoltIcon } from '@heroicons/react/24/solid';
 
+//TODO: This is such an ugly solution, there should be explicit /materials/new route with new?copy=material_id query param
+
 const removeCopySuffix = (materialId: string) => {
   return materialId.replace(/_copy$/, ''); // Removes "_copy" from the end of the string
 };
@@ -132,15 +134,25 @@ export function MaterialPage() {
   }, [materialId, isDuplicate, material_id]);
 
   const handleSaveClick = (material: Material) => async () => {
+    
     if (materialIdCopy && materialIdCopy !== material.id) {
-      deleteMaterial(materialIdCopy);
+      await Api.saveNewMaterial(material);
+      await deleteMaterial(materialIdCopy);
+
+      notifications.show({
+        title: 'Renamed',
+        message: 'Material renamed',
+        color: 'green',
+      });
+    } else {
+      await Api.updateMaterial(material);
+
+      notifications.show({
+        title: 'Saved',
+        message: 'Material saved',
+        color: 'green',
+      });
     }
-    await Api.saveMaterial(material);
-    notifications.show({
-      title: 'Saved',
-      message: 'Material saved',
-      color: 'green',
-    });
   };
   const readOnly = material?.defined_in === 'aiconsole';
   const previewValue = preview

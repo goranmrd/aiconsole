@@ -13,7 +13,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
+
+from hmac import new
 import logging
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
@@ -42,19 +43,30 @@ async def material_get(material_id: str):
             id="",
             name="",
             usage="",
-            status=MaterialStatus.ENABLED.value,
+            status=MaterialStatus.ENABLED,
             defined_in=MaterialLocation.PROJECT_DIR,
         ).model_dump())
+
+
+@router.patch("/{material_id}")
+async def material_patch(material_id: str, material: Material):
+    if material_id != material.id:
+        raise ValueError("Material ID mismatch")
+
+    projects.get_project_materials().save_material(material, new=False)
+
+    return JSONResponse({"status": "ok"})
 
 
 @router.post("/{material_id}")
 async def material_post(material_id: str, material: Material):
     if material_id != material.id:
         raise ValueError("Material ID mismatch")
-    
-    projects.get_project_materials().save_material(material)
+
+    projects.get_project_materials().save_material(material, new=True)
 
     return JSONResponse({"status": "ok"})
+
 
 
 @router.post("/{material_id}/status-change")
@@ -89,4 +101,3 @@ async def delete_material(material_id: str):
         return JSONResponse({"status": "ok"})
     except KeyError:
         raise HTTPException(status_code=404, detail="Material not found")
-    

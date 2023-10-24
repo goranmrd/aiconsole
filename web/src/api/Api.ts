@@ -101,8 +101,14 @@ const getMaterials = async () =>
 const getMaterial = async (id: string) =>
   ky.get(`${BASE_URL}/api/materials/${id}`).json() as Promise<Material>;
 
-const saveMaterial = async (material: Material) =>
+const saveNewMaterial = async (material: Material) =>
   ky.post(`${BASE_URL}/api/materials/${material.id}`, {
+    json: { ...material },
+    timeout: 60000,
+  });
+
+const updateMaterial = async (material: Material) =>
+  ky.patch(`${BASE_URL}/api/materials/${material.id}`, {
     json: { ...material },
     timeout: 60000,
   });
@@ -149,7 +155,8 @@ export const Api = {
   previewMaterial,
   chooseProject,
   getCurrentProject,
-  saveMaterial,
+  saveNewMaterial,
+  updateMaterial,
   deleteMaterial,
   getCommandHistory,
   getChatsHistory,

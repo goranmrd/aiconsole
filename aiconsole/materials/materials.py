@@ -103,9 +103,15 @@ class Materials:
             if material.defined_in == MaterialLocation.AICONSOLE_CORE
         }
 
-    def save_material(self, material: Material):
-        if material.id in self.materials_aiconsole_core:
-            raise Exception(f"Material {material.id} is a aiconcole core.")
+    def save_material(self, material: Material, new: bool):
+        if material.defined_in != MaterialLocation.PROJECT_DIR:
+            raise Exception("Cannot save material not defined in project.")
+
+        if new and material.id in self.materials_project_dir:
+            raise Exception("Material already exists.")
+
+        if not new and material.id not in self.materials_project_dir:
+            raise Exception("Material does not exist.")
 
         current_version = self.materials_project_dir.get(material.id, Material(
             id="unknown",
@@ -126,12 +132,7 @@ class Materials:
         
         self._materials[material.id] = material
 
-        try:
-            path = {
-                MaterialLocation.PROJECT_DIR: Path(self.user_directory),
-            }[material.defined_in]
-        except KeyError:
-            raise Exception("Material need to be defined in project.")
+        path = Path(self.user_directory)
 
         # Save to .toml file
         with (path / f"{material.id}.toml").open("w") as file:
