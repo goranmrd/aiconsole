@@ -13,7 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
+
 import importlib.util
 import logging
 import inspect
@@ -48,14 +48,15 @@ def documentation_from_code(material: 'Material', source: str):
 
         function_list = []
         for name, obj in inspect.getmembers(python_module):
-            
+
             # take only locally defined exports, no imports
             if name.startswith('_'):
                 continue
 
             if inspect.isfunction(obj):
                 # Extract function signature
-                async_prefix = "async " if inspect.iscoroutinefunction(obj) else ""
+                async_prefix = "async " if inspect.iscoroutinefunction(
+                    obj) else ""
                 signature = inspect.signature(obj)
                 function_declaration = f"{async_prefix}def {name}{signature}"
                 doc = inspect.getdoc(obj) or ''
@@ -64,19 +65,19 @@ def documentation_from_code(material: 'Material', source: str):
 {doc}
 '''.strip() + '\n\n\n')
 
-        
         # get main docstring
         docstring = inspect.getdoc(python_module)
 
         newline = '\n'
         final_doc = f'''
-# variables and functions available when executing python code
 {material.usage}
-
 {docstring + newline + newline if docstring else ''}
+
+## Variables and Functions Available When Executing Python Code
+
 {(newline + newline).join(function_list)}
 '''.strip()
-            
+
         return final_doc
 
     return create_content

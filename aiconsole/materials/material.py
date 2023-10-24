@@ -89,7 +89,7 @@ def create():
     '''
     print("Created")
 
-def list()
+def list():
     '''
     Use this function to print 'list'
     '''
