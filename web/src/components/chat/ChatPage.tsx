@@ -19,7 +19,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 
 import SideBar from '@/components/history/SideBar';
-import { CommandInput } from '@/components/materials/CommandInput';
+import { CommandInput } from '@/components/chat/CommandInput';
 import { TopBar } from '@/components/top/TopBar';
 import { Chat } from '@/components/chat/Chat';
 import { useAICStore } from '@/store/AICStore';

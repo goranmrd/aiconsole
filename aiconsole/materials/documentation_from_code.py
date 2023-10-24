@@ -70,7 +70,6 @@ def documentation_from_code(material: 'Material', source: str):
 
         newline = '\n'
         final_doc = f'''
-{material.usage}
 {docstring + newline + newline if docstring else ''}
 
 ## Variables and Functions Available When Executing Python Code

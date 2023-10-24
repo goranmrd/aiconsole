@@ -36,6 +36,7 @@ import { EyeIcon, NoSymbolIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { cn } from '@/utils/styles';
 import MarkdownPreview from './MarkdownPreview';
 import { BoltIcon } from '@heroicons/react/24/solid';
+import { Tooltip } from '../system/Tooltip';
 
 
 export function MaterialPage() {
@@ -89,7 +90,8 @@ export function MaterialPage() {
     return () => {
       clearTimeout(timeout);
     };
-  }, [material]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [material?.content_api, material?.content_dynamic_text, material?.content_static_text, material?.content_type, material?.name]);
 
   useEffect(() => {
     // Auto generate id based on name
@@ -181,9 +183,13 @@ export function MaterialPage() {
 
       <div className="flex flex-col h-full overflow-y-auto p-6 gap-4">
         <div className="flex gap-5">
-          <p>
+        <Tooltip label={'Material id determines the file name and is auto generated from name. It must be unique.'} position="top-end" offset={{ mainAxis: 7 }}>
+        <p>
+            
             <span className="font-bold">Material id: </span> {material?.id}
           </p>
+      </Tooltip>
+          
           {readOnly && (
             <div className="flex gap-2 items-center text-md font-bold ml-auto ">
               <EyeIcon className="w-4 h-4" />
@@ -204,7 +210,7 @@ export function MaterialPage() {
               setErrors={setErrors}
               onChange={(value) => setMaterial({ ...material, name: value })}
               withTooltip
-              tootltipText="Material name is used to identify material in the system. It should be unique."
+              tootltipText="Material name is used to identify material in the system. Make it self explanatory so AI will better understand what it is."
             />
             <SimpleInput
               label="Usage"
@@ -213,7 +219,7 @@ export function MaterialPage() {
               disabled={readOnly}
               onChange={(value) => setMaterial({ ...material, usage: value })}
               withTooltip
-              tootltipText="Usage is used to help identify when material should be used. "
+              tootltipText="Usage is used to help identify when this material should be used. "
             />
             <EnumInput<MaterialStatus>
               label="Status"
@@ -221,20 +227,18 @@ export function MaterialPage() {
               value={material.status}
               render={(value) => { return {'forced': <><BoltIcon className="h-4 w-4" title="forced" /> Forced</>, 'enabled': <><CheckIcon className="h-4 w-4" /> Enabled</>, 'disabled': <><NoSymbolIcon className="h-4 w-4" /> Disabled</>}[value] } }
               onChange={(value) => setMaterial({ ...material, status: value })}
-              withTooltip
-              tootltipText="Status is used to tell GPT Model if it should be used to generate response."
+              tootltipText={(value) => { return {'forced': 'This material will always be used for each task.', 'enabled': 'This material can be used by AI.', 'disabled': 'This material will never be used, in general its better keep only quality materials available to AI.'}[value] } }
             />
             <EnumInput<MaterialContentType>
               label="Content type"
               values={materialContenTypeOptions}
               value={material.content_type}
-              render={(value) => { return {'static_text': 'Static text', 'dynamic_text': 'Dynamic text', 'api': 'API'}[value] } }
+              render={(value) => { return {'static_text': 'Text', 'dynamic_text': 'Dynamic text', 'api': 'API'}[value] } }
               disabled={readOnly}
               onChange={(value) =>
                 setMaterial({ ...material, content_type: value })
               }
-              withTooltip
-              tootltipText="Content type is used to tell GPT Model how to interpret material content."
+              tootltipText={(value) => { return {'static_text': 'Markdown formated text will be injected into AI context.', 'dynamic_text': 'A python function will generate markdown text to be injected into AI context.', 'api': 'Documentation will be extracted from code and injected into AI context as markdown text, code will be available to execute by AI without import statements.'}[value] } }
             />
             <div className="flex flex-row w-full gap-4 h-full">
               {material.content_type === 'static_text' && (
@@ -276,7 +280,7 @@ export function MaterialPage() {
 
               {preview?.error ? (
                 <CodeInput
-                  label="Preview"
+                  label="Preview of markdown text to be injected into AI context"
                   value={preview.error}
                   disabled={readOnly}
                   readOnly={true}

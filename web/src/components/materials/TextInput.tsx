@@ -13,10 +13,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-    
+
 import { ChangeEvent } from 'react';
 import { cn } from '@/utils/styles';
-import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import { Tooltip } from '../system/Tooltip';
 
 const REQUIRED_ERROR_MESSAGE = 'This field is required.';
@@ -79,40 +78,38 @@ export function SimpleInput({
     checkIfEmpty(e.target.value);
   };
 
+  const core = (
+    <textarea
+      disabled={disabled}
+      placeholder={placeholder}
+      id={label}
+      value={value}
+      onBlur={handleBlur}
+      onChange={handleChange}
+      className={cn(
+        className,
+        'resize-none flex-none h-10 bg-black/20 appearance-none border border-transparent rounded w-full py-2 px-3 leading-tight placeholder-gray-400 focus:outline-none focus:border-primary/50 focus:shadow-outline mt-1',
+        {
+          'opacity-[0.7] cursor-not-allowed': disabled,
+          'border-red-700 focus:border-red-700': error,
+        },
+      )}
+    ></textarea>
+  );
+
   return (
     <div className="relative">
       <label
         htmlFor={label}
         className="font-bold flex items-center gap-1 w-fit-content"
       >
-        {label}
-        {withTooltip ? (
-          <Tooltip
-            label={tootltipText}
-            position="top-end"
-            offset={{ mainAxis: 7 }}
-          >
-            <InformationCircleIcon className="w-4 h-4" />
-          </Tooltip>
-        ) : null}
-        :
+        {label}:
       </label>
-      <textarea
-        disabled={disabled}
-        placeholder={placeholder}
-        id={label}
-        value={value}
-        onBlur={handleBlur}
-        onChange={handleChange}
-        className={cn(
-          className,
-          'resize-none flex-none h-10 bg-black/20 appearance-none border border-transparent rounded w-full py-2 px-3 leading-tight placeholder-gray-400 focus:outline-none focus:border-primary/50 focus:shadow-outline mt-1',
-          {
-            'opacity-[0.7] cursor-not-allowed': disabled,
-            'border-red-700 focus:border-red-700': error,
-          },
-        )}
-      ></textarea>
+      { withTooltip ? (
+      <Tooltip label={tootltipText} position="top-end" offset={{ mainAxis: 7 }}>
+        {core}
+      </Tooltip>
+      ) : ( core ) }
       {error && (
         <div className="text-red-700 text-sm absolute right-0">{error}</div>
       )}

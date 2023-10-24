@@ -16,7 +16,7 @@ const customDivStyle = {
 const MarkdownPreview = ({ text, disabled }: MarkdownPreviewProps) => {
   return (
     <div className="w-1/2">
-      <p className="font-bold mb-4">Preview</p>
+      <p className="font-bold mb-4">Preview of markdown text to be injected into AI context:</p>
       <div className="bg-black/20 p-3 w-full h-full max-h-[540px] overflow-y-auto">
         <div
           className={cn('prose prose-default w-full', {
