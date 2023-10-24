@@ -15,6 +15,8 @@
 // limitations under the License.
     
 import { cn } from '@/utils/styles';
+import { Tooltip } from '../Tooltip';
+import { InformationCircleIcon } from '@heroicons/react/24/outline';
 
 interface EnumInputProps<T extends string> {
   label: string;
@@ -23,6 +25,8 @@ interface EnumInputProps<T extends string> {
   className?: string;
   onChange: (value: T) => void;
   disabled?: boolean;
+  withTooltip?: boolean;
+  tootltipText?: string;
 }
 
 export function EnumInput<T extends string>({
@@ -31,10 +35,24 @@ export function EnumInput<T extends string>({
   values,
   onChange,
   disabled = false,
+  withTooltip = false,
+  tootltipText,
 }: EnumInputProps<T>) {
   return (
     <div className="flex items-center gap-4">
-      <label className="font-bold">{label}:</label>
+      <label className="font-bold flex items-center gap-1">
+        {label}
+        {withTooltip ? (
+          <Tooltip
+            label={tootltipText}
+            position="top-end"
+            offset={{ mainAxis: 7 }}
+          >
+            <InformationCircleIcon className="w-4 h-4" />
+          </Tooltip>
+        ) : null}
+        :
+      </label>
       <div className="flex gap-2">
         {values.map((val) => (
           <button

@@ -3,10 +3,27 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   darkMode: 'class',
   plugins: [require('@tailwindcss/typography')],
+
   theme: {
     extend: {
       fontFamily: {
         display: 'Oswald, ui-serif', // Adds a new `font-display` class
+      },
+      typography: {
+          DEFAULT: {
+            css: {
+              color: "#ABABAB",
+              'h1, h2, h3, h4, h5, h6, code': {
+                color: "#ABABAB",
+              },
+              a: {
+                color: "#1f6feb",
+              },
+              pre: {
+                background: "#282c34",
+              }
+            },
+        },
       },
       colors: {
         'primary': '#A67CFF',

@@ -27,6 +27,7 @@ interface CodeInputProps {
   onChange?: (value: string) => void;
   codeLanguage?: string;
   disabled?: boolean;
+  readOnly?: boolean;
 }
 
 export function CodeInput({
@@ -36,6 +37,7 @@ export function CodeInput({
   onChange,
   codeLanguage,
   disabled = false,
+  readOnly = false,
 }: CodeInputProps) {
   const onHighlight = (code: string) => {
     let lang = codeLanguage;
@@ -53,20 +55,26 @@ export function CodeInput({
   };
 
   return (
-    <div className="w-1/2 h-full">
+    <div className="w-1/2 ">
       <label htmlFor={label} className="font-bold">
         {label}:
       </label>
-      <div className={cn(className, 'font-mono text-sm mt-4 h-full ')}>
+      <div
+        className={cn(
+          className,
+          'font-mono text-sm h-full mt-4 overflow-y-auto max-h-[540px]',
+        )}
+      >
         <Editor
           value={value}
-          disabled={disabled}
+          disabled={disabled || readOnly}
           textareaId={label}
           onValueChange={handleValueChange}
           highlight={(code) => onHighlight(code)}
           padding={10}
           className={cn(
-            'h-full resize-none bg-black/20 appearance-none border border-transparent rounded w-full py-2 px-3 leading-tight placeholder-gray-400',
+            'min-h-full resize-none bg-black/20 appearance-none border border-transparent rounded w-full py-2 px-3 leading-tight placeholder-gray-400 bottom-0',
+            { 'opacity-[0.7]': disabled },
           )}
           textareaClassName="focus:!outline-primary/50 focus:!shadow-outline"
         />
