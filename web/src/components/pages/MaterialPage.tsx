@@ -123,8 +123,7 @@ export function MaterialPage() {
 
     Api.getMaterial(materialId).then((material) => {
       if (isDuplicate) {
-        const parsedMaterialId = (material.id + '_copy').replace(/_/g, ' ');
-        material.name = parsedMaterialId;
+        material.name += ' Copy';
         material.defined_in = 'project';
         material.id = material_id || '';
       }
