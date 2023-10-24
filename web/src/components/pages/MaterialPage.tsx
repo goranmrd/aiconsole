@@ -139,7 +139,7 @@ export function MaterialPage() {
             <span className="font-bold">Material id: </span> {material?.id}
           </p>
           {readOnly && (
-            <div className="flex gap-2 items-center text-sm ml-auto">
+            <div className="flex gap-2 items-center text-md font-bold ml-auto ">
               <EyeIcon className="w-4 h-4" />
               This is a system material. It can’t be edited.
             </div>
@@ -222,12 +222,7 @@ export function MaterialPage() {
                   className="flex-grow"
                 />
               ) : (
-                <div className="w-1/2">
-                  <p className="font-bold mb-4">Preview</p>
-                  <div className="bg-black/20 p-3 w-full h-full max-h-[540px] overflow-y-auto">
-                    <MarkdownPreview text={previewValue} />
-                  </div>
-                </div>
+                <MarkdownPreview text={previewValue} disabled={readOnly} />
               )}
             </div>
             <button
@@ -235,7 +230,7 @@ export function MaterialPage() {
               className={cn(
                 'bg-primary hover:bg-gray-700/95 text-black hover:bg-primary-light px-4 py-1 rounded-full flow-right',
                 {
-                  'opacity-[0.3] cursor-default hover:bg-initial':
+                  'opacity-[0.3] cursor-not-allowed hover:bg-initial':
                     disableSubmit,
                 },
               )}
