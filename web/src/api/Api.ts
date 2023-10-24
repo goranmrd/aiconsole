@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import ky from 'ky';
+import ky, { Hooks } from 'ky';
 
 import {
   Agent,
@@ -24,10 +24,22 @@ import {
   RenderedMaterial,
   Settings,
 } from '@/types/types';
+import { notifications } from '@mantine/notifications';
 
 export const BASE_URL = `http://${window.location.hostname}:8000`;
 
-// TODO: Better types for method parameters
+const hooks: Hooks = {
+  beforeError: [
+    (error) => {
+      notifications.show({
+        title: 'Error',
+        message: error.message,
+        color: 'red',
+      });
+      return error;
+    },
+  ],
+};
 
 const execute = (
   body: Chat & { relevant_materials_ids: string[]; agent_id: string },
@@ -37,6 +49,7 @@ const execute = (
     json: { ...body },
     signal,
     timeout: 60000,
+    hooks,
   });
 
 const runCode = ({
@@ -54,6 +67,7 @@ const runCode = ({
     json: rest,
     signal,
     timeout: 60000,
+    hooks,
   });
 
 // Commands
@@ -64,57 +78,72 @@ const saveCommandToHistory = (body: object) =>
   ky.post(`${BASE_URL}/commands/history`, {
     json: { ...body },
     timeout: 60000,
+    hooks,
   });
 
 // Chats
 
-const getChatsHistory = () => ky.get(`${BASE_URL}/chats/headlines`);
+const getChatsHistory = () => ky.get(`${BASE_URL}/chats/headlines`, { hooks });
 
 const getChat: (id: string) => Promise<Chat> = async (id: string) =>
-  await ky.get(`${BASE_URL}/chats/history/${id}`).json();
+  await ky.get(`${BASE_URL}/chats/history/${id}`, { hooks }).json();
 
-const deleteChat = (id: string) => ky.delete(`${BASE_URL}/chats/history/${id}`);
+const deleteChat = (id: string) =>
+  ky.delete(`${BASE_URL}/chats/history/${id}`, { hooks });
 const updateChatHeadline = (id: string, headline: string) =>
   ky.post(`${BASE_URL}/chats/headlines/${id}`, {
     json: { headline },
+    hooks,
   });
 
 const saveHistory = (body: object) =>
-  ky.post(`${BASE_URL}/chats/history`, { json: { ...body }, timeout: 60000 });
+  ky.post(`${BASE_URL}/chats/history`, {
+    json: { ...body },
+    timeout: 60000,
+    hooks,
+  });
 
 // Agents
 
 const getAgents: () => Promise<Agent[]> = async () =>
-  await ky.get(`${BASE_URL}/agents`).json();
+  await ky.get(`${BASE_URL}/agents`, { hooks }).json();
 
 // Projects
 
-const chooseProject = () => ky.post(`${BASE_URL}/api/projects/choose`);
+const chooseProject = () =>
+  ky.post(`${BASE_URL}/api/projects/choose`, { hooks });
 
-const getCurrentProject = () => ky.get(`${BASE_URL}/api/projects/current`);
+const getCurrentProject = () =>
+  ky.get(`${BASE_URL}/api/projects/current`, { hooks });
 
 // Materials
 
 const getMaterials = async () =>
-  ky.get(`${BASE_URL}/api/materials/`).json() as Promise<MaterialInfo[]>;
+  ky.get(`${BASE_URL}/api/materials/`, { hooks }).json() as Promise<
+    MaterialInfo[]
+  >;
 
 const getMaterial = async (id: string) =>
-  ky.get(`${BASE_URL}/api/materials/${id}`).json() as Promise<Material>;
+  ky
+    .get(`${BASE_URL}/api/materials/${id}`, { hooks })
+    .json() as Promise<Material>;
 
 const saveNewMaterial = async (material: Material) =>
   ky.post(`${BASE_URL}/api/materials/${material.id}`, {
     json: { ...material },
     timeout: 60000,
+    hooks,
   });
 
 const updateMaterial = async (material: Material) =>
   ky.patch(`${BASE_URL}/api/materials/${material.id}`, {
     json: { ...material },
     timeout: 60000,
+    hooks,
   });
 
 const deleteMaterial = async (id: string) => {
-  ky.delete(`${BASE_URL}/api/materials/${id}`);
+  ky.delete(`${BASE_URL}/api/materials/${id}`, { hooks });
 };
 
 const previewMaterial: (
@@ -124,6 +153,7 @@ const previewMaterial: (
     .post(`${BASE_URL}/api/materials/preview`, {
       json: { ...material },
       timeout: 60000,
+      hooks,
     })
     .json();
 
@@ -134,16 +164,17 @@ const analyse = (body: Chat, signal?: AbortSignal) =>
     json: { ...body },
     signal,
     timeout: 60000,
+    hooks,
   });
 
 // Settings
 
 const saveSettings = (body: Settings) => {
-  ky.patch(`${BASE_URL}/api/settings`, { json: { ...body } });
+  ky.patch(`${BASE_URL}/api/settings`, { json: { ...body }, hooks });
 };
 
 const getSettings = () =>
-  ky.get(`${BASE_URL}/api/settings`).json() as Promise<Settings>;
+  ky.get(`${BASE_URL}/api/settings`, { hooks }).json() as Promise<Settings>;
 
 export const Api = {
   execute,
