@@ -60,7 +60,6 @@ export default function AutoScroll({ children, className }: Props) {
 
       if (current) {
         current.scrollTop = current.scrollHeight;
-        console.log(current.scrollHeight);
       }
     }, 10);
   }, [children, containerElement, autoScroll]);
