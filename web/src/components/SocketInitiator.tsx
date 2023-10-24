@@ -15,9 +15,10 @@
 // limitations under the License.
 
 import React from 'react';
-import { useWebSocketStore } from '../store/useWebSocketStore.ts';
 
-export function SocketInitiator({ children }: { children: React.ReactNode; }) {
+import { useWebSocketStore } from '../store/useWebSocketStore';
+
+export function SocketInitiator({ children }: { children: React.ReactNode }) {
   const { initWebSocket, disconnect } = useWebSocketStore();
 
   React.useEffect(() => {

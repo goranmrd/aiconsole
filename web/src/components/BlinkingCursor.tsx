@@ -28,5 +28,11 @@ export const BlinkingCursor = () => {
     };
   }, []);
 
-  return <div className={`bg-slate-400 inline-block h-3 w-2 ${visible ? '' : 'invisible'}`} />;
+  return (
+    <div
+      className={`bg-slate-400 inline-block h-3 w-2 ${
+        visible ? '' : 'invisible'
+      }`}
+    />
+  );
 };
