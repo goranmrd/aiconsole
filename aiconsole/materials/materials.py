@@ -57,7 +57,7 @@ class Materials:
     def stop(self):
         self.observer.stop()
 
-    def all_materials(self):
+    def all_materials(self) -> List[Material]:
         """
         Return all loaded materials.
         """
@@ -71,19 +71,43 @@ class Materials:
 
     def enabled_materials(self) -> List[Material]:
         """
-        Return all available loaded materials.
+        Return all enabled loaded materials.
         """
         return [material for material in self._materials.values() if material.status == MaterialStatus.ENABLED]
 
     def forced_materials(self) -> List[Material]:
         """
-        Return all available loaded materials.
+        Return all forced loaded materials.
         """
         return [material for material in self._materials.values() if material.status == MaterialStatus.FORCED]
 
-    def save_material(self, material: Material):
+    @property
+    def materials_project_dir(self) -> Dict[str, Material]:
+        """
+        Return all forced loaded materials.
+        """
+        return {
+            material.id: material
+            for material in self._materials.values()
+            if material.defined_in == MaterialLocation.PROJECT_DIR
+        }
 
-        current_version = self._materials.get(material.id, Material(
+    @property
+    def materials_aiconsole_core(self) -> Dict[str, Material]:
+        """
+        Return all forced loaded materials.
+        """
+        return {
+            material.id: material
+            for material in self._materials.values()
+            if material.defined_in == MaterialLocation.AICONSOLE_CORE
+        }
+
+    def save_material(self, material: Material):
+        if material.id in self.materials_aiconsole_core:
+            raise Exception(f"Material {material.id} is a aiconcole core.")
+
+        current_version = self.materials_project_dir.get(material.id, Material(
             id="unknown",
             version="0.0.1",
             name="",
@@ -220,8 +244,8 @@ class Materials:
         """
         Delete a specific material.
         """
-        if material_id in self._materials:
-            material = self._materials[material_id]
+        if material_id in self.materials_project_dir:
+            material = self.materials_project_dir[material_id]
 
             path = {
                 MaterialLocation.PROJECT_DIR: Path(self.user_directory),
