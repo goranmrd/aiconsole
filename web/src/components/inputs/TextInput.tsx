@@ -1,5 +1,23 @@
+// The AIConsole Project
+// 
+// Copyright 2023 10Clouds
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+    
 import { ChangeEvent } from 'react';
 import { cn } from '@/utils/styles';
+import { InformationCircleIcon } from '@heroicons/react/24/outline';
+import { Tooltip } from '../Tooltip';
 
 const REQUIRED_ERROR_MESSAGE = 'This field is required.';
 
@@ -18,6 +36,8 @@ interface SimpleInputProps {
   required?: boolean;
   errors?: ErrorObject;
   setErrors?: React.Dispatch<React.SetStateAction<ErrorObject>>;
+  withTooltip?: boolean;
+  tootltipText?: string;
 }
 
 export function SimpleInput({
@@ -31,6 +51,8 @@ export function SimpleInput({
   name,
   errors,
   setErrors,
+  withTooltip = false,
+  tootltipText,
 }: SimpleInputProps) {
   const checkIfEmpty = (value: string) => {
     if (required && value.trim() === '') {
@@ -59,8 +81,21 @@ export function SimpleInput({
 
   return (
     <div className="relative">
-      <label htmlFor={label} className="font-bold">
-        {label}:
+      <label
+        htmlFor={label}
+        className="font-bold flex items-center gap-1 w-fit-content"
+      >
+        {label}
+        {withTooltip ? (
+          <Tooltip
+            label={tootltipText}
+            position="top-end"
+            offset={{ mainAxis: 7 }}
+          >
+            <InformationCircleIcon className="w-4 h-4" />
+          </Tooltip>
+        ) : null}
+        :
       </label>
       <textarea
         disabled={disabled}
