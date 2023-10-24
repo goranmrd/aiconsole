@@ -1,6 +1,8 @@
 import { ChangeEvent } from 'react';
 
 import { cn } from '@/utils/styles';
+import { InformationCircleIcon } from '@heroicons/react/24/outline';
+import { Tooltip } from '../Tooltip';
 
 interface SimpleInputProps {
   label: string;
@@ -9,6 +11,8 @@ interface SimpleInputProps {
   onChange: (value: string) => void;
   placeholder?: string;
   disabled?: boolean;
+  withTooltip?: boolean;
+  tootltipText?: string;
 }
 
 export function SimpleInput({
@@ -18,11 +22,26 @@ export function SimpleInput({
   onChange,
   placeholder,
   disabled = false,
+  withTooltip = false,
+  tootltipText,
 }: SimpleInputProps) {
   return (
     <>
-      <label htmlFor={label} className="font-bold">
-        {label}:
+      <label
+        htmlFor={label}
+        className="font-bold flex items-center gap-1 w-fit-content"
+      >
+        {label}
+        {withTooltip ? (
+          <Tooltip
+            label={tootltipText}
+            position="top-end"
+            offset={{ mainAxis: 7 }}
+          >
+            <InformationCircleIcon className="w-4 h-4" />
+          </Tooltip>
+        ) : null}
+        :
       </label>
       <textarea
         disabled={disabled}

@@ -153,18 +153,24 @@ export function MaterialPage() {
               value={material.name}
               disabled={readOnly}
               onChange={(value) => setMaterial({ ...material, name: value })}
+              withTooltip
+              tootltipText="Material name is used to identify material in the system. It should be unique."
             />
             <SimpleInput
               label="Usage"
               value={material.usage}
               disabled={readOnly}
               onChange={(value) => setMaterial({ ...material, usage: value })}
+              withTooltip
+              tootltipText="Usage is used to help identify when material should be used. "
             />
             <EnumInput<MaterialStatus>
               label="Status"
               values={materialStatusOptions}
               value={material.status}
               onChange={(value) => setMaterial({ ...material, status: value })}
+              withTooltip
+              tootltipText="Status is used to tell GPT Model if it should be used to generate response."
             />
             <EnumInput<MaterialContentType>
               label="Content type"
@@ -174,6 +180,8 @@ export function MaterialPage() {
               onChange={(value) =>
                 setMaterial({ ...material, content_type: value })
               }
+              withTooltip
+              tootltipText="Content type is used to tell GPT Model how to interpret material content."
             />
             <div className="flex flex-row w-full gap-4 h-full">
               {material.content_type === 'static_text' && (
