@@ -14,12 +14,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { MouseEventHandler } from 'react';
 import { cn } from '../utils/styles';
 
 interface ButtonProps {
   label: string;
   variant?: 'primary' | 'danger' | 'secondary';
-  onClick?: () => void;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
 }
 
 export function Button({ label, onClick, variant = 'primary' }: ButtonProps) {

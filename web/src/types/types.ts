@@ -86,6 +86,7 @@ export type MaterialInfo = {
   name: string;
   usage: string;
   defined_in: MaterialDefinitionSource;
+  status: MaterialStatus;
 };
 
 export type ChatHeadline = {

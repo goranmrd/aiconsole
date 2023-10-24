@@ -27,6 +27,7 @@ interface EnumInputProps<T extends string> {
   disabled?: boolean;
   withTooltip?: boolean;
   tootltipText?: string;
+  render: (value: T) => React.ReactNode;
 }
 
 export function EnumInput<T extends string>({
@@ -34,6 +35,7 @@ export function EnumInput<T extends string>({
   value,
   values,
   onChange,
+  render,
   disabled = false,
   withTooltip = false,
   tootltipText,
@@ -58,7 +60,7 @@ export function EnumInput<T extends string>({
           <button
             disabled={disabled}
             className={cn(
-              'bg-white/5 border border-white/10 hover:text-black text-sm hover:bg-primary-light px-3 py-1 rounded-full flow-right',
+              'bg-white/5 border border-white/10 hover:text-black text-sm hover:bg-primary-light px-3 py-1 rounded-full flex flex-row items-center gap-1',
               val === value && 'bg-primary border-primary text-black',
               disabled && ' cursor-not-allowed hover:bg-unset hover:text-unset',
               disabled && val !== value && 'opacity-50',
@@ -66,7 +68,7 @@ export function EnumInput<T extends string>({
             onClick={() => onChange(val)}
             key={val}
           >
-            {val}
+            {render(val)}
           </button>
         ))}
       </div>

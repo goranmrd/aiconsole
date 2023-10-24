@@ -37,14 +37,13 @@ export function MaterialsPage() {
 
       <Link to="/materials/new" className="absolute bottom-5 right-5">
         <button className="bg-primary  text-black/80 font-bold flex items-center justify-center  rounded-full hover:bg-primary-light">
-          <PlusSmallIcon className="h-16 w-16" />
+          <PlusSmallIcon className="h-14 w-14" />
         </button>
       </Link>
 
-      <div className="flex flex-row h-full overflow-y-auto justify-center">
-        <div className="flex flex-col p-6 gap-4">
-          {materials && <MaterialTable materials={materials} />}
-        </div>
+      <div className="flex flex-col h-full overflow-y-auto p-12">
+        
+      {materials && <MaterialTable materials={materials} />}
       </div>
     </div>
   );

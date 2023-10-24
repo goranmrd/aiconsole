@@ -32,9 +32,10 @@ import { EnumInput } from '@/components/inputs/EnumInput';
 import { ErrorObject, SimpleInput } from '@/components/inputs/TextInput';
 import { CodeInput } from '@/components/inputs/CodeInput';
 import { useAICStore } from '@/store/AICStore';
-import { EyeIcon } from '@heroicons/react/24/outline';
+import { EyeIcon, NoSymbolIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { cn } from '@/utils/styles';
 import MarkdownPreview from '../MarkdownPreview';
+import { BoltIcon } from '@heroicons/react/24/solid';
 
 const removeCopySuffix = (materialId: string) => {
   return materialId.replace(/_copy$/, ''); // Removes "_copy" from the end of the string
@@ -192,6 +193,7 @@ export function MaterialPage() {
               label="Status"
               values={materialStatusOptions}
               value={material.status}
+              render={(value) => { return {'forced': <><BoltIcon className="h-4 w-4" title="forced" /> Forced</>, 'enabled': <><CheckIcon className="h-4 w-4" /> Enabled</>, 'disabled': <><NoSymbolIcon className="h-4 w-4" /> Disabled</>}[value] } }
               onChange={(value) => setMaterial({ ...material, status: value })}
               withTooltip
               tootltipText="Status is used to tell GPT Model if it should be used to generate response."
@@ -200,6 +202,7 @@ export function MaterialPage() {
               label="Content type"
               values={materialContenTypeOptions}
               value={material.content_type}
+              render={(value) => { return {'static_text': 'Static text', 'dynamic_text': 'Dynamic text', 'api': 'API'}[value] } }
               disabled={readOnly}
               onChange={(value) =>
                 setMaterial({ ...material, content_type: value })

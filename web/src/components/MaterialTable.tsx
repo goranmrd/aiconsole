@@ -19,14 +19,15 @@ import { MaterialInfo } from '@/types/types';
 import { Link, useNavigate } from 'react-router-dom';
 
 import {
-  PencilSquareIcon,
+  BoltIcon,
   TrashIcon,
   LockClosedIcon,
   DocumentDuplicateIcon,
-  EyeIcon,
 } from '@heroicons/react/24/solid';
 import { useAICStore } from '@/store/AICStore';
 import { ConfirmationModal } from './ConfirmationModal';
+import { NoSymbolIcon, CheckIcon } from '@heroicons/react/24/outline';
+import { cn } from '@/utils/styles';
 
 interface MaterialTableProps {
   materials: MaterialInfo[];
@@ -41,62 +42,77 @@ export function MaterialTable({ materials }: MaterialTableProps) {
     navigate(`/materials/${id}`);
   };
 
-  const handleDeleteClick = (id: string) => () => deleteMaterial(id);
+  const handleDeleteClick = (id: string, event: MouseEvent) => {
+    console.log('delete');
+    event.stopPropagation();
+    event.preventDefault();
+    deleteMaterial(id);
+  }
 
   return (
-    <div className="card ">
-      <table className="w-full table-auto text-left ">
-        <thead className="font-bold border-b border-white/20">
-          <tr>
-            <td className="p-4">Name</td>
-            <td className="p-4">Usage</td>
-            <td className="p-4 text-center">Actions</td>
-          </tr>
-        </thead>
-        <tbody>
-          {materials.map((material) => (
-            <tr
-              className="border-b border-white/10 hover:bg-white/5 cursor-pointer"
-              onClick={redirectToMaterialPage(material.id)}
-            >
-              <td className="p-4">
-                <div className="flex items-center">
-                  <Link to={`/materials/${material.id}`} key={material.id}>
-                    {material.id}
-                  </Link>
-                  {material.defined_in === 'aiconsole' && (
-                    <LockClosedIcon className="w-4 h-5 inline ml-2" />
-                  )}
-                </div>
-              </td>
-              <td className="p-4">{material.usage}</td>
-              <td className="p-4 text-center flex items-center justify-end gap-1">
-                <div onClick={redirectToMaterialPage(material.id)}>
-                  {material.defined_in === 'project' ? (
-                    <PencilSquareIcon className="w-5 h-5 inline-block" />
-                  ) : (
-                    <EyeIcon className="w-5 h-5 inline-block" />
-                  )}
-                </div>
-                <div onClick={redirectToMaterialPage(`${material.id}_copy`)}>
-                  <DocumentDuplicateIcon className="h-5 w-5 inline-block" />
-                </div>
+    <table className="w-full table-auto text-left">
+      <thead className="font-bold border-b border-white/20">
+        <tr>
+          <td className="p-4">Status</td>
+          <td className="p-4">Name</td>
+          <td className="p-4">Usage</td>
+          <td className="p-4 text-center">Actions</td>
+        </tr>
+      </thead>
+      <tbody>
+        {materials.map((material) => (
+          <tr
+            key={material.id}
+            className={cn(
+              'border-b border-white/10 hover:bg-white/5',
+              material.status === 'disabled' && 'opacity-40',
+            )}
+          >
+            <td className="p-4 cursor-pointer" onClick={redirectToMaterialPage(material.id)}>
+              <div className=" flex flex-row items-center justify-center w-full h-full">
+                {material.status === 'forced' && (
+                  <BoltIcon className="h-6 w-6 text-primary" title="forced" />
+                )}
+                {material.status === 'enabled' && (
+                  <CheckIcon className="h-6 w-6" title="enabled" />
+                )}
+                {material.status === 'disabled' && (
+                  <NoSymbolIcon className="h-6 w-6" title="disabled" />
+                )}
+              </div>
+            </td>
+            <td className="p-4 cursor-pointer" onClick={redirectToMaterialPage(material.id)}>
+              <div className="flex items-center">
+                  {material.name}
+                {material.defined_in === 'aiconsole' && (
+                  <LockClosedIcon className="w-4 h-5 inline ml-2" />
+                )}
+              </div>
+            </td>
+            <td className="p-4 cursor-pointer" onClick={redirectToMaterialPage(material.id)}>{material.usage}</td>
+            <td className="p-4">
+              <div className=" flex flex-row items-center justify-center w-full h-full">
+                <DocumentDuplicateIcon
+                  onClick={redirectToMaterialPage(`${material.id}_copy`)}
+                  className="h-5 w-5 cursor-pointer"
+                />
+
                 {material.defined_in === 'project' && (
                   <ConfirmationModal
                     confirmButtonText="Yes"
                     cancelButtonText="No"
-                    onConfirm={handleDeleteClick(material.id)}
+                    onConfirm={event => handleDeleteClick(material.id, event)}
                     title={`Are you sure you want to remove ${material.id} material?`}
                     openModalButton={
-                      <TrashIcon className="w-5 h-5 inline-block " />
+                      <TrashIcon className="w-5 h-5 cursor-pointer" />
                     }
                   />
                 )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+              </div>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 }

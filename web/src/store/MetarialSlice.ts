@@ -36,19 +36,25 @@ export const createMaterialSlice: StateCreator<
   fetchMaterials: async () => {
     const materials = await Api.getMaterials();
 
-    const sortedAlphabeticallyAiConsoleMaterials = [...materials]
-      .filter((material) => material.defined_in === 'aiconsole')
-      .sort((a, b) => a.name.localeCompare(b.name));
+    //sort alphabetically
+    materials.sort((a, b) => a.name.localeCompare(b.name));
 
-    const sortedAlphabeticallyProjectMaterials = [...materials]
-      .filter((material) => material.defined_in === 'project')
-      .sort((a, b) => a.name.localeCompare(b.name));
+    //sort by defined_in
+    materials.sort((a, b) => {
+      const aDefinedIn = a.defined_in === 'project' ? 0 : 1;
+      const bDefinedIn = b.defined_in === 'project' ? 0 : 1;
+      return aDefinedIn - bDefinedIn;
+    })
+
+    //sort by status (forced first, disabled last, enabled in the middle)
+    materials.sort((a, b) => {
+      const aStatus = a.status === 'forced' ? 0 : a.status === 'enabled' ? 1 : 2;
+      const bStatus = b.status === 'forced' ? 0 : b.status === 'enabled' ? 1 : 2;
+      return aStatus - bStatus;
+    })
 
     set({
-      materials: [
-        ...sortedAlphabeticallyProjectMaterials,
-        ...sortedAlphabeticallyAiConsoleMaterials,
-      ],
+      materials,
     });
   },
   deleteMaterial: async (id: string) => {
