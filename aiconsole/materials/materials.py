@@ -13,7 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
+
 import logging
 import os
 from pathlib import Path
@@ -67,19 +67,28 @@ class Materials:
         """
         Return all available loaded materials.
         """
-        return [material for material in self._materials.values() if material.status in [MaterialStatus.ENABLED, MaterialStatus.FORCED]]
+        return [
+            material for material in self._materials.values() if
+            material.status in [MaterialStatus.ENABLED, MaterialStatus.FORCED]
+        ]
 
     def enabled_materials(self) -> List[Material]:
         """
         Return all enabled loaded materials.
         """
-        return [material for material in self._materials.values() if material.status == MaterialStatus.ENABLED]
+        return [
+            material for material in self._materials.values()
+            if material.status == MaterialStatus.ENABLED
+        ]
 
     def forced_materials(self) -> List[Material]:
         """
         Return all forced loaded materials.
         """
-        return [material for material in self._materials.values() if material.status == MaterialStatus.FORCED]
+        return [
+            material for material in self._materials.values()
+            if material.status == MaterialStatus.FORCED
+        ]
 
     @property
     def materials_project_dir(self) -> Dict[str, Material]:
@@ -113,23 +122,25 @@ class Materials:
         if not new and material.id not in self.materials_project_dir:
             raise Exception("Material does not exist.")
 
-        current_version = self.materials_project_dir.get(material.id, Material(
-            id="unknown",
-            version="0.0.1",
-            name="",
-            defined_in=MaterialLocation.PROJECT_DIR,
-            usage="",
-        )).version
+        current_version = self.materials_project_dir.get(
+            material.id,
+            Material(
+                id="unknown",
+                version="0.0.1",
+                name="",
+                defined_in=MaterialLocation.PROJECT_DIR,
+                usage="",
+            )).version
 
-        #Parse version number
+        # Parse version number
         current_version = current_version.split(".")
 
-        #Increment version number
+        # Increment version number
         current_version[-1] = str(int(current_version[-1]) + 1)
 
-        #Join version number
+        # Join version number
         material.version = ".".join(current_version)
-        
+
         self._materials[material.id] = material
 
         path = Path(self.user_directory)
@@ -187,7 +198,7 @@ class Materials:
         self._settings.set_material_status(material_id, status)
         self._materials[material_id].status = status
 
-    def load_material(self, material_id: str):
+    async def load_material(self, material_id: str):
         """
         Load a specific material.
         """
@@ -196,6 +207,12 @@ class Materials:
         core_resource_path = resource_to_path(self.core_resource)
 
         if (project_dir_path / f"{material_id}.toml").exists():
+            # if material exists in core
+            if (core_resource_path / f"{material_id}.toml").exists():
+                await NotificationWSMessage(
+                    title=f"Material {material_id} exists in core and project directory",
+                    message="Project directory version will be used.",
+                ).send_to_all()
             location = MaterialLocation.PROJECT_DIR
             path = project_dir_path / f"{material_id}.toml"
         elif (core_resource_path / f"{material_id}.toml").exists():
@@ -216,10 +233,8 @@ class Materials:
             defined_in=location,
             usage=str(tomldoc["usage"]).strip(),
             content_type=MaterialContentType(
-                str(tomldoc["content_type"]).strip()
-            ),
-            status=self._settings.get_material_status(material_id)
-        )
+                str(tomldoc["content_type"]).strip()),
+            status=self._settings.get_material_status(material_id))
 
         if "content_static_text" in tomldoc:
             self._materials[material_id].content_static_text = \
@@ -275,7 +290,7 @@ class Materials:
 
         for id in material_ids:
             try:
-                self.load_material(id)
+                await self.load_material(id)
             except Exception as e:
                 await NotificationWSMessage(
                     title="Material not loaded",
