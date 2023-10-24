@@ -13,27 +13,41 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
+
 import logging
 import os
 import threading
 import webbrowser
+import requests
+import time
 
 from uvicorn import run
 
-
 log = logging.getLogger(__name__)
+
+def open_browser_when_frontend_is_up(url:str):
+    log.info("Waiting for the frontend to start ...")
+    
+    while True:
+        try:
+            requests.get(url)
+            break
+        except requests.exceptions.ConnectionError:
+            log.debug("Waiting for the frontend to start ...")
+            time.sleep(0.2)
+
+    webbrowser.open(url)
 
 
 def run_aiconsole(dev: bool):
     threads = []
 
-    if dev: 
-        threads.append(threading.Thread(target= lambda: os.system("cd web && yarn dev"))) 
-        threads.append(threading.Timer(1, lambda: webbrowser.open("http://localhost:3000/"))) 
+    if dev:
+        threads.append(threading.Thread(target=lambda: os.system("cd web && yarn dev")))
+        threads.append(threading.Thread(target=lambda: open_browser_when_frontend_is_up("http://localhost:3000/")))
     else:
-        threads.append(threading.Timer(2, lambda: webbrowser.open("http://localhost:8000/")))
-    
+        threads.append(threading.Thread(target=lambda: open_browser_when_frontend_is_up("http://localhost:8000/")))
+
     for thread in threads:
         thread.start()
 
