@@ -140,6 +140,7 @@ class Materials:
             }[material.content_type]()
 
             file.write(doc.as_string())
+        self.save_material_status(material.id, material.status)
 
     def save_material_status(self, material_id: str, status: MaterialStatus):
         self._settings.set_material_status(material_id, status)
