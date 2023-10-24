@@ -13,7 +13,7 @@ import {
 } from '@/types/types';
 import { TopBar } from '@/components/TopBar';
 import { EnumInput } from '@/components/inputs/EnumInput';
-import { SimpleInput } from '@/components/inputs/TextInput';
+import { ErrorObject, SimpleInput } from '@/components/inputs/TextInput';
 import { CodeInput } from '@/components/inputs/CodeInput';
 import { useAICStore } from '@/store/AICStore';
 import { EyeIcon } from '@heroicons/react/24/outline';
@@ -37,6 +37,7 @@ export function MaterialPage() {
   const [preview, setPreview] = useState<RenderedMaterial | undefined>(
     undefined,
   );
+  const [errors, setErrors] = useState<ErrorObject>({});
 
   const isMaterialChanged = () => {
     if (material && materialInitial) {
@@ -47,6 +48,8 @@ export function MaterialPage() {
       return Boolean(!changedFields.length);
     }
   };
+
+  const isError = Object.values(errors).some((error) => error !== null);
 
   const deleteMaterial = useAICStore((state) => state.deleteMaterial);
 
@@ -127,7 +130,7 @@ export function MaterialPage() {
     ? '```md\n' + preview?.content.split('\\n').join('\n') + '\n```'
     : 'Generating preview...';
 
-  const disableSubmit = isMaterialChanged() && !isDuplicate;
+  const disableSubmit = (isMaterialChanged() && !isDuplicate) || isError;
 
   return (
     <div className="App flex flex-col h-screen fixed top-0 left-0 bottom-0 right-0 bg-gray-800/95 text-stone-400 ">
@@ -152,10 +155,15 @@ export function MaterialPage() {
               placeholder=""
               value={material.name}
               disabled={readOnly}
+              required
+              name="material_name"
+              errors={errors}
+              setErrors={setErrors}
               onChange={(value) => setMaterial({ ...material, name: value })}
             />
             <SimpleInput
               label="Usage"
+              name="usage"
               value={material.usage}
               disabled={readOnly}
               onChange={(value) => setMaterial({ ...material, usage: value })}
