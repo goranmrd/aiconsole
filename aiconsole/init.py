@@ -15,6 +15,9 @@
 # limitations under the License.
     
 import logging
+import os
+import threading
+import webbrowser
 
 from uvicorn import run
 
@@ -22,16 +25,21 @@ from uvicorn import run
 log = logging.getLogger(__name__)
 
 
-def _get_app(prod: bool) -> str:
-    if prod:
-        return "aiconsole.app:app_prod"
-    return "aiconsole.app:app_dev"
+def run_aiconsole(dev: bool):
+    threads = []
 
+    if dev: 
+        threads.append(threading.Thread(target= lambda: os.system("cd web && yarn dev"))) 
+        threads.append(threading.Timer(1, lambda: webbrowser.open("http://localhost:3000/"))) 
+    else:
+        threads.append(threading.Timer(2, lambda: webbrowser.open("http://localhost:8000/")))
+    
+    for thread in threads:
+        thread.start()
 
-def run_aiconsole(dev: bool) -> None:
     try:
         run(
-            _get_app(not dev),
+            "aiconsole.app:app",
             host="0.0.0.0",
             port=8000,
             reload=dev,
@@ -39,6 +47,9 @@ def run_aiconsole(dev: bool) -> None:
         )
     except KeyboardInterrupt:
         log.info("Exiting ...")
+
+        for thread in threads:
+            thread.join()
 
 
 def aiconsole_dev():

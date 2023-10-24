@@ -16,13 +16,9 @@
     
 import asyncio
 import logging
-import os
-import webbrowser
 from logging import config
 from contextlib import asynccontextmanager
 import threading
-from typing import List
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
@@ -45,7 +41,7 @@ config.dictConfig(log_config)
 _log = logging.getLogger(__name__)
 
 
-def app(prod: bool) -> FastAPI:
+def app():
 
     app = FastAPI(title="AI Console", lifespan=lifespan)
 
@@ -67,52 +63,26 @@ def app(prod: bool) -> FastAPI:
         _log.info(f"Static files directory: {static_path}")
 
         @app.get("/")
-        def root() -> FileResponse:
+        def root():
             index_path = static_path / "index.html"
             return FileResponse(str(index_path))
 
         @app.get("/chats/{chat_id}")
-        def chats(chat_id: str) -> FileResponse:
+        def chats(chat_id: str):
             index_path = static_path / "index.html"
             return FileResponse(str(index_path))
 
         app.mount("/", StaticFiles(directory=str(static_path)))
 
-    def check_for_update() -> None:
+    def check_for_update():
         _log.info("Checking for updates...")
-        if not is_update_needed():
+        if is_update_needed():
+            _log.info("Update available - A new version of AI Console is available!")
+            asyncio.run(NotificationWSMessage(title="Update available",
+                                              message="A new version of AI Console is available!").send_to_all())
+        else:
             _log.info("No update available")
-            return
 
-        _log.info("Update available - A new version of AI Console is available!")
-        asyncio.run(NotificationWSMessage(title="Update available",
-                                          message="A new version of AI Console is available!").send_to_all())
+    threading.Timer(5, check_for_update).start()
 
-    def _get_threads() -> List[threading.Thread]:
-        if prod:
-            return [
-                threading.Timer(3, lambda: webbrowser.open("http://localhost:8000/"))
-            ]
-
-        return [
-            threading.Thread(target=lambda: os.system("cd web && yarn dev")),
-            threading.Timer(1, lambda: webbrowser.open("http://localhost:3000/"))
-        ]
-
-    def _enable_threads() -> None:
-        threads = _get_threads()
-        threads.append(threading.Timer(5, check_for_update))
-
-        for thread in threads:
-            thread.start()
-
-    _enable_threads()
     return app
-
-
-def app_prod() -> FastAPI:
-    return app(prod=True)
-
-
-def app_dev() -> FastAPI:
-    return app(prod=False)
