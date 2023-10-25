@@ -51,10 +51,10 @@ export const createProjectSlice: StateCreator<
 
     await get().initChatHistory();
     await get().initAgents();
+    await get().getSettings();
   },
   chooseProject: async () => {
     (await Api.chooseProject().json()) as { name: string; path: string };
-    await get().getSettings();
   },
   getSettings: async () => {
     const result = await Api.getSettings();

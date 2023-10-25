@@ -15,6 +15,7 @@
 // limitations under the License.
 
 import { useEffect } from 'react';
+import ScrollToBottom from 'react-scroll-to-bottom';
 
 import { MessageGroup } from '@/components/chat/MessageGroup';
 import { Welcome } from '@/components/chat/Welcome';
@@ -54,7 +55,10 @@ export function Chat({ chatId }: { chatId: string }) {
   const groupedMessages = calculateGroupedMessages();
 
   return (
-    <AutoScroll className="h-full overflow-y-auto flex flex-col">
+    <ScrollToBottom
+      className="h-full overflow-y-auto flex flex-col"
+      initialScrollBehavior="auto"
+    >
       {messages?.length === 0 ? (
         <Welcome />
       ) : (
@@ -74,6 +78,6 @@ export function Chat({ chatId }: { chatId: string }) {
           </div>
         </>
       )}
-    </AutoScroll>
+    </ScrollToBottom>
   );
 }
