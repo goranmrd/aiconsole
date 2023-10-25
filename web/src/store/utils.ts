@@ -53,15 +53,6 @@ export function createMessage({
   };
 }
 
-export function useDebouncedPrompt() {
-  const prompt = useAICStore(
-    (state) => state.commandHistory[state.commandIndex],
-  ).trim();
-  const [debouncedPrompt] = useDebouncedValue(prompt, 150, { leading: true });
-
-  return debouncedPrompt;
-}
-
 export function findExistingGroupId(
   message: AICMessage,
   existingGroups: AICMessageGroup[],
