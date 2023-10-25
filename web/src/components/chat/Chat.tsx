@@ -22,7 +22,6 @@ import { Welcome } from '@/components/chat/Welcome';
 import { useAICStore } from '@/store/AICStore';
 import { useAnalysisStore } from '@/store/useAnalysisStore';
 import { Analysis } from './Analysis';
-import AutoScroll from './AutoScroll';
 
 export function Chat({ chatId }: { chatId: string }) {
   const calculateGroupedMessages = useAICStore(
