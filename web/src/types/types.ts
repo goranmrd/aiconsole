@@ -108,5 +108,5 @@ export type Agent = {
 };
 
 export type Settings = {
-  code_autorun?: number;
+  code_autorun?: boolean;
 };

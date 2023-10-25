@@ -39,7 +39,7 @@ export const createProjectSlice: StateCreator<
   projectName: '',
   alwaysExecuteCode: false,
   enableAutoCodeExecution: async () => {
-    await Api.saveSettings({ code_autorun: 1 });
+    await Api.saveSettings({ code_autorun: true });
     set({ alwaysExecuteCode: true });
   },
   setProject: async ({ path, name }: { path: string; name: string }) => {
@@ -59,7 +59,7 @@ export const createProjectSlice: StateCreator<
   getSettings: async () => {
     const result = await Api.getSettings();
     set({
-      alwaysExecuteCode: !!result.code_autorun,
+      alwaysExecuteCode: result.code_autorun,
     });
   },
 });

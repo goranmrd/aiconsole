@@ -25,12 +25,12 @@ from aiconsole.project_settings.settings import Settings
 router = APIRouter()
 
 
-class SettingsPatchData(BaseModel):
-    code_autorun: Optional[int] = None
+class SettingsData(BaseModel):
+    code_autorun: Optional[bool] = None
 
 
 @router.patch("")
-async def patch(patch_data: SettingsPatchData):
+async def patch(patch_data: SettingsData):
     settings = Settings()
     settings.patch({settings_name: setting_value for settings_name, setting_value in patch_data if setting_value is not None})
     return JSONResponse({"status": "ok"})
@@ -39,5 +39,5 @@ async def patch(patch_data: SettingsPatchData):
 @router.get("")
 async def get():
     settings = Settings()
-    return JSONResponse(settings.get_settings())
+    return JSONResponse(SettingsData(**settings.get_settings()).model_dump())
 
