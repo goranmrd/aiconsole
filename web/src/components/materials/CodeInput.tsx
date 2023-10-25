@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-    
+
 import Editor from 'react-simple-code-editor';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/vs2015.css';
@@ -21,13 +21,15 @@ import 'highlight.js/styles/vs2015.css';
 import { cn } from '@/utils/styles';
 
 interface CodeInputProps {
-  label: string;
+  label?: string;
   value: string;
   className?: string;
   onChange?: (value: string) => void;
+  onBlur?: () => void;
   codeLanguage?: string;
   disabled?: boolean;
   readOnly?: boolean;
+  transparent?: boolean;
 }
 
 export function CodeInput({
@@ -35,9 +37,11 @@ export function CodeInput({
   value,
   className,
   onChange,
+  onBlur,
   codeLanguage,
   disabled = false,
   readOnly = false,
+  transparent = false,
 }: CodeInputProps) {
   const onHighlight = (code: string) => {
     let lang = codeLanguage;
@@ -45,6 +49,7 @@ export function CodeInput({
       const { language } = hljs.highlightAuto(code);
       lang = language;
     }
+
     return hljs.highlight(code, { language: lang || 'python' }).value;
   };
 
@@ -55,14 +60,16 @@ export function CodeInput({
   };
 
   return (
-    <div className="w-1/2 ">
-      <label htmlFor={label} className="font-bold">
-        {label}:
-      </label>
+    <div className="h-full">
+      {label && (
+        <label htmlFor={label} className="font-bold block mb-4">
+          {label}:
+        </label>
+      )}
       <div
         className={cn(
           className,
-          'font-mono text-sm h-full mt-4 overflow-y-auto max-h-[540px]',
+          'font-mono text-sm overflow-y-auto h-[calc(100%-40px)] ',
         )}
       >
         <Editor
@@ -70,11 +77,12 @@ export function CodeInput({
           disabled={disabled || readOnly}
           textareaId={label}
           onValueChange={handleValueChange}
+          onBlur={onBlur}
           highlight={(code) => onHighlight(code)}
           padding={10}
           className={cn(
-            'min-h-full resize-none bg-black/20 appearance-none border border-transparent rounded w-full py-2 px-3 leading-tight placeholder-gray-400 bottom-0',
-            { 'opacity-[0.7] ': disabled },
+            'min-h-full resize-none bg-black/20 appearance-none border border-transparent rounded w-full leading-tight placeholder-gray-400 bottom-0 p-0',
+            { 'opacity-[0.7] ': disabled, 'bg-transparent': transparent },
           )}
           textareaClassName={cn(
             'focus:!outline-primary/50 focus:!shadow-outline',
