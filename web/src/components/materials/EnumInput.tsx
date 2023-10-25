@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-    
+
 import { cn } from '@/utils/styles';
 import { Tooltip } from '../system/Tooltip';
 
@@ -39,30 +39,29 @@ export function EnumInput<T extends string>({
 }: EnumInputProps<T>) {
   return (
     <div className="flex items-center gap-4">
-      <label className="font-bold flex items-center gap-1">
-        {label}
-        :
-      </label>
+      <label className="font-bold flex items-center gap-1">{label}:</label>
       <div className="flex gap-2">
-        {values.map((val) => (
+        {values.map((val, index) => (
           <Tooltip
             label={tootltipText(val)}
             position="top-end"
             offset={{ mainAxis: 7 }}
+            key={index}
           >
             <button
-            disabled={disabled}
-            className={cn(
-              'bg-white/5 border border-white/10 hover:text-black text-sm hover:bg-primary-light px-3 py-1 rounded-full flex flex-row items-center gap-1',
-              val === value && 'bg-primary border-primary text-black',
-              disabled && ' cursor-not-allowed hover:bg-unset hover:text-unset',
-              disabled && val !== value && 'opacity-50',
-            )}
-            onClick={() => onChange(val)}
-            key={val}
-          >
-            {render(val)}
-          </button>
+              disabled={disabled}
+              className={cn(
+                'bg-white/5 border border-white/10 hover:text-black text-sm hover:bg-primary-light px-3 py-1 rounded-full flex flex-row items-center gap-1',
+                val === value && 'bg-primary border-primary text-black',
+                disabled &&
+                  ' cursor-not-allowed hover:bg-unset hover:text-unset',
+                disabled && val !== value && 'opacity-50',
+              )}
+              onClick={() => onChange(val)}
+              key={val}
+            >
+              {render(val)}
+            </button>
           </Tooltip>
         ))}
       </div>
