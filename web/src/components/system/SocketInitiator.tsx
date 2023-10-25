@@ -20,8 +20,15 @@ import { useWebSocketStore } from '../../store/useWebSocketStore';
 
 export function SocketInitiator({ children }: { children: React.ReactNode }) {
   const { initWebSocket, disconnect } = useWebSocketStore();
+  const isInittialized = React.useRef(false);
 
   React.useEffect(() => {
+    if (isInittialized.current) {
+      return;
+    }
+
+    isInittialized.current = true;
+
     initWebSocket();
     return () => disconnect();
   }, [initWebSocket, disconnect]);
