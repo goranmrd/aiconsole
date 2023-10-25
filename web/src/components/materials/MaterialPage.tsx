@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-    
+
 import { notifications } from '@mantine/notifications';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
@@ -34,10 +34,8 @@ import { CodeInput } from '@/components/materials/CodeInput';
 import { useAICStore } from '@/store/AICStore';
 import { EyeIcon, NoSymbolIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { cn } from '@/utils/styles';
-import MarkdownPreview from './MarkdownPreview';
 import { BoltIcon } from '@heroicons/react/24/solid';
 import { Tooltip } from '../system/Tooltip';
-
 
 export function MaterialPage() {
   let { material_id } = useParams<{ material_id: string | undefined }>();
@@ -49,7 +47,6 @@ export function MaterialPage() {
   }
 
   const copyId = new URLSearchParams(window.location.search).get('copy');
-
   const [material, setMaterial] = useState<Material | undefined>(undefined);
   const [materialInitial, setMaterialInitial] = useState<Material | undefined>(
     undefined,
@@ -90,8 +87,14 @@ export function MaterialPage() {
     return () => {
       clearTimeout(timeout);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [material?.content_api, material?.content_dynamic_text, material?.content_static_text, material?.content_type, material?.name]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    material?.content_api,
+    material?.content_dynamic_text,
+    material?.content_static_text,
+    material?.content_type,
+    material?.name,
+  ]);
 
   useEffect(() => {
     // Auto generate id based on name
@@ -171,8 +174,9 @@ export function MaterialPage() {
     }
   };
   const readOnly = material?.defined_in === 'aiconsole';
+
   const previewValue = preview
-    ? '```md\n' + preview?.content.split('\\n').join('\n') + '\n```'
+    ? preview?.content.split('\\n').join('\n')
     : 'Generating preview...';
 
   const disableSubmit = (isMaterialChanged() && !(isNew && copyId)) || isError;
@@ -183,13 +187,18 @@ export function MaterialPage() {
 
       <div className="flex flex-col h-full overflow-y-auto p-6 gap-4">
         <div className="flex gap-5">
-        <Tooltip label={'Material id determines the file name and is auto generated from name. It must be unique.'} position="top-end" offset={{ mainAxis: 7 }}>
-        <p>
-            
-            <span className="font-bold">Material id: </span> {material?.id}
-          </p>
-      </Tooltip>
-          
+          <Tooltip
+            label={
+              'Material id determines the file name and is auto generated from name. It must be unique.'
+            }
+            position="top-end"
+            offset={{ mainAxis: 7 }}
+          >
+            <p>
+              <span className="font-bold">Material id: </span> {material?.id}
+            </p>
+          </Tooltip>
+
           {readOnly && (
             <div className="flex gap-2 items-center text-md font-bold ml-auto ">
               <EyeIcon className="w-4 h-4" />
@@ -225,70 +234,109 @@ export function MaterialPage() {
               label="Status"
               values={materialStatusOptions}
               value={material.status}
-              render={(value) => { return {'forced': <><BoltIcon className="h-4 w-4" title="forced" /> Forced</>, 'enabled': <><CheckIcon className="h-4 w-4" /> Enabled</>, 'disabled': <><NoSymbolIcon className="h-4 w-4" /> Disabled</>}[value] } }
+              render={(value) => {
+                return {
+                  forced: (
+                    <>
+                      <BoltIcon className="h-4 w-4" title="forced" /> Forced
+                    </>
+                  ),
+                  enabled: (
+                    <>
+                      <CheckIcon className="h-4 w-4" /> Enabled
+                    </>
+                  ),
+                  disabled: (
+                    <>
+                      <NoSymbolIcon className="h-4 w-4" /> Disabled
+                    </>
+                  ),
+                }[value];
+              }}
               onChange={(value) => setMaterial({ ...material, status: value })}
-              tootltipText={(value) => { return {'forced': 'This material will always be used for each task.', 'enabled': 'This material can be used by AI.', 'disabled': 'This material will never be used, in general its better keep only quality materials available to AI.'}[value] } }
+              tootltipText={(value) => {
+                return {
+                  forced: 'This material will always be used for each task.',
+                  enabled: 'This material can be used by AI.',
+                  disabled:
+                    'This material will never be used, in general its better keep only quality materials available to AI.',
+                }[value];
+              }}
             />
             <EnumInput<MaterialContentType>
               label="Content type"
               values={materialContenTypeOptions}
               value={material.content_type}
-              render={(value) => { return {'static_text': 'Text', 'dynamic_text': 'Dynamic text', 'api': 'API'}[value] } }
+              render={(value) => {
+                return {
+                  static_text: 'Text',
+                  dynamic_text: 'Dynamic text',
+                  api: 'API',
+                }[value];
+              }}
               disabled={readOnly}
               onChange={(value) =>
                 setMaterial({ ...material, content_type: value })
               }
-              tootltipText={(value) => { return {'static_text': 'Markdown formated text will be injected into AI context.', 'dynamic_text': 'A python function will generate markdown text to be injected into AI context.', 'api': 'Documentation will be extracted from code and injected into AI context as markdown text, code will be available to execute by AI without import statements.'}[value] } }
+              tootltipText={(value) => {
+                return {
+                  static_text:
+                    'Markdown formated text will be injected into AI context.',
+                  dynamic_text:
+                    'A python function will generate markdown text to be injected into AI context.',
+                  api: 'Documentation will be extracted from code and injected into AI context as markdown text, code will be available to execute by AI without import statements.',
+                }[value];
+              }}
             />
-            <div className="flex flex-row w-full gap-4 h-full">
-              {material.content_type === 'static_text' && (
-                <CodeInput
-                  label="Text"
-                  value={material.content_static_text}
-                  onChange={(value) =>
-                    setMaterial({ ...material, content_static_text: value })
-                  }
-                  className="flex-grow"
-                  disabled={readOnly}
-                  codeLanguage="markdown"
-                />
-              )}
+            <div className="flex flex-row w-full gap-4 ">
+              <div className="w-1/2 h-[calc(100vh-500px)] min-h-[300px]">
+                {material.content_type === 'static_text' && (
+                  <CodeInput
+                    label="Text"
+                    value={material.content_static_text}
+                    onChange={(value) =>
+                      setMaterial({ ...material, content_static_text: value })
+                    }
+                    className="flex-grow"
+                    disabled={readOnly}
+                    codeLanguage="markdown"
+                  />
+                )}
 
-              {material.content_type === 'dynamic_text' && (
-                <CodeInput
-                  label="Python function returning dynamic text"
-                  value={material.content_dynamic_text}
-                  onChange={(value) =>
-                    setMaterial({ ...material, content_dynamic_text: value })
-                  }
-                  className="flex-grow"
-                  disabled={readOnly}
-                  codeLanguage="python"
-                />
-              )}
-              {material.content_type === 'api' && (
-                <CodeInput
-                  label="API Module"
-                  value={material.content_api}
-                  onChange={(value) =>
-                    setMaterial({ ...material, content_api: value })
-                  }
-                  disabled={readOnly}
-                  className="flex-grow"
-                />
-              )}
-
-              {preview?.error ? (
+                {material.content_type === 'dynamic_text' && (
+                  <CodeInput
+                    label="Python function returning dynamic text"
+                    value={material.content_dynamic_text}
+                    onChange={(value) =>
+                      setMaterial({ ...material, content_dynamic_text: value })
+                    }
+                    className="flex-grow"
+                    disabled={readOnly}
+                    codeLanguage="python"
+                  />
+                )}
+                {material.content_type === 'api' && (
+                  <CodeInput
+                    label="API Module"
+                    value={material.content_api}
+                    onChange={(value) =>
+                      setMaterial({ ...material, content_api: value })
+                    }
+                    disabled={readOnly}
+                    className="flex-grow"
+                  />
+                )}
+              </div>
+              <div className="w-1/2 h-[calc(100vh-500px)] min-h-[300px]">
                 <CodeInput
                   label="Preview of markdown text to be injected into AI context"
-                  value={preview.error}
+                  value={preview?.error ? preview.error : previewValue}
                   disabled={readOnly}
                   readOnly={true}
                   className="flex-grow"
+                  codeLanguage="markdown"
                 />
-              ) : (
-                <MarkdownPreview text={previewValue} disabled={readOnly} />
-              )}
+              </div>
             </div>
             <button
               disabled={disableSubmit}

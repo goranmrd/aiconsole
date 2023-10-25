@@ -13,14 +13,12 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-    
-import { ChangeEvent, useCallback, useState } from 'react';
+
+import { useCallback, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import TextareaAutosize from 'react-textarea-autosize';
-import SyntaxHighlighter from 'react-syntax-highlighter';
-
-import { vs2015 } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { duotoneDark as vs2015 } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
 import { AICMessage } from '@/types/types';
 import { MessageControls } from './MessageControls';
@@ -28,6 +26,7 @@ import { useAICStore } from '@/store/AICStore';
 import { BlinkingCursor } from '@/components/chat/BlinkingCursor';
 import { BASE_URL } from '@/api/Api';
 import { Button } from '@/components/system/Button';
+import { CodeInput } from '../materials/CodeInput';
 
 interface MessageProps {
   message: AICMessage;
@@ -58,8 +57,7 @@ export function Message({ message, isStreaming }: MessageProps) {
 
   const handleCancelEditClick = () => setIsEditing(false);
 
-  const handleOnChange = (e: ChangeEvent<HTMLTextAreaElement>) =>
-    setContent(e.target.value);
+  const handleOnChange = (value: string) => setContent(value);
 
   const handleSaveClick = useCallback(() => {
     updateMessage(message.id, content);
@@ -99,10 +97,12 @@ export function Message({ message, isStreaming }: MessageProps) {
     <div className="flex flex-grow items-start">
       {isEditing ? (
         <div className="bg-[#00000080] rounded-md w-[660px]">
-          <TextareaAutosize
-            className="resize-none border-0 bg-transparent w-full outline-none h-96 p-4"
-            defaultValue={content}
+          <CodeInput
+            className="resize-none border-0 bg-transparent w-full outline-none h-96"
+            value={content}
             onChange={handleOnChange}
+            codeLanguage={message.language}
+            transparent
             onBlur={handleBlur} // added onBlur event here
           />
         </div>
@@ -173,9 +173,7 @@ export function Message({ message, isStreaming }: MessageProps) {
                         </a>
                       );
                     },
-                    // HACK / TODO: fix this any, not sure how to type this, is inline gone? how to handle ref?
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    code(props: any) {
+                    code(props) {
                       // eslint-disable-next-line @typescript-eslint/no-unused-vars
                       const { children, className, inline, node, ...rest } =
                         props;
