@@ -16,50 +16,23 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import './index.css';
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 
 import { initStore } from './store/AICStore.ts';
-import { ErrorPage } from '@/components/system/ErrorPage.tsx';
-import { ChatPage } from '@/components/chat/ChatPage.tsx';
-import { MaterialPage } from '@/components/materials/MaterialPage.tsx';
-import { MaterialsPage } from '@/components/materials/MaterialsPage.tsx';
 import { MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import { SocketInitiator } from '@/components/system/SocketInitiator.tsx';
-
-const router = createBrowserRouter([
-  {
-    path: '/materials/:material_id',
-    element: <MaterialPage />,
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: '/materials',
-    element: <MaterialsPage />,
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: '/',
-    element: <ChatPage />,
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: '/chats/:chat_id',
-    element: <ChatPage />,
-    errorElement: <ErrorPage />,
-  },
-]);
+import { Router } from './Router.tsx';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <MantineProvider>
       <Notifications position="top-right" />
       <SocketInitiator>
-        <RouterProvider router={router} />
+        <Router />
       </SocketInitiator>
     </MantineProvider>
   </React.StrictMode>,
