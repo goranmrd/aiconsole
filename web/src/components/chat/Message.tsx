@@ -173,7 +173,9 @@ export function Message({ message, isStreaming }: MessageProps) {
                         </a>
                       );
                     },
-                    code(props) {
+                    // HACK / TODO: fix this any, not sure how to type this, is inline gone? how to handle ref?
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    code(props: any) {
                       // eslint-disable-next-line @typescript-eslint/no-unused-vars
                       const { children, className, inline, node, ...rest } =
                         props;
