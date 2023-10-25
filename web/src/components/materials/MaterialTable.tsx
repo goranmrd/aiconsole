@@ -93,7 +93,7 @@ export function MaterialTable({ materials }: MaterialTableProps) {
             <td className="p-4">
               <div className=" flex flex-row items-center justify-center w-full h-full gap-2">
                 <DocumentDuplicateIcon
-                  onClick={redirectToMaterialPage(`${material.id}_copy`)}
+                  onClick={redirectToMaterialPage(`new?copy=${material.id}`)}
                   className="h-5 w-5 cursor-pointer"
                 />
 
