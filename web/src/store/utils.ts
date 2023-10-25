@@ -17,8 +17,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { AICMessage, AICMessageGroup } from '../types/types';
-import { useAICStore } from './AICStore';
-import { useDebouncedValue } from '@mantine/hooks';
 
 export function createMessage({
   agent_id,
