@@ -6,7 +6,7 @@ import { ChatPage } from '@/components/chat/ChatPage.tsx';
 import { MaterialPage } from '@/components/materials/MaterialPage.tsx';
 import { MaterialsPage } from '@/components/materials/MaterialsPage.tsx';
 import { useAICStore } from '@/store/AICStore';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 const router = createBrowserRouter([
   {
@@ -34,8 +34,17 @@ const router = createBrowserRouter([
 export function Router() {
   const projectPath = useAICStore((state) => state.projectPath);
 
+  const pathRef = useRef<string | null>(null);
+
   useEffect(() => {
-    router.navigate(`/chats/${uuidv4()}`);
+    if (!pathRef.current) {
+      pathRef.current = projectPath;
+    }
+
+    if (pathRef.current !== projectPath) {
+      router.navigate(`/chats/${uuidv4()}`);
+      pathRef.current = projectPath;
+    }
   }, [projectPath]);
 
   return <RouterProvider router={router} />;

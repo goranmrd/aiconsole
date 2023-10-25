@@ -17,7 +17,7 @@
 import { notifications } from '@mantine/notifications';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { create } from 'zustand';
-import { ErrorEvent } from 'reconnecting-websocket/events'
+import { ErrorEvent } from 'reconnecting-websocket/events';
 import { useAICStore } from './AICStore';
 import { OutgoingWSMessage } from '../types/outgoingMessages';
 import { IncomingWSMessage } from '../types/incomingMessages';
@@ -84,7 +84,6 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
           });
           break;
       }
-
     };
 
     ws.onerror = (e: ErrorEvent) => {

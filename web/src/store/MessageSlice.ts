@@ -15,14 +15,18 @@
 // limitations under the License.
 
 import { StateCreator } from 'zustand';
-import { SHA256 } from 'crypto-js';
-import { v4 as uuidv4 } from 'uuid';
 
 import { AICMessage, AICMessageGroup } from '../types/types';
 import { AICStore } from './AICStore';
+import {
+  joinFoldableGroups,
+  makeMessagesFoldable,
+  processGroups,
+} from './utils';
 
 export type MessageSlice = {
   messages: AICMessage[];
+  messageGroups: AICMessageGroup[];
   removeMessage: (id: string) => void;
   markMessageAsRan: (id: string) => void;
   editMessageContent: (id: string, content: string) => void;
@@ -36,6 +40,7 @@ export const createMessageSlice: StateCreator<
   MessageSlice
 > = (set, get) => ({
   messages: [],
+  messageGroups: [],
   removeMessage: (id: string) => {
     set((state) => ({
       messages: (state.messages || []).filter((message) => message.id !== id),
@@ -64,59 +69,12 @@ export const createMessageSlice: StateCreator<
     get().saveCommandAndMessagesToHistory(content, isUserMessage);
   },
   groupedMessages: () => {
-    const groups: AICMessageGroup[] = [];
+    const groups = processGroups(get().messages || [], get().messageGroups);
 
-    //Group messages
-    for (const message of get().messages || []) {
-      if (
-        groups.length === 0 ||
-        groups[groups.length - 1].role !== message.role ||
-        groups[groups.length - 1].agent_id !== message.agent_id ||
-        groups[groups.length - 1].task !== message.task ||
-        groups[groups.length - 1].materials_ids.join('|') !==
-          message.materials_ids.join('|')
-      ) {
-        groups.push({
-          id: SHA256(message.task || uuidv4()).toString(), // we don't group user messages, so a uuid is fine
-          agent_id: message.agent_id,
-          role: message.role,
-          task: message.task || '',
-          materials_ids: message.materials_ids,
-          sections: [{ id: message.id, foldable: false, messages: [message] }],
-        });
-      } else {
-        groups[groups.length - 1].sections.push({
-          id: message.id,
-          foldable: false,
-          messages: [message],
-        });
-      }
-    }
+    makeMessagesFoldable(groups);
+    joinFoldableGroups(groups);
 
-    //Make all code and code_output messages foldable
-    for (const group of groups) {
-      for (const microGroup of group.sections) {
-        if (microGroup.messages[0].code || microGroup.messages[0].code_output) {
-          microGroup.foldable = true;
-        }
-      }
-    }
-
-    //Join all microGroups that have foldable messages together
-    for (const group of groups) {
-      let i = 0;
-      while (i < group.sections.length - 1) {
-        if (group.sections[i].foldable && group.sections[i + 1].foldable) {
-          group.sections[i].messages = [
-            ...group.sections[i].messages,
-            ...group.sections[i + 1].messages,
-          ];
-          group.sections.splice(i + 1, 1);
-        } else {
-          i++;
-        }
-      }
-    }
+    set({ messageGroups: groups });
 
     return groups;
   },
