@@ -38,6 +38,11 @@ async def run_code(request: Request, code_to_run: CodeToRun, chat_id: str) -> St
 
             mats = [projects.get_project_materials().get_material(mid) for mid in code_to_run.materials_ids]
 
+            # If the code starts with a !, that means a shell command
+            if code_to_run.language == "python" and code_to_run.code.startswith("!"):
+                code_to_run.language = "shell"
+                code_to_run.code = code_to_run.code[1:]
+
             try:
                 for chunk in get_code_interpreter(code_to_run.language).run(code_to_run.code, mats):
                     yield chunk

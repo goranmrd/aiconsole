@@ -137,14 +137,6 @@ async def execution_mode_interpreter(
                     if code_delta:
                         yield code_delta
 
-    # If the code starts with a !, that means a shell command
-    if language == "python" and code.startswith("!"):
-        language = "shell"
-        # Clear the message and resend it
-        yield CLEAR_STR
-        yield f'<<<< START CODE ({language}) >>>>'
-        yield code[1:]
-
     if language:
         yield "<<<< END CODE >>>>"
         language = None
