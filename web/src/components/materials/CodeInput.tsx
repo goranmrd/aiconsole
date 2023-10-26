@@ -19,6 +19,7 @@ import hljs from 'highlight.js';
 import 'highlight.js/styles/vs2015.css';
 
 import { cn } from '@/utils/styles';
+import { useState } from 'react';
 
 interface CodeInputProps {
   label?: string;
@@ -43,6 +44,7 @@ export function CodeInput({
   readOnly = false,
   transparent = false,
 }: CodeInputProps) {
+  const [focus, setFocus] = useState(false);
   const onHighlight = (code: string) => {
     let lang = codeLanguage;
     if (!lang) {
@@ -59,6 +61,13 @@ export function CodeInput({
     }
   };
 
+  const handleBlur = () => {
+    setFocus(false);
+    onBlur?.();
+  };
+
+  const handleFocus = () => setFocus(true);
+
   return (
     <div className="h-full">
       {label && (
@@ -69,7 +78,8 @@ export function CodeInput({
       <div
         className={cn(
           className,
-          'font-mono text-sm overflow-y-auto h-[calc(100%-40px)] ',
+          'font-mono text-sm overflow-y-auto h-full  max-h-[calc(100%-40px)] bg-black/20 border border-transparent rounded',
+          { 'border-primary/50 ': focus },
         )}
       >
         <Editor
@@ -77,19 +87,20 @@ export function CodeInput({
           disabled={disabled || readOnly}
           textareaId={label}
           onValueChange={handleValueChange}
-          onBlur={onBlur}
+          onBlur={handleBlur}
+          onFocus={handleFocus}
           highlight={(code) => onHighlight(code)}
           padding={10}
           className={cn(
-            'min-h-full resize-none bg-black/20 appearance-none border border-transparent rounded w-full leading-tight placeholder-gray-400 bottom-0 p-0',
-            { 'opacity-[0.7] ': disabled, 'bg-transparent': transparent },
-          )}
-          textareaClassName={cn(
-            'focus:!outline-primary/50 focus:!shadow-outline',
+            'resize-none  appearance-none border border-transparent rounded w-full leading-tight placeholder-gray-400 bottom-0 p-0   ',
             {
-              'cursor-not-allowed': disabled,
+              'opacity-[0.7] ': disabled,
+              'bg-transparent': transparent,
             },
           )}
+          textareaClassName={cn('focus:!outline-none focus:!shadow-none ', {
+            'cursor-not-allowed': disabled,
+          })}
         />
       </div>
     </div>
