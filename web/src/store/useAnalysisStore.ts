@@ -51,7 +51,6 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
   next_step: undefined,
   thinking_process: undefined,
   reset: () => {
-    console.log('resetting analysis');
     get().analysisAbortController.abort();
 
     set({
