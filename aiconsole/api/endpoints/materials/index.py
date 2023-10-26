@@ -26,13 +26,14 @@ _log = logging.getLogger(__name__)
 
 @router.get("/")
 async def materials_get():
+    settings = projects.get_project_settings()
     return JSONResponse(
         [
             {
                 "id": material.id,
                 "name": material.name,
                 "defined_in": material.defined_in,
-                "status": material.status,
+                "status": settings.get_material_status(material.id),
                 "usage": material.usage
             } for material in projects.get_project_materials().all_materials()
         ]

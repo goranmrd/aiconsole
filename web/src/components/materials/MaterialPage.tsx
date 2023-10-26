@@ -15,7 +15,7 @@
 // limitations under the License.
 
 import { notifications } from '@mantine/notifications';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
 import { Api } from '@/api/Api';
@@ -38,6 +38,8 @@ import { BoltIcon } from '@heroicons/react/24/solid';
 import { Tooltip } from '../system/Tooltip';
 
 export function MaterialPage() {
+  const navigate = useNavigate();
+
   let { material_id } = useParams<{ material_id: string | undefined }>();
 
   const isNew = material_id === 'new';
@@ -47,29 +49,38 @@ export function MaterialPage() {
   }
 
   const copyId = new URLSearchParams(window.location.search).get('copy');
+  
   const [material, setMaterial] = useState<Material | undefined>(undefined);
-  const [materialInitial, setMaterialInitial] = useState<Material | undefined>(
-    undefined,
-  );
-
-  const [preview, setPreview] = useState<RenderedMaterial | undefined>(
-    undefined,
-  );
+  const [materialInitial, setMaterialInitial] = useState<Material | undefined>(undefined);
+  const [preview, setPreview] = useState<RenderedMaterial | undefined>(undefined);
   const [errors, setErrors] = useState<ErrorObject>({});
 
-  const isMaterialChanged = () => {
-    if (material && materialInitial) {
-      const changedFields = Object.entries(material).filter(([key, value]) => {
-        return value !== materialInitial[key as keyof Material];
-      });
+  const isError = Object.values(errors).some((error) => error !== null);
+  const deleteMaterial = useAICStore((state) => state.deleteMaterial);
+  const readOnly = material?.defined_in === 'aiconsole';
+  const previewValue = preview ? preview?.content.split('\\n').join('\n') : 'Generating preview...';
 
-      return Boolean(!changedFields.length);
+  const isMaterialStatusChanged = () => {
+    if (!material || !materialInitial) {
+      return true;
     }
+    return material.status !== materialInitial.status;
   };
 
-  const isError = Object.values(errors).some((error) => error !== null);
+  const isMaterialChanged = () => {
+    if (!material || !materialInitial) {
+      return true;
+    }
 
-  const deleteMaterial = useAICStore((state) => state.deleteMaterial);
+    const changedFields = Object.keys(material).filter((key) => {
+      return key !== 'status' && material[key as keyof Material] !== materialInitial[key as keyof Material];
+    });
+
+    return changedFields.length > 0;
+  };
+
+  const enableSubmit = (isMaterialChanged() || isMaterialStatusChanged()) && !isError;
+  const disableSubmit = !enableSubmit;
 
   //After 3 seconds of inactivity after change query /preview to get rendered material
   useEffect(() => {
@@ -96,28 +107,35 @@ export function MaterialPage() {
     material?.name,
   ]);
 
+  function nameToId(name: string) {
+    //to lower
+    name = name.toLowerCase() || '';
+
+    //replace white space with underscore
+    name = name.replace(/\s/g, '_');
+
+    //remove special characters
+    name = name.replace(/[^a-zA-Z0-9_]/g, '');
+
+    //remove duplicate underscores
+    name = name.replace(/_+/g, '_');
+
+    //remove leading and trailing underscores
+    name = name.replace(/^_+|_+$/g, '');
+
+    return name;
+  }
+  
   useEffect(() => {
     // Auto generate id based on name
     if (material?.name) {
       setMaterial((material: Material | undefined) => {
+        
         if (!material) return material;
+        const id = nameToId(material.name);
 
-        //to lower
-        let name = material?.name.toLowerCase() || '';
-
-        //replace white space with underscore
-        name = name.replace(/\s/g, '_');
-
-        //remove special characters
-        name = name.replace(/[^a-zA-Z0-9_]/g, '');
-
-        //remove duplicate underscores
-        name = name.replace(/_+/g, '_');
-
-        //remove leading and trailing underscores
-        name = name.replace(/^_+|_+$/g, '');
-
-        return { ...material, id: name };
+        console.log('material', { ...material, id });
+        return { ...material, id };
       });
     }
   }, [material?.name]);
@@ -127,8 +145,8 @@ export function MaterialPage() {
       Api.getMaterial(copyId).then((materialToCopy) => {
         materialToCopy.name += ' Copy';
         materialToCopy.defined_in = 'project';
-        materialToCopy.id = material_id || '';
-        setMaterialInitial(materialToCopy);
+        materialToCopy.id = nameToId(materialToCopy.name);
+        setMaterialInitial(undefined);
         setMaterial(materialToCopy);
       });
     } else if (material_id) {
@@ -139,15 +157,29 @@ export function MaterialPage() {
     } else {
       //HACK: This will get a default new material
       Api.getMaterial('new').then((material) => {
-        setMaterialInitial(material);
+        setMaterialInitial(undefined);
         setMaterial(material);
       });
     }
   }, [copyId, isNew, material_id]);
 
+  const updateStatusIfNecessary = async (material: Material) => {
+    if (isMaterialStatusChanged()) {
+      await Api.setMaterialStatus(material.id, material.status);
+      await useAICStore.getState().fetchMaterials();
+
+      notifications.show({
+        title: 'Status changed',
+        message: `Material status changed to ${material.status}`,
+        color: 'green',
+      });
+    }
+  };
+
   const handleSaveClick = (material: Material) => async () => {
     if (isNew) {
       await Api.saveNewMaterial(material);
+      await updateStatusIfNecessary(material);
 
       notifications.show({
         title: 'Saved',
@@ -157,6 +189,7 @@ export function MaterialPage() {
     } else if (materialInitial && materialInitial.id !== material.id) {
       await Api.saveNewMaterial(material);
       await deleteMaterial(materialInitial.id);
+      await updateStatusIfNecessary(material);
 
       notifications.show({
         title: 'Renamed',
@@ -164,24 +197,25 @@ export function MaterialPage() {
         color: 'green',
       });
     } else {
-      await Api.updateMaterial(material);
+      if (isMaterialChanged()) {
+        await Api.updateMaterial(material);
 
-      notifications.show({
-        title: 'Saved',
-        message: 'Material saved',
-        color: 'green',
-      });
+        notifications.show({
+          title: 'Saved',
+          message: 'Material saved',
+          color: 'green',
+        });
+      }
+
+      await updateStatusIfNecessary(material);
+    }
+
+    if (material_id !== material.id) {
+      navigate(`/materials/${material.id}`);
     }
 
     setMaterialInitial(material);
   };
-  const readOnly = material?.defined_in === 'aiconsole';
-
-  const previewValue = preview
-    ? preview?.content.split('\\n').join('\n')
-    : 'Generating preview...';
-
-  const disableSubmit = (isMaterialChanged() && !(isNew && copyId)) || isError;
 
   return (
     <div className="App flex flex-col h-screen fixed top-0 left-0 bottom-0 right-0 bg-gray-800/95 text-stone-400 ">
@@ -190,9 +224,7 @@ export function MaterialPage() {
       <div className="flex flex-col h-full overflow-y-auto p-6 gap-4">
         <div className="flex gap-5">
           <Tooltip
-            label={
-              'Material id determines the file name and is auto generated from name. It must be unique.'
-            }
+            label={'Material id determines the file name and is auto generated from name. It must be unique.'}
             position="top-end"
             offset={{ mainAxis: 7 }}
           >
@@ -255,7 +287,9 @@ export function MaterialPage() {
                   ),
                 }[value];
               }}
-              onChange={(value) => setMaterial({ ...material, status: value })}
+              onChange={async (value) => {
+                setMaterial({ ...material, status: value });
+              }}
               tootltipText={(value) => {
                 return {
                   forced: 'This material will always be used for each task.',
@@ -277,15 +311,11 @@ export function MaterialPage() {
                 }[value];
               }}
               disabled={readOnly}
-              onChange={(value) =>
-                setMaterial({ ...material, content_type: value })
-              }
+              onChange={(value) => setMaterial({ ...material, content_type: value })}
               tootltipText={(value) => {
                 return {
-                  static_text:
-                    'Markdown formated text will be injected into AI context.',
-                  dynamic_text:
-                    'A python function will generate markdown text to be injected into AI context.',
+                  static_text: 'Markdown formated text will be injected into AI context.',
+                  dynamic_text: 'A python function will generate markdown text to be injected into AI context.',
                   api: 'Documentation will be extracted from code and injected into AI context as markdown text, code will be available to execute by AI without import statements.',
                 }[value];
               }}
@@ -296,9 +326,7 @@ export function MaterialPage() {
                   <CodeInput
                     label="Text"
                     value={material.content_static_text}
-                    onChange={(value) =>
-                      setMaterial({ ...material, content_static_text: value })
-                    }
+                    onChange={(value) => setMaterial({ ...material, content_static_text: value })}
                     className="flex-grow"
                     disabled={readOnly}
                     codeLanguage="markdown"
@@ -309,9 +337,7 @@ export function MaterialPage() {
                   <CodeInput
                     label="Python function returning dynamic text"
                     value={material.content_dynamic_text}
-                    onChange={(value) =>
-                      setMaterial({ ...material, content_dynamic_text: value })
-                    }
+                    onChange={(value) => setMaterial({ ...material, content_dynamic_text: value })}
                     className="flex-grow"
                     disabled={readOnly}
                     codeLanguage="python"
@@ -321,9 +347,7 @@ export function MaterialPage() {
                   <CodeInput
                     label="API Module"
                     value={material.content_api}
-                    onChange={(value) =>
-                      setMaterial({ ...material, content_api: value })
-                    }
+                    onChange={(value) => setMaterial({ ...material, content_api: value })}
                     disabled={readOnly}
                     className="flex-grow"
                   />
@@ -345,8 +369,7 @@ export function MaterialPage() {
               className={cn(
                 'bg-primary hover:bg-gray-700/95 text-black hover:bg-primary-light px-4 py-1 rounded-full flow-right',
                 {
-                  'opacity-[0.3] cursor-not-allowed hover:bg-initial':
-                    disableSubmit,
+                  'opacity-[0.3] cursor-not-allowed hover:bg-initial': disableSubmit,
                 },
               )}
               onClick={handleSaveClick(material)}

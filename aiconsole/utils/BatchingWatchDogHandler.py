@@ -22,10 +22,11 @@ import threading
 
 
 class BatchingWatchDogHandler(watchdog.events.FileSystemEventHandler):
-    def __init__(self, reload):
+    def __init__(self, reload, extension=".toml"):
         self.lock = threading.Lock()
         self.timer = None
         self.reload = reload
+        self.extension = extension
 
     def on_moved(self, event):
         return self.on_modified(event)
@@ -37,7 +38,7 @@ class BatchingWatchDogHandler(watchdog.events.FileSystemEventHandler):
         return self.on_modified(event)
 
     def on_modified(self, event):
-        if event.is_directory or not event.src_path.endswith(".toml"):
+        if event.is_directory or not event.src_path.endswith(self.extension):
             return
 
         with self.lock:

@@ -20,7 +20,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from aiconsole import projects
-from aiconsole.materials.material import MaterialLocation, Material, MaterialStatus
+from aiconsole.materials.material import MaterialLocation, Material, MaterialStatus, MaterialWithStatus
 
 router = APIRouter()
 
@@ -34,11 +34,15 @@ class StatusChangePostBody(BaseModel):
 @router.get("/{material_id}")
 async def material_get(material_id: str):
     try:
+        settings = projects.get_project_settings()
         material = projects.get_project_materials().get_material(material_id)
-        return JSONResponse(material.model_dump())
+        return JSONResponse({
+            **material.model_dump(),
+            "status": settings.get_material_status(material.id),
+        })
     except KeyError:
         #A new material
-        return JSONResponse(Material(
+        return JSONResponse(MaterialWithStatus(
             id="",
             name="",
             usage="",
@@ -90,7 +94,7 @@ async def material_status_change(
     """
     try:
         projects.get_project_materials().get_material(material_id)
-        projects.get_project_materials().save_material_status(material_id, body.status)
+        projects.get_project_settings().set_material_status(material_id, body.status)
         return JSONResponse({"status": "ok"})
     except KeyError:
         raise HTTPException(status_code=404, detail="Material not found")

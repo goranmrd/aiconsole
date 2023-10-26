@@ -21,6 +21,7 @@ import {
   Chat,
   Material,
   MaterialInfo,
+  MaterialStatus,
   RenderedMaterial,
   Settings,
 } from '@/types/types';
@@ -123,6 +124,9 @@ const getMaterials = async () =>
     MaterialInfo[]
   >;
 
+const setMaterialStatus = async (id: string, status: MaterialStatus) => 
+  ky.post(`${BASE_URL}/api/materials/${id}/status-change`, { json: { status }, hooks }).json() as Promise<void>;
+
 const getMaterial = async (id: string) =>
   ky
     .get(`${BASE_URL}/api/materials/${id}`, { hooks })
@@ -169,9 +173,9 @@ const analyse = (body: Chat, signal?: AbortSignal) =>
 
 // Settings
 
-const saveSettings = (body: Settings) => {
+const saveSettings = (body: Settings) => 
   ky.patch(`${BASE_URL}/api/settings`, { json: { ...body }, hooks });
-};
+
 
 const getSettings = () =>
   ky.get(`${BASE_URL}/api/settings`, { hooks }).json() as Promise<Settings>;
@@ -182,6 +186,7 @@ export const Api = {
   analyse,
   getAgents,
   getMaterial,
+  setMaterialStatus,
   getMaterials,
   previewMaterial,
   chooseProject,

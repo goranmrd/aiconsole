@@ -26,7 +26,7 @@ from typing import List
 
 
 def create_plan_class():
-    available_materials = projects.get_project_materials().available_materials()
+    enabled_materials = projects.get_project_materials().enabled_materials()
     available_agents = projects.get_project_agents().all_agents()
 
     class Plan(OpenAISchema):
@@ -61,7 +61,7 @@ def create_plan_class():
             ...,
             description="Chosen material ids relevant for the task",
             json_schema_extra={
-                "items": {"enum": [k.id for k in random.sample(available_materials, len(available_materials))], "type": "string"}
+                "items": {"enum": [k.id for k in random.sample(enabled_materials, len(enabled_materials))], "type": "string"}
             },
         )
 

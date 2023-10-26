@@ -129,7 +129,6 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
     });
 
     await Api.saveHistory(chat);
-    await get().initChatHistory();
   },
   updateChatHeadline: async (id: string, headline: string) => {
     const editedHeadline = get().chatHeadlines.find((chat) => chat.id === id);

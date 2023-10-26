@@ -42,13 +42,14 @@ class MaterialLocation(str, Enum):
     PROJECT_DIR = "project"
 
 
+
+
 class Material(BaseModel):
     id: str
     name: str
     version: str = "0.0.1"
     usage: str
     defined_in: MaterialLocation
-    status: MaterialStatus = MaterialStatus.ENABLED
     
     # Content, either static or dynamic
     content_type: MaterialContentType = MaterialContentType.STATIC_TEXT
@@ -159,3 +160,6 @@ def fibonacci(n):
             return RenderedMaterial(id=self.id, content='', error=traceback.format_exc())
 
         raise ValueError("Material has no content")
+
+class MaterialWithStatus(Material):
+    status: MaterialStatus = MaterialStatus.ENABLED

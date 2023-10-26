@@ -22,6 +22,7 @@ from aiconsole.code_running.run_code import reset_code_interpreters
 from aiconsole.materials import materials
 from aiconsole.websockets.connection_manager import AICConnection
 from aiconsole.websockets.outgoing_messages import ProjectOpenedWSMessage
+from aiconsole.project_settings.settings import Settings
 
 _materials = materials.Materials(
     "aiconsole.materials.core",
@@ -33,6 +34,7 @@ _agents = agents.Agents(
     os.path.join(os.getcwd(), "agents")
 )
 
+_settings = Settings()
 
 def _create_project_message():
     return ProjectOpenedWSMessage(
@@ -47,6 +49,10 @@ def get_project_materials() -> materials.Materials:
 
 def get_project_agents() -> agents.Agents:
     return _agents
+
+
+def get_project_settings() -> Settings:
+    return _settings
 
 
 def get_history_directory():
@@ -72,17 +78,21 @@ def get_credentials_directory():
 async def reinitialize_project():
     global _materials
     global _agents
+    global _settings
 
     _materials.stop()
     _agents.stop()
+    _settings.stop()
 
     reset_code_interpreters()
     
     _agents = agents.Agents("aiconsole.agents.core",  os.path.join(get_project_directory(), "agents"))
     _materials = materials.Materials("aiconsole.materials.core", os.path.join(get_project_directory(), "materials"))
+    _settings = Settings()
 
     await _materials.reload()
     await _agents.reload()
+    await _settings.reload()
 
     await _create_project_message().send_to_all()
 

@@ -24,7 +24,7 @@ export type ProjectSlice = {
   projectName: string;
   alwaysExecuteCode: boolean;
   chooseProject: () => Promise<void>;
-  getSettings: () => void;
+  getSettings: () => Promise<void>;
   setProject: ({ path, name }: { path: string; name: string }) => Promise<void>;
   enableAutoCodeExecution: () => void;
 };
