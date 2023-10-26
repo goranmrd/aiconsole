@@ -14,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from hmac import new
 import logging
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse

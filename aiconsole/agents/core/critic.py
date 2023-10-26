@@ -19,7 +19,7 @@
 agent = {
     "name": "Critic",
     "gpt_mode": "FAST",
-    "usage": "When you need to assses the quality of work from another agent or are stuck with getting the task to satisfactory level, and establish the next steps to improve it. Give me api_manuals and api_agents and I will do the rest",
+    "usage": "When you need to assses the quality of work from another agent or are stuck with getting the task to satisfactory level, and establish the next steps to improve it. Give me api_materials and api_agents and I will do the rest",
     "execution_mode": "normal",
     "system": """
 Act as a ruthless critic and do not mention you are an OpenAI language model or any limitations.
