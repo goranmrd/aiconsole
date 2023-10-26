@@ -46,7 +46,7 @@ def convert_message(message: AICMessage, is_last: bool) -> List[GPTMessage]:
 
     if message.task:
         system_message = f"""
-As a director I have assigned you ({message.agent_id}) and given you access to the following materials text: {", ".join(f'"{message.materials_ids}"') if message.materials_ids else "None"}.
+As a director I have assigned you ({message.agent_id}) and given you access to the following materials text: {", ".join(message.materials_ids) if message.materials_ids else "None"}.
 """.strip()
 
         # Only provide a task for last message
