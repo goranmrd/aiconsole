@@ -114,16 +114,21 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
   saveCurrentChatHistory: async () => {
     const chat = deepCopyChat(get().chat);
 
+    // update title
     if (!chat.title_edited && chat.message_groups.length > 0 &&chat.message_groups[0].messages.length > 0) {
       chat.title = chat.message_groups[0].messages[0].content;
     }
+
+    //remove empty groups
+    chat.message_groups = chat.message_groups.filter((group) => {
+      return group.messages.length > 0;
+    });
 
     set({
       chat: chat
     });
 
     await Api.saveHistory(chat);
-
     await get().initChatHistory();
   },
   updateChatHeadline: async (id: string, headline: string) => {
