@@ -1,10 +1,10 @@
-usage = "When you have a midjourney prompt and need to create an image from it and display images from local path"
+usage = "When you have to write new aiconsole material."
 content_type = "api"
 content_api = """
 ""\"
 ## Location
 
-Materials are stored in the `./manuals` directory. Each material is a .md or a .py file.
+Materials are stored in the `./materials` directory. Each material is a .toml file.
 
 ## Writing Materials
 
