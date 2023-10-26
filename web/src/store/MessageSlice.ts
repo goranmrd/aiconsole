@@ -150,6 +150,7 @@ export const createMessageSlice: StateCreator<
   [],
   MessageSlice
 > = (set, get) => ({
+
   isViableForRunningCode: (groupId: string, messageId: string) => {
     const message = get()
       .chat.message_groups.find((group) => group.id === groupId)
@@ -197,7 +198,6 @@ export const createMessageSlice: StateCreator<
         chat,
       };
     });
-
     get().saveCurrentChatHistory();
   },
   removeOutputFromCode: (
