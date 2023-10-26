@@ -16,6 +16,7 @@
     
 import tomlkit
 import tomlkit.exceptions
+import tomlkit.container
 from pathlib import Path
 from aiconsole.materials.material import MaterialStatus
 from typing import Dict, Any
@@ -48,15 +49,11 @@ class Settings:
             section = self.__toml_data[section_name]
         except tomlkit.exceptions.NonExistentKey:
             return {}
+        
+        if not isinstance(section, tomlkit.container.Container):
+            return {}
+
         return {key: value for key, value in section.items()}
-
-    def __get_material_table(self):
-        materials_table = tomlkit.table()
-
-        for key, value in self.__materials.items():
-            materials_table[key] = tomlkit.string(value)
-
-        return materials_table
 
     def __get_tomlkit_table_for_input(self, input: Dict[str, Any]):
         table = tomlkit.table()

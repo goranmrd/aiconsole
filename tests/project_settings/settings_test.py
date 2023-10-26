@@ -16,6 +16,7 @@
     
 import unittest
 from unittest.mock import mock_open, patch
+from aiconsole.materials.material import MaterialStatus
 from aiconsole.project_settings.settings import Settings
 
 
@@ -34,13 +35,13 @@ class TestSettings(unittest.TestCase):
 
     def test_set_material_status(self):
         # Testing setting the material status
-        self.settings.set_material_status('material1', 'disable')
-        self.assertEqual(self.settings.get_material_status('material1'), 'disable')
+        self.settings.set_material_status('material1', MaterialStatus.DISABLED)
+        self.assertEqual(self.settings.get_material_status('material1'), MaterialStatus.DISABLED)
 
     def test_set_agent_status(self):
         # Testing setting the agent status
-        self.settings.set_agent_status('agent1', 'force')
-        self.assertEqual(self.settings.get_agent_status('agent1'), 'force')
+        self.settings.set_agent_status('agent1', MaterialStatus.FORCED)
+        self.assertEqual(self.settings.get_agent_status('agent1'), MaterialStatus.FORCED)
 
     @patch("builtins.open", new_callable=mock_open)
     def test_load_empty_settings_file(self, mock_file_open):
@@ -79,9 +80,9 @@ class TestSettings(unittest.TestCase):
     def test_save_settings(self, mock_file_open):
         # Testing saving settings to a file
         settings = Settings()
-        settings.set_material_status('material1', 'disable')
-        settings.set_agent_status('agent1', 'force')
+        settings.set_material_status('material1', MaterialStatus.DISABLED)
+        settings.set_agent_status('agent1', MaterialStatus.FORCED)
         with patch('builtins.open', mock_file_open) as m:
-            settings._Settings__save_toml_data()
-            m.assert_called_with(settings._Settings__file_path, 'w')
+            settings.__save_toml_data()
+            m.assert_called_with(settings.__file_path, 'w')
             m().write.assert_called_once()
