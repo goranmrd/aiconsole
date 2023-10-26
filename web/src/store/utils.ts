@@ -17,6 +17,7 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { AICMessage, AICMessageGroup } from '../types/types';
+import { useAICStore } from './AICStore';
 
 export function createMessage({
   agent_id,
@@ -51,23 +52,6 @@ export function createMessage({
   };
 }
 
-export function findExistingGroupId(
-  message: AICMessage,
-  existingGroups: AICMessageGroup[],
-) {
-  for (const group of existingGroups) {
-    if (
-      group.role === message.role &&
-      group.agent_id === message.agent_id &&
-      group.task === message.task &&
-      group.materials_ids.join('|') === message.materials_ids.join('|')
-    ) {
-      return group.id;
-    }
-  }
-  return null;
-}
-
 export function shouldCreateNewGroup(
   message: AICMessage,
   groups: AICMessageGroup[],
@@ -83,59 +67,12 @@ export function shouldCreateNewGroup(
   );
 }
 
-export function processGroups(
-  messages: AICMessage[],
-  existingGroups: AICMessageGroup[],
-) {
-  const groups = [];
-
-  for (const message of messages) {
-    if (shouldCreateNewGroup(message, groups)) {
-      const existingGroupId = findExistingGroupId(message, existingGroups);
-
-      groups.push({
-        id: existingGroupId || uuidv4(),
-        agent_id: message.agent_id,
-        role: message.role,
-        task: message.task || '',
-        materials_ids: message.materials_ids,
-        sections: [{ id: message.id, foldable: false, messages: [message] }],
-      });
-    } else {
-      groups[groups.length - 1].sections.push({
-        id: message.id,
-        foldable: false,
-        messages: [message],
-      });
-    }
-  }
-
-  return groups;
-}
-
-export function makeMessagesFoldable(groups: AICMessageGroup[]) {
-  for (const group of groups) {
-    for (const microGroup of group.sections) {
-      if (microGroup.messages[0].code || microGroup.messages[0].code_output) {
-        microGroup.foldable = true;
-      }
-    }
-  }
-}
-
-export function joinFoldableGroups(groups: AICMessageGroup[]) {
-  for (const group of groups) {
-    let i = 0;
-    while (i < group.sections.length - 1) {
-      if (group.sections[i].foldable && group.sections[i + 1].foldable) {
-        group.sections[i].messages = [
-          ...group.sections[i].messages,
-          ...group.sections[i + 1].messages,
-        ];
-        group.sections.splice(i + 1, 1);
-      } else {
-        i++;
-      }
-    }
-  }
+export function deepCopyGroups(groups: AICMessageGroup[]) {
+  return groups.map((group) => ({
+    ...group,
+    sections: group.sections.map((section) => ({
+      ...section,
+      messages: section.messages.map((message) => ({ ...message })),
+    })),
+  }));
 }

@@ -59,7 +59,10 @@ class Settings:
         table = tomlkit.table()
 
         for key, value in input.items():
-            table[key] = tomlkit.string(value)
+            if isinstance(value, bool):
+                table[key] = tomlkit.item(value)
+            else:
+                table[key] = tomlkit.string(value)
 
         return table
 

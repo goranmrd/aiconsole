@@ -23,7 +23,7 @@ import { useWebSocketStore } from '@/store/useWebSocketStore';
 
 export type ChatSlice = {
   chatId: string;
-  hasPendingCode: boolean;
+  hasPendingCode: () => boolean;
   chatHeadlines: ChatHeadline[];
   setChatId: (id: string) => void;
   deleteChat: (id: string) => Promise<void>;
@@ -37,7 +37,11 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
   get,
 ) => ({
   chatId: '',
-  hasPendingCode: false,
+  hasPendingCode: () => {
+    const messages = get().flatMessages();
+    const lastMessage = messages.at(messages.length - 1);
+    return !!lastMessage?.code
+  },
   chatHeadlines: [],
   agent: undefined,
   materials: [],
@@ -64,40 +68,45 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
     }));
   },
   setChatId: async (id: string) => {
-    set(() => ({
+    set({
       chatId: id,
-      messages: undefined,
-      hasPendingCode: false,
-    }));
-
-    useWebSocketStore.getState().sendMessage({
-      type: 'SetChatIdWSMessage',
-      chat_id: id,
+      loadingMessages: true
     });
+    try {
+      useWebSocketStore.getState().sendMessage({
+        type: 'SetChatIdWSMessage',
+        chat_id: id,
+      });
+  
+      let chat: Chat;
+      
+      if (id === '') {
+        chat = {
+          id: '',
+          messages: [],
+        };
+      } else {
+        chat = await Api.getChat(id);
+      }
 
-    let chat: Chat;
-    if (id === '') {
-      chat = {
-        id: '',
-        messages: [],
-      };
-    } else {
-      chat = await Api.getChat(id);
+      console.log(`chat.messages: ${chat}`);
+      get().setMessagesFromFlatList(chat.messages);
+    } finally {
+      set({
+        loadingMessages: false,
+      });
     }
 
-    set(() => ({
-      messages: (chat.messages || []).map(({ materials_ids, ...rest }) => {
-        return {
-          materials_ids: materials_ids ? materials_ids : [],
-          ...rest,
-        };
-      }),
-    }));
+    
+
+    
+
+    
   },
   saveCurrentChatHistory: async () => {
     await Api.saveHistory({
       id: get().chatId,
-      messages: get().messages,
+      messages: get().flatMessages(),
     });
 
     await get().initChatHistory();

@@ -24,15 +24,11 @@ import { useAnalysisStore } from '@/store/useAnalysisStore';
 import { Analysis } from './Analysis';
 
 export function Chat({ chatId }: { chatId: string }) {
-  const calculateGroupedMessages = useAICStore(
-    (state) => state.groupedMessages,
-  );
+  const groupedMessages = useAICStore((state) => state.messageGroups);
+  const loadingMessages = useAICStore((state) => state.loadingMessages);
   const setChatId = useAICStore((state) => state.setChatId);
-  const isAnalysisRunning = useAnalysisStore(
-    (state) => state.isAnalysisRunning,
-  );
+  const isAnalysisRunning = useAnalysisStore((state) => state.isAnalysisRunning);
   const isExecuteRunning = useAICStore((state) => state.isExecuteRunning);
-  const messages = useAICStore((state) => state.messages);
   const stopWork = useAICStore((state) => state.stopWork);
 
   useEffect(() => {
@@ -51,14 +47,12 @@ export function Chat({ chatId }: { chatId: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatId]); //Initentional trigger when chat_id changes
 
-  const groupedMessages = calculateGroupedMessages();
-
   return (
     <ScrollToBottom
       className="h-full overflow-y-auto flex flex-col"
       initialScrollBehavior="auto"
     >
-      {messages?.length === 0 ? (
+      {!loadingMessages && groupedMessages?.length === 0 ? (
         <Welcome />
       ) : (
         <>

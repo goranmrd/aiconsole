@@ -101,17 +101,14 @@ export const createCommandSlice: StateCreator<
   },
   submitCommand: async (command: string) => {
     if (command.trim() !== '') {
-      set(() => ({
-        messages: [
-          ...(get().messages || []),
-          createMessage({
-            agent_id: 'user',
-            materials_ids: [],
-            role: 'user',
-            content: command,
-          }),
-        ],
-      }));
+      get().appendMessage(
+        createMessage({
+          agent_id: 'user',
+          materials_ids: [],
+          role: 'user',
+          content: command,
+        }),
+      );
 
       get().saveCommandAndMessagesToHistory(command, true);
     }

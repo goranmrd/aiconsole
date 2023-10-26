@@ -47,7 +47,7 @@ def delete_history(chat_id: str):
 def get_history(chat_id: str, get_json: Callable = Depends(json_read)):
     file_path = os.path.join(projects.get_history_directory(), f"{chat_id}.json")
 
-    return get_json(file_path=file_path, empty_obj={})
+    return get_json(file_path=file_path, empty_obj=Chat(id=chat_id, messages=[]).model_dump())
 
 history_lock = asyncio.Lock()
 

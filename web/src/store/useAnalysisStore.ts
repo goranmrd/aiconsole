@@ -38,7 +38,7 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
     useAICStore.subscribe((state, prevState) => {
       if (
         prevState.chatId !== state.chatId ||
-        prevState.messages?.length !== state.messages?.length ||
+        prevState.flatMessages().length !== state.flatMessages().length ||
         (state.isExecuteRunning && !prevState.isExecuteRunning)
       ) {
         useAnalysisStore.getState().reset();
@@ -74,7 +74,7 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
       const response = await Api.analyse(
         {
           id: useAICStore.getState().chatId,
-          messages: useAICStore.getState().messages,
+          messages: useAICStore.getState().flatMessages(),
         },
         get().analysisAbortController.signal,
       );
@@ -98,10 +98,7 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
 
       console.log('Analysis done', data);
       if (data.agent_id !== 'user' && data.next_step) {
-        useAICStore.setState(() => {
-          const newMessages = (useAICStore.getState().messages || []).slice();
-          //push next step
-          newMessages.push(
+        useAICStore.getState().appendMessage(
             createMessage({
               agent_id: data.agent_id,
               task: data.next_step,
@@ -109,11 +106,7 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
               role: 'assistant',
               content: '',
             }),
-          );
-          return {
-            messages: newMessages,
-          };
-        });
+        );
 
         console.log('Executing');
         useAICStore

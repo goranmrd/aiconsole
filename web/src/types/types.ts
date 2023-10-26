@@ -24,7 +24,6 @@ export type AICMessage = {
   materials_ids: string[];
   language?: string;
   code?: boolean;
-  code_ran?: boolean;
   code_output?: boolean;
 };
 
@@ -38,7 +37,7 @@ export type AICMessageGroup = {
   id: string;
   agent_id: string;
   role: string;
-  task: string;
+  task?: string;
   materials_ids: string[];
   sections: AICMessageSection[];
 };
