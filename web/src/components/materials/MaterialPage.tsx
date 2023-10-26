@@ -172,6 +172,8 @@ export function MaterialPage() {
         color: 'green',
       });
     }
+
+    setMaterialInitial(material);
   };
   const readOnly = material?.defined_in === 'aiconsole';
 

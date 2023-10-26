@@ -15,6 +15,7 @@
 # limitations under the License.
     
 import tomlkit
+import tomlkit.exceptions
 from pathlib import Path
 from aiconsole.materials.material import MaterialStatus
 from typing import Dict, Any
@@ -24,11 +25,11 @@ class Settings:
     def __init__(self) -> None:
         self.__file_path: Path = Path('./settings.toml')
         self.__toml_data = self.__load_toml_data()
-        self.__materials: Dict[str, str] = self.__load_section('materials')
-        self.__agents: Dict[str, str] = self.__load_section('agents')
+        self.__materials: Dict[str, MaterialStatus] = self.__load_section('materials')
+        self.__agents: Dict[str, MaterialStatus] = self.__load_section('agents')
         self.__settings: Dict[str, Any] = self.__load_section('settings')
 
-    def __load_toml_data(self) -> tomlkit.document:
+    def __load_toml_data(self) -> tomlkit.TOMLDocument:
         if not self.__file_path.exists():
             self.__create_empty_file()
         with self.__file_path.open() as file:
@@ -61,7 +62,7 @@ class Settings:
         table = tomlkit.table()
 
         for key, value in input.items():
-            table[key] = tomlkit.string(str(value))
+            table[key] = tomlkit.string(value)
 
         return table
 
@@ -74,17 +75,23 @@ class Settings:
             file.write(self.__toml_data.as_string())
 
     def get_material_status(self, material_id: str) -> MaterialStatus:
-        return MaterialStatus(self.__materials.get(material_id, MaterialStatus.ENABLED.value))
+        return MaterialStatus(self.__materials.get(material_id, MaterialStatus.ENABLED))
 
     def get_agent_status(self, agent_id: str) -> MaterialStatus:
-        return MaterialStatus(self.__agents.get(agent_id, MaterialStatus.ENABLED.value))
+        return MaterialStatus(self.__agents.get(agent_id, MaterialStatus.ENABLED))
 
     def set_material_status(self, material_id: str, status: MaterialStatus) -> None:
-        self.__materials[material_id] = status.value
+        if status == MaterialStatus.ENABLED:
+            self.__materials.pop(material_id, None)
+        else:
+            self.__materials[material_id] = status
         self.__save_toml_data()
 
     def set_agent_status(self, agent_id: str, status: MaterialStatus) -> None:
-        self.__agents[agent_id] = status.value
+        if status == MaterialStatus.ENABLED:
+            self.__agents.pop(agent_id, None)
+        else:
+            self.__agents[agent_id] = status
         self.__save_toml_data()
 
     def patch(self, data: Dict[str, Any]) -> None:
