@@ -19,12 +19,10 @@ import { StateCreator } from 'zustand';
 import {
   AICCodeMessage,
   AICContentMessage,
-  AICMessage,
   AICMessageGroup,
-  Chat,
 } from '../types/types';
 import { AICStore } from './AICStore';
-import { deepCopyChat } from './utils';
+import { deepCopyChat, getGroup, getMessage, getOutput } from './utils';
 import { v4 as uuidv4 } from 'uuid';
 
 export type MessageSlice = {
@@ -57,92 +55,6 @@ export type MessageSlice = {
     groupId?: string,
   ) => void;
 };
-
-export type AICGroupLocator = { groupIndex: number; group: AICMessageGroup };
-export type AICMessageLocator = AICGroupLocator & {
-  messageIndex: number;
-  message: AICMessage;
-};
-export type AICOutputLocator = AICMessageLocator & {
-  outputIndex: number;
-  output: AICContentMessage;
-};
-
-/**
- *
- * @param groupId if undefined returns last group
- */
-export function getGroup(
-  chat: Chat,
-  groupId?: string,
-): AICGroupLocator {
-  const groupIndex = groupId
-    ? chat.message_groups.findIndex((group) => group.id === groupId)
-    : chat.message_groups.length - 1;
-
-  if (groupIndex === -1) {
-    throw new Error(`Group with id ${groupId} not found`);
-  }
-
-  const group = chat.message_groups[groupIndex];
-
-  return {
-    group,
-    groupIndex,
-  };
-}
-
-export function getMessage(
-  chat: Chat,
-  groupId?: string,
-  messageId?: string,
-): AICMessageLocator {
-  const { group, groupIndex } = getGroup(chat, groupId);
-
-  const messageIndex = messageId
-    ? group.messages.findIndex((message) => message.id === messageId)
-    : group.messages.length - 1;
-
-  if (messageIndex === -1) {
-    throw new Error(`Message with id ${messageId} not found`);
-  }
-
-  return {
-    groupIndex,
-    group,
-    messageIndex,
-    message: group.messages[messageIndex],
-  };
-}
-
-export function getOutput(
-  chat: Chat,
-  groupId?: string,
-  messageId?: string,
-  outputId?: string,
-): AICOutputLocator {
-  const messageLocation = getMessage(chat, groupId, messageId);
-
-  if (!('outputs' in messageLocation.message)) {
-    throw new Error(`Message with id ${messageId} is not a code message`);
-  }
-
-  const outputs = messageLocation.message.outputs;
-
-  const outputIndex = outputId
-    ? outputs.findIndex((output) => output.id === outputId)
-    : outputs.length - 1;
-
-  if (outputIndex === -1) {
-    throw new Error(`Output with id ${outputId} not found`);
-  }
-
-  return {
-    ...messageLocation,
-    outputIndex,
-    output: outputs[outputIndex],
-  };
-}
 
 export const createMessageSlice: StateCreator<
   AICStore,
@@ -186,12 +98,13 @@ export const createMessageSlice: StateCreator<
   removeMessageFromGroup: (groupId?: string, messageId?: string) => {
     set((state) => {
       const chat = deepCopyChat(state.chat);
-      const messageLocation = getMessage(chat, groupId, messageId);
+      const groupLocation = getGroup(chat, groupId);
+      const messageLocation = getMessage(groupLocation.group, messageId);
 
-      messageLocation.group.messages.splice(messageLocation.messageIndex, 1);
+      groupLocation.group.messages.splice(messageLocation.messageIndex, 1);
 
-      if (messageLocation.group.messages.length === 0) {
-        chat.message_groups.splice(chat.message_groups.indexOf(messageLocation.group), 1);
+      if (groupLocation.group.messages.length === 0) {
+        chat.message_groups.splice(chat.message_groups.indexOf(groupLocation.group), 1);
       }
 
       return {
@@ -207,18 +120,15 @@ export const createMessageSlice: StateCreator<
   ) => {
     set((state) => {
       const chat = deepCopyChat(state.chat);
-      const outputLocation = getOutput(
-        chat,
-        groupId,
-        messageId,
-        outputId,
-      );
+      const groupLocation = getGroup(chat, groupId);
+      const messageLocation = getMessage(groupLocation.group, messageId);
+      const outputLocation = getOutput(messageLocation.message,outputId);
 
-      if (!('outputs' in outputLocation.message)) {
+      if (!('outputs' in messageLocation.message)) {
         throw new Error(`Message with id ${messageId} is not a code message`);
       }
 
-      outputLocation.message.outputs.splice(outputLocation.outputIndex, 1);
+      messageLocation.message.outputs.splice(outputLocation.outputIndex, 1);
 
       return {
         chat,
@@ -234,8 +144,10 @@ export const createMessageSlice: StateCreator<
   ) => {
     set((state) => {
       const chat = deepCopyChat(state.chat);
+      const groupLocation = getGroup(chat, groupId);
+      const messageLocation = getMessage(groupLocation.group, messageId);
+      const message = messageLocation.message;
 
-      const message = getMessage(chat, groupId, messageId).message;
       if ('code' in message) {
         message.code = newContent;
       } else {
@@ -259,19 +171,15 @@ export const createMessageSlice: StateCreator<
   ) => {
     set((state) => {
       const chat = deepCopyChat(state.chat);
+      const groupLocation = getGroup(chat, groupId);
+      const messageLocation = getMessage(groupLocation.group, messageId);
+      const outputLocation = getOutput(messageLocation.message,outputId);
 
-      const { outputIndex, message } = getOutput(
-        chat,
-        groupId,
-        messageId,
-        outputId,
-      );
-
-      if (!('outputs' in message)) {
+      if (!('outputs' in messageLocation.message)) {
         throw new Error(`Message with id ${messageId} is not a code message`);
       }
 
-      message.outputs[outputIndex].content = newOutput;
+      messageLocation.message.outputs[outputLocation.outputIndex].content = newOutput;
 
       return {
         chat,
@@ -283,8 +191,10 @@ export const createMessageSlice: StateCreator<
   appendEmptyOutput: (groupId?: string, messageId?: string) => {
     set((state) => {
       const chat = deepCopyChat(state.chat);
-
-      const message = getMessage(chat, groupId, messageId).message;
+      const groupLocation = getGroup(chat, groupId);
+      const messageLocation = getMessage(groupLocation.group, messageId);
+      const message = messageLocation.message;
+      
       if (!('outputs' in message)) {
         throw new Error(`Message with id ${messageId} is not a code message`);
       }

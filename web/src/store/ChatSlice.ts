@@ -20,8 +20,7 @@ import { Chat, ChatHeadline } from '../types/types';
 import { Api } from '@/api/Api';
 import { AICStore } from './AICStore';
 import { useWebSocketStore } from '@/store/useWebSocketStore';
-import { getGroup, getMessage } from './MessageSlice';
-import { deepCopyChat } from './utils';
+import { deepCopyChat, getGroup, getMessage } from './utils';
 
 export type ChatSlice = {
   chatId: string;
@@ -51,8 +50,8 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
     if (get().chat.message_groups.length === 0) return false;
     const lastGroup = getGroup(get().chat);
     if (lastGroup.group.messages.length === 0) return false;
-    const lastMessage = getMessage(get().chat);
-    return 'language' in lastMessage;
+    const lastMessage = getMessage(lastGroup.group);
+    return 'language' in lastMessage.message;
   },
   chatHeadlines: [],
   agent: undefined,

@@ -19,7 +19,7 @@ import { StateCreator } from 'zustand';
 import { Api } from '@/api/Api';
 import { AICStore } from './AICStore';
 import { useAnalysisStore } from './useAnalysisStore';
-import { getGroup, getMessage } from './MessageSlice';
+import { getGroup, getMessage } from './utils';
 
 export type ActionSlice = {
   doExecute: () => Promise<void>;
@@ -44,7 +44,8 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
       isExecuteRunning: true,
     }));
 
-    const lastMessageLocation = getMessage(get().chat);
+    const lastGroupLocation = getGroup(get().chat);
+    const lastMessageLocation = getMessage(lastGroupLocation.group);
     const lastMessage = lastMessageLocation.message;
 
     if (!('language' in lastMessage)) {
@@ -53,9 +54,9 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
 
     const language = lastMessage.language;
     const code = lastMessage.content;
-    const agentId = lastMessageLocation.group.agent_id;
-    const task = lastMessageLocation.group.task;
-    const materials_ids = lastMessageLocation.group.materials_ids;
+    const agentId = lastGroupLocation.group.agent_id;
+    const task = lastGroupLocation.group.task;
+    const materials_ids = lastGroupLocation.group.materials_ids;
 
     try {
       const response = await Api.runCode({
@@ -228,10 +229,15 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
         }
       }
     } finally {
-      //If the message is still empty, remove it
 
-      if (getMessage(get().chat).message.content === '') {
-        get().removeMessageFromGroup();
+      //If the message is still empty, remove it
+      const lastGroup = getGroup(get().chat).group;
+      if (lastGroup.messages.length > 0) {
+        const lastMessage = getMessage(lastGroup).message;
+
+        if (lastMessage.content === '') {
+          get().removeMessageFromGroup();
+        }
       }
 
       get().saveCurrentChatHistory();
@@ -242,7 +248,8 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
     }
 
     {
-      const lastMessage = getMessage(get().chat).message;
+      const lastGroup = getGroup(get().chat).group;
+      const lastMessage = getMessage(lastGroup).message;
       const isCode = 'language' in lastMessage;
 
       if (isCode) {
