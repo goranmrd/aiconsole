@@ -69,6 +69,7 @@ async def update_chat_headline(chat_id, req: Request):
 
     chat = load_chat_history(chat_id)
     chat.title = new_headline
+    chat.title_edited = True
     save_chat_history(chat)
 
     return new_headline
