@@ -28,7 +28,7 @@ from aiconsole.utils.BatchingWatchDogHandler import BatchingWatchDogHandler
 from aiconsole.utils.list_files_in_file_system import list_files_in_file_system
 from aiconsole.utils.list_files_in_resource_path import list_files_in_resource_path
 from aiconsole.utils.resource_to_path import resource_to_path
-from aiconsole.websockets.outgoing_messages import NotificationWSMessage
+from aiconsole.websockets.outgoing_messages import MaterialsUpdatedWSMessage, NotificationWSMessage
 
 _log = logging.getLogger(__name__)
 
@@ -272,6 +272,7 @@ class Materials:
             material_file_path = path / f"{material_id}.toml"
             if material_file_path.exists():
                 material_file_path.unlink()
+                del self._materials[material_id]
                 return
 
         raise KeyError(f"Material with ID {material_id} not found")
@@ -300,7 +301,6 @@ class Materials:
                 ).send_to_all()
                 continue
 
-        await NotificationWSMessage(
-            title="Materials reloaded",
-            message=f"Reloaded {len(self._materials)} materials",
+        await MaterialsUpdatedWSMessage(
+            count=len(self._materials),
         ).send_to_all()

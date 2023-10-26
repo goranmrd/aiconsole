@@ -75,6 +75,13 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
             path: data.path,
           });
           break;
+        case 'MaterialsUpdatedWSMessage':
+          useAICStore.getState().fetchMaterials();
+          notifications.show({
+            title: 'Materials updated',
+            message: `${data.count} materials updated`,
+          });
+          break;
         case 'AnalysisUpdatedWSMessage':
           useAnalysisStore.setState({
             agent_id: data.agent_id,

@@ -48,6 +48,10 @@ class ProjectOpenedWSMessage(BaseWSMessage):
     name: str
     path: str
 
+
+class MaterialsUpdatedWSMessage(BaseWSMessage):
+    count: int
+
 class AnalysisUpdatedWSMessage(BaseWSMessage):
     agent_id: Optional[str] = None
     relevant_material_ids: Optional[List[str]] = None

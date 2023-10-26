@@ -21,7 +21,8 @@ import { MaterialInfo } from '../types/types';
 import { Api } from '@/api/Api';
 
 export type MaterialSlice = {
-  materials: MaterialInfo[];
+  materials?: MaterialInfo[];
+  initMaterials: () => void;
   fetchMaterials: () => void;
   deleteMaterial: (id: string) => Promise<void>;
 };
@@ -31,8 +32,14 @@ export const createMaterialSlice: StateCreator<
   [],
   [],
   MaterialSlice
-> = (set) => ({
-  materials: [],
+> = (set, get) => ({
+  materials: undefined,
+  initMaterials: () => {
+    if (get().materials === undefined) {
+      set({ materials: [] });
+      get().fetchMaterials();
+    }
+  },
   fetchMaterials: async () => {
     const materials = await Api.getMaterials();
 

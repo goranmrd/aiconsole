@@ -45,9 +45,15 @@ export type AnalysisUpdatedWSMessage = {
   thinking_process?: string;
 };
 
+export type MaterialsUpdatedWSMessage = {
+  type: 'MaterialsUpdatedWSMessage';
+  count: number;
+};
+
 export type IncomingWSMessage =
   | ErrorWSMessage
   | NotificationWSMessage
   | DebugJSONWSMessage
   | ProjectOpenedWSMessage
   | AnalysisUpdatedWSMessage
+  | MaterialsUpdatedWSMessage
