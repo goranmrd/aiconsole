@@ -113,7 +113,7 @@ class Materials:
         }
 
     def save_material(self, material: Material, new: bool):
-        if material.id in self.materials_aiconsole_core.keys():
+        if material.defined_in != MaterialLocation.PROJECT_DIR:
             raise Exception("Cannot save material not defined in project.")
 
         path = Path(self.user_directory)
