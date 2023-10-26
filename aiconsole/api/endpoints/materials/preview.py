@@ -14,9 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
     
+from datetime import datetime
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from aiconsole.agents.types import Agent
+from aiconsole.chat.types import Chat
 from aiconsole.execution_modes.normal import execution_mode_normal
 from aiconsole.gpt.consts import GPTMode
 from aiconsole.materials.content_evaluation_context import ContentEvaluationContext
@@ -27,11 +29,11 @@ router = APIRouter()
 @router.post("/preview")
 async def materials_preview(material: Material):
     content_context = ContentEvaluationContext(
-        messages=[],
+        chat=Chat(id="chat", title="", last_modified=datetime.now(), title_edited=False, message_groups=[]),
         agent=Agent(
             id="user",
             name="User",
-            usage="When a human user needs to respond",
+            usage="",
             system="",
             execution_mode=execution_mode_normal,
             gpt_mode=GPTMode.QUALITY,

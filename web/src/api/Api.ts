@@ -96,9 +96,9 @@ const updateChatHeadline = (id: string, headline: string) =>
     hooks,
   });
 
-const saveHistory = (body: object) =>
+const saveHistory = (chat: Chat) =>
   ky.post(`${BASE_URL}/chats/history`, {
-    json: { ...body },
+    json: { ...chat },
     timeout: 60000,
     hooks,
   });

@@ -35,7 +35,7 @@ async def gpt_analysis_text_step(
     request = GPTRequest(
         system_message=initial_system_prompt,
         gpt_mode=gpt_mode,
-        messages=[*convert_messages(chat.messages), GPTMessage(
+        messages=[*convert_messages(chat), GPTMessage(
             role="system",
             content=last_system_prompt
         )],

@@ -78,7 +78,7 @@ async def execution_mode_interpreter(
             system_message=system_message,
             gpt_mode=context.agent.gpt_mode,
             messages=[message for message in convert_messages(
-                context.messages)],
+                context.chat)],
             functions=[
                 python.openai_schema,
                 shell.openai_schema,

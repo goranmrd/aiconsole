@@ -15,7 +15,7 @@
 # limitations under the License.
     
 import json
-from aiconsole.chat.types import AICMessage
+from aiconsole.chat.types import AICCodeMessage, AICMessage, AICMessageGroup, Chat
 from aiconsole.gpt.types import GPTFunctionCall, GPTMessage, GPTRole
 
 
@@ -27,13 +27,8 @@ from aiconsole.settings import settings
 last_system_message = None
 
 
-def convert_message(message: AICMessage, is_last: bool) -> List[GPTMessage]:
+def convert_message(group: AICMessageGroup, message: AICMessage, is_last: bool) -> List[GPTMessage]:
     global last_system_message
-
-    content = message.content
-    function_call = None
-    name = None
-    role: GPTRole = message.role
 
     result = []
 
@@ -41,17 +36,14 @@ def convert_message(message: AICMessage, is_last: bool) -> List[GPTMessage]:
     # Augment the messages with system messages with meta data about which agent is speaking and what materials were available
     #
 
-    # if (message.agent_id != 'user'):
-    #    system = f'next message by agent={message.agent_id} with access to materials={[(material.id  if message.materials else "None") for material in message.materials]}'
-
-    if message.task:
+    if group.task:
         system_message = f"""
-As a director I have assigned you ({message.agent_id}) and given you access to the following materials text: {", ".join(message.materials_ids) if message.materials_ids else "None"}.
+As a director I have assigned you ({group.agent_id}) and given you access to the following materials text: {", ".join(group.materials_ids) if group.materials_ids else "None"}.
 """.strip()
 
         # Only provide a task for last message
         if is_last:
-            system_message += "\n\nYour job: " + message.task
+            system_message += "\n\nYour job: " + group.task
 
         if last_system_message != system_message:
             result.append(
@@ -63,56 +55,70 @@ As a director I have assigned you ({message.agent_id}) and given you access to t
             )
             last_system_message = system_message
 
-    if message.code:
-        function_call = GPTFunctionCall(
-            name="execute",
-            arguments=json.dumps(
-                {
-                    "code": message.content,
-                    "language": message.language,
-                }
-            ),
+    
+
+    if isinstance(message, AICCodeMessage):
+        result.append(
+            GPTMessage(
+                role="assistant",
+                content=message.content,
+                function_call=GPTFunctionCall(
+                    name="execute",
+                    arguments=json.dumps(
+                        {
+                            "code": message.content,
+                            "language": message.language,
+                        }
+                    ),
+                ),
+                name="code"
+            )
         )
-        name = "code"
-        role = "assistant"
-    elif message.code_output:
-        name = "Run"
 
-        if message.content == "":
-            content = "No output"
+        for output in message.outputs:
+            content = output.content
 
-        # Enforce limit on output length, and put info that it was truncated only if limit was reached, truncate so the last part remains (not the first)
-        if len(content) > settings.FUNCTION_CALL_OUTPUT_LIMIT:
-            content = f"""
+            if content == "":
+                content = "No output"
+
+            # Enforce limit on output length, and put info that it was truncated only if limit was reached, truncate so the last part remains (not the first)
+            if len(content) > settings.FUNCTION_CALL_OUTPUT_LIMIT:
+                content = f"""
 Output truncated to last {settings.FUNCTION_CALL_OUTPUT_LIMIT} characters:
 
 ...
 {content[-settings.FUNCTION_CALL_OUTPUT_LIMIT:]}
 """.strip()
-
-        role = "function"
-    elif message.agent_id != "user":
-        name = message.agent_id
-
-    if content:
+            
+            result.append(
+                GPTMessage(
+                    role="function",
+                    content=content,
+                    name="Run"
+                )
+            )
+    else:
         result.append(
             GPTMessage(
-                role=role, content=content, function_call=function_call, name=name
+                role=group.role,
+                content=message.content,
+                name=group.agent_id if group.agent_id != "user" else None
             )
         )
 
     return result
 
 
-def convert_messages(messages: List[AICMessage]) -> List[GPTMessage]:
+def convert_messages(chat: Chat) -> List[GPTMessage]:
     global last_system_message
     last_system_message = None
-    # Flatten
-    return [
-        item
-        for sublist in [
-            convert_message(message, is_last=index == len(messages) - 1)
-            for (index, message) in enumerate(messages)
-        ]
-        for item in sublist
-    ]
+
+    messages: List[GPTMessage] = []
+
+    for message_group in chat.message_groups:
+        for message in message_group.messages:
+            messages.extend(
+                convert_message(message_group, message, is_last=message == message_group.messages[-1])
+            )
+
+    return messages

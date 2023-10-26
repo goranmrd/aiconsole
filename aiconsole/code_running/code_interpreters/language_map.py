@@ -32,12 +32,15 @@
 # https://github.com/KillianLucas/open-interpreter
 #
 
+from typing import Dict, Literal, Type, Union
+from aiconsole.code_running.code_interpreters.base_code_interpreter import BaseCodeInterpreter
 from .languages.python import Python
 from .languages.shell import Shell
 from .languages.applescript import AppleScript
 
+LanguageStr = Union[Literal["python"], Literal["shell"], Literal["applescript"]]
 
-language_map = {
+language_map: Dict[LanguageStr, Type[BaseCodeInterpreter]] = {
     "python": Python,
     "shell": Shell,
     "applescript": AppleScript,

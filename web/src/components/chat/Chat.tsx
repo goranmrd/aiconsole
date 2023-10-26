@@ -24,7 +24,7 @@ import { useAnalysisStore } from '@/store/useAnalysisStore';
 import { Analysis } from './Analysis';
 
 export function Chat({ chatId }: { chatId: string }) {
-  const groupedMessages = useAICStore((state) => state.messageGroups);
+  const chat = useAICStore((state) => state.chat);
   const loadingMessages = useAICStore((state) => state.loadingMessages);
   const setChatId = useAICStore((state) => state.setChatId);
   const isAnalysisRunning = useAnalysisStore((state) => state.isAnalysisRunning);
@@ -52,17 +52,17 @@ export function Chat({ chatId }: { chatId: string }) {
       className="h-full overflow-y-auto flex flex-col"
       initialScrollBehavior="auto"
     >
-      {!loadingMessages && groupedMessages?.length === 0 ? (
+      {!loadingMessages && chat.message_groups?.length === 0 ? (
         <Welcome />
       ) : (
         <>
           <div>
-            {groupedMessages.map((group, index) => (
+            {chat.message_groups.map((group, index) => (
               <MessageGroup
                 group={group}
                 key={group.id}
                 isStreaming={
-                  isExecuteRunning && index === groupedMessages.length - 1
+                  isExecuteRunning && index === chat.message_groups.length - 1
                 }
               />
             ))}

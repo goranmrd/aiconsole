@@ -20,9 +20,12 @@ import { Chat, ChatHeadline } from '../types/types';
 import { Api } from '@/api/Api';
 import { AICStore } from './AICStore';
 import { useWebSocketStore } from '@/store/useWebSocketStore';
+import { getGroup, getMessage } from './MessageSlice';
+import { deepCopyChat } from './utils';
 
 export type ChatSlice = {
   chatId: string;
+  chat: Chat;
   hasPendingCode: () => boolean;
   chatHeadlines: ChatHeadline[];
   setChatId: (id: string) => void;
@@ -37,10 +40,19 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
   get,
 ) => ({
   chatId: '',
+  chat: {
+    id: '',
+    title: '',
+    last_modified: new Date().toISOString(),
+    title_edited: false,
+    message_groups: [],
+  },
   hasPendingCode: () => {
-    const messages = get().flatMessages();
-    const lastMessage = messages.at(messages.length - 1);
-    return !!lastMessage?.code
+    if (get().chat.message_groups.length === 0) return false;
+    const lastGroup = getGroup(get().chat);
+    if (lastGroup.group.messages.length === 0) return false;
+    const lastMessage = getMessage(get().chat);
+    return 'language' in lastMessage;
   },
   chatHeadlines: [],
   agent: undefined,
@@ -83,31 +95,35 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
       if (id === '') {
         chat = {
           id: '',
-          messages: [],
+          title: '',
+          last_modified: new Date().toISOString(),
+          title_edited: false,
+          message_groups: [],
         };
       } else {
         chat = await Api.getChat(id);
       }
-
-      console.log(`chat.messages: ${chat}`);
-      get().setMessagesFromFlatList(chat.messages);
+      set({
+        chat: chat,
+      });
     } finally {
       set({
         loadingMessages: false,
       });
     }
-
-    
-
-    
-
-    
   },
   saveCurrentChatHistory: async () => {
-    await Api.saveHistory({
-      id: get().chatId,
-      messages: get().flatMessages(),
+    const chat = deepCopyChat(get().chat);
+
+    if (!chat.title_edited && chat.message_groups.length > 0 &&chat.message_groups[0].messages.length > 0) {
+      chat.title = chat.message_groups[0].messages[0].content;
+    }
+
+    set({
+      chat: chat
     });
+
+    await Api.saveHistory(chat);
 
     await get().initChatHistory();
   },

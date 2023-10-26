@@ -36,7 +36,7 @@ async def execute(request: Request, chat: ChatWithAgentAndMaterials) -> Streamin
     agent = projects.get_project_agents().agents[chat.agent_id]
 
     content_context = ContentEvaluationContext(
-        messages=chat.messages,
+        chat=chat,
         agent=agent,
         gpt_mode=agent.gpt_mode,
         relevant_materials=[projects.get_project_materials().get_material(id) for id in chat.relevant_materials_ids],
@@ -45,7 +45,7 @@ async def execute(request: Request, chat: ChatWithAgentAndMaterials) -> Streamin
     rendered_materials = [await material.render(content_context) for material in content_context.relevant_materials]
 
     context = ExecutionModeContext(
-        messages=chat.messages,
+        chat=chat,
         agent=agent,
         relevant_materials=rendered_materials,
         gpt_mode=agent.gpt_mode,

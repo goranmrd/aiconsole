@@ -41,7 +41,7 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
     historyDown: promptDown,
     stopWork,
     isWorking,
-    messageGroups,
+    chat,
     hasPendingCode,
   } = useAICStore((state) => state);
 
@@ -51,7 +51,7 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
     isExecuteRunning ||
     isAnalysisRunning ||
     hasPendingCode() ||
-    (command === '' && messageGroups?.length == 0);
+    (command === '' && chat.message_groups?.length == 0);
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 

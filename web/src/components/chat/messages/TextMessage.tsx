@@ -20,32 +20,25 @@ import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { duotoneDark as vs2015 } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
-import { AICMessage } from '@/types/types';
+import { AICMessage, AICMessageGroup } from '@/types/types';
 import { MessageControls } from './MessageControls';
 import { useAICStore } from '@/store/AICStore';
 import { BlinkingCursor } from '@/components/chat/BlinkingCursor';
 import { BASE_URL } from '@/api/Api';
-import { Button } from '@/components/system/Button';
-import { CodeInput } from '../materials/CodeInput';
+import { CodeInput } from '../../materials/CodeInput';
 
 interface MessageProps {
+  group: AICMessageGroup,
   message: AICMessage;
   isStreaming: boolean;
 }
 
-export function Message({ message, isStreaming }: MessageProps) {
+export function TextMessage({ group, message, isStreaming }: MessageProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [content, setContent] = useState(message.content);
-  const removeMessage = useAICStore((state) => state.removeMessage);
-  const updateMessage = useAICStore((state) => state.editMessageContent);
-  const doRun = useAICStore((state) => state.doRun);
-  const enableAutoCodeExecution = useAICStore(
-    (state) => state.enableAutoCodeExecution,
-  );
-  const isViableForRunningCode = useAICStore((state) => state.isViableForRunningCode);
-
-  const alwaysExecuteCode = useAICStore((state) => state.alwaysExecuteCode);
-
+  const removeMessageFromGroup = useAICStore((state) => state.removeMessageFromGroup);
+  const editMessageContent = useAICStore((state) => state.editMessageContent);
+  
   const handleEditClick = () => {
     if (isStreaming) {
       return;
@@ -54,27 +47,22 @@ export function Message({ message, isStreaming }: MessageProps) {
     setIsEditing(true);
   };
 
-  const handleRemoveClick = () => removeMessage(message.id);
+  const handleRemoveClick = () => removeMessageFromGroup(group.id, message.id);
 
   const handleCancelEditClick = () => setIsEditing(false);
 
   const handleOnChange = (value: string) => setContent(value);
 
   const handleSaveClick = useCallback(() => {
-    updateMessage(message.id, content);
+    editMessageContent(group.id, message.id, content);
     setIsEditing(false);
-  }, [content, message.id, updateMessage]);
+  }, [content, message.id, group.id, editMessageContent]);
 
   const handleBlur = useCallback(() => {
     // setTimeout with 0ms to delay the handleSaveClick call, this will ensure the
     // onClick event has priority over the onBlur event.
     setTimeout(handleSaveClick, 0);
   }, [handleSaveClick]);
-
-  const handleAlwaysRunClick = () => {
-    enableAutoCodeExecution();
-    doRun();
-  };
 
   return (
     <div className="flex flex-grow items-start">
@@ -84,53 +72,14 @@ export function Message({ message, isStreaming }: MessageProps) {
             className="resize-none border-0 bg-transparent w-full outline-none h-96"
             value={content}
             onChange={handleOnChange}
-            codeLanguage={message.language}
+            codeLanguage={'language' in message ? message.language : 'text'}
             transparent
             onBlur={handleBlur} // added onBlur event here
           />
         </div>
       ) : (
         <>
-          {message.code && (
-            <>
-              <span className="w-20 flex-none">Code:</span>
-              <div>
-                <SyntaxHighlighter
-                  style={vs2015}
-                  children={message.content}
-                  language={message.language}
-                  className="overflow-scroll max-w-2xl"
-                />
-                {!message.code_output &&
-                  isViableForRunningCode(message) &&
-                  !isStreaming && (
-                    <div className="flex gap-4 pt-4">
-                      <Button label="Run" onClick={doRun} />
-                      
-                      {!alwaysExecuteCode && <Button
-                        label="Always Run"
-                        onClick={handleAlwaysRunClick}
-                        variant="secondary"
-                      />}
-                    </div>
-                  )}
-              </div>
-            </>
-          )}
-
-          {message.code_output && (
-            <>
-              <span className="w-20 flex-none">Output:</span>
-              <SyntaxHighlighter
-                style={vs2015}
-                children={message.content}
-                language={'text'}
-                className="basis-0 flex-grow overflow-scroll max-w-2xl"
-              />
-            </>
-          )}
-
-          {!message.code && !message.code_output && message.role !== 'user' && (
+          {group.role !== 'user' && (
             <div className="flex-grow">
               <div className="prose prose-stone dark:prose-invert">
                 <ReactMarkdown
@@ -179,7 +128,7 @@ export function Message({ message, isStreaming }: MessageProps) {
             </div>
           )}
 
-          {!message.code && !message.code_output && message.role === 'user' && (
+          {group.role === 'user' && (
             <div className="flex-grow">
               {message.content.split('\n').map((line, index) => (
                 <span key={`line-${index}`} style={{ whiteSpace: 'pre-wrap' }}>

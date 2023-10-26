@@ -13,21 +13,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
-from aiconsole.agents.types import Agent
+
+from aiconsole import projects
 from aiconsole.chat.types import Chat
-from aiconsole.gpt.consts import GPTMode
-from aiconsole.materials.material import Material
+
+import json
+import os
 
 
-from pydantic import BaseModel
+def save_chat_history(chat: Chat):
+    history_directory = projects.get_history_directory()
+    file_path = os.path.join(history_directory, f"{chat.id}.json")
 
-
-from typing import List
-
-
-class ContentEvaluationContext(BaseModel):
-    chat: Chat
-    agent: Agent
-    gpt_mode: GPTMode
-    relevant_materials: List["Material"]
+    if len(chat.message_groups) == 0:
+        # delete instead
+        if os.path.exists(file_path):
+            os.remove(file_path)
+    else:
+        with open(file_path, "w") as f:
+            json.dump(chat.model_dump(exclude={"id", "last_modified"}), f, indent=4)

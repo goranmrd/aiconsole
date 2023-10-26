@@ -37,7 +37,7 @@ async def execution_mode_normal(
 
     async for chunk in gpt_executor.execute(
         GPTRequest(
-            messages=convert_messages(context.messages),
+            messages=convert_messages(context.chat),
             gpt_mode=context.gpt_mode,
             system_message=create_full_prompt_with_materials(
                 intro=get_agent_system_message(context.agent),
