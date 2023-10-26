@@ -22,11 +22,9 @@ import { Welcome } from '@/components/chat/Welcome';
 import { useAICStore } from '@/store/AICStore';
 import { useAnalysisStore } from '@/store/useAnalysisStore';
 import { Analysis } from './Analysis';
+import useGroupMessages from '@/hooks/useGroupMessages';
 
 export function Chat({ chatId }: { chatId: string }) {
-  const calculateGroupedMessages = useAICStore(
-    (state) => state.groupedMessages,
-  );
   const setChatId = useAICStore((state) => state.setChatId);
   const isAnalysisRunning = useAnalysisStore(
     (state) => state.isAnalysisRunning,
@@ -34,6 +32,8 @@ export function Chat({ chatId }: { chatId: string }) {
   const isExecuteRunning = useAICStore((state) => state.isExecuteRunning);
   const messages = useAICStore((state) => state.messages);
   const stopWork = useAICStore((state) => state.stopWork);
+
+  const groupedMessages = useGroupMessages(messages);
 
   useEffect(() => {
     setChatId(chatId);
@@ -50,8 +50,6 @@ export function Chat({ chatId }: { chatId: string }) {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatId]); //Initentional trigger when chat_id changes
-
-  const groupedMessages = calculateGroupedMessages();
 
   return (
     <ScrollToBottom

@@ -16,21 +16,15 @@
 
 import { StateCreator } from 'zustand';
 
-import { AICMessage, AICMessageGroup } from '../types/types';
+import { AICMessage } from '../types/types';
 import { AICStore } from './AICStore';
-import {
-  joinFoldableGroups,
-  makeMessagesFoldable,
-  processGroups,
-} from './utils';
 
 export type MessageSlice = {
   messages: AICMessage[];
-  messageGroups: AICMessageGroup[];
+
   removeMessage: (id: string) => void;
   markMessageAsRan: (id: string) => void;
   editMessageContent: (id: string, content: string) => void;
-  groupedMessages: () => AICMessageGroup[];
 };
 
 export const createMessageSlice: StateCreator<
@@ -40,7 +34,6 @@ export const createMessageSlice: StateCreator<
   MessageSlice
 > = (set, get) => ({
   messages: [],
-  messageGroups: [],
   removeMessage: (id: string) => {
     set((state) => ({
       messages: (state.messages || []).filter((message) => message.id !== id),
@@ -67,15 +60,5 @@ export const createMessageSlice: StateCreator<
     }));
 
     get().saveCommandAndMessagesToHistory(content, isUserMessage);
-  },
-  groupedMessages: () => {
-    const groups = processGroups(get().messages || [], get().messageGroups);
-
-    makeMessagesFoldable(groups);
-    joinFoldableGroups(groups);
-
-    set({ messageGroups: groups });
-
-    return groups;
   },
 });
