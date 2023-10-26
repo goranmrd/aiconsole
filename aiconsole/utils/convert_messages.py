@@ -116,9 +116,11 @@ def convert_messages(chat: Chat) -> List[GPTMessage]:
     messages: List[GPTMessage] = []
 
     for message_group in chat.message_groups:
+        is_last_group = message_group == chat.message_groups[-1]
         for message in message_group.messages:
+            is_last = is_last_group and message == message_group.messages[-1]
             messages.extend(
-                convert_message(message_group, message, is_last=message == message_group.messages[-1])
+                convert_message(message_group, message, is_last=is_last)
             )
 
     return messages

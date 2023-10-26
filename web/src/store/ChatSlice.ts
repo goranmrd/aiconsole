@@ -144,5 +144,8 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
     }));
 
     await Api.updateChatHeadline(id, headline);
+
+    //force reload of the chat
+    get().setChatId(id);
   },
 });
