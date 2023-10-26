@@ -63,7 +63,7 @@ def load_chat_history(id: str) -> Chat:
                                 for msg in group["messages"]:
                                     return msg.get("content")
 
-                    data["title"] = extract_default_headline() or "???"                
+                    data["title"] = extract_default_headline() or "New Chat"                
 
             if "id" in data:
                 del data["id"]
