@@ -134,11 +134,7 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
 
       const response = await Api.execute(
         {
-          id: get().chatId,
-          title: '???',
-          title_edited: false,
-          last_modified: new Date().toISOString(),
-          message_groups: get().chat.message_groups,
+          ...get().chat,
           relevant_materials_ids: lastGroup.materials_ids,
           agent_id: lastGroup.agent_id,
         },
