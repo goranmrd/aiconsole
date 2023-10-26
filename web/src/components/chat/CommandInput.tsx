@@ -16,7 +16,7 @@
     
 import { PaperAirplaneIcon, StopIcon } from '@heroicons/react/24/solid';
 import TextareaAutosize from 'react-textarea-autosize';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { cn } from '@/utils/styles';
 import { useAICStore } from '@/store/AICStore';
@@ -32,18 +32,17 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
     (state) => state.commandHistory[state.commandIndex],
   );
 
-  const {
-    editCommand: setCommand,
-    newCommand,
-    isExecuteRunning,
-    submitCommand,
-    historyUp: promptUp,
-    historyDown: promptDown,
-    stopWork,
-    isWorking,
-    chat,
-    hasPendingCode,
-  } = useAICStore((state) => state);
+  const setCommand = useAICStore((state) => state.editCommand);
+  const newCommand = useAICStore((state) => state.newCommand);
+  const isExecuteRunning = useAICStore((state) => state.isExecuteRunning);
+  const submitCommand = useAICStore((state) => state.submitCommand);
+  const promptUp = useAICStore((state) => state.historyUp);
+  const promptDown = useAICStore((state) => state.historyDown);
+  const stopWork = useAICStore((state) => state.stopWork);
+  const isWorking = useAICStore((state) => state.isWorking);
+  const chat = useAICStore((state) => state.chat);
+  const chatId = useAICStore((state) => state.chatId);
+  const hasPendingCode = useAICStore((state) => state.hasPendingCode);
 
   const isAnalysisRunning = useAnalysisStore((state) => state.isAnalysisRunning);
 
@@ -95,6 +94,12 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
     if (onSubmit) onSubmit();
   };
 
+  // auto focus this text area on changes to chatId
+  useEffect(() => {
+    if (textAreaRef.current) {
+      textAreaRef.current.focus();
+    }
+  }, [chatId]);
 
   return (
     <div
