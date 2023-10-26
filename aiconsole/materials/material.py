@@ -80,21 +80,45 @@ def content(context):
     content_api: str = """
 
 '''
-General API description
+Add here general API description
 '''
 
 def create():
     '''
-    Use this function to print 'Created'
+    Add comment when to use this function, and add example of usage:
+    ```python
+        create()
+    ```
     '''
     print("Created")
 
-def list():
+
+def print_list():
     '''
-    Use this function to print 'list'
+    Use this function to print 'List'.
+    Sample of use:
+    ```python
+        print_list()
+    ```
+
     '''
     print("List")
 
+
+
+def fibonacci(n):
+    '''
+    Use it to calculate and return the nth term of the Fibonacci sequence.
+    Sample of use:
+    ```python
+      fibonacci(10)
+    ```
+    '''
+    if n <= 0:
+        return 0
+    elif n == 1:
+        return 1
+    return fibonacci(n - 1) + fibonacci(n - 2)
 """.strip()
 
     async def render(self, context: 'ContentEvaluationContext'):
@@ -110,10 +134,10 @@ def list():
                 content_func = local_vars.get('content')
                 if callable(content_func):
                     return RenderedMaterial(
-                    id=self.id,
-                    content=header + content_func(context),
-                    error=''
-                )
+                        id=self.id,
+                        content=header + content_func(context),
+                        error=''
+                    )
                 return RenderedMaterial(
                     id=self.id,
                     content='',
