@@ -109,7 +109,7 @@ You can also visit our [Discord channel](https://discord.gg/X5CEpKqP) for a furt
 
 ## License
 
-AI Console is open-source software licensed under the [MIT License](https://opensource.org/license/mit/).
+AI Console is open-source software licensed under the [Apache License ver. 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt).
 
 ## Links
 
