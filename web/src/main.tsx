@@ -24,16 +24,14 @@ import '@mantine/notifications/styles.css';
 import { initStore } from './store/AICStore.ts';
 import { MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
-import { SocketInitiator } from '@/components/system/SocketInitiator.tsx';
 import { Router } from './Router.tsx';
+
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <MantineProvider>
       <Notifications position="top-right" />
-      <SocketInitiator>
         <Router />
-      </SocketInitiator>
     </MantineProvider>
   </React.StrictMode>,
 );

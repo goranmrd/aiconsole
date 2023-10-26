@@ -29,6 +29,7 @@ import { MessageSlice } from './MessageSlice';
 import { AgentsSlice, createAgentsSlice } from './AgentsSlice';
 import { MaterialSlice, createMaterialSlice } from './MetarialSlice';
 import { useAnalysisStore } from './useAnalysisStore';
+import { useWebSocketStore } from './useWebSocketStore';
 
 export type AICStore = MessageSlice &
   CommandSlice &
@@ -51,4 +52,5 @@ export const useAICStore = create<AICStore>()((...a) => ({
 export const initStore = () => {
   useAICStore.getState().initCommandHistory();
   useAnalysisStore.getState().init();
+  useWebSocketStore.getState().initWebSocket();
 };

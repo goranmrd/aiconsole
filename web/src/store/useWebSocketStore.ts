@@ -28,14 +28,19 @@ export type WebSockeStore = {
   initWebSocket: () => void;
   disconnect: () => void;
   sendMessage: (message: OutgoingWSMessage) => void;
+  initStarted: boolean;
 };
 
 // Create Zustand store
 export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
   ws: null,
+  initStarted: false,
 
   // updated function to init the WebSocket connection
   initWebSocket: () => {
+    if (get().initStarted) return;
+    set({ initStarted: true });
+
     const ws = new ReconnectingWebSocket(`ws://localhost:8000/ws`);
 
     ws.onopen = () => {
