@@ -47,30 +47,26 @@ export function Chat({ chatId }: { chatId: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatId]); //Initentional trigger when chat_id changes
 
-  return (
+  return !loadingMessages && chat.message_groups?.length === 0 ? (
+    <Welcome />
+  ) : chat.message_groups?.length > 0 ? ( // This is needed because of https://github.com/compulim/react-scroll-to-bottom/issues/61#issuecomment-1608456508
     <ScrollToBottom
       className="h-full overflow-y-auto flex flex-col"
       initialScrollBehavior="auto"
+      mode={'bottom'}
+      debug={true}
     >
-      {!loadingMessages && chat.message_groups?.length === 0 ? (
-        <Welcome />
-      ) : (
-        <>
-          <div>
-            {chat.message_groups.map((group, index) => (
-              <MessageGroup
-                group={group}
-                key={group.id}
-                isStreaming={
-                  isExecuteRunning && index === chat.message_groups.length - 1
-                }
-              />
-            ))}
-            <Analysis />
-            {!isAnalysisRunning && <div className="flex flex-row h-4"></div>}
-          </div>
-        </>
-      )}
+      {chat.message_groups.map((group, index) => (
+        <MessageGroup
+          group={group}
+          key={group.id}
+          isStreaming={isExecuteRunning && index === chat.message_groups.length - 1}
+        />
+      ))}
+      <Analysis />
+      {!isAnalysisRunning && <div className="flex flex-row h-4"></div>}
     </ScrollToBottom>
+  ) : (
+    <div className="h-full overflow-y-auto flex flex-col"></div>
   );
 }
