@@ -48,7 +48,7 @@ export function Chat({ chatId }: { chatId: string }) {
   }, [chatId]); //Initentional trigger when chat_id changes
 
   return !loadingMessages && chat.message_groups?.length === 0 ? (
-    <Welcome />
+    <div className="h-full overflow-y-auto flex flex-col"><Welcome /></div>
   ) : chat.message_groups?.length > 0 ? ( // This is needed because of https://github.com/compulim/react-scroll-to-bottom/issues/61#issuecomment-1608456508
     <ScrollToBottom
       className="h-full overflow-y-auto flex flex-col"

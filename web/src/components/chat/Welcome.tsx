@@ -64,7 +64,7 @@ export const Welcome = () => {
   const submitCommand = useAICStore((state) => state.submitCommand);
 
   return (
-    <div className="flex flex-col items-center justify-center h-full">
+    <div className="flex flex-col items-center justify-center">
       <section className="container mx-auto px-6 py-8">
         <img
           src="/favicon.svg"
