@@ -34,6 +34,7 @@ import { CodeInput } from '@/components/materials/CodeInput';
 import { useAICStore } from '@/store/AICStore';
 import { EyeIcon, NoSymbolIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { cn } from '@/utils/styles';
+import showNotification from '@/utils/showNotification';
 import { BoltIcon } from '@heroicons/react/24/solid';
 import { Tooltip } from '../system/Tooltip';
 
@@ -149,27 +150,27 @@ export function MaterialPage() {
     if (isNew) {
       await Api.saveNewMaterial(material);
 
-      notifications.show({
+      showNotification({
         title: 'Saved',
         message: 'Material saved',
-        color: 'green',
+        variant: 'success',
       });
     } else if (materialInitial && materialInitial.id !== material.id) {
       await Api.saveNewMaterial(material);
       await deleteMaterial(materialInitial.id);
 
-      notifications.show({
+      showNotification({
         title: 'Renamed',
         message: 'Material renamed',
-        color: 'green',
+        variant: 'success',
       });
     } else {
       await Api.updateMaterial(material);
 
-      notifications.show({
+      showNotification({
         title: 'Saved',
         message: 'Material saved',
-        color: 'green',
+        variant: 'success',
       });
     }
 

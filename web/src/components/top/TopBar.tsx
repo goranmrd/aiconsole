@@ -16,10 +16,10 @@
 
 import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-import { notifications } from '@mantine/notifications';
 
 import { BASE_URL } from '@/api/Api';
 import { useAICStore } from '@/store/AICStore';
+import showNotification from '@/utils/showNotification';
 
 export function TopBar() {
   const chooseProject = useAICStore((state) => state.chooseProject);
@@ -49,10 +49,10 @@ export function TopBar() {
             to="/materials"
             className="cursor-pointer text-sm hover:text-gray-400 hover:animate-pulse"
             onClick={() =>
-              notifications.show({
+              showNotification({
                 title: 'Not implemented',
                 message: 'Agents listing is not implemented yet',
-                color: 'red',
+                variant: 'error',
               })
             }
           >
@@ -65,10 +65,10 @@ export function TopBar() {
           src={`${BASE_URL}/profile/user.jpg`}
           className="h-9 w-9 rounded-full border cursor-pointer shadow-md border-primary"
           onClick={() =>
-            notifications.show({
+            showNotification({
               title: 'Not implemented',
               message: 'User profile is not implemented yet',
-              color: 'red',
+              variant: 'error',
             })
           }
         />

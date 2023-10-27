@@ -31,7 +31,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <MantineProvider>
       <Notifications position="top-right" />
-        <Router />
+      <Router />
     </MantineProvider>
   </React.StrictMode>,
 );

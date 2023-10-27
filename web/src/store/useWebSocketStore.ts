@@ -14,7 +14,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { notifications } from '@mantine/notifications';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { create } from 'zustand';
 import { ErrorEvent } from 'reconnecting-websocket/events';
@@ -22,6 +21,7 @@ import { useAICStore } from './AICStore';
 import { OutgoingWSMessage } from '../types/outgoingMessages';
 import { IncomingWSMessage } from '../types/incomingMessages';
 import { useAnalysisStore } from '@/store/useAnalysisStore';
+import showNotification from '@/utils/showNotification';
 
 export type WebSockeStore = {
   ws: ReconnectingWebSocket | null;
@@ -58,15 +58,15 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
       switch (data.type) {
         case 'ErrorWSMessage':
           console.error(data.error);
-          notifications.show({
+          showNotification({
             title: 'Error',
             message: data.error,
-            color: 'red',
+            variant: 'error',
           });
           break;
         case 'NotificationWSMessage':
           console.log('Notification received: ', data);
-          notifications.show({
+          showNotification({
             title: data.title,
             message: data.message,
           });
@@ -82,7 +82,7 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
           break;
         case 'MaterialsUpdatedWSMessage':
           useAICStore.getState().fetchMaterials();
-          notifications.show({
+          showNotification({
             title: 'Materials updated',
             message: `${data.count} materials updated`,
           });
