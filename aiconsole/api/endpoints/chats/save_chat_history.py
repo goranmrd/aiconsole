@@ -30,5 +30,8 @@ def save_chat_history(chat: Chat):
         if os.path.exists(file_path):
             os.remove(file_path)
     else:
+        os.makedirs(history_directory, exist_ok=True)
         with open(file_path, "w") as f:
-            json.dump(chat.model_dump(exclude={"id", "last_modified"}), f, indent=4)
+            json.dump(chat.model_dump(exclude={"id", "last_modified"}),
+                      f,
+                      indent=4)
