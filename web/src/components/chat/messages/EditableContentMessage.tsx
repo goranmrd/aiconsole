@@ -41,7 +41,10 @@ export function EditableContentMessage({ initialContent, isStreaming, children, 
     setIsEditing(true);
   };
 
-  const handleCancelEditClick = () => setIsEditing(false);
+  const handleCancelEditClick =  useCallback(() => {
+    setIsEditing(false);
+    setContent(initialContent);
+  }, [initialContent, setIsEditing, setContent]);
 
   const handleOnChange = (value: string) => setContent(value);
 
