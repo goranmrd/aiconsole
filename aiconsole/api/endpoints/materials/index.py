@@ -30,11 +30,8 @@ async def materials_get():
     return JSONResponse(
         [
             {
-                "id": material.id,
-                "name": material.name,
-                "defined_in": material.defined_in,
+                **material.model_dump(),
                 "status": settings.get_material_status(material.id),
-                "usage": material.usage
             } for material in projects.get_project_materials().all_materials()
         ]
     )

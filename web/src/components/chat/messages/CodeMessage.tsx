@@ -13,17 +13,18 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-    
-import { useState } from 'react';
+
+import { useCallback, useState } from 'react';
 
 import { Spinner } from '@/components/chat/Spinner';
-import { MessageControls } from './MessageControls';
 import { useAICStore } from '@/store/AICStore';
 import { ArrowDownIcon, ArrowUpIcon } from '@heroicons/react/24/outline';
 import { AICCodeMessage, AICMessageGroup } from '@/types/types';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { Button } from '../../system/Button';
 import { duotoneDark as vs2015 } from 'react-syntax-highlighter/dist/cjs/styles/prism';
+import { CodeOutput } from './CodeOutput';
+import { EditableContentMessage } from './EditableContentMessage';
 
 interface MessageProps {
   group: AICMessageGroup;
@@ -33,90 +34,91 @@ interface MessageProps {
 
 export function CodeMessage({ group, message, isStreaming }: MessageProps) {
   const removeMessageFromGroup = useAICStore((state) => state.removeMessageFromGroup);
+  const editMessageContent = useAICStore((state) => state.editMessageContent);
+
   const alwaysExecuteCode = useAICStore((state) => state.alwaysExecuteCode);
 
   const [folded, setFolded] = useState(alwaysExecuteCode);
   const doRun = useAICStore((state) => state.doRun);
-  const enableAutoCodeExecution = useAICStore(
-    (state) => state.enableAutoCodeExecution,
-  );
+  const enableAutoCodeExecution = useAICStore((state) => state.enableAutoCodeExecution);
   const isViableForRunningCode = useAICStore((state) => state.isViableForRunningCode);
 
-  
   const handleAlwaysRunClick = () => {
     enableAutoCodeExecution();
-    doRun();
+    doRun(group.id, message.id);
   };
 
+  const handleRunClick = () => {
+    doRun(group.id, message.id);
+  }
 
-  const messageComponents = [
-    <div key={message.id}>
-      <span className="w-20 flex-none">Code:</span>
-      <div>
-        <SyntaxHighlighter
-          style={vs2015}
-          children={message.content}
-          language={message.language}
-          className="overflow-scroll max-w-2xl"
-        />
-        {
-          isViableForRunningCode(group.id, message.id) &&
-          !isStreaming && (
-            <div className="flex gap-4 pt-4">
-              <Button label="Run" onClick={doRun} />
-              
-              {!alwaysExecuteCode && <Button
-                label="Always Run"
-                onClick={handleAlwaysRunClick}
-                variant="secondary"
-              />}
-            </div>
-          )}
-      </div>
-    </div>
-    
-    ,
-    ...message.outputs.map((output) => 
-      <div key={output.id}>
-        <span className="w-20 flex-none">Output:</span>
-        <SyntaxHighlighter
-          style={vs2015}
-          children={output.content}
-          language={'text'}
-          className="basis-0 flex-grow overflow-scroll max-w-2xl"
-        />
-      </div>
-    )
-  ];
 
-  const handleRemoveClick = () => {
-    removeMessageFromGroup(group.id, message.id)
-  };
+  const handleAcceptedContent = useCallback(
+    (content: string) => {
+      editMessageContent(group.id, message.id, content);
+    },
+    [message.id, group.id, editMessageContent],
+  );
+
+  const handleRemoveClick = useCallback(() => {
+    removeMessageFromGroup(group.id, message.id);
+  }, [message.id, group.id, removeMessageFromGroup]);
 
   return (
     <div className="flex justify-between items-center">
-      <div className="p-5 rounded-md flex flex-col gap-5 bg-primary/5 flex-grow max-w-[90%]">
-        <div
-          className="cursor-pointer"
-          onClick={() => setFolded((folded) => !folded)}
-        >
+      <div className="p-5 rounded-md flex flex-col gap-5 bg-primary/5 flex-grow mr-4">
+        <div className="cursor-pointer" onClick={() => setFolded((folded) => !folded)}>
           <div className="flex flex-row gap-2 items-center">
             {isStreaming ? (
               <div className="flex-grow flex flex-row gap-3 items-center">
                 Working ... <Spinner />
               </div>
             ) : (
-              <div className="flex-grow">
-                {folded ? 'Check' : 'Hide'} the code
-              </div>
+              <div className="flex-grow">{folded ? 'Check' : 'Hide'} the code</div>
             )}
+
             {folded && <ArrowDownIcon className="h-5 w-5" />}
             {!folded && <ArrowUpIcon className="h-5 w-5" />}
           </div>
         </div>
-        {!folded && messageComponents}
+
+        {!folded && (
+          <>
+            <EditableContentMessage
+              initialContent={message.content}
+              isStreaming={isStreaming}
+              language={message.language}
+              handleAcceptedContent={handleAcceptedContent}
+              handleRemoveClick={handleRemoveClick}
+            >
+              <div className="flex flex-row w-full">
+                <span className="w-20">Code: </span>
+                <SyntaxHighlighter
+                  style={vs2015}
+                  children={message.content}
+                  language={message.language}
+                  className="overflow-scroll max-w-3xl flex-grow rounded-md"
+                />
+              </div>
+              {isViableForRunningCode(group.id, message.id) && !isStreaming && (
+                <div className="flex gap-4 pt-4">
+                  <Button label="Run" onClick={handleRunClick} />
+
+                  {!alwaysExecuteCode && (
+                    <Button label="Always Run" onClick={handleAlwaysRunClick} variant="secondary" />
+                  )}
+                </div>
+              )}
+            </EditableContentMessage>
+
+            {...message.outputs.map((output) => (
+              <div key={output.id}>
+                <CodeOutput group={group} message={message} output={output} isStreaming={isStreaming} />
+              </div>
+            ))}
+          </>
+        )}
       </div>
-      {!isStreaming && <MessageControls onRemoveClick={handleRemoveClick} />}
     </div>
   );
 }

@@ -20,10 +20,11 @@ import { Api } from '@/api/Api';
 import { AICStore } from './AICStore';
 import { useAnalysisStore } from './useAnalysisStore';
 import { getGroup, getMessage } from './utils';
+import { group } from 'console';
 
 export type ActionSlice = {
   doExecute: () => Promise<void>;
-  doRun: () => Promise<void>;
+  doRun: (groupId?: string, messageId?: string) => Promise<void>;
   isExecuteRunning: boolean;
   isWorking: () => boolean;
   stopWork: () => void;
@@ -38,14 +39,14 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
 
   executeAbortSignal: new AbortController(),
 
-  doRun: async () => {
+  doRun: async (groupId?: string, messageId?: string) => {
     set(() => ({
       executeAbortSignal: new AbortController(),
       isExecuteRunning: true,
     }));
 
-    const lastGroupLocation = getGroup(get().chat);
-    const lastMessageLocation = getMessage(lastGroupLocation.group);
+    const lastGroupLocation = getGroup(get().chat, groupId);
+    const lastMessageLocation = getMessage(lastGroupLocation.group, messageId);
     const lastMessage = lastMessageLocation.message;
 
     if (!('language' in lastMessage)) {
@@ -54,8 +55,6 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
 
     const language = lastMessage.language;
     const code = lastMessage.content;
-    const agentId = lastGroupLocation.group.agent_id;
-    const task = lastGroupLocation.group.task;
     const materials_ids = lastGroupLocation.group.materials_ids;
 
     try {
@@ -70,7 +69,7 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
       const reader = response.body?.getReader();
       const decoder = new TextDecoder('utf-8');
 
-      get().appendEmptyOutput()
+      get().appendEmptyOutput(groupId, messageId)
 
       while (true) {
         try {
@@ -81,7 +80,7 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
 
           const textChunk = decoder.decode(value);
 
-          get().appendTextAtTheEnd(textChunk)
+          get().appendTextAtTheEnd(textChunk, groupId, messageId)
 
           if (done) {
             break;
@@ -103,21 +102,14 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
       }));
     }
 
-
-    // We ran code, continue operation with the same agent
-    console.log('from run output: doExecute');
-
-    //Create new message with the same agent, needed for doExecute
-
-    get().appendGroup({
-      agent_id: agentId,
-      task: task,
-      materials_ids,
-      role: 'assistant',
-      messages: [],
-    })
-
-    await get().doExecute();
+    {
+      // If We ran code on the last message, continue operation with the same agent
+      const lastGroup = getGroup(get().chat).group;
+      const lastMessage = getMessage(lastGroup).message;
+      if ((groupId == undefined || lastGroup.id === groupId) && (messageId == undefined || lastMessage.id == messageId)) {
+        await get().doExecute();
+      }
+    }
   },
 
   /**

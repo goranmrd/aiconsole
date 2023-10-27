@@ -46,7 +46,7 @@ export type MessageSlice = {
     newOutput: string,
   ) => void;
   appendEmptyOutput: (groupId?: string, messageId?: string) => void;
-  appendTextAtTheEnd: (text: string) => void;
+  appendTextAtTheEnd: (text: string, groupId?: string, messageId?: string) => void;
   appendGroup: (group: Omit<AICMessageGroup, 'id'>) => void;
   appendMessage: (
     message:
@@ -73,20 +73,20 @@ export const createMessageSlice: StateCreator<
       return false;
     }
   },
-  appendTextAtTheEnd: (text: string) => {
+  appendTextAtTheEnd: (text: string, groupId?: string, messageId?: string, ) => {
     //append text to last content
     set((state) => {
       const chat = deepCopyChat(state.chat);
 
-      const lastGroup = chat.message_groups[chat.message_groups.length - 1];
-      const lastMessage = lastGroup.messages[lastGroup.messages.length - 1];
+      const group = getGroup(chat, groupId).group;
+      const message = getMessage(group, messageId).message;
 
-      if ('outputs' in lastMessage && lastMessage.outputs.length > 0) {
-        const lastOutput = lastMessage.outputs[lastMessage.outputs.length - 1];
+      if ('outputs' in message && message.outputs.length > 0) {
+        const lastOutput = message.outputs[message.outputs.length - 1];
 
         lastOutput.content += text;
       } else {
-        lastMessage.content += text;
+        message.content += text;
       }
 
       return {
