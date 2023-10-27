@@ -13,13 +13,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-    
-import {
-  TrashIcon,
-  PencilIcon,
-  CheckIcon,
-  XMarkIcon,
-} from '@heroicons/react/24/outline';
+
+import { TrashIcon, PencilIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 interface MessageControlsProps {
   isEditing?: boolean;
@@ -53,13 +48,15 @@ export function MessageControls({
             <button>
               <PencilIcon onClick={onEditClick} className="h-5 w-5" />{' '}
             </button>
-          ): <div className="h-5 w-5"></div>}
+          ) : (
+            <div className="h-5 w-5"></div>
+          )}
+          {onRemoveClick && (
+            <button onClick={onRemoveClick}>
+              <TrashIcon className="h-5 w-5" />{' '}
+            </button>
+          )}
         </>
-      )}
-      {onRemoveClick && (
-        <button onClick={onRemoveClick}>
-          <TrashIcon className="h-5 w-5" />{' '}
-        </button>
       )}
     </div>
   );
