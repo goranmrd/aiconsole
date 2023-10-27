@@ -42,14 +42,12 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
   const isWorking = useAICStore((state) => state.isWorking);
   const chat = useAICStore((state) => state.chat);
   const chatId = useAICStore((state) => state.chatId);
-  const hasPendingCode = useAICStore((state) => state.hasPendingCode);
 
   const isAnalysisRunning = useAnalysisStore((state) => state.isAnalysisRunning);
 
   const sendingMessagesBlocked =
     isExecuteRunning ||
     isAnalysisRunning ||
-    hasPendingCode() ||
     (command === '' && chat.message_groups?.length == 0);
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -110,7 +108,6 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
     >
       <div className="flex items-center">
         <TextareaAutosize
-          disabled={hasPendingCode()}
           ref={textAreaRef}
           className="border-white/20 ring-secondary/30 bg-black flex-grow resize-none overflow-hidden rounded-3xl border px-4 py-2 focus:outline-none focus:ring-2"
           value={command}

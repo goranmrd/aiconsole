@@ -25,7 +25,6 @@ import { deepCopyChat, getGroup, getMessage } from './utils';
 export type ChatSlice = {
   chatId: string;
   chat: Chat;
-  hasPendingCode: () => boolean;
   chatHeadlines: ChatHeadline[];
   setChatId: (id: string) => void;
   deleteChat: (id: string) => Promise<void>;
@@ -45,13 +44,6 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
     last_modified: new Date().toISOString(),
     title_edited: false,
     message_groups: [],
-  },
-  hasPendingCode: () => {
-    if (get().chat.message_groups.length === 0) return false;
-    const lastGroup = getGroup(get().chat);
-    if (lastGroup.group.messages.length === 0) return false;
-    const lastMessage = getMessage(lastGroup.group);
-    return 'language' in lastMessage.message;
   },
   chatHeadlines: [],
   agent: undefined,
