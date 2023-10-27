@@ -17,6 +17,7 @@
 import { useCallback, useState } from 'react';
 import { MessageControls } from './MessageControls';
 import { CodeInput } from '../../materials/CodeInput';
+import { cn } from '@/utils/styles';
 
 interface EditableContentMessageProps {
   initialContent: string;
@@ -25,9 +26,10 @@ interface EditableContentMessageProps {
   children?: React.ReactNode;
   handleRemoveClick?: () => void;
   handleAcceptedContent: (content: string) => void;
+  className?: string;
 }
 
-export function EditableContentMessage({ initialContent, isStreaming, children, language, handleAcceptedContent, handleRemoveClick }: EditableContentMessageProps) {
+export function EditableContentMessage({ initialContent, isStreaming, children, language, handleAcceptedContent, handleRemoveClick, className }: EditableContentMessageProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [content, setContent] = useState(initialContent);
 
@@ -55,9 +57,9 @@ export function EditableContentMessage({ initialContent, isStreaming, children, 
   }, [handleSaveClick]);
 
   return (
-    <div className="flex flex-grow items-start">
+    <div className={cn("flex flex-row items-start", className)}>
       {isEditing ? (
-        <div className="bg-[#00000080] rounded-md w-[660px]">
+        <div className="bg-[#00000080] rounded-md flex-grow">
           <CodeInput
             className="resize-none border-0 bg-transparent w-full outline-none h-96"
             value={content}
@@ -68,7 +70,9 @@ export function EditableContentMessage({ initialContent, isStreaming, children, 
           />
         </div>
       ) : (
-        children
+        <div className="flex-grow">
+          {children}
+        </div>
       )}
 
       {!isStreaming && (

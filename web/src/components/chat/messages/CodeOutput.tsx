@@ -44,21 +44,22 @@ export function CodeOutput({ group, message, output, isStreaming }: OutputProps)
   }, [group.id, message.id, output.id, removeOutputFromCode]);
 
   return (
-    <EditableContentMessage
-      initialContent={output.content}
-      isStreaming={isStreaming}
-      handleAcceptedContent={handleAcceptedContent}
-      handleRemoveClick={handleRemoveClick}
-    >
-      <div className="flex flex-row w-full">
-        <span className="w-20">Output: </span>
+    <div className="flex flex-row w-full">
+      <span className="w-20">Output: </span>
+      <EditableContentMessage
+        initialContent={output.content}
+        isStreaming={isStreaming}
+        handleAcceptedContent={handleAcceptedContent}
+        handleRemoveClick={handleRemoveClick}
+        className="flex-grow"
+      >
         <SyntaxHighlighter
           style={vs2015}
           children={output.content}
           language={'text'}
           className="basis-0 overflow-scroll max-w-3xl flex-grow rounded-md p-2"
         />
-      </div>
-    </EditableContentMessage>
+      </EditableContentMessage>
+    </div>
   );
 }

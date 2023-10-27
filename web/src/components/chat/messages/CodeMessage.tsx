@@ -50,8 +50,7 @@ export function CodeMessage({ group, message, isStreaming }: MessageProps) {
 
   const handleRunClick = () => {
     doRun(group.id, message.id);
-  }
-
+  };
 
   const handleAcceptedContent = useCallback(
     (content: string) => {
@@ -84,32 +83,34 @@ export function CodeMessage({ group, message, isStreaming }: MessageProps) {
 
         {!folded && (
           <>
-            <EditableContentMessage
-              initialContent={message.content}
-              isStreaming={isStreaming}
-              language={message.language}
-              handleAcceptedContent={handleAcceptedContent}
-              handleRemoveClick={handleRemoveClick}
-            >
-              <div className="flex flex-row w-full">
-                <span className="w-20">Code: </span>
-                <SyntaxHighlighter
-                  style={vs2015}
-                  children={message.content}
+            <div className="flex flex-row w-full">
+              <span className="w-20">Code: </span>
+              <div className="flex-grow">
+                <EditableContentMessage
+                  initialContent={message.content}
+                  isStreaming={isStreaming}
                   language={message.language}
-                  className="overflow-scroll max-w-3xl flex-grow rounded-md"
-                />
-              </div>
-              {isViableForRunningCode(group.id, message.id) && !isStreaming && (
-                <div className="flex gap-4 pt-4">
-                  <Button label="Run" onClick={handleRunClick} />
+                  handleAcceptedContent={handleAcceptedContent}
+                  handleRemoveClick={handleRemoveClick}
+                >
+                  <SyntaxHighlighter
+                    style={vs2015}
+                    children={message.content}
+                    language={message.language}
+                    className="overflow-scroll max-w-3xl flex-grow rounded-md"
+                  />
+                </EditableContentMessage>
+                {isViableForRunningCode(group.id, message.id) && !isStreaming && (
+                  <div className="flex gap-4 pt-2">
+                    <Button label="Run" onClick={handleRunClick} />
 
-                  {!alwaysExecuteCode && (
-                    <Button label="Always Run" onClick={handleAlwaysRunClick} variant="secondary" />
-                  )}
-                </div>
-              )}
-            </EditableContentMessage>
+                    {!alwaysExecuteCode && (
+                      <Button label="Always Run" onClick={handleAlwaysRunClick} variant="secondary" />
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
 
             {...message.outputs.map((output) => (
               <div key={output.id}>

@@ -20,7 +20,6 @@ import { Api } from '@/api/Api';
 import { AICStore } from './AICStore';
 import { useAnalysisStore } from './useAnalysisStore';
 import { getGroup, getMessage } from './utils';
-import { group } from 'console';
 
 export type ActionSlice = {
   doExecute: () => Promise<void>;
