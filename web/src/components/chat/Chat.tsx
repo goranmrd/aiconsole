@@ -54,7 +54,6 @@ export function Chat({ chatId }: { chatId: string }) {
       className="h-full overflow-y-auto flex flex-col"
       initialScrollBehavior="auto"
       mode={'bottom'}
-      debug={true}
     >
       {chat.message_groups.map((group, index) => (
         <MessageGroup
