@@ -14,7 +14,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { notifications } from '@mantine/notifications';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
@@ -169,10 +168,10 @@ export function MaterialPage() {
       await Api.setMaterialStatus(material.id, material.status);
       await useAICStore.getState().fetchMaterials();
 
-      notifications.show({
+      showNotification({
         title: 'Status changed',
         message: `Material status changed to ${material.status}`,
-        color: 'green',
+        variant: 'success',
       });
     }
   };
