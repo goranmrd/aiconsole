@@ -20,7 +20,7 @@ import { Chat, ChatHeadline } from '../types/types';
 import { Api } from '@/api/Api';
 import { AICStore } from './AICStore';
 import { useWebSocketStore } from '@/store/useWebSocketStore';
-import { deepCopyChat, getGroup, getMessage } from './utils';
+import { deepCopyChat } from './utils';
 
 export type ChatSlice = {
   chatId: string;
