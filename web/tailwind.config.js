@@ -10,7 +10,7 @@ export default {
         display: 'Oswald, ui-serif', // Adds a new `font-display` class
       },
       boxShadow: {
-        'dark': '0px 20px 40px 0px rgba(0, 0, 0, 0.25);'
+        'dark': '0px 20px 40px 0px rgba(0, 0, 0, 0.25)'
       },
       typography: {
           DEFAULT: {
