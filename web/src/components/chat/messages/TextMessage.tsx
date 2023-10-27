@@ -16,7 +16,6 @@
 
 import { useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { duotoneDark as vs2015 } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
@@ -59,7 +58,6 @@ export function TextMessage({ group, message, isStreaming }: MessageProps) {
           <div className="flex-grow">
             <div className="prose prose-stone dark:prose-invert">
               <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
                 components={{
                   img: ({ src, ...props }) => {
                     return (
