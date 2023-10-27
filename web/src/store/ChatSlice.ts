@@ -117,7 +117,15 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
     });
 
     set({
-      chat: chat
+      chat: chat,
+      chatHeadlines: [
+       {
+          id: get().chatId,
+          message: chat.title,
+          timestamp: new Date().toISOString(),
+        },
+        ...get().chatHeadlines.filter((chat) => chat.id !== get().chatId),
+      ],
     });
 
     await Api.saveHistory(chat);
