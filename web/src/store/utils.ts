@@ -14,39 +14,112 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { v4 as uuidv4 } from 'uuid';
+import { AICContentMessage, AICMessage, AICMessageGroup, Chat } from '../types/types';
 
-import { AICMessage } from '../types/types';
+export type AICGroupLocation = { groupIndex: number; group: AICMessageGroup };
+export type AICMessageLocation = { messageIndex: number; message: AICMessage; };
+export type AICOutputLocaion = { outputIndex: number; output: AICContentMessage; };
 
-export function createMessage({
-  agent_id,
-  role,
-  task,
-  content,
-  materials_ids,
-  language,
-  code,
-  code_output,
-}: {
-  agent_id: string;
-  role: string;
-  task?: string;
-  content: string;
-  materials_ids: string[];
-  language?: string;
-  code?: boolean;
-  code_output?: boolean;
-}): AICMessage {
+/**
+ *
+ * @param groupId if undefined returns last group
+ */
+export function getGroup(
+  chat: Chat,
+  groupId?: string,
+): AICGroupLocation {
+  const groupIndex = groupId
+    ? chat.message_groups.findIndex((group) => group.id === groupId)
+    : chat.message_groups.length - 1;
+
+  if (groupIndex === -1) {
+    throw new Error(`Group with id ${groupId} not found`);
+  }
+
+  const group = chat.message_groups[groupIndex];
+
   return {
-    agent_id,
-    id: uuidv4(),
-    role,
-    task,
-    materials_ids,
-    content,
-    language,
-    code,
-    code_output,
-    timestamp: new Date().toISOString(),
+    group,
+    groupIndex,
+  };
+}
+
+/**
+ *
+ * @param messageId if undefined returns last message
+ */
+export function getMessage(
+  group: AICMessageGroup,
+  messageId?: string,
+): AICMessageLocation {
+  const messageIndex = messageId
+    ? group.messages.findIndex((message) => message.id === messageId)
+    : group.messages.length - 1;
+
+  if (messageIndex === -1) {
+    throw new Error(`Message with id ${messageId} not found`);
+  }
+
+  return {
+    messageIndex,
+    message: group.messages[messageIndex],
+  };
+}
+
+/**
+ * 
+ * @param outputId if undefined returns last output
+ */
+export function getOutput(
+  message: AICMessage,
+  outputId?: string,
+): AICOutputLocaion {
+  
+  if (!('outputs' in message)) {
+    throw new Error(`Message with id ${message.id} is not a code message`);
+  }
+
+  const outputs = message.outputs;
+
+  const outputIndex = outputId
+    ? outputs.findIndex((output) => output.id === outputId)
+    : outputs.length - 1;
+
+  if (outputIndex === -1) {
+    throw new Error(`Output with id ${outputId} not found`);
+  }
+
+  return {
+    outputIndex,
+    output: outputs[outputIndex],
+  };
+}
+
+
+function deepCopyMessage(message: AICMessage): AICMessage {
+  if ('language' in message) {
+    const {outputs, ...rest} = message;
+    return {
+      ...rest,
+      outputs: outputs.map((output) => deepCopyMessage(output)),
+    };
+  } else {
+    return {
+      ...message,
+    };
+  }
+}
+
+export function deepCopyGroups(groups: AICMessageGroup[]): AICMessageGroup[] {
+  return groups.map((group) => ({
+    ...group,
+    messages: group.messages.map((message) => deepCopyMessage(message)),
+  }));
+}
+
+export function deepCopyChat(chat: Chat): Chat {
+  return {
+    ...chat,
+    message_groups: deepCopyGroups(chat.message_groups),
   };
 }

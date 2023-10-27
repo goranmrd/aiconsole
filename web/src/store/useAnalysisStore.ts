@@ -18,7 +18,6 @@ import { create } from 'zustand';
 
 import { useAICStore } from './AICStore';
 import { Api } from '@/api/Api';
-import { createMessage } from './utils';
 
 export type AnalysisStore = {
   agent_id?: string;
@@ -38,7 +37,7 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
     useAICStore.subscribe((state, prevState) => {
       if (
         prevState.chatId !== state.chatId ||
-        prevState.messages?.length !== state.messages?.length ||
+        prevState.chat.message_groups.length !== state.chat.message_groups.length ||
         (state.isExecuteRunning && !prevState.isExecuteRunning)
       ) {
         useAnalysisStore.getState().reset();
@@ -52,7 +51,6 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
   next_step: undefined,
   thinking_process: undefined,
   reset: () => {
-    console.log('resetting analysis');
     get().analysisAbortController.abort();
 
     set({
@@ -72,10 +70,7 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
       }));
 
       const response = await Api.analyse(
-        {
-          id: useAICStore.getState().chatId,
-          messages: useAICStore.getState().messages,
-        },
+        useAICStore.getState().chat,
         get().analysisAbortController.signal,
       );
 
@@ -98,27 +93,16 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
 
       console.log('Analysis done', data);
       if (data.agent_id !== 'user' && data.next_step) {
-        useAICStore.setState(() => {
-          const newMessages = (useAICStore.getState().messages || []).slice();
-          //push next step
-          newMessages.push(
-            createMessage({
-              agent_id: data.agent_id,
-              task: data.next_step,
-              materials_ids: data.materials_ids,
-              role: 'assistant',
-              content: '',
-            }),
-          );
-          return {
-            messages: newMessages,
-          };
-        });
-
+        useAICStore.getState().appendGroup({
+          agent_id: data.agent_id,
+          task: data.next_step,
+          materials_ids: data.materials_ids,
+          role: 'assistant',
+          messages: [],
+        })
+    
         console.log('Executing');
-        useAICStore
-          .getState()
-          .doExecute(data.agent_id, data.next_step, data.materials_ids);
+        useAICStore.getState().doExecute();
       }
     } catch (err) {
       if ((err as Error).name === 'AbortError') {

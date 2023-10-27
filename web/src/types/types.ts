@@ -14,25 +14,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export type AICMessage = {
-  agent_id: string;
+export type AICContentMessage = {
   id: string;
-  role: string;
-  task?: string;
-  content: string;
   timestamp: string;
-  materials_ids: string[];
-  language?: string;
-  code?: boolean;
-  code_ran?: boolean;
-  code_output?: boolean;
+  content: string;
 };
 
-export type AICMessageSection = {
-  id: string;
-  foldable: boolean;
-  messages: AICMessage[];
+export type AICCodeMessage = AICContentMessage & {
+  language: string;
+  outputs: AICContentMessage[];
 };
+
+export type AICMessage = AICContentMessage | AICCodeMessage;
 
 export type AICMessageGroup = {
   id: string;
@@ -40,26 +33,15 @@ export type AICMessageGroup = {
   role: string;
   task: string;
   materials_ids: string[];
-  sections: AICMessageSection[];
+  messages: AICMessage[];
 };
 
 export type MaterialDefinedIn = 'aiconsole' | 'project';
-export const materialDefinedInOptions: MaterialDefinedIn[] = [
-  'aiconsole',
-  'project',
-];
+export const materialDefinedInOptions: MaterialDefinedIn[] = ['aiconsole', 'project'];
 export type MaterialStatus = 'disabled' | 'enabled' | 'forced';
-export const materialStatusOptions: MaterialStatus[] = [
-  'disabled',
-  'enabled',
-  'forced',
-];
+export const materialStatusOptions: MaterialStatus[] = ['disabled', 'enabled', 'forced'];
 export type MaterialContentType = 'static_text' | 'dynamic_text' | 'api';
-export const materialContenTypeOptions: MaterialContentType[] = [
-  'static_text',
-  'dynamic_text',
-  'api',
-];
+export const materialContenTypeOptions: MaterialContentType[] = ['static_text', 'dynamic_text', 'api'];
 
 export type Material = {
   id: string;
@@ -97,7 +79,10 @@ export type ChatHeadline = {
 
 export type Chat = {
   id: string;
-  messages: AICMessage[];
+  title: string;
+  title_edited: boolean;
+  last_modified: string;
+  message_groups: AICMessageGroup[];
 };
 
 export type Agent = {
@@ -109,4 +94,8 @@ export type Agent = {
 
 export type Settings = {
   code_autorun?: boolean;
+};
+
+export type ErrorResponse = {
+  detail?: string;
 };

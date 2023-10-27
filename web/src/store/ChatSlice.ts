@@ -20,10 +20,11 @@ import { Chat, ChatHeadline } from '../types/types';
 import { Api } from '@/api/Api';
 import { AICStore } from './AICStore';
 import { useWebSocketStore } from '@/store/useWebSocketStore';
+import { deepCopyChat, getGroup, getMessage } from './utils';
 
 export type ChatSlice = {
   chatId: string;
-  hasPendingCode: boolean;
+  chat: Chat;
   chatHeadlines: ChatHeadline[];
   setChatId: (id: string) => void;
   deleteChat: (id: string) => Promise<void>;
@@ -37,7 +38,13 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
   get,
 ) => ({
   chatId: '',
-  hasPendingCode: false,
+  chat: {
+    id: '',
+    title: '',
+    last_modified: new Date().toISOString(),
+    title_edited: false,
+    message_groups: [],
+  },
   chatHeadlines: [],
   agent: undefined,
   materials: [],
@@ -64,43 +71,56 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
     }));
   },
   setChatId: async (id: string) => {
-    set(() => ({
+    set({
       chatId: id,
-      messages: undefined,
-      hasPendingCode: false,
-    }));
-
-    useWebSocketStore.getState().sendMessage({
-      type: 'SetChatIdWSMessage',
-      chat_id: id,
+      loadingMessages: true
     });
-
-    let chat: Chat;
-    if (id === '') {
-      chat = {
-        id: '',
-        messages: [],
-      };
-    } else {
-      chat = await Api.getChat(id);
-    }
-
-    set(() => ({
-      messages: (chat.messages || []).map(({ materials_ids, ...rest }) => {
-        return {
-          materials_ids: materials_ids ? materials_ids : [],
-          ...rest,
+    try {
+      useWebSocketStore.getState().sendMessage({
+        type: 'SetChatIdWSMessage',
+        chat_id: id,
+      });
+  
+      let chat: Chat;
+      
+      if (id === '') {
+        chat = {
+          id: '',
+          title: '',
+          last_modified: new Date().toISOString(),
+          title_edited: false,
+          message_groups: [],
         };
-      }),
-    }));
+      } else {
+        chat = await Api.getChat(id);
+      }
+      set({
+        chat: chat,
+      });
+    } finally {
+      set({
+        loadingMessages: false,
+      });
+    }
   },
   saveCurrentChatHistory: async () => {
-    await Api.saveHistory({
-      id: get().chatId,
-      messages: get().messages,
+    const chat = deepCopyChat(get().chat);
+
+    // update title
+    if (!chat.title_edited && chat.message_groups.length > 0 &&chat.message_groups[0].messages.length > 0) {
+      chat.title = chat.message_groups[0].messages[0].content;
+    }
+
+    //remove empty groups
+    chat.message_groups = chat.message_groups.filter((group) => {
+      return group.messages.length > 0;
     });
 
-    await get().initChatHistory();
+    set({
+      chat: chat
+    });
+
+    await Api.saveHistory(chat);
   },
   updateChatHeadline: async (id: string, headline: string) => {
     const editedHeadline = get().chatHeadlines.find((chat) => chat.id === id);
@@ -119,5 +139,8 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
     }));
 
     await Api.updateChatHeadline(id, headline);
+
+    //force reload of the chat
+    get().setChatId(id);
   },
 });

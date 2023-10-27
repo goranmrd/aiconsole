@@ -16,7 +16,7 @@
     
 import { PaperAirplaneIcon, StopIcon } from '@heroicons/react/24/solid';
 import TextareaAutosize from 'react-textarea-autosize';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { cn } from '@/utils/styles';
 import { useAICStore } from '@/store/AICStore';
@@ -32,26 +32,23 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
     (state) => state.commandHistory[state.commandIndex],
   );
 
-  const {
-    editCommand: setCommand,
-    newCommand,
-    isExecuteRunning,
-    submitCommand,
-    historyUp: promptUp,
-    historyDown: promptDown,
-    stopWork,
-    isWorking,
-    messages,
-    hasPendingCode,
-  } = useAICStore((state) => state);
+  const setCommand = useAICStore((state) => state.editCommand);
+  const newCommand = useAICStore((state) => state.newCommand);
+  const isExecuteRunning = useAICStore((state) => state.isExecuteRunning);
+  const submitCommand = useAICStore((state) => state.submitCommand);
+  const promptUp = useAICStore((state) => state.historyUp);
+  const promptDown = useAICStore((state) => state.historyDown);
+  const stopWork = useAICStore((state) => state.stopWork);
+  const isWorking = useAICStore((state) => state.isWorking);
+  const chat = useAICStore((state) => state.chat);
+  const chatId = useAICStore((state) => state.chatId);
 
   const isAnalysisRunning = useAnalysisStore((state) => state.isAnalysisRunning);
 
   const sendingMessagesBlocked =
     isExecuteRunning ||
     isAnalysisRunning ||
-    hasPendingCode ||
-    (command === '' && messages?.length == 0);
+    (command === '' && chat.message_groups?.length == 0);
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -95,6 +92,13 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
     if (onSubmit) onSubmit();
   };
 
+  // auto focus this text area on changes to chatId
+  useEffect(() => {
+    if (textAreaRef.current) {
+      textAreaRef.current.focus();
+    }
+  }, [chatId]);
+
   return (
     <div
       className={cn(
@@ -104,7 +108,6 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
     >
       <div className="flex items-center">
         <TextareaAutosize
-          disabled={hasPendingCode}
           ref={textAreaRef}
           className="border-white/20 ring-secondary/30 bg-black flex-grow resize-none overflow-hidden rounded-3xl border px-4 py-2 focus:outline-none focus:ring-2"
           value={command}

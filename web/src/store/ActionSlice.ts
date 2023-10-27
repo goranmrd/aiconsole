@@ -18,22 +18,12 @@ import { StateCreator } from 'zustand';
 
 import { Api } from '@/api/Api';
 import { AICStore } from './AICStore';
-import { createMessage } from './utils';
 import { useAnalysisStore } from './useAnalysisStore';
+import { getGroup, getMessage } from './utils';
 
 export type ActionSlice = {
-  doExecute: (
-    agentId: string,
-    task: string,
-    materials_ids: string[],
-  ) => Promise<void>;
-  doRun: (
-    agentId: string,
-    task: string,
-    material_ids: string[],
-    language: string,
-    code: string,
-  ) => Promise<void>;
+  doExecute: () => Promise<void>;
+  doRun: (groupId?: string, messageId?: string) => Promise<void>;
   isExecuteRunning: boolean;
   isWorking: () => boolean;
   stopWork: () => void;
@@ -48,51 +38,37 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
 
   executeAbortSignal: new AbortController(),
 
-  doRun: async (
-    agentId: string,
-    task: string,
-    materials_ids: string[],
-    language: string,
-    code: string,
-  ) => {
+  doRun: async (groupId?: string, messageId?: string) => {
     set(() => ({
       executeAbortSignal: new AbortController(),
       isExecuteRunning: true,
     }));
 
-    let messages = get().messages || [];
+    const lastGroupLocation = getGroup(get().chat, groupId);
+    const lastMessageLocation = getMessage(lastGroupLocation.group, messageId);
+    const lastMessage = lastMessageLocation.message;
 
-    messages[messages.length - 1].code_ran = true;
+    if (!('language' in lastMessage)) {
+      throw new Error('Last message is not a code message');
+    }
 
-    set(() => ({
-      messages: messages.slice(),
-    }));
+    const language = lastMessage.language;
+    const code = lastMessage.content;
+    const materials_ids = lastGroupLocation.group.materials_ids;
 
     try {
       const response = await Api.runCode({
         chatId: get().chatId,
         language,
         code,
-        materials_ids: materials_ids,
+        materials_ids,
         signal: get().executeAbortSignal.signal,
       });
 
       const reader = response.body?.getReader();
       const decoder = new TextDecoder('utf-8');
 
-      set(({ messages }) => ({
-        messages: [
-          ...(messages || []),
-          createMessage({
-            agent_id: agentId,
-            task: task,
-            materials_ids,
-            role: 'assistant',
-            content: '',
-            code_output: true,
-          }),
-        ],
-      }));
+      get().appendEmptyOutput(groupId, messageId)
 
       while (true) {
         try {
@@ -103,13 +79,7 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
 
           const textChunk = decoder.decode(value);
 
-          messages = get().messages || [];
-
-          messages[messages.length - 1].content += textChunk;
-
-          set(() => ({
-            messages: messages.slice(),
-          }));
+          get().appendTextAtTheEnd(textChunk, groupId, messageId)
 
           if (done) {
             break;
@@ -127,46 +97,24 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
       get().saveCurrentChatHistory();
 
       set(() => ({
-        hasPendingCode: false,
         isExecuteRunning: false,
       }));
     }
 
-    // We ran code, continue operation with the same agent
-    console.log('from run output: doExecute');
-
-    //Create new message with the same agent, needed for doExecute
-    set(() => {
-      const newMessages = (get().messages || []).slice();
-
-      newMessages.push(
-        createMessage({
-          agent_id: agentId,
-          task: task,
-          materials_ids,
-          role: 'assistant',
-          content: '',
-        }),
-      );
-      return {
-        messages: newMessages,
-      };
-    });
-
-    await get().doExecute(agentId, task, materials_ids);
+    {
+      // If We ran code on the last message, continue operation with the same agent
+      const lastGroup = getGroup(get().chat).group;
+      const lastMessage = getMessage(lastGroup).message;
+      if ((groupId == undefined || lastGroup.id === groupId) && (messageId == undefined || lastMessage.id == messageId)) {
+        await get().doExecute();
+      }
+    }
   },
 
   /**
    * doExecute expects that the last message is the one it should be filling in.
    */
-  doExecute: async (agentId: string, task: string, materials_ids: string[]) => {
-    const commonMessageAspects = {
-      agent_id: agentId,
-      task: task,
-      materials_ids,
-      role: 'assistant',
-      content: '',
-    };
+  doExecute: async () => {
 
     set(() => ({
       executeAbortSignal: new AbortController(),
@@ -174,13 +122,13 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
     }));
 
     try {
+      const lastGroup = getGroup(get().chat).group;
+
       const response = await Api.execute(
         {
-          id: get().chatId,
-          // Add an empty message containing parameters of the current task so backend can use it for this execution
-          messages: [...(get().messages || [])],
-          relevant_materials_ids: materials_ids,
-          agent_id: agentId,
+          ...get().chat,
+          relevant_materials_ids: lastGroup.materials_ids,
+          agent_id: lastGroup.agent_id,
         },
         get().executeAbortSignal.signal,
       );
@@ -188,39 +136,25 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
       const reader = response.body?.getReader();
       const decoder = new TextDecoder('utf-8');
 
-      let messageDone = false;
+      let messageDone = true;
 
       while (true) {
-        // this is temporary
         try {
           const { value, done } = (await reader?.read()) || {
             value: undefined,
             done: true,
           };
 
-          const messages = get().messages || [];
-
-          const finishMessage = (newMessageProps: object, force: boolean) => {
-            if (messageDone || force) {
-              if (messages[messages.length - 1].content === '') {
-                messages.pop();
-              }
-
-              messages.push(
-                createMessage({
-                  ...commonMessageAspects,
-                  ...newMessageProps,
-                }),
-              );
-              messageDone = false;
-            }
-          };
-
           const TOKEN_PROCESSORS = [
             ...['python', 'shell', 'applescript'].map((language) => ({
               token: `<<<< START CODE (${language}) >>>>`,
               processor: () => {
-                finishMessage({ language, code: true }, true);
+                get().appendMessage({
+                  content: '',
+                  language,
+                  outputs: [],
+                });
+                messageDone = false;
               },
             })),
             {
@@ -233,9 +167,9 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
             {
               token: '<<<< CLEAR >>>>',
               processor: () => {
-                finishMessage({}, false);
-                messages[messages.length - 1].content = '';
-              },
+                get().removeMessageFromGroup();
+                messageDone = true;
+              }
             },
           ];
 
@@ -262,14 +196,16 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
             });
 
             if (!consumed) {
-              finishMessage({}, false);
-              messages[messages.length - 1].content += text;
+              if (messageDone) {
+                //new plain message
+                get().appendMessage({
+                  content: '',
+                });
+                messageDone = false;
+              }
+              get().appendTextAtTheEnd(text);
             }
           }
-
-          set(() => ({
-            messages: messages.slice(),
-          }));
 
           if (done) {
             break;
@@ -284,21 +220,16 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
         }
       }
     } finally {
+
       //If the message is still empty, remove it
+      const lastGroup = getGroup(get().chat).group;
+      if (lastGroup.messages.length > 0) {
+        const lastMessage = getMessage(lastGroup).message;
 
-      set(({ messages }) => {
-        if (messages !== undefined) {
-          if (messages[messages.length - 1].content === '') {
-            return {
-              messages: messages.slice(0, -1),
-            };
-          }
+        if (lastMessage.content === '') {
+          get().removeMessageFromGroup();
         }
-
-        return {
-          messages,
-        };
-      });
+      }
 
       get().saveCurrentChatHistory();
 
@@ -307,26 +238,18 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
       }));
     }
 
-    const messages = get().messages || [];
-    const language = messages[messages.length - 1].language;
-    const code = messages[messages.length - 1].code;
-    const executeCode = get().alwaysExecuteCode;
+    {
+      const lastGroup = getGroup(get().chat).group;
+      const lastMessage = getMessage(lastGroup).message;
+      const isCode = 'language' in lastMessage;
 
-    if (code) {
-      set({ hasPendingCode: true });
-    } else {
-      useAnalysisStore.getState().doAnalysis();
-    }
-
-    if (messages.length > 0 && code && language && executeCode) {
-      console.log('Running code');
-      await get().doRun(
-        agentId,
-        task,
-        materials_ids,
-        language,
-        messages[messages.length - 1].content,
-      );
+      if (isCode) {
+        if (get().alwaysExecuteCode) {
+          await get().doRun();
+        }
+      } else {
+        useAnalysisStore.getState().doAnalysis();
+      }
     }
   },
 

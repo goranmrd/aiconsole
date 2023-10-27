@@ -70,6 +70,23 @@ def preprocess_python(code: str, materials: List[Material]):
     Add end of execution marker
     """
 
+    # Check for syntax errors in user's code
+    try:
+        ast.parse(code)
+    except SyntaxError as e:
+        # If there's a syntax error, return the error message directly
+        newline = '\n'
+        # msg_for_user = f"SyntaxError on line {e.lineno}, column {e.offset}: {e.msg} ({e.text})"
+        
+        msg_for_user = f"" \
+                       f'File "{e.filename}", line {e.lineno}, column {e.offset}\n '\
+                       f"  {(e.text or '').replace(newline, '')}\n" \
+                       f"  {(e.offset or 0) * ' '}^\n" \
+                       f"SyntaxError: {e.msg}\n" 
+        
+        return f"print(f'''{msg_for_user}''')\nprint('## end_of_execution ##')"
+
+
     api_materials = [material for material in materials if material.content_type == "api"]
     apis = [material.content_api for material in api_materials]
 

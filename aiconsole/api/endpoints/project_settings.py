@@ -14,30 +14,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
     
-from typing import Optional
-
 from fastapi import APIRouter
-from pydantic import BaseModel
 from starlette.responses import JSONResponse
+from aiconsole import projects
 
-from aiconsole.project_settings.settings import Settings
+from aiconsole.project_settings.settings import PartialSettingsData, save_settings
 
 router = APIRouter()
 
 
-class SettingsData(BaseModel):
-    code_autorun: Optional[bool] = None
-
-
 @router.patch("")
-async def patch(patch_data: SettingsData):
-    settings = Settings()
-    settings.patch({settings_name: setting_value for settings_name, setting_value in patch_data if setting_value is not None})
+async def patch(patch_data: PartialSettingsData):
+    save_settings(patch_data)
     return JSONResponse({"status": "ok"})
 
 
 @router.get("")
 async def get():
-    settings = Settings()
-    return JSONResponse(SettingsData(**settings.get_settings()).model_dump())
+    return JSONResponse(projects.get_project_settings().model_dump())
 

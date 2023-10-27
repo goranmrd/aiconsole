@@ -18,8 +18,8 @@ import { StateCreator } from 'zustand';
 
 import { AICStore } from './AICStore';
 import { Api } from '@/api/Api';
-import { createMessage } from './utils';
 import { useAnalysisStore } from './useAnalysisStore';
+
 
 export type CommandSlice = {
   commandHistory: string[];
@@ -101,17 +101,19 @@ export const createCommandSlice: StateCreator<
   },
   submitCommand: async (command: string) => {
     if (command.trim() !== '') {
-      set(() => ({
-        messages: [
-          ...(get().messages || []),
-          createMessage({
-            agent_id: 'user',
-            materials_ids: [],
-            role: 'user',
-            content: command,
-          }),
-        ],
-      }));
+      get().appendGroup({
+        agent_id: 'user',
+        task: '',
+        materials_ids: [],
+        role: 'user',
+        messages: [],
+      });
+
+      get().appendMessage(
+        {
+          content: command,
+        },
+      );
 
       get().saveCommandAndMessagesToHistory(command, true);
     }

@@ -21,9 +21,9 @@ import tomlkit
 from typing import Dict, List
 import watchdog.events
 import watchdog.observers
-from aiconsole.materials.material import MaterialContentType, MaterialStatus
+from aiconsole import projects
+from aiconsole.materials.material import MaterialContentType, MaterialStatus, MaterialWithStatus
 from aiconsole.materials.material import MaterialLocation, Material
-from aiconsole.project_settings.settings import Settings
 from aiconsole.utils.BatchingWatchDogHandler import BatchingWatchDogHandler
 from aiconsole.utils.list_files_in_file_system import list_files_in_file_system
 from aiconsole.utils.list_files_in_resource_path import list_files_in_resource_path
@@ -44,7 +44,6 @@ class Materials:
         self.core_resource = core_resource
         self.user_directory = user_agents_directory
         self._materials = {}
-        self._settings = Settings()
 
         self.observer = watchdog.observers.Observer()
 
@@ -63,31 +62,24 @@ class Materials:
         """
         return list(self._materials.values())
 
-    def available_materials(self) -> List[Material]:
-        """
-        Return all available loaded materials.
-        """
-        return [
-            material for material in self._materials.values() if
-            material.status in [MaterialStatus.ENABLED, MaterialStatus.FORCED]
-        ]
-
     def enabled_materials(self) -> List[Material]:
         """
         Return all enabled loaded materials.
         """
+        settings = projects.get_project_settings()
         return [
-            material for material in self._materials.values()
-            if material.status == MaterialStatus.ENABLED
+            material for material in self._materials.values() if
+            settings.get_material_status(material.id) in [MaterialStatus.ENABLED]
         ]
 
     def forced_materials(self) -> List[Material]:
         """
         Return all forced loaded materials.
         """
+        settings = projects.get_project_settings()
         return [
-            material for material in self._materials.values()
-            if material.status == MaterialStatus.FORCED
+            material for material in self._materials.values() if
+            settings.get_material_status(material.id) in [MaterialStatus.FORCED]
         ]
 
     @property
@@ -194,11 +186,8 @@ class Materials:
             }[material.content_type]()
 
             file.write(doc.as_string())
-        self.save_material_status(material.id, material.status)
 
-    def save_material_status(self, material_id: str, status: MaterialStatus):
-        self._settings.set_material_status(material_id, status)
-        self._materials[material_id].status = status
+        
 
     async def load_material(self, material_id: str):
         """
@@ -235,8 +224,7 @@ class Materials:
             defined_in=location,
             usage=str(tomldoc["usage"]).strip(),
             content_type=MaterialContentType(
-                str(tomldoc["content_type"]).strip()),
-            status=self._settings.get_material_status(material_id))
+                str(tomldoc["content_type"]).strip()))
 
         if "content_static_text" in tomldoc:
             self._materials[material_id].content_static_text = \

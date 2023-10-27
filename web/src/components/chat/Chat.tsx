@@ -22,18 +22,14 @@ import { Welcome } from '@/components/chat/Welcome';
 import { useAICStore } from '@/store/AICStore';
 import { useAnalysisStore } from '@/store/useAnalysisStore';
 import { Analysis } from './Analysis';
-import useGroupMessages from '@/hooks/useGroupMessages';
 
 export function Chat({ chatId }: { chatId: string }) {
+  const chat = useAICStore((state) => state.chat);
+  const loadingMessages = useAICStore((state) => state.loadingMessages);
   const setChatId = useAICStore((state) => state.setChatId);
-  const isAnalysisRunning = useAnalysisStore(
-    (state) => state.isAnalysisRunning,
-  );
+  const isAnalysisRunning = useAnalysisStore((state) => state.isAnalysisRunning);
   const isExecuteRunning = useAICStore((state) => state.isExecuteRunning);
-  const messages = useAICStore((state) => state.messages);
   const stopWork = useAICStore((state) => state.stopWork);
-
-  const groupedMessages = useGroupMessages(messages);
 
   useEffect(() => {
     setChatId(chatId);
@@ -56,17 +52,17 @@ export function Chat({ chatId }: { chatId: string }) {
       className="h-full overflow-y-auto flex flex-col"
       initialScrollBehavior="auto"
     >
-      {messages?.length === 0 ? (
+      {!loadingMessages && chat.message_groups?.length === 0 ? (
         <Welcome />
       ) : (
         <>
           <div>
-            {groupedMessages.map((group, index) => (
+            {chat.message_groups.map((group, index) => (
               <MessageGroup
                 group={group}
                 key={group.id}
                 isStreaming={
-                  isExecuteRunning && index === groupedMessages.length - 1
+                  isExecuteRunning && index === chat.message_groups.length - 1
                 }
               />
             ))}

@@ -23,16 +23,16 @@ import random
 def create_materials_str() -> str:
     new_line = "\n"
 
-    available_materials = projects.get_project_materials().available_materials()
+    enabled_materials = projects.get_project_materials().enabled_materials()
 
     random_materials = (
         new_line.join(
             [
                 f"* {c.id} - {c.usage}"
-                for c in random.sample(available_materials, len(available_materials))
+                for c in random.sample(enabled_materials, len(enabled_materials))
             ]
         )
-        if available_materials
+        if enabled_materials
         else ""
     )
 

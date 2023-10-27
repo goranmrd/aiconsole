@@ -14,14 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from hmac import new
 import logging
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from aiconsole import projects
-from aiconsole.materials.material import MaterialLocation, Material, MaterialStatus
+from aiconsole.materials.material import MaterialLocation, Material, MaterialStatus, MaterialWithStatus
 
 router = APIRouter()
 
@@ -35,11 +34,15 @@ class StatusChangePostBody(BaseModel):
 @router.get("/{material_id}")
 async def material_get(material_id: str):
     try:
+        settings = projects.get_project_settings()
         material = projects.get_project_materials().get_material(material_id)
-        return JSONResponse(material.model_dump())
+        return JSONResponse({
+            **material.model_dump(),
+            "status": settings.get_material_status(material.id),
+        })
     except KeyError:
         #A new material
-        return JSONResponse(Material(
+        return JSONResponse(MaterialWithStatus(
             id="",
             name="",
             usage="",
@@ -51,9 +54,12 @@ async def material_get(material_id: str):
 @router.patch("/{material_id}")
 async def material_patch(material_id: str, material: Material):
     if material_id != material.id:
-        raise ValueError("Material ID mismatch")
+        raise HTTPException(status_code=400, detail="Material ID mismatch")
 
-    projects.get_project_materials().save_material(material, new=False)
+    try:
+        projects.get_project_materials().save_material(material, new=False)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
     return JSONResponse({"status": "ok"})
 
@@ -61,12 +67,14 @@ async def material_patch(material_id: str, material: Material):
 @router.post("/{material_id}")
 async def material_post(material_id: str, material: Material):
     if material_id != material.id:
-        raise ValueError("Material ID mismatch")
+        raise HTTPException(status_code=400, detail="Material ID mismatch")
 
-    projects.get_project_materials().save_material(material, new=True)
+    try:
+        projects.get_project_materials().save_material(material, new=True)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
     return JSONResponse({"status": "ok"})
-
 
 
 @router.post("/{material_id}/status-change")
@@ -86,7 +94,7 @@ async def material_status_change(
     """
     try:
         projects.get_project_materials().get_material(material_id)
-        projects.get_project_materials().save_material_status(material_id, body.status)
+        projects.get_project_settings().set_material_status(material_id, body.status)
         return JSONResponse({"status": "ok"})
     except KeyError:
         raise HTTPException(status_code=404, detail="Material not found")

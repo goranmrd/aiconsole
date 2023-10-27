@@ -13,25 +13,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
-import logging
-from fastapi import APIRouter
-from fastapi.responses import JSONResponse
+
 from aiconsole import projects
+from aiconsole.chat.types import Chat
 
-router = APIRouter()
+import json
+import os
 
-_log = logging.getLogger(__name__)
 
+def save_chat_history(chat: Chat):
+    history_directory = projects.get_history_directory()
+    file_path = os.path.join(history_directory, f"{chat.id}.json")
 
-@router.get("/")
-async def materials_get():
-    settings = projects.get_project_settings()
-    return JSONResponse(
-        [
-            {
-                **material.model_dump(),
-                "status": settings.get_material_status(material.id),
-            } for material in projects.get_project_materials().all_materials()
-        ]
-    )
+    if len(chat.message_groups) == 0:
+        # delete instead
+        if os.path.exists(file_path):
+            os.remove(file_path)
+    else:
+        with open(file_path, "w") as f:
+            json.dump(chat.model_dump(exclude={"id", "last_modified"}), f, indent=4)

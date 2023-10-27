@@ -16,7 +16,7 @@
     
 from typing import AsyncGenerator, Callable, List
 from pydantic import BaseModel
-from aiconsole.chat.types import AICMessage
+from aiconsole.chat.types import Chat
 
 from aiconsole.gpt.consts import GPTMode
 from aiconsole.materials.rendered_material import RenderedMaterial
@@ -35,7 +35,7 @@ class Agent(AgentBase):
                              AsyncGenerator[str, None]]
 
 class ExecutionModeContext(BaseModel):
-    messages: List[AICMessage]
+    chat: Chat
     agent: Agent
     gpt_mode: GPTMode
     relevant_materials: List[RenderedMaterial]

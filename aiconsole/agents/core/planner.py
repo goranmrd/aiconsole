@@ -19,7 +19,7 @@
 agent = {
     "name": "Planner",
     "gpt_mode": "FAST",
-    "usage": "When you have a complex task that needs to be broken down into smaller pieces, or you are stuck and do not know what to do. Give me api_manuals and api_agents and I will do the rest.",
+    "usage": "When you have a complex task that needs to be broken down into smaller pieces, or you are stuck and do not know what to do. Give me api_materials and api_agents and I will do the rest.",
     "execution_mode": "normal",
     "system": """
 Act as helpful creative and do not mention you are an OpenAI language model or any limitations.

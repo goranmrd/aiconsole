@@ -16,8 +16,9 @@
     
 import { AICMessageGroup } from '@/types/types';
 import { cn } from '@/utils/styles';
-import { MessageSection } from './MessageSection';
+import { CodeMessage } from './messages/CodeMessage';
 import { UserInfo } from '@/components/chat/UserInfo';
+import { TextMessage } from './messages/TextMessage';
 
 export function MessageGroup({
   group,
@@ -40,12 +41,22 @@ export function MessageGroup({
           task={group.task}
         />
         <div className="flex-grow flex flex-col gap-5">
-          {group.sections.map((section, index) => (
-            <MessageSection
-              key={section.id}
-              messageSection={section}
-              isStreaming={index === group.sections.length - 1 && isStreaming}
-            />
+          {group.messages.map((message, index) => (
+            'language' in message ? (
+              <CodeMessage
+                key={message.id}
+                group={group}
+                message={message}
+                isStreaming={index === group.messages.length - 1 && isStreaming}
+              />
+            ) : (
+              <TextMessage
+                key={message.id}
+                message={message}
+                group={group}
+                isStreaming={index === group.messages.length - 1 && isStreaming}
+              />
+            )
           ))}
         </div>
       </div>

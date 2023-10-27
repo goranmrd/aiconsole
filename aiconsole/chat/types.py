@@ -14,31 +14,46 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
     
-from typing import List, Optional
+from datetime import datetime
+from typing import List, Optional, Union
+from unittest.mock import Base
 from pydantic import BaseModel
+from tomlkit import date
+from aiconsole.code_running.code_interpreters.language_map import LanguageStr
 from aiconsole.gpt.types import GPTRole
 
 
-class AICMessage(BaseModel):
-    id: str
-    agent_id: str
-    role: GPTRole
-    task: Optional[str] = None
-    content: str
-    timestamp: str
-    materials_ids: List[str]
+class AICContentMessage(BaseModel):
+  id: str
+  timestamp: str
+  content: str
 
-    language: Optional[str] = None
-    code: Optional[bool] = False
-    code_ran: Optional[bool] = False
-    code_output: Optional[bool] = False
+class AICCodeMessage (AICContentMessage):
+  language: LanguageStr
+  outputs: List[AICContentMessage]
 
+AICMessage = Union[AICCodeMessage, AICContentMessage]
+
+class AICMessageGroup(BaseModel):
+  id: str
+  agent_id: str
+  role: GPTRole
+  task: str
+  materials_ids: List[str]
+  messages: List[AICMessage]
 
 class Chat(BaseModel):
     id: str
+    title: str
+    title_edited: bool = False
+    last_modified: datetime
+    message_groups: List[AICMessageGroup]
 
-    messages: List[AICMessage]
-
+    def model_dump(self, **kwargs):
+        return {
+            **super().model_dump(**kwargs),
+            "last_modified": self.last_modified.isoformat(),
+        }
 
 class ChatWithAgentAndMaterials(Chat):
     agent_id: str

@@ -86,7 +86,7 @@ def pick_agent(arguments, chat: Chat) -> Agent:
         picked_agent = default_agent
 
     # If it turns out that the user must respond to him self, have the assistant drive the conversation
-    if is_users_turn and chat.messages and chat.messages[-1].role == "user":
+    if is_users_turn and chat.message_groups and chat.message_groups[-1].role == "user":
         picked_agent = default_agent
 
     return picked_agent
@@ -125,7 +125,7 @@ async def gpt_analysis_function_step(
     request = GPTRequest(
         system_message=initial_system_prompt,
         gpt_mode=gpt_mode,
-        messages=[*convert_messages(chat.messages), GPTMessage(
+        messages=[*convert_messages(chat), GPTMessage(
             role="system",
             content=last_system_prompt
         )],

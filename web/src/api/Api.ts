@@ -19,8 +19,10 @@ import ky, { Hooks } from 'ky';
 import {
   Agent,
   Chat,
+  ErrorResponse,
   Material,
   MaterialInfo,
+  MaterialStatus,
   RenderedMaterial,
   Settings,
 } from '@/types/types';
@@ -30,10 +32,11 @@ export const BASE_URL = `http://${window.location.hostname}:8000`;
 
 const hooks: Hooks = {
   beforeError: [
-    (error) => {
+    async (error) => {
+      const res = (await error.response.json()) as ErrorResponse;
       showNotification({
         title: 'Error',
-        message: error.message,
+        message: res.detail || error.message,
         variant: 'error',
       });
       return error;
@@ -41,10 +44,7 @@ const hooks: Hooks = {
   ],
 };
 
-const execute = (
-  body: Chat & { relevant_materials_ids: string[]; agent_id: string },
-  signal?: AbortSignal,
-) =>
+const execute = (body: Chat & { relevant_materials_ids: string[]; agent_id: string }, signal?: AbortSignal) =>
   ky.post(`${BASE_URL}/execute`, {
     json: { ...body },
     signal,
@@ -88,45 +88,39 @@ const getChatsHistory = () => ky.get(`${BASE_URL}/chats/headlines`, { hooks });
 const getChat: (id: string) => Promise<Chat> = async (id: string) =>
   await ky.get(`${BASE_URL}/chats/history/${id}`, { hooks }).json();
 
-const deleteChat = (id: string) =>
-  ky.delete(`${BASE_URL}/chats/history/${id}`, { hooks });
+const deleteChat = (id: string) => ky.delete(`${BASE_URL}/chats/history/${id}`, { hooks });
 const updateChatHeadline = (id: string, headline: string) =>
   ky.post(`${BASE_URL}/chats/headlines/${id}`, {
     json: { headline },
     hooks,
   });
 
-const saveHistory = (body: object) =>
+const saveHistory = (chat: Chat) =>
   ky.post(`${BASE_URL}/chats/history`, {
-    json: { ...body },
+    json: { ...chat },
     timeout: 60000,
     hooks,
   });
 
 // Agents
 
-const getAgents: () => Promise<Agent[]> = async () =>
-  await ky.get(`${BASE_URL}/agents`, { hooks }).json();
+const getAgents: () => Promise<Agent[]> = async () => await ky.get(`${BASE_URL}/agents`, { hooks }).json();
 
 // Projects
 
-const chooseProject = () =>
-  ky.post(`${BASE_URL}/api/projects/choose`, { hooks });
+const chooseProject = () => ky.post(`${BASE_URL}/api/projects/choose`, { hooks });
 
-const getCurrentProject = () =>
-  ky.get(`${BASE_URL}/api/projects/current`, { hooks });
+const getCurrentProject = () => ky.get(`${BASE_URL}/api/projects/current`, { hooks });
 
 // Materials
 
-const getMaterials = async () =>
-  ky.get(`${BASE_URL}/api/materials/`, { hooks }).json() as Promise<
-    MaterialInfo[]
-  >;
+const getMaterials = async () => ky.get(`${BASE_URL}/api/materials/`, { hooks }).json() as Promise<MaterialInfo[]>;
+
+const setMaterialStatus = async (id: string, status: MaterialStatus) =>
+  ky.post(`${BASE_URL}/api/materials/${id}/status-change`, { json: { status }, hooks }).json() as Promise<void>;
 
 const getMaterial = async (id: string) =>
-  ky
-    .get(`${BASE_URL}/api/materials/${id}`, { hooks })
-    .json() as Promise<Material>;
+  ky.get(`${BASE_URL}/api/materials/${id}`, { hooks }).json() as Promise<Material>;
 
 const saveNewMaterial = async (material: Material) =>
   ky.post(`${BASE_URL}/api/materials/${material.id}`, {
@@ -146,9 +140,7 @@ const deleteMaterial = async (id: string) => {
   ky.delete(`${BASE_URL}/api/materials/${id}`, { hooks });
 };
 
-const previewMaterial: (
-  material: Material,
-) => Promise<RenderedMaterial> = async (material: Material) =>
+const previewMaterial: (material: Material) => Promise<RenderedMaterial> = async (material: Material) =>
   ky
     .post(`${BASE_URL}/api/materials/preview`, {
       json: { ...material },
@@ -169,12 +161,9 @@ const analyse = (body: Chat, signal?: AbortSignal) =>
 
 // Settings
 
-const saveSettings = (body: Settings) => {
-  ky.patch(`${BASE_URL}/api/settings`, { json: { ...body }, hooks });
-};
+const saveSettings = (body: Settings) => ky.patch(`${BASE_URL}/api/settings`, { json: { ...body }, hooks });
 
-const getSettings = () =>
-  ky.get(`${BASE_URL}/api/settings`, { hooks }).json() as Promise<Settings>;
+const getSettings = () => ky.get(`${BASE_URL}/api/settings`, { hooks }).json() as Promise<Settings>;
 
 export const Api = {
   execute,
@@ -182,6 +171,7 @@ export const Api = {
   analyse,
   getAgents,
   getMaterial,
+  setMaterialStatus,
   getMaterials,
   previewMaterial,
   chooseProject,

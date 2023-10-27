@@ -101,7 +101,7 @@ Your job is to prepare a new better plan.
 - Is there a better agent for this task?
 - Is there a better way to describe the task?
 - Is there anything that that might be a next task do that the user might find valuable? Are you trying to figure out how to help without troubling the user.
-- Has an agent made an error in the last messages of the current conversation? If so maybe try to correct it with a different task, different agent or a different set of manuals?
+- Has an agent made an error in the last messages of the current conversation? If so maybe try to correct it with a different task, different agent or a different set of materials?
 - If you are stuck you may always ask one agent to provide an expert critique of the current situation.
 - Is the next step and agent correlated and choosen apropriatelly?
 - If the next step is on the user, make sure that is_users_turn is True
