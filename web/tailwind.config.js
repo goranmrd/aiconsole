@@ -9,6 +9,9 @@ export default {
       fontFamily: {
         display: 'Oswald, ui-serif', // Adds a new `font-display` class
       },
+      boxShadow: {
+        'dark': '0px 20px 40px 0px rgba(0, 0, 0, 0.25);'
+      },
       typography: {
           DEFAULT: {
             css: {
@@ -34,13 +37,21 @@ export default {
         'secondary-light': '#FFFFEE',
         'secondary-dark': '#D5FF00',
         'gray': {
-          300: '#ABABAB',
+          300: '#A6A6A6',
           400: '#737373',
           500: '#3E3E3E',
           600: '#272727',
           700: '#1F1F1F',
           800: '#1A1A1A',
           900: '#111111',
+        },
+        'green': {
+          400: '#60C164',
+          800: '#09390B'
+        },
+        'red': {
+          400: '#CF4840',
+          800: '#4E0B07'
         }
       },
     }

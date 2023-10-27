@@ -14,7 +14,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { notifications } from '@mantine/notifications';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
@@ -34,6 +33,7 @@ import { CodeInput } from '@/components/materials/CodeInput';
 import { useAICStore } from '@/store/AICStore';
 import { EyeIcon, NoSymbolIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { cn } from '@/utils/styles';
+import showNotification from '@/utils/showNotification';
 import { BoltIcon } from '@heroicons/react/24/solid';
 import { Tooltip } from '../system/Tooltip';
 
@@ -168,10 +168,10 @@ export function MaterialPage() {
       await Api.setMaterialStatus(material.id, material.status);
       await useAICStore.getState().fetchMaterials();
 
-      notifications.show({
+      showNotification({
         title: 'Status changed',
         message: `Material status changed to ${material.status}`,
-        color: 'green',
+        variant: 'success',
       });
     }
   };
@@ -181,29 +181,29 @@ export function MaterialPage() {
       await Api.saveNewMaterial(material);
       await updateStatusIfNecessary(material);
 
-      notifications.show({
+      showNotification({
         title: 'Saved',
         message: 'Material saved',
-        color: 'green',
+        variant: 'success',
       });
     } else if (materialInitial && materialInitial.id !== material.id) {
       await Api.saveNewMaterial(material);
       await deleteMaterial(materialInitial.id);
       await updateStatusIfNecessary(material);
 
-      notifications.show({
+      showNotification({
         title: 'Renamed',
         message: 'Material renamed',
-        color: 'green',
+        variant: 'success',
       });
     } else {
       if (isMaterialChanged()) {
         await Api.updateMaterial(material);
 
-        notifications.show({
+        showNotification({
           title: 'Saved',
           message: 'Material saved',
-          color: 'green',
+          variant: 'success',
         });
       }
 

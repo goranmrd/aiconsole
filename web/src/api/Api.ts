@@ -26,7 +26,7 @@ import {
   RenderedMaterial,
   Settings,
 } from '@/types/types';
-import { notifications } from '@mantine/notifications';
+import showNotification from '@/utils/showNotification';
 
 export const BASE_URL = `http://${window.location.hostname}:8000`;
 
@@ -34,10 +34,10 @@ const hooks: Hooks = {
   beforeError: [
     async (error) => {
       const res = (await error.response.json()) as ErrorResponse;
-      notifications.show({
+      showNotification({
         title: 'Error',
         message: res.detail || error.message,
-        color: 'red',
+        variant: 'error',
       });
       return error;
     },
