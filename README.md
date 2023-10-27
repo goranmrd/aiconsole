@@ -105,7 +105,7 @@ You can see examples of materials in the ./preset/materials directory
 
 We welcome contributions from the community to make AI Console even better. If you have any ideas, bug reports, or feature requests, please open an issue on the GitHub repository. Feel free to submit pull requests as well!
 
-You can also visit our [Discord channel](https://discord.gg/X5CEpKqP) for a further discussion.
+You can also visit our [Discord channel](https://discord.gg/5hzqZqP4H5) for a further discussion.
 
 ## License
 
@@ -114,5 +114,5 @@ AI Console is open-source software licensed under the [Apache License ver. 2.0](
 ## Links
 
 - [Landing page](https://aiconsole.ai)
-- [Discord](https://discord.gg/X5CEpKqP)
+- [Discord](https://discord.gg/5hzqZqP4H5)
 - [Twitter](https://twitter.com/mcielecki)
