@@ -1,7 +1,9 @@
 module.exports = {
   packagerConfig: {
+    executableName: 'AIConsole',
     asar: true,
-    icon: 'electron/icon'
+    icon: 'electron/icon',
+    extraResource: ["python"],
   },
   rebuildConfig: {},
   makers: [

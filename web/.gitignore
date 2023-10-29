@@ -23,4 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 
-out/
+# Our current electron stuff
+/out
+/python

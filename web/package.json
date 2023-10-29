@@ -1,5 +1,5 @@
 {
-  "name": "aic-web",
+  "name": "aiconsole",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -14,6 +14,10 @@
     "make": "electron-forge make"
   },
   "main": "electron/main.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/10clouds/aiconsole.git"
+  },
   "dependencies": {
     "@heroicons/react": "^2.0.18",
     "@mantine/core": "^7.1.2",
@@ -23,6 +27,7 @@
     "clsx": "^2.0.0",
     "crypto-js": "^4.1.1",
     "date-fns": "^2.30.0",
+    "electron-is-packaged": "^1.0.2",
     "electron-squirrel-startup": "^1.0.0",
     "highlight.js": "^11.9.0",
     "ky": "^1.0.1",
@@ -36,6 +41,7 @@
     "react-textarea-autosize": "^8.5.3",
     "reconnecting-websocket": "^4.4.0",
     "tailwind-merge": "^1.14.0",
+    "update-electron-app": "^3.0.0",
     "uuid": "^9.0.1",
     "zustand": "^4.4.1"
   },

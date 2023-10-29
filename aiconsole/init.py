@@ -39,14 +39,16 @@ def open_browser_when_frontend_is_up(url:str):
     webbrowser.open(url)
 
 
-def run_aiconsole(dev: bool):
+def run_aiconsole(dev: bool, launch_browser: bool):
     threads = []
 
     if dev:
         threads.append(threading.Thread(target=lambda: os.system("cd web && yarn dev")))
-        threads.append(threading.Thread(target=lambda: open_browser_when_frontend_is_up("http://localhost:3000/")))
+        if launch_browser:
+            threads.append(threading.Thread(target=lambda: open_browser_when_frontend_is_up("http://localhost:3000/")))
     else:
-        threads.append(threading.Thread(target=lambda: open_browser_when_frontend_is_up("http://localhost:8000/")))
+        if launch_browser:
+            threads.append(threading.Thread(target=lambda: open_browser_when_frontend_is_up("http://localhost:8000/")))
 
     for thread in threads:
         thread.start()
@@ -67,12 +69,11 @@ def run_aiconsole(dev: bool):
 
 
 def aiconsole_dev():
-    run_aiconsole(dev=True)
+    run_aiconsole(dev=True, launch_browser=True)
 
 
 def aiconsole():
-    run_aiconsole(dev=False)
-
+    run_aiconsole(dev=False, launch_browser=True)
 
 if __name__ == "__main__":
     aiconsole_dev()

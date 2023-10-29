@@ -1,5 +1,7 @@
 const { app, BrowserWindow, Tray } = require('electron');
+const isPackaged = require('electron-is-packaged').isPackaged;
 const { spawn } = require('child_process');
+const path = require('path');
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
@@ -8,7 +10,7 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: true,
     },
-    titleBarStyle: 'hidden',
+    //titleBarStyle: 'hidden',
     icon: '/Users/maciel/Projects/aiconsole/web/electron/icon.png',
   });
 
@@ -20,34 +22,64 @@ function createWindow() {
   // Add an event listener to handle the main window's close event.
   mainWindow.on('closed', () => {
     // Stop the FastAPI server when the Electron app is closed
-    fastapiProcess.kill();
     app.quit();
   });
 }
 
-//const appIcon = new Tray('/Users/somebody/images/icon.png')
+//const { updateElectronApp } = require('update-electron-app')
+//updateElectronApp()
 
-// Start the FastAPI server
-const fastapiProcess = spawn('poetry', ['run', 'aiconsole']);
+let path_to_python;
 
-// Handle FastAPI server process exit
-fastapiProcess.on('exit', (code) => {
-  console.log(`FastAPI server exited with code ${code}`);
+if (isPackaged) {
+  path_to_python = path.join(process.resourcesPath, 'python/bin/python3.9');
+} else {
+  path_to_python = path.join(__dirname, '../python/bin/python3.9');
+}
+
+app.whenReady().then(() => {
+  // Run python with module aiconsole.main
+  const backendProcess = spawn(path_to_python, ['-m', 'aiconsole.electron']);
+
+  //close the app when backend process exits
+  backendProcess.on('exit', () => {
+    app.quit();
+  });
+
+  backendProcess.stdout.on('data', (data) => {
+    //data ends with \n ? strip it
+    if (data[data.length - 1] == 10) {
+      data = data.slice(0, -1);
+    }
+    console.log(`${data}`);
+    
+    if (data.toString().includes('running on http://')) {
+      app.whenReady().then(createWindow);
+    }
+  });
+
+  backendProcess.stderr.on('data', (data) => {
+    //data ends with \n ? strip it
+    if (data[data.length - 1] == 10) {
+      data = data.slice(0, -1);
+    }
+    console.error(data);
+  });
+
+  backendProcess.on('exit', (code) => {
+    console.log(`FastAPI server exited with code ${code}`);
+  });
+  
+  // Close the FastAPI process when the Electron app closes
+  app.on('will-quit', () => {
+    backendProcess.kill();
+  });
+
+  app.on('window-all-closed', function () {
+    if (process.platform !== 'darwin') app.quit();
+  });
+  
+  app.on('activate', function () {
+    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  });
 });
-
-// create window when fastapi server is ready
-fastapiProcess.stdout.on('data', (data) => {
-  if (data.toString().includes('Running on http://')) {
-    app.whenReady().then(createWindow);
-  }
-});
-
-app.on('window-all-closed', function () {
-  if (process.platform !== 'darwin') app.quit();
-});
-
-app.on('activate', function () {
-  if (BrowserWindow.getAllWindows().length === 0) createWindow();
-});
-
-app.whenReady().then(createWindow);
