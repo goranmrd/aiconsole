@@ -35,6 +35,12 @@ body {
 
   /* Do not repeat the background image. */
   background-repeat: no-repeat;
+
+}
+
+* {
+  font-family: 'Inter', sans-serif;
+  line-height: normal;
 }
 
 .downlight {
@@ -47,7 +53,7 @@ body {
 .downlight::after {
   content: "";
   z-index: -1;
-  
+
   /* Make the pseudo element fill the entire parent element. */
   position: absolute;
   top: 0;
@@ -69,6 +75,16 @@ body {
 
   /* Make background transparent */
   opacity: 0.1;
+}
+
+.button svg {
+  height: 16px;
+  width: 16px;
+}
+
+.button-icon-only svg {
+  height: 24px;
+  width: 24px;
 }
 
 /* Style the scrollbars */

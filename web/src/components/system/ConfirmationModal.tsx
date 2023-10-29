@@ -39,7 +39,7 @@ export function ConfirmationModal({
   const handleConfirm = (event: MouseEvent<HTMLButtonElement>) => {
     onConfirm(event);
     close();
-  };  
+  };
 
   return (
     <>
@@ -63,8 +63,12 @@ export function ConfirmationModal({
         }}
       >
         <div className="flex justify-center items-center gap-4">
-          <Button variant="danger" label={cancelButtonText} onClick={close} />
-          <Button onClick={handleConfirm} label={confirmButtonText} />
+          <Button variant="secondary" bold small onClick={close}>
+            {cancelButtonText}
+          </Button>
+          <Button variant="primary" small onClick={handleConfirm}>
+            {confirmButtonText}
+          </Button>
         </div>
       </Modal>
 

@@ -25,6 +25,7 @@ import { Button } from '../../system/Button';
 import { duotoneDark as vs2015 } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { CodeOutput } from './CodeOutput';
 import { EditableContentMessage } from './EditableContentMessage';
+import { PlayIcon, RocketLaunchIcon } from '@heroicons/react/24/outline';
 
 interface MessageProps {
   group: AICMessageGroup;
@@ -33,15 +34,21 @@ interface MessageProps {
 }
 
 export function CodeMessage({ group, message, isStreaming }: MessageProps) {
-  const removeMessageFromGroup = useAICStore((state) => state.removeMessageFromGroup);
+  const removeMessageFromGroup = useAICStore(
+    (state) => state.removeMessageFromGroup,
+  );
   const editMessageContent = useAICStore((state) => state.editMessageContent);
 
   const alwaysExecuteCode = useAICStore((state) => state.alwaysExecuteCode);
 
   const [folded, setFolded] = useState(alwaysExecuteCode);
   const doRun = useAICStore((state) => state.doRun);
-  const enableAutoCodeExecution = useAICStore((state) => state.enableAutoCodeExecution);
-  const isViableForRunningCode = useAICStore((state) => state.isViableForRunningCode);
+  const enableAutoCodeExecution = useAICStore(
+    (state) => state.enableAutoCodeExecution,
+  );
+  const isViableForRunningCode = useAICStore(
+    (state) => state.isViableForRunningCode,
+  );
 
   const handleAlwaysRunClick = () => {
     enableAutoCodeExecution();
@@ -66,14 +73,19 @@ export function CodeMessage({ group, message, isStreaming }: MessageProps) {
   return (
     <div className="flex justify-between items-center">
       <div className="p-5 rounded-md flex flex-col gap-5 bg-primary/5 flex-grow mr-4">
-        <div className="cursor-pointer" onClick={() => setFolded((folded) => !folded)}>
+        <div
+          className="cursor-pointer"
+          onClick={() => setFolded((folded) => !folded)}
+        >
           <div className="flex flex-row gap-2 items-center">
             {isStreaming ? (
               <div className="flex-grow flex flex-row gap-3 items-center">
                 Working ... <Spinner />
               </div>
             ) : (
-              <div className="flex-grow">{folded ? 'Check' : 'Hide'} the code</div>
+              <div className="flex-grow">
+                {folded ? 'Check' : 'Hide'} the code
+              </div>
             )}
 
             {folded && <ArrowDownIcon className="h-5 w-5" />}
@@ -100,21 +112,43 @@ export function CodeMessage({ group, message, isStreaming }: MessageProps) {
                     className="overflow-scroll max-w-3xl flex-grow rounded-md"
                   />
                 </EditableContentMessage>
-                {isViableForRunningCode(group.id, message.id) && !isStreaming && (
-                  <div className="flex gap-4 pt-2">
-                    <Button label="Run" onClick={handleRunClick} />
+                {isViableForRunningCode(group.id, message.id) &&
+                  !isStreaming && (
+                    <div className="flex gap-4 pt-2">
+                      <Button
+                        variant="status"
+                        statusColor="green"
+                        small
+                        onClick={handleRunClick}
+                      >
+                        <PlayIcon />
+                        Run
+                      </Button>
 
-                    {!alwaysExecuteCode && (
-                      <Button label="Always Run" onClick={handleAlwaysRunClick} variant="secondary" />
-                    )}
-                  </div>
-                )}
+                      {!alwaysExecuteCode && (
+                        <Button
+                          onClick={handleAlwaysRunClick}
+                          variant="status"
+                          statusColor="purple"
+                          small
+                        >
+                          <RocketLaunchIcon />
+                          Always Run
+                        </Button>
+                      )}
+                    </div>
+                  )}
               </div>
             </div>
 
             {...message.outputs.map((output) => (
               <div key={output.id}>
-                <CodeOutput group={group} message={message} output={output} isStreaming={isStreaming} />
+                <CodeOutput
+                  group={group}
+                  message={message}
+                  output={output}
+                  isStreaming={isStreaming}
+                />
               </div>
             ))}
           </>
