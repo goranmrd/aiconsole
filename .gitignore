@@ -166,3 +166,4 @@ cython_debug/
 /materials
 /aiconsole/static
 /settings.toml
+/web/electron/python
