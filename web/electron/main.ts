@@ -40,7 +40,7 @@ function createWindow() {
 let path_to_python;
 
 if (isPackaged) {
-  path_to_python = path.join(process.resourcesPath, '../..', 'electron/python/bin/python3.9');
+  path_to_python = path.join(process.resourcesPath, 'python/bin/python3.9');
 } else {
   path_to_python = path.join(__dirname, '../..', 'electron/python/bin/python3.9');
 }
