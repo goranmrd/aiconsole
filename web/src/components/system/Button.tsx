@@ -41,6 +41,7 @@ interface ButtonProps {
   iconOnly?: boolean;
   small?: boolean;
   bold?: boolean;
+  classNames?: string;
   onClick?: MouseEventHandler<HTMLButtonElement>;
 }
 
@@ -54,6 +55,7 @@ export function Button({
   small,
   statusColor,
   bold,
+  classNames,
 }: ButtonProps) {
   const getVariant = () => {
     switch (variant) {
@@ -62,7 +64,7 @@ export function Button({
       case 'secondary':
         return 'bg-gray-800 border-gray-400 text-gray-300 hover:border-secondary hover:text-secondary font-normal text-[15px] focus:border-secondary';
       case 'tertiary':
-        return 'bg-transparent border-transparent text-gray-300 hover:border-transparent hover:text-secondary hover:bg-transparent font-normal text-[15px] focus:bg-transparent';
+        return 'bg-transparent border-transparent text-gray-300 hover:border-transparent hover:text-secondary hover:bg-transparent font-normal text-[15px] focus:bg-transparent px-0';
       case 'status':
         return `!px-[14px] !py-[13px] max-h-[48px] bg-gray-800 border-gray-500 text-gray-300 [&>svg]:text-gray-500 font-normal text-[15px] hover:text-gray-300 hover:border-gray-300 hover:bg-gray-800 [&>svg]:hover:text-gray-300 [&>svg]:focus:text-gray-300 [&>svg]:transition-colors [&>svg]:duration-200 focus:border-gray-300 focus:text-gray-300 focus:bg-gray-800 ${getStatusColor(
           statusColor,
@@ -76,12 +78,14 @@ export function Button({
       onClick={onClick}
       type="button"
       className={cn(
+        classNames,
         'rounded-[36px]  px-[30px] py-[20px] outline-none w-[fit-content]  font-semibold flex items-center justify-center gap-2 max-h-[60px] border border-secondary button hover:bg-gray-600 hover:text-secondary  transition-colors duration-200 focus:bg-gray-600 focus:text-secondary',
         getVariant(),
         {
           'w-full': fullWidth,
           'p-[18px] button-icon-only max-w-[60px]': iconOnly,
-          'px-[30px] py-[14.5px] max-h-[48px]': small,
+          'px-[20px] py-[14.5px] max-h-[48px]': small,
+          'p-[12px] max-h-[48px]': small && iconOnly,
           'bg-gray-700 border-gray-500  text-gray-500 cursor-not-allowed hover:border-gray-500 hover:bg-gray-700 hover:text-gray-500 focus:bg-gray-700 focus:border-gray-500 focus:text-gray-500 [&>svg]:text-gray-500 [&>svg]:hover:text-gray-500 [&>svg]focus:text-white pointer-events-none':
             disabled,
           'font-semibold': bold,

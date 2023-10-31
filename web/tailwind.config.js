@@ -10,6 +10,9 @@ export default {
       fontFamily: {
         inter: ['Inter', 'sans-serif'],
       },
+      backgroundImage: {
+        'recent-bg': "url('/bg1.png')",
+      },
       boxShadow: {
         'dark': '0px 20px 40px 0px rgba(0, 0, 0, 0.25)'
       },

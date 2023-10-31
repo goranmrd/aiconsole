@@ -23,19 +23,9 @@ limitations under the License.
 @tailwind components;
 @tailwind utilities;
 
+
 body {
-  /* Add a background image to the body. */
-  background-image: url('/bg2.jpg');
-
-  /* Make sure the image always covers the full viewport. */
-  background-size: cover;
-
-  /* Position the background image in the center of the viewport. */
-  background-position: center center;
-
-  /* Do not repeat the background image. */
-  background-repeat: no-repeat;
-
+  --mantine-color-body: #191919;
 }
 
 * {
