@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss').Config} */
+
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   darkMode: 'class',
@@ -7,7 +8,10 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        display: 'Oswald, ui-serif', // Adds a new `font-display` class
+        inter: ['Inter', 'sans-serif'],
+      },
+      backgroundImage: {
+        'recent-bg': "url('/bg1.png')",
       },
       boxShadow: {
         'dark': '0px 20px 40px 0px rgba(0, 0, 0, 0.25)'
@@ -36,6 +40,8 @@ export default {
         'secondary': '#F1FF99',
         'secondary-light': '#FFFFEE',
         'secondary-dark': '#D5FF00',
+        'danger': '#CF4840',
+        'success': '#60C164',
         'gray': {
           300: '#A6A6A6',
           400: '#737373',

@@ -16,7 +16,6 @@
 
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-
 import { Api } from '@/api/Api';
 import {
   Material,
@@ -49,16 +48,22 @@ export function MaterialPage() {
   }
 
   const copyId = new URLSearchParams(window.location.search).get('copy');
-  
+
   const [material, setMaterial] = useState<Material | undefined>(undefined);
-  const [materialInitial, setMaterialInitial] = useState<Material | undefined>(undefined);
-  const [preview, setPreview] = useState<RenderedMaterial | undefined>(undefined);
+  const [materialInitial, setMaterialInitial] = useState<Material | undefined>(
+    undefined,
+  );
+  const [preview, setPreview] = useState<RenderedMaterial | undefined>(
+    undefined,
+  );
   const [errors, setErrors] = useState<ErrorObject>({});
 
   const isError = Object.values(errors).some((error) => error !== null);
   const deleteMaterial = useAICStore((state) => state.deleteMaterial);
   const readOnly = material?.defined_in === 'aiconsole';
-  const previewValue = preview ? preview?.content.split('\\n').join('\n') : 'Generating preview...';
+  const previewValue = preview
+    ? preview?.content.split('\\n').join('\n')
+    : 'Generating preview...';
 
   const isMaterialStatusChanged = () => {
     if (!material || !materialInitial) {
@@ -73,13 +78,18 @@ export function MaterialPage() {
     }
 
     const changedFields = Object.keys(material).filter((key) => {
-      return key !== 'status' && material[key as keyof Material] !== materialInitial[key as keyof Material];
+      return (
+        key !== 'status' &&
+        material[key as keyof Material] !==
+          materialInitial[key as keyof Material]
+      );
     });
 
     return changedFields.length > 0;
   };
 
-  const enableSubmit = (isMaterialChanged() || isMaterialStatusChanged()) && !isError;
+  const enableSubmit =
+    (isMaterialChanged() || isMaterialStatusChanged()) && !isError;
   const disableSubmit = !enableSubmit;
 
   //After 3 seconds of inactivity after change query /preview to get rendered material
@@ -125,12 +135,11 @@ export function MaterialPage() {
 
     return name;
   }
-  
+
   useEffect(() => {
     // Auto generate id based on name
     if (material?.name) {
       setMaterial((material: Material | undefined) => {
-        
         if (!material) return material;
         const id = nameToId(material.name);
 
@@ -224,7 +233,9 @@ export function MaterialPage() {
       <div className="flex flex-col h-full overflow-y-auto p-6 gap-4">
         <div className="flex gap-5">
           <Tooltip
-            label={'Material id determines the file name and is auto generated from name. It must be unique.'}
+            label={
+              'Material id determines the file name and is auto generated from name. It must be unique.'
+            }
             position="top-end"
             offset={{ mainAxis: 7 }}
           >
@@ -311,11 +322,15 @@ export function MaterialPage() {
                 }[value];
               }}
               disabled={readOnly}
-              onChange={(value) => setMaterial({ ...material, content_type: value })}
+              onChange={(value) =>
+                setMaterial({ ...material, content_type: value })
+              }
               tootltipText={(value) => {
                 return {
-                  static_text: 'Markdown formated text will be injected into AI context.',
-                  dynamic_text: 'A python function will generate markdown text to be injected into AI context.',
+                  static_text:
+                    'Markdown formated text will be injected into AI context.',
+                  dynamic_text:
+                    'A python function will generate markdown text to be injected into AI context.',
                   api: 'Documentation will be extracted from code and injected into AI context as markdown text, code will be available to execute by AI without import statements.',
                 }[value];
               }}
@@ -326,7 +341,9 @@ export function MaterialPage() {
                   <CodeInput
                     label="Text"
                     value={material.content_static_text}
-                    onChange={(value) => setMaterial({ ...material, content_static_text: value })}
+                    onChange={(value) =>
+                      setMaterial({ ...material, content_static_text: value })
+                    }
                     className="flex-grow"
                     disabled={readOnly}
                     codeLanguage="markdown"
@@ -337,7 +354,9 @@ export function MaterialPage() {
                   <CodeInput
                     label="Python function returning dynamic text"
                     value={material.content_dynamic_text}
-                    onChange={(value) => setMaterial({ ...material, content_dynamic_text: value })}
+                    onChange={(value) =>
+                      setMaterial({ ...material, content_dynamic_text: value })
+                    }
                     className="flex-grow"
                     disabled={readOnly}
                     codeLanguage="python"
@@ -347,7 +366,9 @@ export function MaterialPage() {
                   <CodeInput
                     label="API Module"
                     value={material.content_api}
-                    onChange={(value) => setMaterial({ ...material, content_api: value })}
+                    onChange={(value) =>
+                      setMaterial({ ...material, content_api: value })
+                    }
                     disabled={readOnly}
                     className="flex-grow"
                   />
@@ -369,7 +390,8 @@ export function MaterialPage() {
               className={cn(
                 'bg-primary hover:bg-gray-700/95 text-black hover:bg-primary-light px-4 py-1 rounded-full flow-right',
                 {
-                  'opacity-[0.3] cursor-not-allowed hover:bg-initial': disableSubmit,
+                  'opacity-[0.3] cursor-not-allowed hover:bg-initial':
+                    disableSubmit,
                 },
               )}
               onClick={handleSaveClick(material)}
