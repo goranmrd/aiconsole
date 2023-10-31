@@ -25,6 +25,8 @@ import watchdog.observers
 
 from aiconsole.materials.material import MaterialStatus
 from aiconsole.utils.BatchingWatchDogHandler import BatchingWatchDogHandler
+from aiconsole.websockets.outgoing_messages import SettingsWSMessage
+
 
 class PartialSettingsData(BaseModel):
     code_autorun: Optional[bool] = None
@@ -59,6 +61,7 @@ class Settings:
 
     async def reload(self):
         self._settings = load_settings()
+        await SettingsWSMessage().send_to_all()
 
     def get_material_status(self, material_id: str) -> MaterialStatus:
         s = self._settings

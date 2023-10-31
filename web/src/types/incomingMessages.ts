@@ -50,6 +50,10 @@ export type MaterialsUpdatedWSMessage = {
   count: number;
 };
 
+export type SettingsWSMessage = {
+  type: 'SettingsWSMessage';
+};
+
 export type IncomingWSMessage =
   | ErrorWSMessage
   | NotificationWSMessage
@@ -57,3 +61,4 @@ export type IncomingWSMessage =
   | ProjectOpenedWSMessage
   | AnalysisUpdatedWSMessage
   | MaterialsUpdatedWSMessage
+  | SettingsWSMessage
