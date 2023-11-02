@@ -68,8 +68,8 @@ def get_aic_directory():
     return os.path.join(get_project_directory(),  ".aic")
 
 
-def get_project_directory():
-    if not _materials:
+def get_project_directory(initiating = False):
+    if not _materials and not initiating:
         raise ValueError("Project settings are not initialized")
     return os.getcwd()
 
@@ -103,8 +103,8 @@ async def reinitialize_project():
 
     reset_code_interpreters()
     
-    _agents = agents.Agents("aiconsole.agents.core",  os.path.join(get_project_directory(), "agents"))
-    _materials = materials.Materials("aiconsole.materials.core", os.path.join(get_project_directory(), "materials"))
+    _agents = agents.Agents("aiconsole.agents.core",  os.path.join(get_project_directory(True), "agents"))
+    _materials = materials.Materials("aiconsole.materials.core", os.path.join(get_project_directory(True), "materials"))
     _settings = Settings()
 
     await _materials.reload()
