@@ -29,6 +29,7 @@ _log = logging.getLogger(__name__)
 
 class StatusChangePostBody(BaseModel):
     status: MaterialStatus
+    to_global: bool
 
 
 @router.get("/{material_id}")
@@ -41,7 +42,7 @@ async def material_get(material_id: str):
             "status": settings.get_material_status(material.id),
         })
     except KeyError:
-        #A new material
+        # A new material
         return JSONResponse(MaterialWithStatus(
             id="",
             name="",
@@ -94,7 +95,9 @@ async def material_status_change(
     """
     try:
         projects.get_project_materials().get_material(material_id)
-        projects.get_project_settings().set_material_status(material_id, body.status)
+        projects.get_project_settings().set_material_status(
+            material_id=material_id, status=body.status, to_global=body.to_global
+        )
         return JSONResponse({"status": "ok"})
     except KeyError:
         raise HTTPException(status_code=404, detail="Material not found")
