@@ -14,10 +14,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Cog6ToothIcon } from "@heroicons/react/24/solid";
+import { Settings } from 'lucide-react';
 
 export function Spinner() {
-  return (
-    <Cog6ToothIcon className="animate-spin h-5 w-5" />
-  );
+  return <Settings className="animate-spin h-5 w-5" />;
 }

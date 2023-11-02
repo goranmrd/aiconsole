@@ -30,10 +30,10 @@ import { EnumInput } from '@/components/materials/EnumInput';
 import { ErrorObject, SimpleInput } from '@/components/materials/TextInput';
 import { CodeInput } from '@/components/materials/CodeInput';
 import { useAICStore } from '@/store/AICStore';
-import { EyeIcon, NoSymbolIcon, CheckIcon } from '@heroicons/react/24/outline';
+import { Eye, Zap, Check, Ban } from 'lucide-react';
+
 import { cn } from '@/utils/styles';
 import showNotification from '@/utils/showNotification';
-import { BoltIcon } from '@heroicons/react/24/solid';
 import { Tooltip } from '../system/Tooltip';
 
 export function MaterialPage() {
@@ -246,7 +246,7 @@ export function MaterialPage() {
 
           {readOnly && (
             <div className="flex gap-2 items-center text-md font-bold ml-auto ">
-              <EyeIcon className="w-4 h-4" />
+              <Eye className="w-4 h-4" />
               This is a system material. It can’t be edited.
             </div>
           )}
@@ -283,17 +283,17 @@ export function MaterialPage() {
                 return {
                   forced: (
                     <>
-                      <BoltIcon className="h-4 w-4" title="forced" /> Forced
+                      <Zap className="h-4 w-4" name="forced" /> Forced
                     </>
                   ),
                   enabled: (
                     <>
-                      <CheckIcon className="h-4 w-4" /> Enabled
+                      <Check className="h-4 w-4" /> Enabled
                     </>
                   ),
                   disabled: (
                     <>
-                      <NoSymbolIcon className="h-4 w-4" /> Disabled
+                      <Ban className="h-4 w-4" /> Disabled
                     </>
                   ),
                 }[value];

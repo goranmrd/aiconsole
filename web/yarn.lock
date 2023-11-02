@@ -498,11 +498,6 @@
   resolved "https://registry.npmjs.org/@floating-ui/utils/-/utils-0.1.6.tgz"
   integrity sha512-OfX7E2oUDYxtBvsuS4e/jSn4Q9Qb6DzgeYtsAdkPZ47znpoNsMgZw0+tVijiv3uGNR6dgNlty6r9rzIzHjtd/A==
 
-"@heroicons/react@^2.0.18":
-  version "2.0.18"
-  resolved "https://registry.npmjs.org/@heroicons/react/-/react-2.0.18.tgz"
-  integrity sha512-7TyMjRrZZMBPa+/5Y8lN0iyvUU/01PeMGX2+RE7cQWpEUIcb4QotzUObFkJDejj/HUH4qjP/eQ0gzzKs2f+6Yw==
-
 "@humanwhocodes/config-array@^0.11.11":
   version "0.11.11"
   resolved "https://registry.npmjs.org/@humanwhocodes/config-array/-/config-array-0.11.11.tgz"
@@ -554,10 +549,10 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@mantine/core@^7.1.2":
-  version "7.1.2"
-  resolved "https://registry.npmjs.org/@mantine/core/-/core-7.1.2.tgz"
-  integrity sha512-EZg82V/+uA2bM981mEUOUGfqKIRsMfvxLdAPQpurhtqsnq4yBj1xjC3KzX/Eas9QhhHuR+4DJJyGTuO9aOK6nQ==
+"@mantine/core@^7.1.7":
+  version "7.1.7"
+  resolved "https://registry.yarnpkg.com/@mantine/core/-/core-7.1.7.tgz#773a30f858b660ff6099eae3e3424a9cc74ca295"
+  integrity sha512-xi5zyzGRFDKXUp2WL63sQqzDPKP1Ezz1AIkQXHwpsGGxa4fVvzyn/CzgidnFUK93soWq7ixhVdD4oP1Yeh68Mw==
   dependencies:
     "@floating-ui/react" "^0.24.8"
     clsx "2.0.0"
@@ -566,23 +561,23 @@
     react-textarea-autosize "8.5.3"
     type-fest "^3.13.1"
 
-"@mantine/hooks@^7.1.2":
-  version "7.1.2"
-  resolved "https://registry.npmjs.org/@mantine/hooks/-/hooks-7.1.2.tgz"
-  integrity sha512-2sqfBKse/aJq93zEpIn4OY+jRACmDIWBixfBgobRfltDyeL8G+3223LSAaeT6ZD8+h2YBJVmbCD5QY7bx2l11Q==
+"@mantine/hooks@^7.1.7":
+  version "7.1.7"
+  resolved "https://registry.yarnpkg.com/@mantine/hooks/-/hooks-7.1.7.tgz#dafa9110d30a15166444ec0e78dd7541d61268e4"
+  integrity sha512-OwKK1CtZ++lRXcjqN3G1MiY4Ie0Cd+aGGjrzlSxO2JJnYLkPgAmQqO6HkwK6p7XOwMpRW0eJdh3r1ONkna8pSg==
 
-"@mantine/notifications@^7.1.2":
-  version "7.1.2"
-  resolved "https://registry.npmjs.org/@mantine/notifications/-/notifications-7.1.2.tgz"
-  integrity sha512-aakf3KRGOnfh+qxGGH/B0ifS5myFi3xO2S0AKD6t//sbQrrUW+SUKh0qyuatnKIx7dxf+DA/sMobyqLUgyzAmg==
+"@mantine/notifications@^7.1.7":
+  version "7.1.7"
+  resolved "https://registry.yarnpkg.com/@mantine/notifications/-/notifications-7.1.7.tgz#1cd5b022993b7702eb422d712c630bda05130b17"
+  integrity sha512-ctzSUuR4/tKYYqKEffARd6KdFvzSfFKREFu4z7J90fevbdz9IjiCSvFNQOJXQVrb+UfOdOXYSy7vaxzNb2fQtw==
   dependencies:
-    "@mantine/store" "7.1.2"
+    "@mantine/store" "7.1.7"
     react-transition-group "4.4.5"
 
-"@mantine/store@7.1.2":
-  version "7.1.2"
-  resolved "https://registry.npmjs.org/@mantine/store/-/store-7.1.2.tgz"
-  integrity sha512-Lf3FLymM0q92BuRC4tZxTxrb9EjVa+J8fqEV147u/Q3aUSNmkhJCqN2MXPbTHIBJ2PsbLtDhy/2edNyIK1KhKQ==
+"@mantine/store@7.1.7":
+  version "7.1.7"
+  resolved "https://registry.yarnpkg.com/@mantine/store/-/store-7.1.7.tgz#11eb1dafc51f5e4da40473bc45efdc615c14774f"
+  integrity sha512-Ew+FDxrMwmiQ9fWeyKWSL9cmdWAJggqHKyErwAhNKmjiUUpayLCOlyhyxqm8dxj6KlSyJhSJX2lPh7a6wjvv3Q==
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
@@ -1880,6 +1875,11 @@ lru-cache@^6.0.0:
   integrity sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==
   dependencies:
     yallist "^4.0.0"
+
+lucide-react@^0.291.0:
+  version "0.291.0"
+  resolved "https://registry.yarnpkg.com/lucide-react/-/lucide-react-0.291.0.tgz#d6db8f5117a68c8bbc6ed51d800879fa6a471978"
+  integrity sha512-79jHlT9Je2PXSvXIBGDkItCK7In2O9iKnnSJ/bJxvIBOFaX2Ex0xEcC4fRS/g0F2uQGFejjmn2qWhwdc5wicMQ==
 
 math-random@2.0.1:
   version "2.0.1"

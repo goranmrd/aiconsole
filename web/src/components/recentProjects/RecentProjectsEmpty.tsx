@@ -14,7 +14,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { PlusIcon } from '@heroicons/react/24/outline';
+import { Plus } from 'lucide-react';
+
 import { Button } from '../system/Button';
 
 export function RecentProjectsEmpty() {
@@ -31,7 +32,7 @@ export function RecentProjectsEmpty() {
         </h1>
         <div className="flex justify-center gap-[20px] mt-[36px]">
           <Button small>
-            Add your first project <PlusIcon />
+            Add your first project <Plus />
           </Button>
           <Button small variant="secondary">
             Open Project
