@@ -8,8 +8,8 @@ declare const MAIN_WINDOW_VITE_NAME: string;
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1280,
+    height: 720,
     webPreferences: {
       nodeIntegration: true,
       webSecurity: false,

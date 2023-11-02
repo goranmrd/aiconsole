@@ -1,14 +1,14 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createHashRouter, RouterProvider } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 
-import { ErrorPage } from '@/components/system/ErrorPage.tsx';
-import { ChatPage } from '@/components/chat/ChatPage.tsx';
-import { MaterialPage } from '@/components/materials/MaterialPage.tsx';
-import { MaterialsPage } from '@/components/materials/MaterialsPage.tsx';
+import { ErrorPage } from '@/components/system/ErrorPage';
+import { ChatPage } from '@/components/chat/ChatPage';
+import { MaterialPage } from '@/components/materials/MaterialPage';
+import { MaterialsPage } from '@/components/materials/MaterialsPage';
 import { useAICStore } from '@/store/AICStore';
 import { useEffect, useRef } from 'react';
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     path: '/materials/:material_id',
     element: <MaterialPage />,
