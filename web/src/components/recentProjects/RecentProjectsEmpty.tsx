@@ -22,6 +22,7 @@ import { v4 as uuidv4 } from 'uuid';
 export function RecentProjectsEmpty() {
   const chooseProject = useAICStore((state) => state.chooseProject);
   const navigate = useNavigate();
+  const projectPath = useAICStore((state) => state.projectPath);
 
   const goToProjectChat = () => {
     navigate(`/chats/${uuidv4()}`);
@@ -47,9 +48,11 @@ export function RecentProjectsEmpty() {
           <Button small onClick={handleOpenClick}>
             Open your project
           </Button>
-          <Button small variant="secondary" onClick={goToProjectChat}>
-            Go to project
-          </Button>
+          {projectPath ? (
+            <Button small variant="secondary" onClick={goToProjectChat}>
+              Go to project
+            </Button>
+          ) : null}
         </div>
       </div>
       <img

@@ -52,19 +52,28 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
                 className="hover:animate-pulse cursor-pointer flex gap-2 items-center mr-[20px]"
                 to={`/chats/${uuidv4()}`}
               >
-                <img src={`/favicon.svg`} className="h-[48px] w-[48px] cursor-pointer filter" />
+                <img
+                  src={`/favicon.svg`}
+                  className="h-[48px] w-[48px] cursor-pointer filter"
+                />
               </Link>
               <Button small variant="secondary" onClick={() => navigate('/')}>
                 <ArrowLeft />
                 Back to projects
               </Button>
-              <h3 className="font-black text-grey-300 ml-[70px] first-letter:uppercase" onClick={chooseProject}>
+              <h3
+                className="font-black text-grey-300 ml-[70px] first-letter:uppercase"
+                onClick={chooseProject}
+              >
                 {projectName}
               </h3>
             </div>
             {/* TODO: remove "materials" and "agents" links when sidebar ready */}
             <div className="flex gap-4">
-              <Link to="/materials" className="cursor-pointer text-sm  hover:text-gray-400 hover:animate-pulse">
+              <Link
+                to="/materials"
+                className="cursor-pointer text-sm  hover:text-gray-400 hover:animate-pulse"
+              >
                 MATERIALS
               </Link>
               <Link
@@ -84,10 +93,31 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
           </>
         )}
         <div className="ml-auto flex gap-[20px]">
-          <Button small variant="secondary">
+          <Button
+            small
+            variant="secondary"
+            onClick={() =>
+              showNotification({
+                title: 'Not implemented',
+                message: 'Project settings is not implemented yet',
+                variant: 'error',
+              })
+            }
+          >
             Project settings
           </Button>
-          <Button iconOnly small variant="secondary">
+          <Button
+            iconOnly
+            small
+            variant="secondary"
+            onClick={() =>
+              showNotification({
+                title: 'Not implemented',
+                message: 'Settings is not implemented yet',
+                variant: 'error',
+              })
+            }
+          >
             <Settings />
           </Button>
         </div>
