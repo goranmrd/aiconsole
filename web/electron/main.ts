@@ -13,8 +13,6 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: true,
     },
-    //titleBarStyle: 'hidden',
-    icon: '/Users/maciel/Projects/aiconsole/web/electron/icon.png',
   });
 
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
