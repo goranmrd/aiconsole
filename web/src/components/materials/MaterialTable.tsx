@@ -18,15 +18,9 @@ import { MouseEvent } from 'react';
 import { MaterialInfo } from '@/types/types';
 import { useNavigate } from 'react-router-dom';
 
-import {
-  BoltIcon,
-  TrashIcon,
-  LockClosedIcon,
-  DocumentDuplicateIcon,
-} from '@heroicons/react/24/solid';
 import { useAICStore } from '@/store/AICStore';
 import { ConfirmationModal } from '../system/ConfirmationModal';
-import { NoSymbolIcon, CheckIcon } from '@heroicons/react/24/outline';
+import { Trash, Zap, Check, Ban, Layers2, Lock } from 'lucide-react';
 import { cn } from '@/utils/styles';
 
 interface MaterialTableProps {
@@ -68,31 +62,42 @@ export function MaterialTable({ materials }: MaterialTableProps) {
               material.status === 'disabled' && 'opacity-40',
             )}
           >
-            <td className="p-4 cursor-pointer" onClick={redirectToMaterialPage(material.id)}>
+            <td
+              className="p-4 cursor-pointer"
+              onClick={redirectToMaterialPage(material.id)}
+            >
               <div className=" flex flex-row items-center justify-center w-full h-full">
                 {material.status === 'forced' && (
-                  <BoltIcon className="h-6 w-6 text-primary" title="forced" />
+                  <Zap className="h-6 w-6 text-primary" name="forced" />
                 )}
                 {material.status === 'enabled' && (
-                  <CheckIcon className="h-6 w-6" title="enabled" />
+                  <Check className="h-6 w-6" name="enabled" />
                 )}
                 {material.status === 'disabled' && (
-                  <NoSymbolIcon className="h-6 w-6" title="disabled" />
+                  <Ban className="h-6 w-6" name="disabled" />
                 )}
               </div>
             </td>
-            <td className="p-4 cursor-pointer" onClick={redirectToMaterialPage(material.id)}>
+            <td
+              className="p-4 cursor-pointer"
+              onClick={redirectToMaterialPage(material.id)}
+            >
               <div className="flex items-center">
                   {material.name}
                 {material.defined_in === 'aiconsole' && (
-                  <LockClosedIcon className="w-4 h-5 inline ml-2" />
+                  <Lock className="w-4 h-5 inline ml-2" />
                 )}
               </div>
             </td>
-            <td className="p-4 cursor-pointer" onClick={redirectToMaterialPage(material.id)}>{material.usage}</td>
+            <td
+              className="p-4 cursor-pointer"
+              onClick={redirectToMaterialPage(material.id)}
+            >
+              {material.usage}
+            </td>
             <td className="p-4">
               <div className=" flex flex-row items-center justify-center w-full h-full gap-2">
-                <DocumentDuplicateIcon
+                <Layers2
                   onClick={redirectToMaterialPage(`new?copy=${material.id}`)}
                   className="h-5 w-5 cursor-pointer"
                 />
@@ -101,10 +106,10 @@ export function MaterialTable({ materials }: MaterialTableProps) {
                   <ConfirmationModal
                     confirmButtonText="Yes"
                     cancelButtonText="No"
-                    onConfirm={event => handleDeleteClick(material.id, event)}
+                    onConfirm={(event) => handleDeleteClick(material.id, event)}
                     title={`Are you sure you want to remove ${material.id} material?`}
                     openModalButton={
-                      <TrashIcon className="w-5 h-5 cursor-pointer" />
+                      <Trash className="w-5 h-5 cursor-pointer" />
                     }
                   />
                 )}

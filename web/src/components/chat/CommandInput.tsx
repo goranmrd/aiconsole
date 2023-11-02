@@ -13,14 +13,14 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-    
-import { PaperAirplaneIcon, StopIcon } from '@heroicons/react/24/solid';
+
 import TextareaAutosize from 'react-textarea-autosize';
 import { useEffect, useRef } from 'react';
-
+import { Send, Square } from 'lucide-react';
 import { cn } from '@/utils/styles';
 import { useAICStore } from '@/store/AICStore';
 import { useAnalysisStore } from '@/store/useAnalysisStore';
+import { fr } from 'date-fns/locale';
 
 interface MessageInputProps {
   className?: string;
@@ -43,7 +43,9 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
   const chat = useAICStore((state) => state.chat);
   const chatId = useAICStore((state) => state.chatId);
 
-  const isAnalysisRunning = useAnalysisStore((state) => state.isAnalysisRunning);
+  const isAnalysisRunning = useAnalysisStore(
+    (state) => state.isAnalysisRunning,
+  );
 
   const sendingMessagesBlocked =
     isExecuteRunning ||
@@ -125,7 +127,7 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
             type="button"
             onClick={stopWork}
           >
-            <StopIcon className="h-6 w-6" />
+            <Square className="h-6 w-6" />
           </button>
         )}
         <button
@@ -141,7 +143,7 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
           onClick={handleSendMessage}
           disabled={sendingMessagesBlocked}
         >
-          <PaperAirplaneIcon className="h-6 w-6 scale-75" />
+          <Send className="h-6 w-6 scale-75" />
         </button>
       </div>
     </div>

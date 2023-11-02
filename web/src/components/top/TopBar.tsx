@@ -20,11 +20,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { useAICStore } from '@/store/AICStore';
 import showNotification from '@/utils/showNotification';
 import { Button } from '../system/Button';
-import {
-  PlusIcon,
-  Cog6ToothIcon,
-  ArrowLeftIcon,
-} from '@heroicons/react/24/outline';
+import { Plus, ArrowLeft, Settings } from 'lucide-react';
 
 interface TopBarProps {
   variant?: 'recentProjects' | 'chat';
@@ -41,7 +37,7 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
         {variant === 'recentProjects' ? (
           <div className="flex gap-[20px]">
             <Button small>
-              Add project <PlusIcon />
+              Add project <Plus />
             </Button>
             <Button small variant="secondary">
               Open Project
@@ -60,7 +56,7 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
                 />
               </Link>
               <Button small variant="secondary" onClick={() => navigate('/')}>
-                <ArrowLeftIcon />
+                <ArrowLeft />
                 Back to projects
               </Button>
               <h3
@@ -99,7 +95,7 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
             Project settings
           </Button>
           <Button iconOnly small variant="secondary">
-            <Cog6ToothIcon />
+            <Settings />
           </Button>
         </div>
       </div>

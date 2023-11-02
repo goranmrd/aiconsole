@@ -16,7 +16,8 @@
 
 import { MouseEvent } from 'react';
 import { Button } from '../system/Button';
-import { TrashIcon } from '@heroicons/react/24/outline';
+import { Trash } from 'lucide-react';
+
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -50,7 +51,7 @@ export function ProjectCard({ id, name, chatHistory }: ProjectCardProps) {
         <p className="mb-[10px] text-[15px]">{command}</p>
       ))}
       <Button variant="tertiary" classNames="mt-[5px]" onClick={deleteProject}>
-        <TrashIcon />
+        <Trash />
         Remove project
       </Button>
     </div>
