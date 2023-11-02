@@ -7,6 +7,7 @@ import { MaterialPage } from '@/components/materials/MaterialPage.tsx';
 import { MaterialsPage } from '@/components/materials/MaterialsPage.tsx';
 import { useAICStore } from '@/store/AICStore';
 import { useEffect, useRef } from 'react';
+import { RecentProjects } from './components/recentProjects/RecentProjects';
 
 const router = createBrowserRouter([
   {
@@ -21,7 +22,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/',
-    element: <ChatPage />,
+    element: <RecentProjects />,
     errorElement: <ErrorPage />,
   },
   {

@@ -14,64 +14,94 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 
-import { BASE_URL } from '@/api/Api';
 import { useAICStore } from '@/store/AICStore';
 import showNotification from '@/utils/showNotification';
+import { Button } from '../system/Button';
+import {
+  PlusIcon,
+  Cog6ToothIcon,
+  ArrowLeftIcon,
+} from '@heroicons/react/24/outline';
 
-export function TopBar() {
+interface TopBarProps {
+  variant?: 'recentProjects' | 'chat';
+}
+
+export function TopBar({ variant = 'chat' }: TopBarProps) {
+  const navigate = useNavigate();
   const chooseProject = useAICStore((state) => state.chooseProject);
   const projectName = useAICStore((state) => state.projectName);
 
   return (
-    <div className="flex w-full flex-col p-6 border-b drop-shadow-md bg-gray-900/30 border-white/10">
+    <div className="flex w-full flex-col px-[30px] py-[26px] border-b drop-shadow-md bg-transparent border-white/10">
       <div className="flex gap-2 items-center">
-        <div className="flex font-bold text-sm gap-2 items-center pr-5">
-          <Link className="hover:animate-pulse cursor-pointer flex gap-2 items-center" to={`/chats/${uuidv4()}`}>
-            <img src={`/favicon.svg`} className="h-9 w-9 cursor-pointer filter" />
-            <h1 className="text-lg  text-white">AIConsole</h1>
-          </Link>
-          <span className=""> / </span>
-          <span className="hover:animate-pulse cursor-pointer" onClick={chooseProject}>
-            {projectName}
-          </span>
+        {variant === 'recentProjects' ? (
+          <div className="flex gap-[20px]">
+            <Button small>
+              Add project <PlusIcon />
+            </Button>
+            <Button small variant="secondary">
+              Open Project
+            </Button>
+          </div>
+        ) : (
+          <>
+            <div className="flex font-bold text-sm gap-2 items-center pr-5">
+              <Link
+                className="hover:animate-pulse cursor-pointer flex gap-2 items-center mr-[20px]"
+                to={`/chats/${uuidv4()}`}
+              >
+                <img
+                  src={`/favicon.svg`}
+                  className="h-[48px] w-[48px] cursor-pointer filter"
+                />
+              </Link>
+              <Button small variant="secondary" onClick={() => navigate('/')}>
+                <ArrowLeftIcon />
+                Back to projects
+              </Button>
+              <h3
+                className="font-black text-grey-300 ml-[70px] first-letter:uppercase"
+                onClick={chooseProject}
+              >
+                {projectName}
+              </h3>
+            </div>
+            {/* TODO: remove "materials" and "agents" links when sidebar ready */}
+            <div className="flex gap-4">
+              <Link
+                to="/materials"
+                className="cursor-pointer text-sm  hover:text-gray-400 hover:animate-pulse"
+              >
+                MATERIALS
+              </Link>
+              <Link
+                to="/materials"
+                className="cursor-pointer text-sm hover:text-gray-400 hover:animate-pulse"
+                onClick={() =>
+                  showNotification({
+                    title: 'Not implemented',
+                    message: 'Agents listing is not implemented yet',
+                    variant: 'error',
+                  })
+                }
+              >
+                AGENTS
+              </Link>
+            </div>
+          </>
+        )}
+        <div className="ml-auto flex gap-[20px]">
+          <Button small variant="secondary">
+            Project settings
+          </Button>
+          <Button iconOnly small variant="secondary">
+            <Cog6ToothIcon />
+          </Button>
         </div>
-        <div className="flex gap-4">
-          <Link
-            to="/materials"
-            className="cursor-pointer text-sm  hover:text-gray-400 hover:animate-pulse"
-          >
-            MATERIALS
-          </Link>
-          <Link
-            to="/materials"
-            className="cursor-pointer text-sm hover:text-gray-400 hover:animate-pulse"
-            onClick={() =>
-              showNotification({
-                title: 'Not implemented',
-                message: 'Agents listing is not implemented yet',
-                variant: 'error',
-              })
-            }
-          >
-            AGENTS
-          </Link>
-        </div>
-
-        <div className="flex-grow"></div>
-        <img
-          src={`${BASE_URL}/profile/user.jpg`}
-          className="h-9 w-9 rounded-full border cursor-pointer shadow-md border-primary"
-          onClick={() =>
-            showNotification({
-              title: 'Not implemented',
-              message: 'User profile is not implemented yet',
-              variant: 'error',
-            })
-          }
-        />
       </div>
     </div>
   );
