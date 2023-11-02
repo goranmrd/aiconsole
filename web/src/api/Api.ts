@@ -117,7 +117,7 @@ const getCurrentProject = () => ky.get(`${BASE_URL}/api/projects/current`, { hoo
 const getMaterials = async () => ky.get(`${BASE_URL}/api/materials/`, { hooks }).json() as Promise<MaterialInfo[]>;
 
 const setMaterialStatus = async (id: string, status: MaterialStatus) =>
-  ky.post(`${BASE_URL}/api/materials/${id}/status-change`, { json: { status }, hooks }).json() as Promise<void>;
+  ky.post(`${BASE_URL}/api/materials/${id}/status-change`, { json: { status, to_global: false }, hooks }).json() as Promise<void>;
 
 const getMaterial = async (id: string) =>
   ky.get(`${BASE_URL}/api/materials/${id}`, { hooks }).json() as Promise<Material>;
