@@ -12,7 +12,6 @@ function createWindow() {
     height: 720,
     webPreferences: {
       nodeIntegration: true,
-      webSecurity: false,
     },
     //titleBarStyle: 'hidden',
     icon: '/Users/maciel/Projects/aiconsole/web/electron/icon.png',
