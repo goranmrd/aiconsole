@@ -7,6 +7,7 @@ import { MaterialPage } from '@/components/materials/MaterialPage';
 import { MaterialsPage } from '@/components/materials/MaterialsPage';
 import { useAICStore } from '@/store/AICStore';
 import { useEffect, useRef } from 'react';
+import { RecentProjects } from './components/recentProjects/RecentProjects';
 
 const router = createHashRouter([
   {
@@ -21,7 +22,7 @@ const router = createHashRouter([
   },
   {
     path: '/',
-    element: <ChatPage />,
+    element: <RecentProjects />,
     errorElement: <ErrorPage />,
   },
   {

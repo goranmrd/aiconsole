@@ -24,7 +24,6 @@
     "@mantine/notifications": "^7.1.2",
     "@tailwindcss/typography": "^0.5.10",
     "clsx": "^2.0.0",
-    "crypto-js": "^4.1.1",
     "date-fns": "^2.30.0",
     "electron-is-packaged": "^1.0.2",
     "electron-squirrel-startup": "^1.0.0",

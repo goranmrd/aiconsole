@@ -17,6 +17,7 @@
 from typing import List, Optional
 from pydantic import BaseModel
 
+
 class BaseWSMessage(BaseModel):
     def get_type(self):
         return self.__class__.__name__
@@ -33,16 +34,20 @@ class BaseWSMessage(BaseModel):
         # Don't include None values, call to super to avoid recursion
         return {k: v for k, v in super().model_dump().items() if v is not None}
 
+
 class NotificationWSMessage(BaseWSMessage):
     title: str
     message: str
+
 
 class DebugJSONWSMessage(BaseWSMessage):
     message: str
     object: dict
 
+
 class ErrorWSMessage(BaseWSMessage):
     error: str
+
 
 class ProjectOpenedWSMessage(BaseWSMessage):
     name: str
@@ -51,6 +56,11 @@ class ProjectOpenedWSMessage(BaseWSMessage):
 
 class MaterialsUpdatedWSMessage(BaseWSMessage):
     count: int
+
+
+class SettingsWSMessage(BaseWSMessage):
+    pass
+
 
 class AnalysisUpdatedWSMessage(BaseWSMessage):
     agent_id: Optional[str] = None
