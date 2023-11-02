@@ -167,3 +167,4 @@ cython_debug/
 /aiconsole/static
 /settings.toml
 /web/electron/python
+.vite
