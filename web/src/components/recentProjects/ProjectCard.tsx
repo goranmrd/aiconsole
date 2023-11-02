@@ -47,8 +47,10 @@ export function ProjectCard({ id, name, chatHistory }: ProjectCardProps) {
       onClick={goToProjectChat}
     >
       <h3 className="text-[22px] font-black mb-[21px]">{name}</h3>
-      {chatHistory.map((command) => (
-        <p className="mb-[10px] text-[15px]">{command}</p>
+      {chatHistory.map((command, index) => (
+        <p key={index} className="mb-[10px] text-[15px]">
+          {command}
+        </p>
       ))}
       <Button variant="tertiary" classNames="mt-[5px]" onClick={deleteProject}>
         <Trash />
