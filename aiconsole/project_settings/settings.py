@@ -145,6 +145,9 @@ class Settings:
     @staticmethod
     def __set_openai_api_key_environment(settings: Dict[str, Any]) -> None:
         openai_api_key = settings.get('settings', {}).get('openai_api_key', None)
+        if openai_api_key is None:
+            return
+
         if os.environ.get("OPENAI_API_KEY", None) != openai_api_key:
             os.environ["OPENAI_API_KEY"] = openai_api_key
 
