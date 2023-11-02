@@ -14,8 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { TrashIcon, PencilIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
-
+import { Trash, Pencil, Check, X } from 'lucide-react';
 interface MessageControlsProps {
   isEditing?: boolean;
   onSaveClick?: () => void;
@@ -36,24 +35,24 @@ export function MessageControls({
       {isEditing ? (
         <>
           <button>
-            <CheckIcon onClick={onSaveClick} className="h-5 w-5 fill-green" />{' '}
+            <Check onClick={onSaveClick} className="h-5 w-5 fill-green" />{' '}
           </button>
           <button>
-            <XMarkIcon onClick={onCancelClick} className="h-5 w-5 text-red" />{' '}
+            <X onClick={onCancelClick} className="h-5 w-5 text-red" />{' '}
           </button>
         </>
       ) : (
         <>
           {onSaveClick && onEditClick && onCancelClick ? (
             <button>
-              <PencilIcon onClick={onEditClick} className="h-5 w-5" />{' '}
+              <Pencil onClick={onEditClick} className="h-5 w-5" />{' '}
             </button>
           ) : (
             <div className="h-5 w-5"></div>
           )}
           {onRemoveClick && (
             <button onClick={onRemoveClick}>
-              <TrashIcon className="h-5 w-5" />{' '}
+              <Trash className="h-5 w-5" />{' '}
             </button>
           )}
         </>

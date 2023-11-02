@@ -18,14 +18,13 @@ import { useCallback, useState } from 'react';
 
 import { Spinner } from '@/components/chat/Spinner';
 import { useAICStore } from '@/store/AICStore';
-import { ArrowDownIcon, ArrowUpIcon } from '@heroicons/react/24/outline';
+import { ChevronDown, ChevronUp, Play, Infinity } from 'lucide-react';
 import { AICCodeMessage, AICMessageGroup } from '@/types/types';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { Button } from '../../system/Button';
 import { duotoneDark as vs2015 } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { CodeOutput } from './CodeOutput';
 import { EditableContentMessage } from './EditableContentMessage';
-import { PlayIcon, RocketLaunchIcon } from '@heroicons/react/24/outline';
 
 interface MessageProps {
   group: AICMessageGroup;
@@ -88,8 +87,8 @@ export function CodeMessage({ group, message, isStreaming }: MessageProps) {
               </div>
             )}
 
-            {folded && <ArrowDownIcon className="h-5 w-5" />}
-            {!folded && <ArrowUpIcon className="h-5 w-5" />}
+            {folded && <ChevronUp className="h-5 w-5" />}
+            {!folded && <ChevronDown className="h-5 w-5" />}
           </div>
         </div>
 
@@ -121,7 +120,7 @@ export function CodeMessage({ group, message, isStreaming }: MessageProps) {
                         small
                         onClick={handleRunClick}
                       >
-                        <PlayIcon />
+                        <Play />
                         Run
                       </Button>
 
@@ -132,7 +131,7 @@ export function CodeMessage({ group, message, isStreaming }: MessageProps) {
                           statusColor="purple"
                           small
                         >
-                          <RocketLaunchIcon />
+                          <Infinity />
                           Always Run
                         </Button>
                       )}
