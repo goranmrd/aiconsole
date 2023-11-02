@@ -19,12 +19,7 @@ import { Link } from 'react-router-dom';
 
 import { ChatHeadline } from '@/types/types';
 import { cn } from '@/utils/styles';
-import {
-  TrashIcon,
-  PencilIcon,
-  CheckIcon,
-  XMarkIcon,
-} from '@heroicons/react/24/solid';
+import { Trash, Pencil, Check, X } from 'lucide-react';
 
 export type HeadlinesGroupProps = {
   title: string;
@@ -88,14 +83,11 @@ const HeadlinesGroup = ({
                   onChange={(e) => setInputText(e.target.value)}
                 />
                 <div className="flex-grow flex items-center gap-2">
-                  <CheckIcon
+                  <Check
                     className="h-4 w-4"
                     onClick={() => OnAccept(chat.id)}
                   />
-                  <XMarkIcon
-                    className="h-4 w-4"
-                    onClick={() => setIsEditMode(false)}
-                  />
+                  <X className="h-4 w-4" onClick={() => setIsEditMode(false)} />
                 </div>
               </div>
             ) : (
@@ -103,11 +95,11 @@ const HeadlinesGroup = ({
             )}
             {selected && !isEditMode && (
               <>
-                <PencilIcon
+                <Pencil
                   className="h-4 w-4 flex-none"
                   onClick={() => onChatEdit(chat.message)}
                 />
-                <TrashIcon
+                <Trash
                   className="h-4 w-4 flex-none"
                   onClick={(e) => onChatDelete(e, chat.id)}
                 />
