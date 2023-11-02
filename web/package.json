@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite --config vite.renderer.config.ts",
+    "dev": "vite",
     "watch": "vite build --watch",
     "build": "tsc && vite build --config vite.renderer.config.ts",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
