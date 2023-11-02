@@ -50,7 +50,6 @@ export const useAICStore = create<AICStore>()((...a) => ({
 }));
 
 export const initStore = () => {
-  useAICStore.getState().initCommandHistory();
   useAnalysisStore.getState().init();
   useWebSocketStore.getState().initWebSocket();
 };

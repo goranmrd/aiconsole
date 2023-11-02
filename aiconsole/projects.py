@@ -16,6 +16,7 @@
     
 import os
 import sys
+from typing import Optional
 
 from aiconsole.agents import agents
 from aiconsole.code_running.run_code import reset_code_interpreters
@@ -24,15 +25,9 @@ from aiconsole.websockets.connection_manager import AICConnection
 from aiconsole.websockets.outgoing_messages import ProjectOpenedWSMessage
 from aiconsole.project_settings.settings import Settings
 
-_materials = materials.Materials(
-    "aiconsole.materials.core",
-    os.path.join(os.getcwd(), "materials")
-)
+_materials: Optional[materials.Materials] = None
 
-_agents = agents.Agents(
-    "aiconsole.agents.core",
-    os.path.join(os.getcwd(), "agents")
-)
+_agents: Optional[agents.Agents] = None
 
 _settings = Settings()
 
@@ -44,35 +39,54 @@ def _create_project_message():
 
 
 def get_project_materials() -> materials.Materials:
+    if not _materials:
+        raise ValueError("Project materials are not initialized")
     return _materials
 
 
 def get_project_agents() -> agents.Agents:
+    if not _agents:
+        raise ValueError("Project agents are not initialized")
     return _agents
 
 
 def get_project_settings() -> Settings:
+    if not _materials:
+        raise ValueError("Project settings are not initialized")
     return _settings
 
 
 def get_history_directory():
+    if not _materials:
+        raise ValueError("Project settings are not initialized")
     return os.path.join(get_aic_directory(), "history")
 
 
 def get_aic_directory():
+    if not _materials:
+        raise ValueError("Project settings are not initialized")
     return os.path.join(get_project_directory(),  ".aic")
 
 
 def get_project_directory():
+    if not _materials:
+        raise ValueError("Project settings are not initialized")
     return os.getcwd()
 
 
 def get_project_name():
+    if not _materials:
+        raise ValueError("Project settings are not initialized")
     return os.path.basename(get_project_directory())
 
 
 def get_credentials_directory():
+    if not _materials:
+        raise ValueError("Project settings are not initialized")
     return os.path.join(get_aic_directory(), "credentials")
+
+def is_project_initialized():
+    return _materials is not None
 
 
 async def reinitialize_project():
@@ -80,8 +94,11 @@ async def reinitialize_project():
     global _agents
     global _settings
 
-    _materials.stop()
-    _agents.stop()
+    if _materials:
+        _materials.stop()
+
+    if _agents:
+        _agents.stop()
     _settings.stop()
 
     reset_code_interpreters()

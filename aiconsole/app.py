@@ -32,7 +32,8 @@ from aiconsole.websockets.outgoing_messages import NotificationWSMessage
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await projects.reinitialize_project()
+    if projects.is_project_initialized():
+        await projects.reinitialize_project()
     yield
 
 

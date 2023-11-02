@@ -15,6 +15,7 @@
 # limitations under the License.
     
 import logging
+import os
 
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
@@ -37,7 +38,8 @@ def ask_directory():
     else:
         root.deiconify()
     root.withdraw()
-    directory = filedialog.askdirectory(initialdir=projects.get_project_directory())
+    initial_dir = projects.get_project_directory() if projects.is_project_initialized() else os.getcwd()   
+    directory = filedialog.askdirectory(initialdir=initial_dir)
     
     return directory
 
@@ -45,12 +47,9 @@ def ask_directory():
 @router.post("/choose")
 async def choose_project():
     # Show a system select directory dialog
-    try:
-        directory = ask_directory()
+    directory = ask_directory()
 
-        if directory:
-            await projects.change_project_directory(directory)
-    except Exception as e:
-        await NotificationWSMessage(title="Error", message=e.__str__()).send_to_all()
+    if directory:
+        await projects.change_project_directory(directory)
 
     return JSONResponse({})

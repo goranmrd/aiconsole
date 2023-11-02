@@ -49,6 +49,7 @@ export const createProjectSlice: StateCreator<
       alwaysExecuteCode: false,
     }));
 
+    await get().initCommandHistory();
     await get().initChatHistory();
     await get().initAgents();
     await get().getSettings();
