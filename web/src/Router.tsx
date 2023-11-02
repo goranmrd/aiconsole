@@ -42,6 +42,10 @@ export function Router() {
       pathRef.current = projectPath;
     }
 
+    if (projectPath) {
+      router.navigate(`/chats/${uuidv4()}`);
+    }
+
     if (pathRef.current !== projectPath) {
       router.navigate(`/chats/${uuidv4()}`);
       pathRef.current = projectPath;

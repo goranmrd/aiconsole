@@ -91,7 +91,7 @@ const MOCKED_PROJECTS_DATA = [
 export function RecentProjects() {
   return (
     <div className="min-h-[100vh] bg-recent-bg bg-cover bg-top">
-      {MOCKED_PROJECTS_DATA.length ? (
+      {!MOCKED_PROJECTS_DATA.length ? (
         <div>
           <TopBar variant="recentProjects" />
 

@@ -14,11 +14,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Plus } from 'lucide-react';
-
+import { useAICStore } from '@/store/AICStore';
 import { Button } from '../system/Button';
+import { useNavigate } from 'react-router';
+import { v4 as uuidv4 } from 'uuid';
 
 export function RecentProjectsEmpty() {
+  const chooseProject = useAICStore((state) => state.chooseProject);
+  const navigate = useNavigate();
+
+  const goToProjectChat = () => {
+    navigate(`/chats/${uuidv4()}`);
+  };
+
+  const handleOpenClick = async () => {
+    await chooseProject();
+    goToProjectChat();
+  };
+
   return (
     <div className="flex justify-center items-center flex-col min-h-[100vh] px-[60px]">
       <div className="absolute top-50% translate-y-[-150%]">
@@ -31,11 +44,11 @@ export function RecentProjectsEmpty() {
           Welcome to <span className=" text-primary">AIConsole!</span>
         </h1>
         <div className="flex justify-center gap-[20px] mt-[36px]">
-          <Button small>
-            Add your first project <Plus />
+          <Button small onClick={handleOpenClick}>
+            Open your project
           </Button>
-          <Button small variant="secondary">
-            Open Project
+          <Button small variant="secondary" onClick={goToProjectChat}>
+            Go to project
           </Button>
         </div>
       </div>
