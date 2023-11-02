@@ -23,7 +23,6 @@ limitations under the License.
 @tailwind components;
 @tailwind utilities;
 
-
 body {
   --mantine-color-body: #191919;
 }
@@ -41,7 +40,7 @@ body {
 
 /* The pseudo element is now responsible for the background image. */
 .downlight::after {
-  content: "";
+  content: '';
   z-index: -1;
 
   /* Make the pseudo element fill the entire parent element. */
@@ -52,7 +51,7 @@ body {
   left: 0;
 
   /* Add a background image. */
-  background-image: url('/bg1.jpg');
+  background-image: url('/bg1.png');
 
   /* Make sure the image always covers the full viewport. */
   background-size: cover;
