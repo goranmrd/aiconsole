@@ -3,7 +3,7 @@ module.exports = {
     executableName: 'AIConsole',
     asar: true,
     icon: '../electron/icon',
-    extraResource: ['../electron/python'],
+    extraResource: ['../python'],
   },
   rebuildConfig: {},
   makers: [

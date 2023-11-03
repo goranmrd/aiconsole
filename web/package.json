@@ -8,8 +8,6 @@
     "build": "tsc && vite build --config vite.renderer.config.ts",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "start": "electron-forge start",
-    "package": "electron-forge package",
     "make": "electron-forge make"
   },
   "main": ".vite/build/main.js",

@@ -40,7 +40,7 @@ download_python() {
 
 intall_dependencies() {
     echo "Installing aiconsole and dependencies..."
-    ./python/bin/pip install ../ --use-feature=in-tree-build
+    ./python/bin/pip install . --use-feature=in-tree-build
 }
 
 check_installation
