@@ -1,7 +1,7 @@
 {
   "name": "aiconsole",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.2.1",
   "scripts": {
     "dev": "vite",
     "watch": "vite build --watch",
@@ -16,6 +16,7 @@
     "url": "https://github.com/10clouds/aiconsole.git"
   },
   "dependencies": {
+    "@electron-forge/publisher-github": "^6.4.2",
     "@mantine/core": "^7.1.7",
     "@mantine/hooks": "^7.1.7",
     "@mantine/notifications": "^7.1.7",
