@@ -16,7 +16,9 @@
 
 import { TopBar } from '@/components/top/TopBar';
 import { ProjectCard } from './ProjectCard';
+import { useAICStore } from '@/store/AICStore';
 import { RecentProjectsEmpty } from './RecentProjectsEmpty';
+import OpenAiApiKeyForm from '../system/OpenAiApiKeyForm';
 
 // TODO: temporary mocked data until backend is ready
 const MOCKED_PROJECTS_DATA = [
@@ -89,6 +91,22 @@ const MOCKED_PROJECTS_DATA = [
 ];
 
 export function RecentProjects() {
+
+  const openAiApiKey = useAICStore((state) => state.openAiApiKey);
+
+  if (openAiApiKey === undefined) {
+    // the request is in progress - don't render anything to avoid flickering
+    return;
+  }
+
+  if (!openAiApiKey) {
+    return (
+      <div className="min-h-[100vh] bg-recent-bg bg-cover bg-top">
+        <OpenAiApiKeyForm />
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-[100vh] bg-recent-bg bg-cover bg-top">
       {!MOCKED_PROJECTS_DATA.length ? (

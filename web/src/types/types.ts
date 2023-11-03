@@ -94,6 +94,7 @@ export type Agent = {
 
 export type Settings = {
   code_autorun?: boolean;
+  openai_api_key?: string | null;
 };
 
 export type ErrorResponse = {
