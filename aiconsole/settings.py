@@ -33,6 +33,7 @@ if MAX_BUDGET:
 
 AICONSOLE_PATH = Path(__file__).parent
 
+
 class Settings(BaseSettings):
     OPENAI_API_KEY: Optional[str] = Field(None, env=["OPENAI_API_KEY"])
     ORIGINS: list[str] = ["http://localhost:3000", "http://localhost:3001", "http://127.0.0.1:3000", "http://127.0.0.1:3001"]

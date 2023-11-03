@@ -23,7 +23,7 @@ import tomlkit.container
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-import watchdog.observers
+from watchdog.observers import Observer
 from tomlkit import TOMLDocument
 
 from aiconsole.materials.material import MaterialStatus
@@ -56,27 +56,31 @@ class SettingsData(BaseModel):
 
 
 class Settings:
-    _settings: SettingsData
-
-    def __init__(self):
+    def __init__(self, project_settings_file_path: Optional[Path] = None):
         self._settings = SettingsData()
 
         self._global_settings_file_path = self.__get__settings_file_path(Path(user_config_dir('aiconsole')) / "settings.toml")
-        self._project_settings_file_path = self.__get__settings_file_path(Path("settings.toml"))
+        self._project_settings_file_path = self.__get__settings_file_path(project_settings_file_path)
+        self._observer: Observer = Observer()
 
-        self.__setup_observer()
+        self.setup_observer()
 
-    def __setup_observer(self):
-        self.observer = watchdog.observers.Observer()
+    def setup_observer(self):
+        if not self._project_settings_file_path:
+            return
 
-        self.observer.schedule(
+        self._observer.unschedule_all()
+        self._observer.stop()
+
+        self._observer.schedule(
             BatchingWatchDogHandler(
                 self.reload,
                 self._global_settings_file_path.name
             ),
             str(self._global_settings_file_path.parent)
         )
-        self.observer.schedule(
+
+        self._observer.schedule(
             BatchingWatchDogHandler(
                 self.reload,
                 self._project_settings_file_path.name
@@ -84,20 +88,24 @@ class Settings:
             str(self._project_settings_file_path.parent)
         )
 
-        self.observer.start()
+        self._observer.start()
 
     @classmethod
-    def __get__settings_file_path(cls, file_path: Path) -> Path:
+    def __get__settings_file_path(cls, file_path: Optional[Path]) -> Optional[Path]:
+        if file_path is None:
+            return None
+
         if not file_path.exists():
             file_path.parent.mkdir(parents=True, exist_ok=True)
             file_path.touch()
+
         return file_path
 
     def model_dump(self) -> Dict[str, Any]:
         return self._settings.model_dump()
 
     def stop(self):
-        self.observer.stop()
+        self._observer.stop()
 
     async def reload(self):
         self._settings = self.load()

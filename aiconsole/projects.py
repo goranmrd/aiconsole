@@ -16,6 +16,7 @@
     
 import os
 import sys
+from pathlib import Path
 from typing import Optional
 
 from aiconsole.agents import agents
@@ -31,7 +32,8 @@ _agents: Optional[agents.Agents] = None
 
 _settings = Settings()
 
-def _create_project_message():
+
+def _create_project_message() -> ProjectOpenedWSMessage:
     return ProjectOpenedWSMessage(
         path=get_project_directory(),
         name=get_project_name()
@@ -85,7 +87,8 @@ def get_credentials_directory():
         raise ValueError("Project settings are not initialized")
     return os.path.join(get_aic_directory(), "credentials")
 
-def is_project_initialized():
+
+def is_project_initialized() -> bool:
     return _materials is not None
 
 
@@ -105,7 +108,7 @@ async def reinitialize_project():
     
     _agents = agents.Agents("aiconsole.agents.core",  os.path.join(get_project_directory(True), "agents"))
     _materials = materials.Materials("aiconsole.materials.core", os.path.join(get_project_directory(True), "materials"))
-    _settings = Settings()
+    _settings = Settings(Path(get_project_directory(True)) / "settings.toml")
 
     await _materials.reload()
     await _agents.reload()
