@@ -8,7 +8,7 @@ check_installation() {
     else
         download_python
     fi
-    intall_dependencies
+    install_dependencies
     echo "Build process completed!"
 }
 
@@ -38,7 +38,7 @@ download_python() {
     rm $file_name
 }
 
-intall_dependencies() {
+install_dependencies() {
     echo "Installing aiconsole and dependencies..."
     ./python/bin/pip install . --use-feature=in-tree-build
 }
