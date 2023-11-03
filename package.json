@@ -5,6 +5,6 @@
     "start": "npm run prepare-python && cd web && npx electron-forge start",
     "package": "npm run prepare-python && cd web && npx electron-forge package",
     "prepare-python": "./electron/build_local_python.sh",
-    "make": "cd web && npm run make"
+    "make": "npm run prepare-python && cd web && npm run make"
   }
 }
