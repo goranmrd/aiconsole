@@ -23,10 +23,12 @@ export type ProjectSlice = {
   projectPath: string;
   projectName: string;
   alwaysExecuteCode: boolean;
+  openAiApiKey?: string | null;
   chooseProject: () => Promise<void>;
   getSettings: () => Promise<void>;
   setProject: ({ path, name }: { path: string; name: string }) => Promise<void>;
   enableAutoCodeExecution: () => void;
+  setOpenAiApiKey: (key: string) => Promise<void>;
 };
 
 export const createProjectSlice: StateCreator<
@@ -38,9 +40,14 @@ export const createProjectSlice: StateCreator<
   projectPath: '',
   projectName: '',
   alwaysExecuteCode: false,
+  openAiApiKey: undefined,
   enableAutoCodeExecution: async () => {
     await Api.saveSettings({ code_autorun: true });
     set({ alwaysExecuteCode: true });
+  },
+  setOpenAiApiKey: async (key: string) => {
+    await Api.saveSettings({ openai_api_key: key });
+    set({ openAiApiKey: key });
   },
   setProject: async ({ path, name }: { path: string; name: string }) => {
     set(() => ({
@@ -60,6 +67,7 @@ export const createProjectSlice: StateCreator<
     const result = await Api.getSettings();
     set({
       alwaysExecuteCode: result.code_autorun,
+      openAiApiKey: result.openai_api_key
     });
   },
 });
