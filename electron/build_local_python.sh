@@ -5,10 +5,10 @@ python_dir="./python"
 check_installation() {
     if [ -d "$python_dir" ]; then
         echo "Python already installed."
-        intall_dependencies
     else
         download_python
     fi
+    intall_dependencies
     echo "Build process completed!"
 }
 
@@ -40,7 +40,7 @@ download_python() {
 
 intall_dependencies() {
     echo "Installing aiconsole and dependencies..."
-    ./python/bin/pip install ../.. --use-feature=in-tree-build
+    ./python/bin/pip install ../ --use-feature=in-tree-build
 }
 
 check_installation

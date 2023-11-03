@@ -1,7 +1,8 @@
-const { app, BrowserWindow, Tray } = require('electron');
-const isPackaged = require('electron-is-packaged').isPackaged;
-const { spawn } = require('child_process');
-const path = require('path');
+const { app, BrowserWindow, Tray } = require("electron");
+const isPackaged = require("electron-is-packaged").isPackaged;
+const { spawn } = require("child_process");
+const path = require("path");
+const { dialog } = require("electron");
 
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string;
 declare const MAIN_WINDOW_VITE_NAME: string;
@@ -18,7 +19,9 @@ function createWindow() {
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
     mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
   } else {
-    mainWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`));
+    mainWindow.loadFile(
+      path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`)
+    );
   }
 
   // Open the DevTools in dev mode
@@ -27,7 +30,7 @@ function createWindow() {
   }
 
   // Add an event listener to handle the main window's close event.
-  mainWindow.on('closed', () => {
+  mainWindow.on("closed", () => {
     // Stop the FastAPI server when the Electron app is closed
     app.quit();
   });
@@ -39,54 +42,55 @@ function createWindow() {
 let path_to_python;
 
 if (isPackaged) {
-  path_to_python = path.join(process.resourcesPath, 'python/bin/python3.9');
+  path_to_python = path.join(process.resourcesPath, "python/bin/python3.9");
 } else {
-  path_to_python = path.join(__dirname, '../..', 'electron/python/bin/python3.9');
+  path_to_python = path.join(__dirname, "../../..", "electron/python/bin/python3.9");
 }
 
 app.whenReady().then(() => {
   // Run python with module aiconsole.main
-  const backendProcess = spawn(path_to_python, ['-m', 'aiconsole.electron']);
+  const backendProcess = spawn(path_to_python, ["-m", "aiconsole.electron"]);
 
   //close the app when backend process exits
-  backendProcess.on('exit', () => {
+  backendProcess.on("exit", () => {
     app.quit();
   });
 
-  backendProcess.stdout.on('data', (data) => {
+  backendProcess.stdout.on("data", (data) => {
     //data ends with \n ? strip it
     if (data[data.length - 1] == 10) {
       data = data.slice(0, -1);
     }
     console.log(`${data}`);
 
-    if (data.toString().includes('running on http://')) {
+    if (data.toString().includes("running on http://")) {
       app.whenReady().then(createWindow);
     }
   });
 
-  backendProcess.stderr.on('data', (data) => {
+  backendProcess.stderr.on("data", (data) => {
     //data ends with \n ? strip it
     if (data[data.length - 1] == 10) {
       data = data.slice(0, -1);
     }
+    // dialog.showErrorBox("Backend Error", data.toString());
     console.error(data);
   });
 
-  backendProcess.on('exit', (code) => {
+  backendProcess.on("exit", (code) => {
     console.log(`FastAPI server exited with code ${code}`);
   });
 
   // Close the FastAPI process when the Electron app closes
-  app.on('will-quit', () => {
+  app.on("will-quit", () => {
     backendProcess.kill();
   });
 
-  app.on('window-all-closed', function () {
-    if (process.platform !== 'darwin') app.quit();
+  app.on("window-all-closed", function () {
+    if (process.platform !== "darwin") app.quit();
   });
 
-  app.on('activate', function () {
+  app.on("activate", function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
 });

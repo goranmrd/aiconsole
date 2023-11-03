@@ -2,14 +2,12 @@
 
 ![AIConsole_Banner_3](https://github.com/10clouds/aiconsole/assets/135703473/bb3d8bca-c45a-452f-bc98-286546159f70)
 
-
-
 <p align="center"><strong>Your AI tools that run on your own device </strong></p> 
 <p align="center"><strong>Build and train AI personal assistants that can run code locally to perform any tasks.</strong></p>
 
 AI Console is an AI-powered personal assistant designed to help you with a wide range of tasks. It combines the power of artificial intelligence and natural language processing to provide personalized assistance and streamline your workflows.
 
-## Features 
+## Features
 
 Task Management: AI Console can help you manage your tasks and projects efficiently. It can create, update, and track your to-do lists, set reminders, and provide helpful prompts to keep you on track.
 
@@ -18,8 +16,6 @@ Programming Assistance: Whether you're a beginner or an experienced developer, A
 Content Creation: Need help with content creation? AI Console has got you covered. It can generate engaging blog post ideas, suggest catchy headlines, and even assist in crafting compelling introductions. With its imaginative voice and storytelling techniques, AI Console can elevate your content creation efforts.
 
 Data Retrieval: Say goodbye to tedious manual data retrieval tasks. AI Console can fetch data from various sources, such as APIs, databases, and web scraping. It can organize and analyze the retrieved data, and present it in a format that suits your needs.
-
-
 
 ## Installing & Running
 
@@ -30,6 +26,7 @@ cd your_project_dir
 export OPENAI_API_KEY=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 aiconsole
 ```
+
 On a Mac you might be prompted to install developer tools in order to install aiconsole.
 
 If during installation you get errors like:
@@ -49,18 +46,33 @@ In order to run your own AIConsole:
 
 1. Install poetry`pip install poetry`, update PATH if needed.
 1. Clone the project.
-2. In the main project folder `aiconsole` run: `poetry install`.
-3. In the `aiconsole/web`: run yarn`.
-4. In `aiconsole` run: `poetry run aiconsole-dev`.
+1. In the main project folder `aiconsole` run: `poetry install`.
+1. In the `aiconsole/web`: run yarn`.
+1. In `aiconsole` run: `poetry run aiconsole-dev`.
 
 Requires OPENAI_API_KEY env variable to be set.
+
+## Running the dev electron version
+
+```shell
+cd electron
+./build_local_python.sh
+cd ..
+yarn start
+```
+
+## Bundling the desktop app
+
+```shell
+./make_electron_app.sh
+```
 
 ### Running in another directory in dev mode
 
 Often times you want to host aiconsole working files in another directory, even while developing. In order to do that you need to:
 
 1. Discover the path to your env:
-poetry env info
+   poetry env info
 
 2. You will get something like: /Users/user/Library/Caches/pypoetry/virtualenvs/aiconsole-rmLpd4fO-py3.10
 
@@ -85,7 +97,6 @@ cd web && npm run build && cd .. && poetry build && poetry publish --username __
 ## Materials
 
 Create .md files in ./materials directory in the following format:
-
 
 ```md
 <!---
