@@ -14,7 +14,11 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: true,
     },
+    show: false,
   });
+
+  mainWindow.maximize();
+  mainWindow.show();
 
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
     mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
