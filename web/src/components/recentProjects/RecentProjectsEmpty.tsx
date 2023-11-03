@@ -36,11 +36,7 @@ export function RecentProjectsEmpty() {
   return (
     <div className="flex justify-center items-center flex-col min-h-[100vh] px-[60px]">
       <div className="absolute top-50% translate-y-[-150%]">
-        <img
-          src="/favicon.svg"
-          className="shadows-lg w-[60px] h-[60px] mx-auto "
-          alt="Logo"
-        />
+        <img src="favicon.svg" className="shadows-lg w-[60px] h-[60px] mx-auto " alt="Logo" />
         <h1 className="text-[56px] text-center font-black text-white ">
           Welcome to <span className=" text-primary">AIConsole!</span>
         </h1>
@@ -55,11 +51,7 @@ export function RecentProjectsEmpty() {
           ) : null}
         </div>
       </div>
-      <img
-        src="/recent-projects-empty-image.png"
-        className="mx-auto my-[100px]"
-        alt="aiconsole chat image"
-      />
+      <img src="recent-projects-empty-image.png" className="mx-auto my-[100px]" alt="aiconsole chat image" />
     </div>
   );
 }

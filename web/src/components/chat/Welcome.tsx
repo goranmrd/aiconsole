@@ -34,27 +34,22 @@ const keyAspects = [
     title: 'Build Domain-Specific Tools',
     description:
       'Engineer domain tools for the AIConsole, personalizing it to cater to niche tasks and specifications.',
-    btnText:
-      'How to develop and customize my domain-specific tools in AIConsole?',
+    btnText: 'How to develop and customize my domain-specific tools in AIConsole?',
   },
   {
     title: 'Run It Locally',
-    description:
-      'Execute AIConsole on your local machine rendering a secure and convenient operation.',
-    btnText:
-      "Can you tell me more about running AIConsole locally and it's security aspects?",
+    description: 'Execute AIConsole on your local machine rendering a secure and convenient operation.',
+    btnText: "Can you tell me more about running AIConsole locally and it's security aspects?",
   },
   {
     title: 'Learn the Web Interface',
     description:
       'Navigate through our simplified, user-friendly web interface, that makes your tasks easier to understand and more engaging to complete.',
-    btnText:
-      'I would like to know more about the AIConsole web interface, what are its specific features?',
+    btnText: 'I would like to know more about the AIConsole web interface, what are its specific features?',
   },
   {
     title: 'Any Task Execution',
-    description:
-      'Use AIConsole to automate your work, be it managing your schedule or sending emails.',
+    description: 'Use AIConsole to automate your work, be it managing your schedule or sending emails.',
     btnText:
       'Tell me more about how AIConsole executes tasks? what kind of tasks can be executed? what is the spectrum of knowledge AIConsole has access to?',
   },
@@ -66,17 +61,11 @@ export const Welcome = () => {
   return (
     <div className="flex flex-col items-center justify-center">
       <section className="container mx-auto px-6 py-8">
-        <img
-          src="/favicon.svg"
-          className="filter opacity-75 shadows-lg w-20 h-20 mx-auto m-4"
-          alt="Logo"
-        />
+        <img src="favicon.svg" className="filter opacity-75 shadows-lg w-20 h-20 mx-auto m-4" alt="Logo" />
         <h2 className="text-4xl mb-4 text-center font-extrabold">
           Welcome to <span className=" text-primary">AIConsole!</span>
         </h2>
-        <p className="text-xl mb-12  text-center">
-          The platform to build your AI universe.
-        </p>
+        <p className="text-xl mb-12  text-center">The platform to build your AI universe.</p>
 
         <div className="grid grid-cols-3 gap-4 mt-8">
           {keyAspects.map((aspect, index) => (

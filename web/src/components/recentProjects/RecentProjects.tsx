@@ -96,7 +96,7 @@ export function RecentProjects() {
           <TopBar variant="recentProjects" />
 
           <div className="px-[60px] py-[40px]">
-            <img src="/favicon.svg" className="shadows-lg w-[60px] h-[60px] mx-auto m-4" alt="Logo" />
+            <img src="favicon.svg" className="shadows-lg w-[60px] h-[60px] mx-auto m-4" alt="Logo" />
             <h1 className="text-[56px] mb-[60px] text-center font-black text-white ">
               Welcome to <span className=" text-primary">AIConsole!</span>
             </h1>
