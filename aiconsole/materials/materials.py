@@ -18,7 +18,7 @@ import logging
 import os
 from pathlib import Path
 import tomlkit
-from typing import Dict, List
+from typing import Dict, List, Optional
 import watchdog.events
 import watchdog.observers
 from aiconsole import projects
@@ -104,7 +104,7 @@ class Materials:
             if material.defined_in == MaterialLocation.AICONSOLE_CORE
         }
 
-    def save_material(self, material: Material, new: bool):
+    def save_material(self, material: Material, new: bool, old_material_id: Optional[str] = None):
         if material.defined_in != MaterialLocation.PROJECT_DIR:
             raise Exception("Cannot save material not defined in project.")
 
@@ -114,8 +114,11 @@ class Materials:
         if new and file_path.exists():
             raise Exception(f"Material {material.id} already exists.")
 
+        if not new and not (path / f"{old_material_id}.toml").exists():
+            raise Exception(f"Material {old_material_id} does not exist.")
+
         if not new and not file_path.exists():
-            raise Exception(f"Material {material.id} does not exist.")
+            self.move(old_material_id, material.id)
 
         current_version = self.materials_project_dir.get(
             material.id,
@@ -187,7 +190,21 @@ class Materials:
 
             file.write(doc.as_string())
 
-        
+    def move(self, old_material_id: str, new_material_id: str) -> None:
+        path = Path(self.user_directory)
+        old_material_file_path = path / f"{old_material_id}.toml"
+        new_material_file_path = path / f"{new_material_id}.toml"
+
+        # Check if the old file exists
+        if not old_material_file_path.exists():
+            raise FileNotFoundError(f"'{old_material_id}' does not exist.")
+
+        # Check if the new file already exists
+        if new_material_file_path.exists():
+            raise FileExistsError(f"'{new_material_id}' already exists.")
+
+        # Move (rename) the file
+        old_material_file_path.rename(new_material_file_path)
 
     async def load_material(self, material_id: str):
         """

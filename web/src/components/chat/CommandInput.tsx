@@ -20,7 +20,6 @@ import { Send, Square } from 'lucide-react';
 import { cn } from '@/utils/styles';
 import { useAICStore } from '@/store/AICStore';
 import { useAnalysisStore } from '@/store/useAnalysisStore';
-import { fr } from 'date-fns/locale';
 
 interface MessageInputProps {
   className?: string;
