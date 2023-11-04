@@ -80,30 +80,28 @@ def _set_openai_api_key_environment(settings: SettingsData) -> None:
 
 class Settings:
 
-    def __init__(self, project_settings_file_path: Optional[Path] = None):
+    def __init__(self, project_path: Optional[Path] = None):
         self._settings = SettingsData()
 
         self._global_settings_file_path = Path(user_config_dir('aiconsole')) / "settings.toml"
         
-        if not project_settings_file_path:
-            self._project_settings_file_path = Path(get_project_directory(None, True)) / "settings.toml" if is_project_initialized() else None
+        if project_path:
+            self._project_settings_file_path = project_path / "settings.toml"
+        else:
+            self._project_settings_file_path = None
        
         self._observer = Observer()
 
-        self.setup_observer()
-
-    def setup_observer(self):
-        self._observer.unschedule_all()
-        self._observer.stop()
-
         self._observer.schedule(
             BatchingWatchDogHandler(self.reload, self._global_settings_file_path.name),
-            str(self._global_settings_file_path.parent))
+            str(self._global_settings_file_path.parent),
+                               recursive=True)
 
         if self._project_settings_file_path:
             self._observer.schedule(
                 BatchingWatchDogHandler(self.reload, self._project_settings_file_path.name),
-                str(self._project_settings_file_path.parent))
+                str(self._project_settings_file_path.parent),
+                               recursive=True)
 
         self._observer.start()
 
@@ -196,20 +194,20 @@ class Settings:
             disabled_materials=[
                 material
                 for material, status in settings.get('materials', {}).items()
-                if status == MaterialStatus.DISABLED.value
+                if status == MaterialStatus.DISABLED
             ],
             disabled_agents=[
                 agent for agent, status in settings.get('agents', {}).items()
-                if status == MaterialStatus.DISABLED.value
+                if status == MaterialStatus.DISABLED
             ],
             forced_materials=[
                 material
                 for material, status in settings.get('materials', {}).items()
-                if status == MaterialStatus.FORCED.value
+                if status == MaterialStatus.FORCED
             ],
             forced_agents=[
                 agent for agent, status in settings.get('agents', {}).items()
-                if status == MaterialStatus.DISABLED.value
+                if status == MaterialStatus.DISABLED
             ])
         
         _set_openai_api_key_environment(settings_data)
@@ -289,7 +287,7 @@ class Settings:
 
 async def init():
     global _settings
-    _settings = Settings()
+    _settings = Settings(Path(get_project_directory(None, True)) if is_project_initialized() else None)
     await _settings.reload()
 
 def get_aiconsole_settings() -> Settings:
@@ -299,5 +297,5 @@ def get_aiconsole_settings() -> Settings:
 async def reload_settings():
     global _settings
     _settings.stop()
-    _settings = Settings(Path(get_project_directory(None, True)) / "settings.toml" if is_project_initialized() else None)
+    _settings = Settings(Path(get_project_directory(None, True)) if is_project_initialized() else None)
     await _settings.reload()

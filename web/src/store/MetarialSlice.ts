@@ -35,10 +35,8 @@ export const createMaterialSlice: StateCreator<
 > = (set, get) => ({
   materials: undefined,
   initMaterials: () => {
-    if (get().materials === undefined) {
-      set({ materials: [] });
-      get().fetchMaterials();
-    }
+    set({ materials: [] });
+    get().fetchMaterials();
   },
   fetchMaterials: async () => {
     const materials = await Api.getMaterials();

@@ -175,7 +175,6 @@ export function MaterialPage() {
   const updateStatusIfNecessary = async (material: Material) => {
     if (isMaterialStatusChanged()) {
       await Api.setMaterialStatus(material.id, material.status);
-      await useAICStore.getState().fetchMaterials();
 
       showNotification({
         title: 'Status changed',

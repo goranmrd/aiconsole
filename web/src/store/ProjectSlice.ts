@@ -63,6 +63,7 @@ export const createProjectSlice: StateCreator<
     await Promise.all([
       get().initCommandHistory(),
       get().initChatHistory(),
+      get().initMaterials(),
       get().initAgents(),
       get().initSettings(),
     ]);

@@ -121,6 +121,7 @@ async def reinitialize_project():
 
     from aiconsole.agents import agents
     from aiconsole.materials import materials
+    from aiconsole.project_settings.project_settings import reload_settings
 
     project_dir = get_project_directory(None, True)
 
@@ -131,6 +132,7 @@ async def reinitialize_project():
 
     await _materials.reload()
     await _agents.reload()
+    await reload_settings()
 
     await _create_project_message().send_to_all()
 
