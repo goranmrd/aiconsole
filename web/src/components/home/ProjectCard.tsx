@@ -38,17 +38,17 @@ export function ProjectCard({ name, path, chatHistory }: ProjectCardProps) {
 
   return (
     <div
-      className="group border-2 border-gray-600 p-[30px] pb-[10px] rounded-[20px] max-w-[435px] w-full text-gray-400 cursor-pointer bg-gray-900"
+      className="group border-2 border-gray-600 p-[30px] pb-[10px] rounded-[20px] max-w-[435px] w-full opacity-75 transition-opacity  cursor-pointer bg-gray-900 hover:opacity-100"
       onClick={goToProjectChat}
     >
-      <h3 className="text-[22px] font-black mb-[21px]">{name}</h3>
+      <Button variant="tertiary"><h3 className="text-[22px] font-black mb-[21px] group-hover:text-secondary transition-colors">{name}</h3></Button>
       {chatHistory.map((command, index) => (
         // make it single line and end with  ...
         <p key={index} className="mb-[10px] text-[15px] truncate">
           {command}
         </p>
       ))}
-      <Button variant="tertiary" classNames="mt-[5px]  opacity-0 group-hover:opacity-100" onClick={deleteProject}>
+      <Button variant="tertiary" classNames="mt-[5px]  opacity-0 group-hover:opacity-100 transition-opacity" onClick={deleteProject}>
         <X />
         Remove project
       </Button>

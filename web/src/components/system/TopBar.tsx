@@ -22,6 +22,7 @@ import showNotification from '@/utils/showNotification';
 import { Button } from './Button';
 import { ArrowLeft, Settings, FolderOpen, FolderPlus } from 'lucide-react';
 import { Api } from '@/api/Api';
+import { useRecentProjectsStore } from '@/store/home/useRecentProjectsStore';
 
 interface TopBarProps {
   variant?: 'recentProjects' | 'chat';
@@ -31,6 +32,7 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
   const chooseProject = useAICStore((state) => state.chooseProject);
   const projectName = useAICStore((state) => state.projectName);
   const isProjectOpen = useAICStore((state) => state.isProjectOpen());
+  const recentProjects = useRecentProjectsStore((state) => state.recentProjects);
 
   const handleOpenClick = () => chooseProject();
 
@@ -40,7 +42,7 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
     <div className="flex w-full flex-col px-[30px] py-[26px] border-b drop-shadow-md bg-transparent border-white/10">
       <div className="flex gap-2 items-center">
         {variant === 'recentProjects' ? (
-          <div className="flex gap-[20px]">
+          recentProjects.length > 0  && <div className="flex gap-[20px]" onClick={handleOpenClick}>
             <Button small>
             <FolderPlus /> New Project ... 
             </Button>

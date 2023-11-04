@@ -16,7 +16,7 @@
 
 import { useAICStore } from '@/store/AICStore';
 import { Button } from '../system/Button';
-import { FolderOpen } from 'lucide-react';
+import { FolderOpen, FolderPlus } from 'lucide-react';
 
 export function RecentProjectsEmpty() {
   const chooseProject = useAICStore((state) => state.chooseProject);
@@ -34,8 +34,11 @@ export function RecentProjectsEmpty() {
         </h1>
         <div className="flex justify-center gap-[20px] mt-[36px]">
           <Button small onClick={handleOpenClick}>
-            <FolderOpen /> Open Project ...
+            <FolderPlus /> Create Your First Project ...
           </Button>
+          <Button small variant="secondary"  onClick={handleOpenClick}>
+              <FolderOpen /> Open Project ...
+            </Button>
         </div>
       </div>
       <img src="recent-projects-empty-image.png" className="mx-auto my-[100px]" alt="aiconsole chat image" />
