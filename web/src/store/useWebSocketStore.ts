@@ -96,7 +96,7 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
           });
           break;
         case 'SettingsWSMessage':
-          useAICStore.getState().getSettings();
+          useAICStore.getState().initSettings();
           showNotification({
             title: 'Settings changed',
             message: `New setting activated`,

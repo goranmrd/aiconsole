@@ -16,20 +16,18 @@
     
 from fastapi import APIRouter
 from starlette.responses import JSONResponse
-from aiconsole import projects
 
-from aiconsole.project_settings.settings import PartialSettingsData
+from aiconsole.project_settings.project_settings import PartialSettingsAndToGlobal, get_aiconsole_settings
 
 router = APIRouter()
 
-
 @router.patch("")
-async def patch(patch_data: PartialSettingsData):
-    projects.get_project_settings().save(settings_data=patch_data, to_global=patch_data.to_global)
+async def patch(patch_data: PartialSettingsAndToGlobal):
+    get_aiconsole_settings().save(settings_data=patch_data, to_global=patch_data.to_global)
     return JSONResponse({"status": "ok"})
 
 
 @router.get("")
 async def get():
-    return JSONResponse(projects.get_project_settings().model_dump())
+    return JSONResponse(get_aiconsole_settings().model_dump())
 

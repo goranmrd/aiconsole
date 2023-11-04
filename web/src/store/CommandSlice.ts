@@ -34,7 +34,7 @@ export type CommandSlice = {
     isUserCommand: boolean,
   ) => Promise<void>;
   submitCommand: (prompt: string) => void;
-  initCommandHistory: () => void;
+  initCommandHistory: () => Promise<void>;
 };
 
 export const createCommandSlice: StateCreator<

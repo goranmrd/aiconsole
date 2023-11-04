@@ -17,7 +17,7 @@
 import unittest
 from unittest.mock import mock_open, patch
 from aiconsole.materials.material import MaterialStatus
-from aiconsole.project_settings.settings import Settings
+from aiconsole.project_settings.project_settings import Settings
 
 
 class TestSettings(unittest.TestCase):

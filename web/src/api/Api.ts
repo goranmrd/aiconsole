@@ -161,9 +161,13 @@ const analyse = (body: Chat, signal?: AbortSignal) =>
 
 // Settings
 
-const saveSettings = (body: Settings) => ky.patch(`${BASE_URL}/api/settings`, { json: { ...body }, hooks });
+async function saveSettings(params: {to_global: boolean} & Settings) {
+  return ky.patch(`${BASE_URL}/api/settings`, { json: params, hooks })
+}
 
-const getSettings = () => ky.get(`${BASE_URL}/api/settings`, { hooks }).json() as Promise<Settings>;
+async function getSettings(): Promise<Settings> {
+  return ky.get(`${BASE_URL}/api/settings`, { hooks }).json();
+}
 
 export const Api = {
   execute,

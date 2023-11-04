@@ -18,6 +18,7 @@ import { useAICStore } from '@/store/AICStore';
 import { Button } from '../system/Button';
 import { useNavigate } from 'react-router';
 import { v4 as uuidv4 } from 'uuid';
+import { FolderOpen } from 'lucide-react';
 
 export function RecentProjectsEmpty() {
   const chooseProject = useAICStore((state) => state.chooseProject);
@@ -42,7 +43,7 @@ export function RecentProjectsEmpty() {
         </h1>
         <div className="flex justify-center gap-[20px] mt-[36px]">
           <Button small onClick={handleOpenClick}>
-            Open your project
+            <FolderOpen /> Open Project ...
           </Button>
           {projectPath ? (
             <Button small variant="secondary" onClick={goToProjectChat}>

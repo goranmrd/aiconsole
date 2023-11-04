@@ -25,6 +25,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from aiconsole import projects
 from aiconsole.api.routers import app_router
+from aiconsole.project_settings import project_settings
 from aiconsole.settings import AICONSOLE_PATH, settings, log_config
 from aiconsole.utils.is_update_needed import is_update_needed
 from aiconsole.websockets.outgoing_messages import NotificationWSMessage
@@ -32,6 +33,7 @@ from aiconsole.websockets.outgoing_messages import NotificationWSMessage
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    await project_settings.init()
     if projects.is_project_initialized():
         await projects.reinitialize_project()
     yield
@@ -43,7 +45,6 @@ _log = logging.getLogger(__name__)
 
 
 def app():
-
     app = FastAPI(title="AI Console", lifespan=lifespan)
 
     app.add_middleware(

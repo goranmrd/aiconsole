@@ -14,19 +14,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
     
-import logging
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from aiconsole import projects
+from aiconsole.project_settings.project_settings import get_aiconsole_settings
 
 router = APIRouter()
-
-_log = logging.getLogger(__name__)
 
 
 @router.get("/")
 async def materials_get():
-    settings = projects.get_project_settings()
+    settings = get_aiconsole_settings()
     return JSONResponse(
         [
             {

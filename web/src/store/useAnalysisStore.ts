@@ -28,12 +28,12 @@ export type AnalysisStore = {
   doAnalysis: () => Promise<void>;
   isAnalysisRunning: boolean;
   analysisAbortController: AbortController;
-  init(): void;
+  initAnalytics(): void;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
-  init: () => {
+  initAnalytics: () => {
     useAICStore.subscribe((state, prevState) => {
       if (
         prevState.chatId !== state.chatId ||

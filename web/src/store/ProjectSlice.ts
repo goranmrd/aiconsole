@@ -25,7 +25,7 @@ export type ProjectSlice = {
   alwaysExecuteCode: boolean;
   openAiApiKey?: string | null;
   chooseProject: () => Promise<void>;
-  getSettings: () => Promise<void>;
+  initSettings: () => Promise<void>;
   setProject: ({ path, name }: { path: string; name: string }) => Promise<void>;
   enableAutoCodeExecution: () => void;
   setOpenAiApiKey: (key: string) => Promise<void>;
@@ -42,11 +42,11 @@ export const createProjectSlice: StateCreator<
   alwaysExecuteCode: false,
   openAiApiKey: undefined,
   enableAutoCodeExecution: async () => {
-    await Api.saveSettings({ code_autorun: true });
+    await Api.saveSettings({ code_autorun: true, to_global: true});
     set({ alwaysExecuteCode: true });
   },
   setOpenAiApiKey: async (key: string) => {
-    await Api.saveSettings({ openai_api_key: key });
+    await Api.saveSettings({ openai_api_key: key, to_global: true });
     set({ openAiApiKey: key });
   },
   setProject: async ({ path, name }: { path: string; name: string }) => {
@@ -56,15 +56,17 @@ export const createProjectSlice: StateCreator<
       alwaysExecuteCode: false,
     }));
 
-    await get().initCommandHistory();
-    await get().initChatHistory();
-    await get().initAgents();
-    await get().getSettings();
+    await Promise.all([
+      get().initCommandHistory(),
+      get().initChatHistory(),
+      get().initAgents(),
+      get().initSettings(),
+    ]);
   },
   chooseProject: async () => {
     (await Api.chooseProject().json()) as { name: string; path: string };
   },
-  getSettings: async () => {
+  initSettings: async () => {
     const result = await Api.getSettings();
     set({
       alwaysExecuteCode: result.code_autorun,

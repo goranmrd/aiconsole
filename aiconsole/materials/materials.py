@@ -24,6 +24,7 @@ import watchdog.observers
 from aiconsole import projects
 from aiconsole.materials.material import MaterialContentType, MaterialStatus, MaterialWithStatus
 from aiconsole.materials.material import MaterialLocation, Material
+from aiconsole.project_settings.project_settings import get_aiconsole_settings
 from aiconsole.utils.BatchingWatchDogHandler import BatchingWatchDogHandler
 from aiconsole.utils.list_files_in_file_system import list_files_in_file_system
 from aiconsole.utils.list_files_in_resource_path import list_files_in_resource_path
@@ -66,7 +67,7 @@ class Materials:
         """
         Return all enabled loaded materials.
         """
-        settings = projects.get_project_settings()
+        settings = get_aiconsole_settings()
         return [
             material for material in self._materials.values() if
             settings.get_material_status(material.id) in [MaterialStatus.ENABLED]
@@ -76,7 +77,7 @@ class Materials:
         """
         Return all forced loaded materials.
         """
-        settings = projects.get_project_settings()
+        settings = get_aiconsole_settings()
         return [
             material for material in self._materials.values() if
             settings.get_material_status(material.id) in [MaterialStatus.FORCED]

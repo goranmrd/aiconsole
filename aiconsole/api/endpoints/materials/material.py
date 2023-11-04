@@ -21,6 +21,7 @@ from pydantic import BaseModel
 
 from aiconsole import projects
 from aiconsole.materials.material import MaterialLocation, Material, MaterialStatus, MaterialWithStatus
+from aiconsole.project_settings.project_settings import get_aiconsole_settings
 
 router = APIRouter()
 
@@ -35,7 +36,7 @@ class StatusChangePostBody(BaseModel):
 @router.get("/{material_id}")
 async def material_get(material_id: str):
     try:
-        settings = projects.get_project_settings()
+        settings = get_aiconsole_settings()
         material = projects.get_project_materials().get_material(material_id)
         return JSONResponse({
             **material.model_dump(),
@@ -95,7 +96,7 @@ async def material_status_change(
     """
     try:
         projects.get_project_materials().get_material(material_id)
-        projects.get_project_settings().set_material_status(
+        get_aiconsole_settings().set_material_status(
             material_id=material_id, status=body.status, to_global=body.to_global
         )
         return JSONResponse({"status": "ok"})

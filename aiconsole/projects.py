@@ -13,25 +13,25 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
+
 import os
 import sys
-from pathlib import Path
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
-from aiconsole.agents import agents
+
 from aiconsole.code_running.run_code import reset_code_interpreters
-from aiconsole.materials import materials
+
+
+if TYPE_CHECKING:
+    from aiconsole.agents import agents
+    from aiconsole.materials import materials
+
 from aiconsole.websockets.connection_manager import AICConnection
 from aiconsole.websockets.outgoing_messages import ProjectOpenedWSMessage
-from aiconsole.project_settings.settings import Settings
 
-_materials: Optional[materials.Materials] = None
+_materials: Optional['materials.Materials'] = None
 
-_agents: Optional[agents.Agents] = None
-
-_settings = Settings()
-
+_agents: Optional['agents.Agents'] = None
 
 def _create_project_message() -> ProjectOpenedWSMessage:
     return ProjectOpenedWSMessage(
@@ -40,22 +40,18 @@ def _create_project_message() -> ProjectOpenedWSMessage:
     )
 
 
-def get_project_materials() -> materials.Materials:
+def get_project_materials() -> 'materials.Materials':
     if not _materials:
         raise ValueError("Project materials are not initialized")
     return _materials
 
 
-def get_project_agents() -> agents.Agents:
+def get_project_agents() -> 'agents.Agents':
     if not _agents:
         raise ValueError("Project agents are not initialized")
     return _agents
 
 
-def get_project_settings() -> Settings:
-    if not _materials:
-        raise ValueError("Project settings are not initialized")
-    return _settings
 
 
 def get_history_directory():
@@ -95,24 +91,24 @@ def is_project_initialized() -> bool:
 async def reinitialize_project():
     global _materials
     global _agents
-    global _settings
 
     if _materials:
         _materials.stop()
 
     if _agents:
         _agents.stop()
-    _settings.stop()
 
     reset_code_interpreters()
-    
-    _agents = agents.Agents("aiconsole.agents.core",  os.path.join(get_project_directory(True), "agents"))
-    _materials = materials.Materials("aiconsole.materials.core", os.path.join(get_project_directory(True), "materials"))
-    _settings = Settings(Path(get_project_directory(True)) / "settings.toml")
+
+    _agents = agents.Agents(
+        "aiconsole.agents.core",
+        os.path.join(get_project_directory(True), "agents"))
+    _materials = materials.Materials(
+        "aiconsole.materials.core",
+        os.path.join(get_project_directory(True), "materials"))
 
     await _materials.reload()
     await _agents.reload()
-    await _settings.reload()
 
     await _create_project_message().send_to_all()
 
@@ -124,7 +120,7 @@ async def send_project_init(connection: AICConnection):
 async def change_project_directory(path):
     if not os.path.exists(path):
         raise ValueError(f"Path {path} does not exist")
-    
+
     # Change cwd and import path
     os.chdir(path)
     sys.path[0] = path
