@@ -135,36 +135,28 @@ class Settings:
                             material_id: str,
                             status: MaterialStatus,
                             to_global: bool = False) -> None:
-        partial_dict = {
-            MaterialStatus.DISABLED: {
-                'disabled_materials': [material_id]
-            },
-            MaterialStatus.ENABLED: {
-                'enabled_materials': [material_id]
-            },
-            MaterialStatus.FORCED: {
-                'forced_materials': [material_id]
-            }
+
+
+        partial_settings = {
+            MaterialStatus.DISABLED: PartialSettingsData(disabled_materials=[material_id]),
+            MaterialStatus.ENABLED: PartialSettingsData(enabled_materials=[material_id]),
+            MaterialStatus.FORCED: PartialSettingsData(forced_materials=[material_id])
         }
-        self.save(PartialSettingsData(**partial_dict[status]),
+
+        self.save(partial_settings[status],
                   to_global=to_global)
 
     def set_agent_status(self,
                          agent_id: str,
                          status: MaterialStatus,
                          to_global: bool = False) -> None:
-        partial_dict = {
-            MaterialStatus.DISABLED: {
-                'disabled_agents': [agent_id]
-            },
-            MaterialStatus.ENABLED: {
-                'enabled_agents': [agent_id]
-            },
-            MaterialStatus.FORCED: {
-                'forced_agents': [agent_id]
-            }
+        partial_settings = {
+            MaterialStatus.DISABLED: PartialSettingsData(disabled_agents=[agent_id]),
+            MaterialStatus.ENABLED: PartialSettingsData(enabled_agents=[agent_id]),
+            MaterialStatus.FORCED: PartialSettingsData(forced_agents=[agent_id])
         }
-        self.save(PartialSettingsData(**partial_dict[status]),
+
+        self.save(partial_settings[status],
                   to_global=to_global)
 
     def get_code_autorun(self) -> bool:
