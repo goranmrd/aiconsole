@@ -16,26 +16,17 @@
 
 import { useAICStore } from '@/store/AICStore';
 import { Button } from '../system/Button';
-import { useNavigate } from 'react-router';
-import { v4 as uuidv4 } from 'uuid';
 import { FolderOpen } from 'lucide-react';
 
 export function RecentProjectsEmpty() {
   const chooseProject = useAICStore((state) => state.chooseProject);
-  const navigate = useNavigate();
-  const projectPath = useAICStore((state) => state.projectPath);
-
-  const goToProjectChat = () => {
-    navigate(`/chats/${uuidv4()}`);
-  };
 
   const handleOpenClick = async () => {
     await chooseProject();
-    goToProjectChat();
   };
 
   return (
-    <div className="flex justify-center items-center flex-col min-h-[100vh] px-[60px]">
+    <div className="flex justify-center items-center flex-col min-h-[100vh] px-[60px] m-20 relative">
       <div className="absolute top-50% translate-y-[-150%]">
         <img src="favicon.svg" className="shadows-lg w-[60px] h-[60px] mx-auto " alt="Logo" />
         <h1 className="text-[56px] text-center font-black text-white ">
@@ -45,11 +36,6 @@ export function RecentProjectsEmpty() {
           <Button small onClick={handleOpenClick}>
             <FolderOpen /> Open Project ...
           </Button>
-          {projectPath ? (
-            <Button small variant="secondary" onClick={goToProjectChat}>
-              Go to project
-            </Button>
-          ) : null}
         </div>
       </div>
       <img src="recent-projects-empty-image.png" className="mx-auto my-[100px]" alt="aiconsole chat image" />

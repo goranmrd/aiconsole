@@ -18,9 +18,6 @@ import { MouseEvent } from 'react';
 import { Button } from '../system/Button';
 import { Trash } from 'lucide-react';
 
-import { useNavigate } from 'react-router-dom';
-import { v4 as uuidv4 } from 'uuid';
-
 interface ProjectCardProps {
   id: number;
   name: string;
@@ -28,8 +25,6 @@ interface ProjectCardProps {
 }
 
 export function ProjectCard({ id, name, chatHistory }: ProjectCardProps) {
-  const navigate = useNavigate();
-
   const deleteProject = (event: MouseEvent) => {
     event.stopPropagation();
     console.log(id);
@@ -38,7 +33,6 @@ export function ProjectCard({ id, name, chatHistory }: ProjectCardProps) {
 
   const goToProjectChat = () => {
     // TODO: add logic
-    navigate(`/chats/${uuidv4()}`);
   };
 
   return (

@@ -20,7 +20,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import SideBar from '@/components/history/SideBar';
 import { CommandInput } from '@/components/chat/CommandInput';
-import { TopBar } from '@/components/top/TopBar';
+import { TopBar } from '@/components/system/TopBar';
 import { Chat } from '@/components/chat/Chat';
 
 export function ChatPage() {

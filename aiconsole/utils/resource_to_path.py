@@ -15,7 +15,7 @@
 # limitations under the License.
     
 from pathlib import Path
-from aiconsole.settings import AICONSOLE_PATH
+from aiconsole.consts import AICONSOLE_PATH
 
 
 def resource_to_path(resource) -> Path:

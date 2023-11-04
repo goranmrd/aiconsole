@@ -37,6 +37,14 @@ export type ProjectOpenedWSMessage = {
   path: string;
 };
 
+export type ProjectClosedWSMessage = {
+  type: 'ProjectClosedWSMessage';
+};
+
+export type ProjectLoadingWSMessage = {
+  type: 'ProjectLoadingWSMessage';
+};
+
 export type AnalysisUpdatedWSMessage = {
   type: 'AnalysisUpdatedWSMessage';
   agent_id?: string;
@@ -59,6 +67,8 @@ export type IncomingWSMessage =
   | NotificationWSMessage
   | DebugJSONWSMessage
   | ProjectOpenedWSMessage
+  | ProjectClosedWSMessage
+  | ProjectLoadingWSMessage
   | AnalysisUpdatedWSMessage
   | MaterialsUpdatedWSMessage
   | SettingsWSMessage

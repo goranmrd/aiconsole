@@ -17,8 +17,9 @@
 
 from fastapi import APIRouter
 
-from . import choose
+from . import choose, close
 
 router = APIRouter()
 
 router.include_router(choose.router)
+router.include_router(close.router)

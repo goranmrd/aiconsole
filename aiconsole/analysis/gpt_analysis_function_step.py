@@ -20,13 +20,13 @@ from aiconsole import projects
 from aiconsole.agents.types import Agent
 from aiconsole.analysis.create_plan_class import create_plan_class
 from aiconsole.chat.types import Chat
+from aiconsole.consts import DIRECTOR_MIN_TOKENS, DIRECTOR_PREFERRED_TOKENS
 from aiconsole.execution_modes.normal import execution_mode_normal
 from aiconsole.gpt.consts import GPTMode
 from aiconsole.gpt.gpt_executor import GPTExecutor
 from aiconsole.gpt.request import GPTRequest
 from aiconsole.gpt.types import EnforcedFunctionCall, GPTMessage
 from aiconsole.materials.material import Material
-from aiconsole.settings import settings
 from aiconsole.utils.convert_messages import convert_messages
 from aiconsole.websockets.outgoing_messages import AnalysisUpdatedWSMessage
 import logging
@@ -131,8 +131,8 @@ async def gpt_analysis_function_step(
         )],
         functions=[plan_class.openai_schema],
         presence_penalty=2,
-        min_tokens=settings.DIRECTOR_MIN_TOKENS,
-        preferred_tokens=settings.DIRECTOR_PREFERRED_TOKENS,
+        min_tokens=DIRECTOR_MIN_TOKENS,
+        preferred_tokens=DIRECTOR_PREFERRED_TOKENS,
     )
 
     if (force_call):

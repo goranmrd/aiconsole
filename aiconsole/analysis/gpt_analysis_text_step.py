@@ -19,7 +19,7 @@ from aiconsole.gpt.consts import GPTMode
 from aiconsole.gpt.gpt_executor import GPTExecutor
 from aiconsole.gpt.request import GPTRequest
 from aiconsole.gpt.types import GPTMessage
-from aiconsole.settings import settings
+from aiconsole.consts import settings
 from aiconsole.utils.convert_messages import convert_messages
 from aiconsole.websockets.outgoing_messages import AnalysisUpdatedWSMessage
 

@@ -108,7 +108,10 @@ const getAgents: () => Promise<Agent[]> = async () => await ky.get(`${BASE_URL}/
 
 // Projects
 
-const chooseProject = () => ky.post(`${BASE_URL}/api/projects/choose`, { hooks });
+const closeProject = () => ky.post(`${BASE_URL}/api/projects/close`, { hooks });
+
+// infinite timeout
+const chooseProject = () => ky.post(`${BASE_URL}/api/projects/choose`, { hooks, timeout: false });
 
 const getCurrentProject = () => ky.get(`${BASE_URL}/api/projects/current`, { hooks });
 
@@ -178,6 +181,7 @@ export const Api = {
   setMaterialStatus,
   getMaterials,
   previewMaterial,
+  closeProject,
   chooseProject,
   getCurrentProject,
   saveNewMaterial,

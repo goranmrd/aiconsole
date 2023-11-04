@@ -14,11 +14,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { TopBar } from '@/components/top/TopBar';
+import { TopBar } from '@/components/system/TopBar';
 import { ProjectCard } from './ProjectCard';
 import { useAICStore } from '@/store/AICStore';
 import { RecentProjectsEmpty } from './RecentProjectsEmpty';
-import OpenAiApiKeyForm from '../system/OpenAiApiKeyForm';
+import OpenAiApiKeyForm from './OpenAiApiKeyForm';
 
 // TODO: temporary mocked data until backend is ready
 const MOCKED_PROJECTS_DATA = [
@@ -90,44 +90,42 @@ const MOCKED_PROJECTS_DATA = [
   },
 ];
 
-export function RecentProjects() {
-
+export function Home() {
   const openAiApiKey = useAICStore((state) => state.openAiApiKey);
-
-  if (openAiApiKey === undefined) {
-    // the request is in progress - don't render anything to avoid flickering
-    return;
-  }
-
-  if (!openAiApiKey) {
-    return (
-      <div className="min-h-[100vh] bg-recent-bg bg-cover bg-top">
-        <OpenAiApiKeyForm />
-      </div>
-    )
-  }
+  const isProjectLoading = useAICStore((state) => state.isProjectLoading);
 
   return (
     <div className="min-h-[100vh] bg-recent-bg bg-cover bg-top">
-      {!MOCKED_PROJECTS_DATA.length ? (
-        <div>
-          <TopBar variant="recentProjects" />
-
-          <div className="px-[60px] py-[40px]">
-            <img src="favicon.svg" className="shadows-lg w-[60px] h-[60px] mx-auto m-4" alt="Logo" />
-            <h1 className="text-[56px] mb-[60px] text-center font-black text-white ">
-              Welcome to <span className=" text-primary">AIConsole!</span>
-            </h1>
-            <div className="grid grid-flow-row-dense grid-cols-[repeat(auto-fit,minmax(355px,_435px))] justify-center gap-[20px] mx-auto ">
-              {MOCKED_PROJECTS_DATA.map(({ id, name, chatHistory }) => (
-                <ProjectCard key={id} id={id} name={name} chatHistory={chatHistory} />
-              ))}
-            </div>
-          </div>
-        </div>
-      ) : (
-        <RecentProjectsEmpty />
-      )}
+      <div>
+        <TopBar variant="recentProjects" />
+        {openAiApiKey === undefined || isProjectLoading() ? (
+          <>{/* the request is in progress - don't render anything to avoid flickering */}</>
+        ) : (
+          <>
+            {!openAiApiKey ? (
+              <OpenAiApiKeyForm />
+            ) : (
+              <>
+                {!MOCKED_PROJECTS_DATA.length ? (
+                  <div className="px-[60px] py-[40px]">
+                    <img src="favicon.svg" className="shadows-lg w-[60px] h-[60px] mx-auto m-4" alt="Logo" />
+                    <h1 className="text-[56px] mb-[60px] text-center font-black text-white ">
+                      Welcome to <span className=" text-primary">AIConsole!</span>
+                    </h1>
+                    <div className="grid grid-flow-row-dense grid-cols-[repeat(auto-fit,minmax(355px,_435px))] justify-center gap-[20px] mx-auto ">
+                      {MOCKED_PROJECTS_DATA.map(({ id, name, chatHistory }) => (
+                        <ProjectCard key={id} id={id} name={name} chatHistory={chatHistory} />
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <RecentProjectsEmpty />
+                )}
+              </>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }

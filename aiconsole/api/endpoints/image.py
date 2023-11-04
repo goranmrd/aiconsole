@@ -19,7 +19,7 @@ from pathlib import Path
 from fastapi import APIRouter
 from fastapi.responses import FileResponse
 
-from aiconsole.settings import AICONSOLE_PATH
+from aiconsole.consts import AICONSOLE_PATH
 
 router = APIRouter()
 

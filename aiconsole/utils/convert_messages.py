@@ -16,12 +16,11 @@
     
 import json
 from aiconsole.chat.types import AICCodeMessage, AICMessage, AICMessageGroup, Chat
+from aiconsole.consts import FUNCTION_CALL_OUTPUT_LIMIT
 from aiconsole.gpt.types import GPTFunctionCall, GPTMessage, GPTRole
 
 
 from typing import List
-
-from aiconsole.settings import settings
 
 
 last_system_message = None
@@ -82,12 +81,12 @@ As a director I have assigned you ({group.agent_id}) and given you access to the
                 content = "No output"
 
             # Enforce limit on output length, and put info that it was truncated only if limit was reached, truncate so the last part remains (not the first)
-            if len(content) > settings.FUNCTION_CALL_OUTPUT_LIMIT:
+            if len(content) > FUNCTION_CALL_OUTPUT_LIMIT:
                 content = f"""
-Output truncated to last {settings.FUNCTION_CALL_OUTPUT_LIMIT} characters:
+Output truncated to last {FUNCTION_CALL_OUTPUT_LIMIT} characters:
 
 ...
-{content[-settings.FUNCTION_CALL_OUTPUT_LIMIT:]}
+{content[-FUNCTION_CALL_OUTPUT_LIMIT:]}
 """.strip()
             
             result.append(

@@ -20,13 +20,17 @@ import { Api } from '@/api/Api';
 import { AICStore } from './AICStore';
 
 export type ProjectSlice = {
-  projectPath: string;
-  projectName: string;
+  projectPath?: string; //undefined means loading, '' means no project, otherwise path
+  projectName?: string;
   alwaysExecuteCode: boolean;
   openAiApiKey?: string | null;
   chooseProject: () => Promise<void>;
   initSettings: () => Promise<void>;
+  isProjectLoading: () => boolean;
+  isProjectOpen: () => boolean;
   setProject: ({ path, name }: { path: string; name: string }) => Promise<void>;
+  closeProject: () => Promise<void>;
+  markProjectAsLoading: () => void;
   enableAutoCodeExecution: () => void;
   setOpenAiApiKey: (key: string) => Promise<void>;
 };
@@ -37,8 +41,8 @@ export const createProjectSlice: StateCreator<
   [],
   ProjectSlice
 > = (set, get) => ({
-  projectPath: '',
-  projectName: '',
+  projectPath: undefined,
+  projectName: undefined,
   alwaysExecuteCode: false,
   openAiApiKey: undefined,
   enableAutoCodeExecution: async () => {
@@ -62,6 +66,26 @@ export const createProjectSlice: StateCreator<
       get().initAgents(),
       get().initSettings(),
     ]);
+    
+  },
+  closeProject: async () => {
+    set(() => ({
+      projectPath: '',
+      projectName: '',
+      alwaysExecuteCode: false,
+    }));
+  },
+  markProjectAsLoading: () => {
+    set(() => ({
+      projectPath: undefined,
+      projectName: undefined,
+    }));
+  },
+  isProjectLoading: () => {
+    return get().projectPath === undefined;
+  },
+  isProjectOpen: () => {
+    return !!get().projectPath;
   },
   chooseProject: async () => {
     (await Api.chooseProject().json()) as { name: string; path: string };

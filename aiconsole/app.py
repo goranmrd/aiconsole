@@ -26,7 +26,7 @@ from fastapi.staticfiles import StaticFiles
 from aiconsole import projects
 from aiconsole.api.routers import app_router
 from aiconsole.project_settings import project_settings
-from aiconsole.settings import AICONSOLE_PATH, settings, log_config
+from aiconsole.consts import AICONSOLE_PATH, ORIGINS, log_config
 from aiconsole.utils.is_update_needed import is_update_needed
 from aiconsole.websockets.outgoing_messages import NotificationWSMessage
 
@@ -49,7 +49,7 @@ def app():
 
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=settings.ORIGINS,
+        allow_origins=ORIGINS,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],

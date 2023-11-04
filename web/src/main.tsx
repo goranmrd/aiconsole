@@ -24,7 +24,7 @@ import '@mantine/notifications/styles.css';
 import { initStore } from './store/AICStore.ts';
 import { MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
-import { Router } from './Router.tsx';
+import { Router } from './components/system/Router.tsx';
 
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

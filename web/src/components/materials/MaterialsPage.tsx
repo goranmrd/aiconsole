@@ -16,7 +16,7 @@
 
 import { Link } from 'react-router-dom';
 
-import { TopBar } from '@/components/top/TopBar';
+import { TopBar } from '@/components/system/TopBar';
 import { Plus } from 'lucide-react';
 import { useAICStore } from '@/store/AICStore';
 import { MaterialTable } from './MaterialTable';

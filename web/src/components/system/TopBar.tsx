@@ -14,24 +14,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 
 import { useAICStore } from '@/store/AICStore';
 import showNotification from '@/utils/showNotification';
-import { Button } from '../system/Button';
-import { Plus, ArrowLeft, Settings } from 'lucide-react';
+import { Button } from './Button';
+import { ArrowLeft, Settings, FolderOpen, FolderPlus } from 'lucide-react';
+import { Api } from '@/api/Api';
 
 interface TopBarProps {
   variant?: 'recentProjects' | 'chat';
 }
 
 export function TopBar({ variant = 'chat' }: TopBarProps) {
-  const navigate = useNavigate();
   const chooseProject = useAICStore((state) => state.chooseProject);
   const projectName = useAICStore((state) => state.projectName);
+  const isProjectOpen = useAICStore((state) => state.isProjectOpen());
 
   const handleOpenClick = () => chooseProject();
+
+  const handleBackToProjects = () => Api.closeProject();
 
   return (
     <div className="flex w-full flex-col px-[30px] py-[26px] border-b drop-shadow-md bg-transparent border-white/10">
@@ -39,10 +42,10 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
         {variant === 'recentProjects' ? (
           <div className="flex gap-[20px]">
             <Button small>
-              Add project <Plus />
+            <FolderPlus /> New Project ... 
             </Button>
-            <Button small variant="secondary" onClick={handleOpenClick}>
-              Open Project
+            <Button small variant="secondary"  onClick={handleOpenClick}>
+              <FolderOpen /> Open Project ...
             </Button>
           </div>
         ) : (
@@ -54,11 +57,11 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
               >
                 <img src={`favicon.svg`} className="h-[48px] w-[48px] cursor-pointer filter" />
               </Link>
-              <Button small variant="secondary" onClick={() => navigate('/')}>
+              <Button small variant="secondary" onClick={handleBackToProjects}>
                 <ArrowLeft />
                 Back to projects
               </Button>
-              <h3 className="font-black text-grey-300 ml-[70px] first-letter:uppercase" onClick={chooseProject}>
+              <h3 className="font-black text-grey-300 ml-[70px] first-letter:uppercase">
                 {projectName}
               </h3>
             </div>
@@ -84,7 +87,7 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
           </>
         )}
         <div className="ml-auto flex gap-[20px]">
-          <Button
+          {isProjectOpen && <Button
             small
             variant="secondary"
             onClick={() =>
@@ -95,8 +98,8 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
               })
             }
           >
-            Project settings
-          </Button>
+            Project {projectName} settings
+          </Button> }
           <Button
             iconOnly
             small

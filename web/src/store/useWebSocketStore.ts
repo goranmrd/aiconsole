@@ -65,7 +65,6 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
           });
           break;
         case 'NotificationWSMessage':
-          console.log('Notification received: ', data);
           showNotification({
             title: data.title,
             message: data.message,
@@ -79,6 +78,12 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
             name: data.name,
             path: data.path,
           });
+          break;
+        case 'ProjectClosedWSMessage':
+          useAICStore.getState().closeProject();
+          break;
+        case 'ProjectLoadingWSMessage':
+          useAICStore.getState().markProjectAsLoading();
           break;
         case 'MaterialsUpdatedWSMessage':
           useAICStore.getState().fetchMaterials();

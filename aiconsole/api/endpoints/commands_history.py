@@ -22,9 +22,9 @@ from typing import Callable
 from fastapi import APIRouter, Depends
 from aiconsole import projects
 from aiconsole.chat.types import Command
-from aiconsole.settings import settings
 
 from aiconsole.api.json_file_operations import json_read, json_write
+from aiconsole.consts import COMMANDS_HISTORY_JSON, HISTORY_LIMIT
 
 router = APIRouter()
 _log = logging.getLogger(__name__)
@@ -32,7 +32,7 @@ _log = logging.getLogger(__name__)
 
 @router.get("/commands/history")
 def get_history(get_json: Callable = Depends(json_read)):
-    file_path = os.path.join(projects.get_aic_directory(), settings.COMMANDS_HISTORY_JSON)
+    file_path = os.path.join(projects.get_aic_directory(), COMMANDS_HISTORY_JSON)
 
     return get_json(file_path=file_path, empty_obj=[])
 
@@ -42,7 +42,7 @@ def save_history(command: Command, store_json: Callable = Depends(json_write)):
     """
     Saves the history of sent commands to <commands_history_dir>/<commands_history_json>
     """
-    file_path = os.path.join(projects.get_aic_directory(), settings.COMMANDS_HISTORY_JSON)
+    file_path = os.path.join(projects.get_aic_directory(), COMMANDS_HISTORY_JSON)
 
     if os.path.exists(file_path):
         with open(file_path, "r") as f:
@@ -56,11 +56,11 @@ def save_history(command: Command, store_json: Callable = Depends(json_write)):
     commands.reverse()
     commands = list(dict.fromkeys(commands))
     commands.reverse()
-    commands = commands[-settings.HISTORY_LIMIT:]
+    commands = commands[-HISTORY_LIMIT:]
 
     store_json(
         directory=projects.get_aic_directory(),
-        file_name=settings.COMMANDS_HISTORY_JSON,
+        file_name=COMMANDS_HISTORY_JSON,
         content=commands
     )
 

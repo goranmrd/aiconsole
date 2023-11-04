@@ -15,10 +15,8 @@
 # limitations under the License.
     
 from pathlib import Path
-from typing import Optional
 
-from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import validator, Field
+from pydantic import Field
 
 from aiconsole.gpt.consts import GPTMode
 import litellm
@@ -33,38 +31,23 @@ if MAX_BUDGET:
 
 AICONSOLE_PATH = Path(__file__).parent
 
+ORIGINS: list[str] = ["http://localhost:3000", "http://localhost:3001", "http://127.0.0.1:3000", "http://127.0.0.1:3001"]
 
-class Settings(BaseSettings):
-    OPENAI_API_KEY: Optional[str] = Field(None, env=["OPENAI_API_KEY"])
-    ORIGINS: list[str] = ["http://localhost:3000", "http://localhost:3001", "http://127.0.0.1:3000", "http://127.0.0.1:3001"]
-
-    LOG_FORMAT: str = "{asctime} {name} [{levelname}] {message}"
-    LOG_STYLE: str = "{"
-    LOG_LEVEL: str = Field("INFO", env=["LOG_LEVEL", "LOGLEVEL"])
-    LOG_HANDLERS: list[str] = ["console"]
+LOG_FORMAT: str = "{asctime} {name} [{levelname}] {message}"
+LOG_STYLE: str = "{"
+LOG_LEVEL: str = "INFO"
+LOG_HANDLERS: list[str] = ["console"]
 
 
-    HISTORY_LIMIT: int = 1000
-    COMMANDS_HISTORY_JSON: str = "command_history.json"
+HISTORY_LIMIT: int = 1000
+COMMANDS_HISTORY_JSON: str = "command_history.json"
 
-    DEFAULT_MODE: str = GPTMode.FAST.value
-    FUNCTION_CALL_OUTPUT_LIMIT: int = 2000
-
-
-    DIRECTOR_MIN_TOKENS: int = 250
-    DIRECTOR_PREFERRED_TOKENS: int = 1000
-
-    @validator("LOG_LEVEL", pre=True)
-    def uppercase_log_level(cls, v: str) -> str:
-        return v.upper()
+DEFAULT_MODE: str = GPTMode.FAST.value
+FUNCTION_CALL_OUTPUT_LIMIT: int = 2000
 
 
-    class Config(SettingsConfigDict):
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-
-
-settings = Settings()
+DIRECTOR_MIN_TOKENS: int = 250
+DIRECTOR_PREFERRED_TOKENS: int = 1000
 
 
 log_config = {
@@ -73,8 +56,8 @@ log_config = {
     "formatters": {
         "console": {
             "()": "logging.Formatter",
-            "fmt": settings.LOG_FORMAT,
-            "style": settings.LOG_STYLE,
+            "fmt": LOG_FORMAT,
+            "style": LOG_STYLE,
         }
     },
     "handlers": {
@@ -87,12 +70,12 @@ log_config = {
     },
     "loggers": {
         "aiconsole": {
-            "handlers": settings.LOG_HANDLERS,
-            "level": settings.LOG_LEVEL,
+            "handlers": LOG_HANDLERS,
+            "level": LOG_LEVEL,
             "propagate": False,
         },
         "uvicorn": {
-            "handlers": settings.LOG_HANDLERS,
+            "handlers": LOG_HANDLERS,
             "level": "INFO",
         },
     },

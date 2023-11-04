@@ -13,7 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
+
 from typing import List, Optional
 from pydantic import BaseModel
 
@@ -25,11 +25,11 @@ class BaseWSMessage(BaseModel):
     def send_to_chat(self, chat_id: str):
         from aiconsole.websockets.connection_manager import send_message_to_chat
         return send_message_to_chat(chat_id, self)
-    
+
     def send_to_all(self):
         from aiconsole.websockets.connection_manager import send_message_to_all
         return send_message_to_all(self)
-    
+
     def model_dump(self):
         # Don't include None values, call to super to avoid recursion
         return {k: v for k, v in super().model_dump().items() if v is not None}
@@ -53,6 +53,12 @@ class ProjectOpenedWSMessage(BaseWSMessage):
     name: str
     path: str
 
+
+class ProjectClosedWSMessage(BaseWSMessage):
+    pass
+
+class ProjectLoadingWSMessage(BaseWSMessage):
+    pass
 
 class MaterialsUpdatedWSMessage(BaseWSMessage):
     count: int
