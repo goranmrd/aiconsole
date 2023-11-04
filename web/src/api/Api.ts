@@ -23,6 +23,7 @@ import {
   Material,
   MaterialInfo,
   MaterialStatus,
+  RecentProject,
   RenderedMaterial,
   Settings,
 } from '@/types/types';
@@ -111,9 +112,13 @@ const getAgents: () => Promise<Agent[]> = async () => await ky.get(`${BASE_URL}/
 const closeProject = () => ky.post(`${BASE_URL}/api/projects/close`, { hooks });
 
 // infinite timeout
-const chooseProject = () => ky.post(`${BASE_URL}/api/projects/choose`, { hooks, timeout: false });
+const chooseProject = (path?: string) => ky.post(`${BASE_URL}/api/projects/choose`, { json: { directory: path }, hooks, timeout: false });
 
 const getCurrentProject = () => ky.get(`${BASE_URL}/api/projects/current`, { hooks });
+
+async function getRecentProjects(): Promise<RecentProject[]> {
+  return ky.get(`${BASE_URL}/api/projects/recent`, { hooks }).json();
+}
 
 // Materials
 
@@ -184,6 +189,7 @@ export const Api = {
   closeProject,
   chooseProject,
   getCurrentProject,
+  getRecentProjects,
   saveNewMaterial,
   updateMaterial,
   deleteMaterial,

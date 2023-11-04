@@ -19,80 +19,12 @@ import { ProjectCard } from './ProjectCard';
 import { useAICStore } from '@/store/AICStore';
 import { RecentProjectsEmpty } from './RecentProjectsEmpty';
 import OpenAiApiKeyForm from './OpenAiApiKeyForm';
-
-// TODO: temporary mocked data until backend is ready
-const MOCKED_PROJECTS_DATA = [
-  {
-    id: 1,
-    name: 'Project 1',
-
-    chatHistory: [
-      'Lorem ipsum dolor amet',
-      'Lorem ipsum dolor sit amet, consectetur',
-      'Dolor sit amet, consectetur adipiscing elit',
-      'In vitae nunc eget. Aspernatur vitae',
-    ],
-  },
-  {
-    id: 2,
-    name: 'Project 2',
-
-    chatHistory: [
-      'Lorem ipsum dolor amet',
-      'Lorem ipsum dolor sit amet, consectetur',
-      'Dolor sit amet, consectetur adipiscing elit',
-      'In vitae nunc eget. Aspernatur vitae',
-    ],
-  },
-  {
-    id: 3,
-    name: 'Project 3',
-
-    chatHistory: [
-      'Lorem ipsum dolor amet',
-      'Lorem ipsum dolor sit amet, consectetur',
-      'Dolor sit amet, consectetur adipiscing elit',
-      'In vitae nunc eget. Aspernatur vitae',
-    ],
-  },
-  {
-    id: 4,
-    name: 'Project 4',
-
-    chatHistory: [
-      'Lorem ipsum dolor amet',
-      'Lorem ipsum dolor sit amet, consectetur',
-      'Dolor sit amet, consectetur adipiscing elit',
-      'In vitae nunc eget. Aspernatur vitae',
-    ],
-  },
-  {
-    id: 5,
-    name: 'Project 5',
-
-    chatHistory: [
-      'Lorem ipsum dolor amet',
-      'Lorem ipsum dolor sit amet, consectetur',
-      'Dolor sit amet, consectetur adipiscing elit',
-      'In vitae nunc eget. Aspernatur vitae',
-    ],
-  },
-  {
-    id: 6,
-    name: 'Project 6',
-
-    chatHistory: [
-      'Lorem ipsum dolor amet',
-      'Lorem ipsum dolor sit amet, consectetur',
-      'Dolor sit amet, consectetur adipiscing elit',
-      'In vitae nunc eget. Aspernatur vitae',
-    ],
-  },
-];
+import { useRecentProjectsStore } from '@/store/home/useRecentProjectsStore';
 
 export function Home() {
   const openAiApiKey = useAICStore((state) => state.openAiApiKey);
   const isProjectLoading = useAICStore((state) => state.isProjectLoading);
+  const recentProjects = useRecentProjectsStore((state) => state.recentProjects);
 
   return (
     <div className="min-h-[100vh] bg-recent-bg bg-cover bg-top">
@@ -106,15 +38,16 @@ export function Home() {
               <OpenAiApiKeyForm />
             ) : (
               <>
-                {!MOCKED_PROJECTS_DATA.length ? (
+                {recentProjects.length > 0 ? (
                   <div className="px-[60px] py-[40px]">
                     <img src="favicon.svg" className="shadows-lg w-[60px] h-[60px] mx-auto m-4" alt="Logo" />
                     <h1 className="text-[56px] mb-[60px] text-center font-black text-white ">
                       Welcome to <span className=" text-primary">AIConsole!</span>
                     </h1>
+                    <div>Recent projects:</div>
                     <div className="grid grid-flow-row-dense grid-cols-[repeat(auto-fit,minmax(355px,_435px))] justify-center gap-[20px] mx-auto ">
-                      {MOCKED_PROJECTS_DATA.map(({ id, name, chatHistory }) => (
-                        <ProjectCard key={id} id={id} name={name} chatHistory={chatHistory} />
+                      {recentProjects.map(({ name, path, recent_chats }) => (
+                        <ProjectCard key={path} name={name} path={path} chatHistory={recent_chats} />
                       ))}
                     </div>
                   </div>

@@ -14,31 +14,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-from fastapi import Request
-from aiconsole import projects
-from aiconsole.api.endpoints.chats.save_chat_history import save_chat_history
-from aiconsole.api.endpoints.chats.load_chat_history import load_chat_history
-from aiconsole.api.endpoints.chats.history import router
 import logging
+from fastapi import Request
+from aiconsole.api.endpoints.chats.history import router
+from aiconsole.chats.list_possible_historic_chat_ids import list_possible_historic_chat_ids
+from aiconsole.chats.load_chat_history import load_chat_history
+from aiconsole.chats.save_chat_history import save_chat_history
 
 _log = logging.getLogger(__name__)
-
-def list_possible_historic_chat_ids():
-    history_directory = projects.get_history_directory()
-    if os.path.exists(history_directory) and os.path.isdir(history_directory):
-        entries = os.scandir(history_directory)
-
-        files = [entry for entry in entries if entry.is_file()
-                 and entry.name.endswith(".json")]
-        # Sort the files based on modification time (descending order)
-        files = sorted(files, key=lambda entry: os.path.getmtime(
-            entry.path), reverse=True)
-
-        return [file.name.split(".")[0] for file in files]
-    else:
-        return []
-
 
 @router.get("/headlines")
 def get_history_headlines():

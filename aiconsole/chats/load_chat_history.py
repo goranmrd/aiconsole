@@ -15,6 +15,7 @@
 # limitations under the License.
     
 from datetime import datetime
+from typing import Optional
 import uuid
 from aiconsole import projects
 from aiconsole.chat.types import Chat
@@ -25,8 +26,8 @@ import os
 
 
 
-def load_chat_history(id: str) -> Chat:
-    history_directory = projects.get_history_directory()
+def load_chat_history(id: str, project_path: Optional[str] = None) -> Chat:
+    history_directory = projects.get_history_directory(project_path)
     file_path = os.path.join(history_directory, f"{id}.json")
 
     if os.path.exists(file_path):

@@ -17,8 +17,8 @@
 import os
 import sys
 from typing import TYPE_CHECKING, Optional
-
 from aiconsole.code_running.run_code import reset_code_interpreters
+from aiconsole.recent_projects.recent_projects import add_to_recent_projects
 
 
 if TYPE_CHECKING:
@@ -53,34 +53,37 @@ def get_project_agents() -> 'agents.Agents':
         raise ValueError("Project agents are not initialized")
     return _agents
 
-def get_history_directory():
-    if not is_project_initialized():
+def get_history_directory(project_path: Optional[str] = None):
+    if not is_project_initialized() and not project_path:
         raise ValueError("Project settings are not initialized")
-    return os.path.join(get_aic_directory(), "history")
+    return os.path.join(get_aic_directory(project_path), "history")
 
 
-def get_aic_directory():
-    if not is_project_initialized():
+def get_aic_directory(project_path: Optional[str] = None):
+    if not is_project_initialized() and not project_path:
         raise ValueError("Project settings are not initialized")
-    return os.path.join(get_project_directory(),  ".aic")
+    return os.path.join(get_project_directory(project_path),  ".aic")
 
 
-def get_project_directory(initiating = False):
-    if not is_project_initialized() and not initiating:
+def get_project_directory(project_path: Optional[str] = None, initiating = False):
+    if not is_project_initialized() and not initiating and not project_path:
         raise ValueError("Project settings are not initialized")
+
+    if project_path:
+        return project_path
+        
     return os.getcwd()
 
-
-def get_project_name():
+def get_project_name(project_path: Optional[str] = None):
     if not is_project_initialized():
         raise ValueError("Project settings are not initialized")
-    return os.path.basename(get_project_directory())
+    return os.path.basename(get_project_directory(project_path))
 
 
-def get_credentials_directory():
-    if not is_project_initialized():
+def get_credentials_directory(project_path: Optional[str] = None):
+    if not is_project_initialized() and not project_path:
         raise ValueError("Project settings are not initialized")
-    return os.path.join(get_aic_directory(), "credentials")
+    return os.path.join(get_aic_directory(project_path), "credentials")
 
 
 def is_project_initialized() -> bool:
@@ -119,12 +122,12 @@ async def reinitialize_project():
     from aiconsole.agents import agents
     from aiconsole.materials import materials
 
-    _agents = agents.Agents(
-        "aiconsole.agents.core",
-        os.path.join(get_project_directory(True), "agents"))
-    _materials = materials.Materials(
-        "aiconsole.materials.core",
-        os.path.join(get_project_directory(True), "materials"))
+    project_dir = get_project_directory(None, True)
+
+    await add_to_recent_projects(project_dir)
+
+    _agents = agents.Agents("aiconsole.agents.core", os.path.join(project_dir, "agents"))
+    _materials = materials.Materials("aiconsole.materials.core", os.path.join(project_dir, "materials"))
 
     await _materials.reload()
     await _agents.reload()
@@ -145,3 +148,5 @@ async def change_project_directory(path: str):
     sys.path[0] = path
 
     await reinitialize_project()
+
+

@@ -92,6 +92,12 @@ export type Agent = {
   system: string;
 };
 
+export type RecentProject = {
+  name: string;
+  path: string;
+  recent_chats: string[];
+};
+
 export type Settings = {
   code_autorun?: boolean;
   openai_api_key?: string | null;

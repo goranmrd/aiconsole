@@ -30,6 +30,7 @@ import { AgentsSlice, createAgentsSlice } from './AgentsSlice';
 import { MaterialSlice, createMaterialSlice } from './MetarialSlice';
 import { useAnalysisStore } from './useAnalysisStore';
 import { useWebSocketStore } from './useWebSocketStore';
+import { useRecentProjectsStore } from './home/useRecentProjectsStore';
 
 export type AICStore = MessageSlice &
   CommandSlice &
@@ -53,4 +54,5 @@ export const initStore = () => {
   useAnalysisStore.getState().initAnalytics();
   useAICStore.getState().initSettings();
   useWebSocketStore.getState().initWebSocket();
+  useRecentProjectsStore.getState().initRecentProjects();
 };

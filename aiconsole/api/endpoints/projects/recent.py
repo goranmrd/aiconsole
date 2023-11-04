@@ -13,14 +13,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
 
 from fastapi import APIRouter
-
-from . import choose, close, recent
+from fastapi.responses import JSONResponse
+from aiconsole.recent_projects import recent_projects
 
 router = APIRouter()
 
-router.include_router(choose.router)
-router.include_router(close.router)
-router.include_router(recent.router)
+@router.get("/recent")
+async def choose_project():
+    return JSONResponse(await recent_projects.get_recent_project())

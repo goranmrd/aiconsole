@@ -16,38 +16,40 @@
 
 import { MouseEvent } from 'react';
 import { Button } from '../system/Button';
-import { Trash } from 'lucide-react';
+import { X } from 'lucide-react';
+import { useAICStore } from '@/store/AICStore';
 
 interface ProjectCardProps {
-  id: number;
   name: string;
+  path: string;
   chatHistory: string[];
 }
 
-export function ProjectCard({ id, name, chatHistory }: ProjectCardProps) {
+export function ProjectCard({ name, path, chatHistory }: ProjectCardProps) {
+  const chooseProject = useAICStore((state) => state.chooseProject);
   const deleteProject = (event: MouseEvent) => {
     event.stopPropagation();
-    console.log(id);
     // TODO: add delete project logic
   };
 
   const goToProjectChat = () => {
-    // TODO: add logic
+    chooseProject(path);
   };
 
   return (
     <div
-      className="border-2 border-gray-600 p-[30px] pb-[10px] rounded-[20px] max-w-[435px] w-full text-gray-400 cursor-pointer bg-gray-900"
+      className="group border-2 border-gray-600 p-[30px] pb-[10px] rounded-[20px] max-w-[435px] w-full text-gray-400 cursor-pointer bg-gray-900"
       onClick={goToProjectChat}
     >
       <h3 className="text-[22px] font-black mb-[21px]">{name}</h3>
       {chatHistory.map((command, index) => (
-        <p key={index} className="mb-[10px] text-[15px]">
+        // make it single line and end with  ...
+        <p key={index} className="mb-[10px] text-[15px] truncate">
           {command}
         </p>
       ))}
-      <Button variant="tertiary" classNames="mt-[5px]" onClick={deleteProject}>
-        <Trash />
+      <Button variant="tertiary" classNames="mt-[5px]  opacity-0 group-hover:opacity-100" onClick={deleteProject}>
+        <X />
         Remove project
       </Button>
     </div>

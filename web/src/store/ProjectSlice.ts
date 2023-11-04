@@ -24,7 +24,7 @@ export type ProjectSlice = {
   projectName?: string;
   alwaysExecuteCode: boolean;
   openAiApiKey?: string | null;
-  chooseProject: () => Promise<void>;
+  chooseProject:  (path?: string) => Promise<void>;
   initSettings: () => Promise<void>;
   isProjectLoading: () => boolean;
   isProjectOpen: () => boolean;
@@ -87,8 +87,8 @@ export const createProjectSlice: StateCreator<
   isProjectOpen: () => {
     return !!get().projectPath;
   },
-  chooseProject: async () => {
-    (await Api.chooseProject().json()) as { name: string; path: string };
+  chooseProject: async (path?: string) => {
+    (await Api.chooseProject(path).json()) as { name: string; path: string };
   },
   initSettings: async () => {
     const result = await Api.getSettings();

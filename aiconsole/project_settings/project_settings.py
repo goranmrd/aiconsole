@@ -86,7 +86,7 @@ class Settings:
         self._global_settings_file_path = Path(user_config_dir('aiconsole')) / "settings.toml"
         
         if not project_settings_file_path:
-            self._project_settings_file_path = Path(get_project_directory(True)) / "settings.toml" if is_project_initialized() else None
+            self._project_settings_file_path = Path(get_project_directory(None, True)) / "settings.toml" if is_project_initialized() else None
        
         self._observer = Observer()
 
@@ -299,5 +299,5 @@ def get_aiconsole_settings() -> Settings:
 async def reload_settings():
     global _settings
     _settings.stop()
-    _settings = Settings(Path(get_project_directory(True)) / "settings.toml" if is_project_initialized() else None)
+    _settings = Settings(Path(get_project_directory(None, True)) / "settings.toml" if is_project_initialized() else None)
     await _settings.reload()

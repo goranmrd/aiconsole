@@ -13,32 +13,33 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
-import json
-import logging
-import os
-from typing import Callable
 
-from fastapi import APIRouter, Depends
+import json
+import os
+
+from fastapi import APIRouter
 from aiconsole import projects
 from aiconsole.chat.types import Command
 
-from aiconsole.api.json_file_operations import json_read, json_write
 from aiconsole.consts import COMMANDS_HISTORY_JSON, HISTORY_LIMIT
 
 router = APIRouter()
-_log = logging.getLogger(__name__)
-
 
 @router.get("/commands/history")
-def get_history(get_json: Callable = Depends(json_read)):
+def get_history():
     file_path = os.path.join(projects.get_aic_directory(), COMMANDS_HISTORY_JSON)
 
-    return get_json(file_path=file_path, empty_obj=[])
+    if os.path.exists(file_path):
+        with open(file_path, "r") as f:
+            commands = json.load(f)
+    else:
+        commands = []
+    
+    return commands
 
 
 @router.post("/commands/history")
-def save_history(command: Command, store_json: Callable = Depends(json_write)):
+def save_history(command: Command):
     """
     Saves the history of sent commands to <commands_history_dir>/<commands_history_json>
     """
@@ -51,17 +52,14 @@ def save_history(command: Command, store_json: Callable = Depends(json_write)):
         commands = []
 
     commands.append(command.command)
-    
+
     # remove non unique but keep the order, (but reverse it to remove the oldest first)
     commands.reverse()
     commands = list(dict.fromkeys(commands))
     commands.reverse()
     commands = commands[-HISTORY_LIMIT:]
 
-    store_json(
-        directory=projects.get_aic_directory(),
-        file_name=COMMANDS_HISTORY_JSON,
-        content=commands
-    )
+    with open(file_path, "w") as f:
+        json.dump(commands, f)
 
     return commands

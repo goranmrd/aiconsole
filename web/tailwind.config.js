@@ -5,6 +5,11 @@ export default {
   darkMode: 'class',
   plugins: [require('@tailwindcss/typography')],
 
+  variants: {
+    extend: {
+        display: ["group-hover"],
+    },
+  },
   theme: {
     extend: {
       fontFamily: {

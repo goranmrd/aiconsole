@@ -13,14 +13,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
+
 import os
 from fastapi import APIRouter, status, Response
 from fastapi.responses import JSONResponse
 from aiconsole import projects
-from aiconsole.api.endpoints.chats.load_chat_history import load_chat_history
-from aiconsole.api.endpoints.chats.save_chat_history import save_chat_history
 from aiconsole.chat.types import Chat
+from aiconsole.chats.load_chat_history import load_chat_history
+from aiconsole.chats.save_chat_history import save_chat_history
 
 router = APIRouter()
 
@@ -55,5 +55,3 @@ async def save_history(chat: Chat):
         status_code=status.HTTP_201_CREATED,
         content="Chat history saved successfully",
     )
-
-

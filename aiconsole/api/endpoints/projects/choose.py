@@ -15,10 +15,11 @@
 # limitations under the License.
 
 import os
+from typing import Optional
 
 from fastapi import APIRouter
+from pydantic import BaseModel
 from aiconsole import projects
-from aiconsole.websockets.outgoing_messages import ProjectLoadingWSMessage
 
 router = APIRouter()
 
@@ -40,10 +41,16 @@ def _ask_directory():
     return directory
 
 
+class ChooseParams(BaseModel):
+    directory: Optional[str] = None
+
 @router.post("/choose")
-async def choose_project():
-    # Show a system select directory dialog
-    directory = _ask_directory()
+async def choose_project(params: ChooseParams):
+    directory = params.directory
+    
+    if not directory:
+        # Show a system select directory dialog
+        directory = _ask_directory()
 
     if directory:
         await projects.change_project_directory(directory)
