@@ -16,7 +16,7 @@
 
 import TextareaAutosize from 'react-textarea-autosize';
 import { useEffect, useRef } from 'react';
-import { Send, Square } from 'lucide-react';
+import { SendHorizonal, Square } from 'lucide-react';
 import { cn } from '@/utils/styles';
 import { useAICStore } from '@/store/AICStore';
 import { useAnalysisStore } from '@/store/useAnalysisStore';
@@ -142,7 +142,7 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
           onClick={handleSendMessage}
           disabled={sendingMessagesBlocked}
         >
-          <Send className="h-6 w-6 scale-75" />
+          <SendHorizonal className="h-6 w-6" />
         </button>
       </div>
     </div>
