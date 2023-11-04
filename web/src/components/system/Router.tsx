@@ -4,7 +4,7 @@ import { ChatPage } from '@/components/chat/ChatPage';
 import { MaterialPage } from '@/components/materials/MaterialPage';
 import { MaterialsPage } from '@/components/materials/MaterialsPage';
 import { Home } from '../home/Home';
-import { RouteMonitor } from './RouteMonitor';
+import { RouteMonitor } from './ProjectMonitor';
 
 export function Router() {
   return (
