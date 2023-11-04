@@ -21,7 +21,6 @@ import tomlkit
 from typing import Dict, List
 import watchdog.events
 import watchdog.observers
-from aiconsole import projects
 from aiconsole.materials.material import MaterialContentType, MaterialStatus, MaterialWithStatus
 from aiconsole.materials.material import MaterialLocation, Material
 from aiconsole.project_settings.project_settings import get_aiconsole_settings
@@ -29,7 +28,8 @@ from aiconsole.utils.BatchingWatchDogHandler import BatchingWatchDogHandler
 from aiconsole.utils.list_files_in_file_system import list_files_in_file_system
 from aiconsole.utils.list_files_in_resource_path import list_files_in_resource_path
 from aiconsole.utils.resource_to_path import resource_to_path
-from aiconsole.websockets.outgoing_messages import MaterialsUpdatedWSMessage, NotificationWSMessage
+from aiconsole.websockets.outgoing_messages import ErrorWSMessage, MaterialsUpdatedWSMessage, NotificationWSMessage
+import rtoml
 
 _log = logging.getLogger(__name__)
 
@@ -213,8 +213,8 @@ class Materials:
         else:
             raise KeyError(f"Material {material_id} not found")
 
-        with path.open("r") as file:
-            tomldoc = dict(tomlkit.loads(file.read()))
+        with open(path, "r") as file:
+            tomldoc = rtoml.loads(file.read())
 
         material_id = os.path.splitext(os.path.basename(path))[0]
 
@@ -284,9 +284,8 @@ class Materials:
             try:
                 await self.load_material(id)
             except Exception as e:
-                await NotificationWSMessage(
-                    title="Material not loaded",
-                    message=f"Skipping invalid material {id} {e}",
+                await ErrorWSMessage(
+                    error=f"Invalid material {id} {e}",
                 ).send_to_all()
                 continue
 
