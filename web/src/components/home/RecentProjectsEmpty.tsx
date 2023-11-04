@@ -36,9 +36,9 @@ export function RecentProjectsEmpty() {
           <Button small onClick={handleOpenClick}>
             <FolderPlus /> Create Your First Project ...
           </Button>
-          <Button small variant="secondary"  onClick={handleOpenClick}>
-              <FolderOpen /> Open Project ...
-            </Button>
+          <Button small variant="secondary" onClick={handleOpenClick}>
+            <FolderOpen /> Open Project ...
+          </Button>
         </div>
       </div>
       <img src="recent-projects-empty-image.png" className="mx-auto my-[100px]" alt="aiconsole chat image" />

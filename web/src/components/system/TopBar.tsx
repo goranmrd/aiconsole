@@ -42,8 +42,8 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
     <div className="flex w-full flex-col px-[30px] py-[26px] border-b drop-shadow-md bg-transparent border-white/10">
       <div className="flex gap-2 items-center">
         {variant === 'recentProjects' ? (
-          recentProjects.length > 0  && <div className="flex gap-[20px]" onClick={handleOpenClick}>
-            <Button small>
+          recentProjects.length > 0  && <div className="flex gap-[20px]">
+            <Button small onClick={handleOpenClick}>
             <FolderPlus /> New Project ... 
             </Button>
             <Button small variant="secondary"  onClick={handleOpenClick}>
