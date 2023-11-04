@@ -33,8 +33,8 @@ export function RouteMonitor({ children }: { children: React.ReactNode }) {
   }, [projectPath, isProjectOpen, isProjectLoading, navigate]);
 
   useEffect(() => {
-    // For some reason we are in chat there is no project
-    if (!isProjectOpen && location.pathname.startsWith('/chat')) {
+    // For some reason we are in project url and there is no project
+    if (!isProjectOpen && location.pathname !== '/') {
       navigate('/');
     }
 
