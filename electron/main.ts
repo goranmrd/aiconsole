@@ -40,8 +40,8 @@ function createWindow() {
   });
 }
 
-//const { updateElectronApp } = require('update-electron-app')
-//updateElectronApp()
+const { updateElectronApp } = require('update-electron-app')
+updateElectronApp()
 
 let path_to_python;
 
