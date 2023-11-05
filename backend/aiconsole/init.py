@@ -15,8 +15,6 @@
 # limitations under the License.
 
 import logging
-import os
-import threading
 import webbrowser
 import requests
 import time
@@ -39,16 +37,8 @@ def open_browser_when_frontend_is_up(url:str):
     webbrowser.open(url)
 
 
-def run_aiconsole(dev: bool, launch_browser: bool):
+def run_aiconsole(dev: bool):
     threads = []
-
-    if dev:
-        threads.append(threading.Thread(target=lambda: os.system("cd web && yarn dev")))
-        if launch_browser:
-            threads.append(threading.Thread(target=lambda: open_browser_when_frontend_is_up("http://localhost:3000/")))
-    else:
-        if launch_browser:
-            threads.append(threading.Thread(target=lambda: open_browser_when_frontend_is_up("http://localhost:8000/")))
 
     for thread in threads:
         thread.start()
@@ -69,11 +59,11 @@ def run_aiconsole(dev: bool, launch_browser: bool):
 
 
 def aiconsole_dev():
-    run_aiconsole(dev=True, launch_browser=True)
+    run_aiconsole(dev=True)
 
 
 def aiconsole():
-    run_aiconsole(dev=False, launch_browser=True)
+    run_aiconsole(dev=False)
 
 if __name__ == "__main__":
     aiconsole_dev()

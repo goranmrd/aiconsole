@@ -1,7 +1,10 @@
 /** @type {import('tailwindcss').Config} */
 
+import path from 'path';
+
 export default {
-  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  // Note that those paths are set up this way because in electron build the ./xxx path seem to be relative to the electron folder
+  content: [path.resolve(__dirname, 'index.html'), path.resolve(__dirname, 'src') + '/**/*.{js,ts,jsx,tsx}'],
   darkMode: 'class',
   plugins: [require('@tailwindcss/typography')],
 

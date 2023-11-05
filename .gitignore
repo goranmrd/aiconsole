@@ -181,8 +181,5 @@ dist-ssr
 /.aic
 /agents
 /materials
-/aiconsole/static
 /settings.toml
-/python
-electron/python
 .vite

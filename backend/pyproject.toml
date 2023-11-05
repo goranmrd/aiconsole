@@ -7,7 +7,6 @@ version = "0.2.1"
 description = "Run and expand your personal AI tools"
 authors = ["Maciej Cielecki <maciej.cielecki@10clouds.com>"]
 license = "Apache-2.0"
-readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.9"

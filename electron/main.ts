@@ -46,9 +46,9 @@ function createWindow() {
 let path_to_python;
 
 if (isPackaged) {
-  path_to_python = path.join(process.resourcesPath, "python/bin/python3.9");
+  path_to_python = path.join(process.resourcesPath, "python/bin/python3.10");
 } else {
-  path_to_python = path.join(__dirname, "../../..", "python/bin/python3.9");
+  path_to_python = path.join(__dirname, "../..", "python/bin/python3.10");
 }
 
 app.whenReady().then(() => {
@@ -60,10 +60,10 @@ app.whenReady().then(() => {
     app.quit();
   });
 
-  backendProcess.stdout.on("data", (data) => {
+  backendProcess.stdout.on("data", (data: Buffer) => {
     //data ends with \n ? strip it
     if (data[data.length - 1] == 10) {
-      data = data.slice(0, -1);
+      data = Uint8Array.prototype.slice.call(data, 0, -1);
     }
     console.log(`${data}`);
 
@@ -72,13 +72,13 @@ app.whenReady().then(() => {
     }
   });
 
-  backendProcess.stderr.on("data", (data) => {
+  backendProcess.stderr.on("data", (data: Buffer) => {
     //data ends with \n ? strip it
     if (data[data.length - 1] == 10) {
-      data = data.slice(0, -1);
+      data = Uint8Array.prototype.slice.call(data, 0, -1);
     }
     // dialog.showErrorBox("Backend Error", data.toString());
-    console.error(data);
+    console.error(`${data}`);
   });
 
   backendProcess.on("exit", (code) => {

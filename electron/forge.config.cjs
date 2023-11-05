@@ -2,8 +2,8 @@ module.exports = {
   packagerConfig: {
     executableName: 'AIConsole',
     asar: true,
-    icon: '../electron/icon',
-    extraResource: ['../python'],
+    icon: './assets/icon',
+    extraResource: ['python'],
   },
   rebuildConfig: {},
   makers: [
@@ -13,7 +13,7 @@ module.exports = {
         // An URL to an ICO file to use as the application icon (displayed in Control Panel > Programs and Features).
         iconUrl: 'https://url/to/icon.ico',
         // The ICO file to use as the icon for the generated Setup.exe
-        setupIcon: '../electron/icon.ico',
+        setupIcon: './assets/icon.ico',
       },
     },
     // {
@@ -24,7 +24,7 @@ module.exports = {
       name: '@electron-forge/maker-deb',
       config: {
         options: {
-          icon: '../electron/icon.png',
+          icon: './assets/icon.png',
         },
       },
     },
@@ -35,13 +35,13 @@ module.exports = {
     {
       name: '@electron-forge/maker-dmg',
       config: {
-        icon: '../electron/icon.icns',
+        icon: './assets/icon.icns',
       },
     },
     {
       name: '@electron-forge/maker-wix',
       config: {
-        icon: '../electron/icon.ico',
+        icon: './assets/icon.ico',
       },
     },
   ],
@@ -67,7 +67,7 @@ module.exports = {
       config: {
         build: [
           {
-            entry: '../electron/main.ts',
+            entry: './main.ts',
             config: 'vite.main.config.ts',
           },
         ],

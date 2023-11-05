@@ -7,6 +7,6 @@ export default defineConfig({
     // Some libs that can run in both Web and Node.js, such as `axios`, we need to tell Vite to build them in Node.js.
     browserField: false,
     mainFields: ['module', 'jsnext:main', 'jsnext'],
-    alias: [{ find: '@', replacement: path.resolve(__dirname, 'src') }],
+    alias: [{ find: '@', replacement: path.resolve(__dirname, '..', 'frontend', 'src') }],
   },
 });

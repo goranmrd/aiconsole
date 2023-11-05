@@ -9,9 +9,6 @@ export default defineConfig({
     port: 3000,
     host: '0.0.0.0',
   },
-  build: {
-    outDir: '../aiconsole/static',
-  },
   resolve: {
     alias: [{ find: '@', replacement: path.resolve(__dirname, 'src') }],
   },
