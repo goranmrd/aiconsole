@@ -6,13 +6,8 @@
     "start": "npm run prepare-python && yarn && npx electron-forge start",
     "package": "npm run prepare-python && cd web && npx electron-forge package",
     "prepare-python": "python ./scripts/bundle_python.py",
-    "make": "electron-forge make",
-    "publish": "python ./scripts/propagate_version.py && npm run prepare-python && npx electron-forge publish",
-    "make:mac": "electron-forge make --platform=darwin --arch=x64",
-    "make:mac-arm": "electron-forge make --platform=darwin --arch=arm64",
-    "make:windows": "electron-forge make --platform=win32 --arch=x64",
-    "make:linux": "electron-forge make --platform=linux --arch=x64",
-    "make:all": "npm run make:mac && npm run make:mac-arm && npm run make:windows && npm run make:linux"
+    "make": "npm run prepare-python && yarn && electron-forge make",
+    "publish": "python ./scripts/propagate_version.py && npm run prepare-python && yarn && npx electron-forge publish"
   },
   "productName": "AIConsole",
   "main": ".vite/build/main.js",
