@@ -39,9 +39,6 @@ jobs:
       - name: Make app
         run: cd electron && yarn run make
   
-      - name: Install Xcode Command Line Tools
-        run: xcode-select --install
-  
       - name: Zip the app for notarization
         run: ditto -c -k --keepParent "MyApp.app" "MyApp.zip"
   
