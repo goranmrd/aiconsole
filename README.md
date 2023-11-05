@@ -17,28 +17,20 @@ Content Creation: Need help with content creation? AI Console has got you covere
 
 Data Retrieval: Say goodbye to tedious manual data retrieval tasks. AI Console can fetch data from various sources, such as APIs, databases, and web scraping. It can organize and analyze the retrieved data, and present it in a format that suits your needs.
 
-## Installing & Running
+## Downloading and Installing
 
-```shell
-pip install --upgrade aiconsole --pre # (in some environments it must be pip3 instead of pip)
-mkdir your_project_dir
-cd your_project_dir
-export OPENAI_API_KEY=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-aiconsole
-```
+Select the version suitable for your operating system:
 
-On a Mac you might be prompted to install developer tools in order to install aiconsole.
+- [Windows](https://github.com/10clouds/aiconsole/releases)
+- [macOS (Intel)](https://github.com/10clouds/aiconsole/releases)
+- [macOS (ARM)](https://github.com/10clouds/aiconsole/releases)
+- [Linux](https://github.com/10clouds/aiconsole/releases)
 
-If during installation you get errors like:
+## Embedding the AIConsole backend in your app
 
-```
-WARNING: The script aiconsole is installed in '/Users/user/Library/Python/3.9/bin' which is not on PATH.
-Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
-```
+If you want to develop something on top of the aiconsole backend, you may install the backend part using:
 
-Run aiconsole like this: `/Users/user/Library/Python/3.9/bin/aiconsole` (replace the path with a path that you see in the warnings) instead of `aiconsole`.
-
-In your project directory, aiconsole will create a bunch of working files like standard materials and agents
+`pip install aiconsole`
 
 ## Running Development Non-Electron AIConsole
 
