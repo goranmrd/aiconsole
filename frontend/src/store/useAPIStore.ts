@@ -27,10 +27,16 @@ export type APIStore = {
 export const useAPIStore = create<APIStore>((set, get) => ({
   initAPIStore: async () => {
     return new Promise((resolve, reject) => {
-      window.electron.requestBackendPort().then((port: number) => {
-        set({ port });
+      if (window?.electron?.requestBackendPort === undefined) {
+        set({ port: 8000 });
         resolve();
-      });
+      } else {
+        //running from electron, let's wait for port
+        window.electron.requestBackendPort().then((port: number) => {
+          set({ port });
+          resolve();
+        });
+      }
     });
   },
   getBaseURL: () => {
