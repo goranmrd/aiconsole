@@ -5,9 +5,9 @@
   "scripts": {
     "start": "npm run prepare-python && yarn && npx electron-forge start",
     "package": "npm run prepare-python && cd web && npx electron-forge package",
-    "prepare-python": "./scripts/build_local_python.sh",
+    "prepare-python": "python ./scripts/bundle_python.py",
     "make": "electron-forge make",
-    "publish": "./scripts/propagate_version.sh && npm run prepare-python && npx electron-forge publish",
+    "publish": "python ./scripts/propagate_version.py && npm run prepare-python && npx electron-forge publish",
     "make:mac": "electron-forge make --platform=darwin --arch=x64",
     "make:mac-arm": "electron-forge make --platform=darwin --arch=arm64",
     "make:windows": "electron-forge make --platform=win32 --arch=x64",
