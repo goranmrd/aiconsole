@@ -55,11 +55,8 @@ async def material_get(material_id: str):
 
 @router.patch("/{material_id}")
 async def material_patch(material_id: str, material: Material):
-    if material_id != material.id:
-        raise HTTPException(status_code=400, detail="Material ID mismatch")
-
     try:
-        projects.get_project_materials().save_material(material, new=False)
+        projects.get_project_materials().save_material(material, new=False, old_material_id=material_id)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -68,11 +65,8 @@ async def material_patch(material_id: str, material: Material):
 
 @router.post("/{material_id}")
 async def material_post(material_id: str, material: Material):
-    if material_id != material.id:
-        raise HTTPException(status_code=400, detail="Material ID mismatch")
-
     try:
-        projects.get_project_materials().save_material(material, new=True)
+        projects.get_project_materials().save_material(material, new=True, old_material_id=material_id)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
