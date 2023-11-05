@@ -57,6 +57,8 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
     const materials_ids = lastGroupLocation.group.materials_ids;
 
     try {
+      get().markAsExecuting(true, groupId, messageId);
+
       const response = await Api.runCode({
         chatId: get().chatId,
         language,
@@ -95,6 +97,8 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
       }
     } finally {
       get().saveCurrentChatHistory();
+
+      get().markAsExecuting(false, groupId, messageId);
 
       set(() => ({
         isExecuteRunning: false,
@@ -152,6 +156,7 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
                 get().appendMessage({
                   content: '',
                   language,
+                  is_code_executing: false,
                   outputs: [],
                 });
                 messageDone = false;

@@ -45,6 +45,7 @@ export type MessageSlice = {
     outputId: string,
     newOutput: string,
   ) => void;
+  markAsExecuting: (executing: boolean, groupId?: string, messageId?: string) => void;
   appendEmptyOutput: (groupId?: string, messageId?: string) => void;
   appendTextAtTheEnd: (text: string, groupId?: string, messageId?: string) => void;
   appendGroup: (group: Omit<AICMessageGroup, 'id'>) => void;
@@ -88,6 +89,23 @@ export const createMessageSlice: StateCreator<
       } else {
         message.content += text;
       }
+
+      return {
+        chat,
+      };
+    });
+  },
+  markAsExecuting: (executing: boolean, groupId?: string, messageId?: string, ) => {
+    set((state) => {
+      const chat = deepCopyChat(state.chat);
+      const group = getGroup(chat, groupId).group;
+      const message = getMessage(group, messageId).message;
+
+      if (!('language' in message)) {
+        throw new Error('Last message is not a code message');
+      }
+
+      message.is_code_executing = executing;
 
       return {
         chat,

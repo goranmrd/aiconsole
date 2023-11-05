@@ -22,6 +22,8 @@ export type AICContentMessage = {
 
 export type AICCodeMessage = AICContentMessage & {
   language: string;
+  //HACK: For now this is frontend only, but if we move message management to backend, this should be moved there as well.
+  is_code_executing: boolean; 
   outputs: AICContentMessage[];
 };
 

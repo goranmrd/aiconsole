@@ -69,6 +69,9 @@ export function CodeMessage({ group, message, isStreaming }: MessageProps) {
     removeMessageFromGroup(group.id, message.id);
   }, [message.id, group.id, removeMessageFromGroup]);
 
+  //Either executing or streaming while there are still no output messages
+  const shouldDisplaySpinner = message.is_code_executing || (isStreaming && message.outputs.length === 0)
+
   return (
     <div className="flex justify-between items-center">
       <div className="p-5 rounded-md flex flex-col gap-5 bg-primary/5 flex-grow mr-4">
@@ -77,7 +80,7 @@ export function CodeMessage({ group, message, isStreaming }: MessageProps) {
           onClick={() => setFolded((folded) => !folded)}
         >
           <div className="flex flex-row gap-2 items-center">
-            {isStreaming ? (
+            {shouldDisplaySpinner ? (
               <div className="flex-grow flex flex-row gap-3 items-center">
                 Working ... <Spinner />
               </div>
