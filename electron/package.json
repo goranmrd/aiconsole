@@ -8,7 +8,6 @@
     "prepare-frontend": "cd .. && cd frontend && yarn",
     "prepare-electron": "yarn",
     "prepare-all": "npm run prepare-python && npm run prepare-frontend && npm run prepare-electron",
-    
     "dev": "npm run prepare-all && npx electron-forge start",
     "package": "npm run prepare-all && npx electron-forge package",
     "make": "npm run prepare-all && electron-forge make",
@@ -32,6 +31,6 @@
     "@electron-forge/plugin-vite": "^6.4.2",
     "@electron-forge/publisher-github": "^6.4.2",
     "@vitejs/plugin-react": "^4.1.1",
-    "electron": "^27.0.1"
+    "electron": "^27.0.3"
   }
 }
