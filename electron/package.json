@@ -1,6 +1,6 @@
 {
   "name": "aiconsole",
-  "version": "0.2.1",
+  "version": "0.2.1a1",
   "license": "Apache-2.0",
   "description": "AIConsole is an editor that allows you to use your notes to teach AI how tocomplete and automate tasks.",
   "scripts": {
