@@ -7,7 +7,7 @@
     "package": "npm run prepare-python && cd web && npx electron-forge package",
     "prepare-python": "./scripts/build_local_python.sh",
     "make": "electron-forge make",
-    "publish2": "./scripts/propagate_version.sh && npm run prepare-python && cd web && npx electron-forge publish && poetry publish",
+    "publish": "./scripts/propagate_version.sh && npm run prepare-python && npx electron-forge publish",
     "make:mac": "electron-forge make --platform=darwin --arch=x64",
     "make:mac-arm": "electron-forge make --platform=darwin --arch=arm64",
     "make:windows": "electron-forge make --platform=win32 --arch=x64",
