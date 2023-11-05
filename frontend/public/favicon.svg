@@ -1,17 +1,29 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 64 64">
-  <defs>
-    <style>
-      .cls-1 {
-        fill: url(#linear-gradient);
-        fill-rule: evenodd;
-        stroke-width: 0px;
-      }
-    </style>
-    <linearGradient id="linear-gradient" x1="32" y1="59.87" x2="32" y2="5.09" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#9e7cff"/>
-      <stop offset="1" stop-color="#c78eff"/>
-    </linearGradient>
-  </defs>
-  <path class="cls-1" d="m61.01,43.07L42.02,9.71h-.01c-1.79-3.76-5.59-6.39-10-6.46-4.42.07-8.22,2.7-10,6.46h-.01S2.99,43.07,2.99,43.07c-3.01,5.24-1.32,11.84,3.92,14.85,1.66.95,3.55,1.44,5.46,1.44.17,0,.29,0,.51,0h38.25c.22,0,.34,0,.51,0,1.91,0,3.8-.48,5.46-1.44,5.24-3.01,6.93-9.61,3.92-14.85ZM31.81,9.71c2.66,0,4.82,2.16,4.82,4.82s-2.16,4.82-4.82,4.82-4.82-2.16-4.82-4.82,2.16-4.82,4.82-4.82Zm3.62,43.18H16c-5.23,0-8.49-5.67-5.85-10.19l10.24-17.64c1.25-2.14,4.01-2.87,6.15-1.62,2.14,1.25,2.87,4.01,1.62,6.15l-8.29,14.3h15.57c2.48,0,4.5,2.01,4.5,4.5s-2.01,4.5-4.5,4.5Zm18.32-.46c-2.15,1.24-4.9.5-6.14-1.66l-12.2-21.21c-1.24-2.15-.5-4.9,1.66-6.14,2.15-1.24,4.9-.5,6.14,1.66l12.2,21.21c1.24,2.15.5,4.9-1.66,6.14Z"/>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 28.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 64 64" style="enable-background:new 0 0 64 64;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill-rule:evenodd;clip-rule:evenodd;fill:url(#SVGID_1_);}
+	.st1{fill-rule:evenodd;clip-rule:evenodd;fill:#FFFFFF;}
+</style>
+<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="32" y1="589.87" x2="32" y2="535.09" gradientTransform="matrix(1 0 0 1 0 -530)">
+	<stop  offset="0" style="stop-color:#9E7CFF"/>
+	<stop  offset="1" style="stop-color:#C78EFF"/>
+</linearGradient>
+<path class="st0" d="M61,43.1L42,9.7l0,0c-1.8-3.8-5.6-6.4-10-6.5c-4.4,0.1-8.2,2.7-10,6.5l0,0L3,43.1c-3,5.2-1.3,11.8,3.9,14.8
+	c1.7,1,3.6,1.4,5.5,1.4c0.2,0,0.3,0,0.5,0h38.2c0.2,0,0.3,0,0.5,0c1.9,0,3.8-0.5,5.5-1.4C62.3,54.9,64,48.3,61,43.1L61,43.1z
+	 M31.8,9.7c2.7,0,4.8,2.2,4.8,4.8s-2.2,4.8-4.8,4.8S27,17.2,27,14.5S29.2,9.7,31.8,9.7z M35.4,52.9H16c-5.2,0-8.5-5.7-5.9-10.2
+	l10.2-17.6c1.2-2.1,4-2.9,6.1-1.6c2.1,1.2,2.9,4,1.6,6.1l-8.3,14.3h15.6c2.5,0,4.5,2,4.5,4.5S37.9,52.9,35.4,52.9L35.4,52.9z
+	 M53.8,52.4c-2.2,1.2-4.9,0.5-6.1-1.7L35.4,29.6c-1.2-2.1-0.5-4.9,1.7-6.1s4.9-0.5,6.1,1.7l12.2,21.2C56.7,48.4,55.9,51.2,53.8,52.4
+	z"/>
+<circle class="st1" cx="31.8" cy="14.5" r="4.8"/>
+<path class="st1" d="M35.4,52.9H16c-5.2,0-8.5-5.7-5.9-10.2l10.2-17.6c1.2-2.1,4-2.9,6.1-1.6c2.1,1.2,2.9,4,1.6,6.1l-8.3,14.3h15.6
+	c2.5,0,4.5,2,4.5,4.5S37.9,52.9,35.4,52.9L35.4,52.9z"/>
+<path class="st1" d="M53.8,52.4c-2.2,1.2-4.9,0.5-6.1-1.7L35.4,29.6c-1.2-2.1-0.5-4.9,1.7-6.1s4.9-0.5,6.1,1.7l12.2,21.2
+	C56.7,48.4,55.9,51.2,53.8,52.4z"/>
+<g id="Eb4myT_00000000207246059017306010000004282443228623487627_">
+	
+		<image style="overflow:visible;" width="200" height="246" id="Eb4myT_00000150815803066798457510000014984465148114483585_" xlink:href="D5FCB284011D30E.png"  transform="matrix(0.5 0 0 0.5 204.1116 -45.2294)">
+	</image>
+</g>
 </svg>
