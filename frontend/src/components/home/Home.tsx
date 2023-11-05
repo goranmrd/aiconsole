@@ -44,7 +44,7 @@ export function Home() {
                     <h1 className="text-[56px] mb-[60px] font-black text-center">
                       Welcome to <span className=" text-primary">AIConsole!</span>
                     </h1>
-                    <div className="p-4 text-center opacity-75">Recent projects:</div>
+                    <div className="p-4 pb-8 text-center opacity-75">Recent projects:</div>
                     <div className="grid grid-flow-row-dense grid-cols-[repeat(auto-fit,minmax(355px,_435px))] justify-center gap-[20px] mx-auto">
                       {recentProjects.map(({ name, path, recent_chats }) => (
                         <ProjectCard key={path} name={name} path={path} chatHistory={recent_chats} />

@@ -26,6 +26,7 @@ from aiconsole.recent_projects.recent_project import RecentProject
 def _get_user_recent_projects_file():
     return Path(user_config_dir('aiconsole')) / "recent"
 
+
 def _read_recent_projects():
     recent_projects_file = _get_user_recent_projects_file()
     if recent_projects_file.exists():
@@ -35,9 +36,13 @@ def _read_recent_projects():
 
     return recent_projects
 
+def _save_recent_projects(recent_projects):
+    recent_projects_file = _get_user_recent_projects_file()
+    recent_projects_file.parent.mkdir(parents=True, exist_ok=True)
+    recent_projects_file.write_text("\n".join(recent_projects))
+
 
 async def add_to_recent_projects(project_path: str):
-    # read from file
     recent_projects = _read_recent_projects()
     recent_projects.insert(0, project_path)
 
@@ -48,19 +53,23 @@ async def add_to_recent_projects(project_path: str):
     if len(recent_projects) > MAX_RECENT_PROJECTS:
         recent_projects = recent_projects[:MAX_RECENT_PROJECTS]
 
-    # save to file
-    recent_projects_file = _get_user_recent_projects_file()
-    recent_projects_file.parent.mkdir(parents=True, exist_ok=True)
-    recent_projects_file.write_text("\n".join(recent_projects))
+    _save_recent_projects(recent_projects)
 
+
+async def remove_from_recent_projects(project_path: str):
+    recent_projects = _read_recent_projects()
+    recent_projects.remove(project_path)
+    _save_recent_projects(recent_projects)
 
 
 async def get_recent_project():
-    # read from file
     recent_projects = _read_recent_projects()
 
-    return [RecentProject(name=
-        os.path.basename(path),
-        path=path,
-        recent_chats=[load_chat_history(id, path).title for id in list_possible_historic_chat_ids(path)[:4]]
-    ).model_dump() for path in recent_projects]
+    return [
+        RecentProject(name=os.path.basename(path),
+                      path=path,
+                      recent_chats=[
+                          load_chat_history(id, path).title
+                          for id in list_possible_historic_chat_ids(path)[:4]
+                      ]).model_dump() for path in recent_projects
+    ]

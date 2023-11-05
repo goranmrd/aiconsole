@@ -123,6 +123,10 @@ async function getRecentProjects(): Promise<RecentProject[]> {
   return ky.get(`${getBaseURL()}/api/projects/recent`, { hooks }).json();
 }
 
+async function removeRecentProject(path: string) {
+  return ky.delete(`${getBaseURL()}/api/projects/recent`, { json: { path }, hooks });
+}
+
 // Materials
 
 const getMaterials = async () => ky.get(`${getBaseURL()}/api/materials/`, { hooks }).json() as Promise<MaterialInfo[]>;
@@ -193,6 +197,7 @@ export const Api = {
   chooseProject,
   getCurrentProject,
   getRecentProjects,
+  removeRecentProject,
   saveNewMaterial,
   updateMaterial,
   deleteMaterial,

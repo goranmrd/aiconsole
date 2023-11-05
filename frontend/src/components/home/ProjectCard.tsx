@@ -14,10 +14,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { MouseEvent } from 'react';
-import { Button } from '../system/Button';
-import { X } from 'lucide-react';
 import { useAICStore } from '@/store/AICStore';
+import { useRecentProjectsStore } from '@/store/home/useRecentProjectsStore';
+import { MessageSquare, MessagesSquare, X } from 'lucide-react';
+import { MouseEvent, useState } from 'react';
+import { Button } from '../system/Button';
+import { cn } from '@/utils/styles';
 
 interface ProjectCardProps {
   name: string;
@@ -27,9 +29,13 @@ interface ProjectCardProps {
 
 export function ProjectCard({ name, path, chatHistory }: ProjectCardProps) {
   const chooseProject = useAICStore((state) => state.chooseProject);
-  const deleteProject = (event: MouseEvent) => {
+  const removeRecentProject = useRecentProjectsStore((state) => state.removeRecentProject);
+  const [isDeleteHovered, setDeleteHovered] = useState(false);
+
+  
+  const deleteProject = async (event: MouseEvent) => {
     event.stopPropagation();
-    // TODO: add delete project logic
+    await removeRecentProject(path);
   };
 
   const goToProjectChat = () => {
@@ -38,20 +44,27 @@ export function ProjectCard({ name, path, chatHistory }: ProjectCardProps) {
 
   return (
     <div
-      className="group border-2 border-gray-600 p-[30px] pb-[10px] rounded-[20px] max-w-[435px] w-full opacity-75 transition-opacity  cursor-pointer bg-gray-900 hover:opacity-100"
+      className="group border-2 border-gray-600 p-[30px] rounded-[20px] max-w-[435px] w-full opacity-75 transition-opacity  cursor-pointer bg-gray-900 hover:opacity-100"
       onClick={goToProjectChat}
     >
-      <Button variant="tertiary"><h3 className="text-[22px] font-black mb-[21px] group-hover:text-secondary transition-colors">{name}</h3></Button>
+      <div className="flex flex-row items-center w-full mb-[30px]">
+        <div className='flex-grow align-left'>
+        <Button variant="tertiary" classNames='p-0 m-0' ><h3 className={cn(!isDeleteHovered && "group-hover:text-secondary", "text-[22px] font-black  transition-colors")}>{name}</h3></Button>
+        </div>
+        <Button variant="tertiary" classNames="mt-[5px] opacity-0 group-hover:opacity-100 transition-all duration-700 p-0 m-0" onMouseEnter={() => setDeleteHovered(true)}
+          onMouseLeave={() => setDeleteHovered(false)} onClick={deleteProject}>
+          <X className='scale-150' />
+        </Button>
+      </div>
+      
+      
       {chatHistory.map((command, index) => (
         // make it single line and end with  ...
-        <p key={index} className="mb-[10px] text-[15px] truncate">
-          {command}
-        </p>
+        <div key={index} className="flex flex-row items-center gap-2 mb-[10px] text-[15px]">
+          <MessageSquare className='flex-none w-4 h-4 opacity-50' /><div className="flex-grow truncate">{command} </div>
+        </div>
       ))}
-      <Button variant="tertiary" classNames="mt-[5px]  opacity-0 group-hover:opacity-100 transition-opacity" onClick={deleteProject}>
-        <X />
-        Remove project
-      </Button>
+      
     </div>
   );
 }

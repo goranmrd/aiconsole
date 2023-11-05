@@ -23,6 +23,7 @@ import { RecentProject } from '@/types/types';
 export type RecentProjectsStore = {
   initRecentProjects: () => Promise<void>;
   recentProjects: RecentProject[];
+  removeRecentProject: (projectPath: string) => Promise<void>;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -35,6 +36,11 @@ export const useRecentProjectsStore = create<RecentProjectsStore>((set, get) => 
         set({ recentProjects });
       }
     });
+  },
+  removeRecentProject: async (projectPath: string) => {
+    await Api.removeRecentProject(projectPath);
+    const recentProjects = await Api.getRecentProjects();
+    set({ recentProjects });
   },
   recentProjects: [],
 }));
