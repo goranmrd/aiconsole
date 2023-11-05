@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
+from aiconsole.gpt.check_key import check_key
 
 from appdirs import user_config_dir
 from pydantic import BaseModel
@@ -30,7 +31,7 @@ from aiconsole.materials.material import MaterialStatus
 from aiconsole.projects import get_project_directory, is_project_initialized
 from aiconsole.utils.BatchingWatchDogHandler import BatchingWatchDogHandler
 from aiconsole.utils.recursive_merge import recursive_merge
-from aiconsole.websockets.outgoing_messages import SettingsWSMessage
+from aiconsole.websockets.outgoing_messages import NotificationWSMessage, SettingsWSMessage
 
 import logging
 
@@ -112,7 +113,7 @@ class Settings:
         self._observer.stop()
 
     async def reload(self):
-        self._settings = self.__load()#
+        self._settings = await self.__load()#
         await SettingsWSMessage().send_to_all()
 
     def get_material_status(self, material_id: str) -> MaterialStatus:
@@ -170,7 +171,7 @@ class Settings:
             PartialSettingsData(code_autorun=self._settings.code_autorun),
             to_global=to_global)
 
-    def __load(self) -> SettingsData:
+    async def __load(self) -> SettingsData:
         settings = {}
         paths = [self._global_settings_file_path, self._project_settings_file_path]
 
@@ -178,11 +179,19 @@ class Settings:
             if file_path and file_path.exists():   
                 settings = recursive_merge(settings, _load_from_path(file_path))
 
+        # Check openai key and nullify if not valid
+        possible_openai_key = settings.get('settings', {}).get('openai_api_key', None)
+        if possible_openai_key and not check_key(possible_openai_key):
+            await NotificationWSMessage(
+                title="Invalid OpenAI API key",
+                message="OpenAI API key is invalid, please check your settings"
+            ).send_to_all()
+            possible_openai_key = None
+
         settings_data = SettingsData(
             code_autorun=settings.get('settings',
                                       {}).get('code_autorun', False),
-            openai_api_key=settings.get('settings',
-                                        {}).get('openai_api_key', None),
+            openai_api_key=possible_openai_key,
             disabled_materials=[
                 material
                 for material, status in settings.get('materials', {}).items()
