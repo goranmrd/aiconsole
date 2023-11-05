@@ -1,4 +1,4 @@
-name: Release app
+name: Upload Electron Binaries to Github
 
 on:
   workflow_dispatch:
