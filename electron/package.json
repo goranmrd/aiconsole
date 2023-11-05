@@ -3,11 +3,15 @@
   "version": "0.2.1",
   "license": "Apache-2.0",
   "scripts": {
-    "start": "npm run prepare-python && yarn && npx electron-forge start",
-    "package": "npm run prepare-python && cd web && npx electron-forge package",
     "prepare-python": "python ./scripts/bundle_python.py",
-    "make": "npm run prepare-python && yarn && electron-forge make",
-    "publish": "python ./scripts/propagate_version.py && npm run prepare-python && yarn && npx electron-forge publish"
+    "prepare-frontend": "cd .. && cd frontend && yarn",
+    "prepare-electron": "yarn",
+    "prepare-all": "npm run prepare-python && npm run prepare-frontend && npm run prepare-electron",
+    
+    "start": "npm run prepare-all && npx electron-forge start",
+    "package": "npm run prepare-all && npx electron-forge package",
+    "make": "npm run prepare-all && electron-forge make",
+    "publish": "python ./scripts/propagate_version.py && npm run prepare-all && npx electron-forge publish"
   },
   "productName": "AIConsole",
   "main": ".vite/build/main.js",
