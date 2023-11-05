@@ -97,4 +97,7 @@ app.whenReady().then(() => {
   app.on("activate", function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
+
+  // main/index.js
+  if (require('electron-squirrel-startup') === true) app.quit();
 });

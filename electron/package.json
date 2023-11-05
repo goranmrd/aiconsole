@@ -1,0 +1,17 @@
+{
+  "name": "aiconsole",
+  "version": "0.2.1",
+  "scripts": {
+    "start": "npm run prepare-python && cd web && npx electron-forge start",
+    "package": "npm run prepare-python && cd web && npx electron-forge package",
+    "prepare-python": "./electron/build_local_python.sh",
+    "make": "npm run prepare-python && cd web && npm run make",
+    "publish2": "./electron/sync_version.sh && npm run prepare-python && cd web && npx electron-forge publish && poetry publish",
+    "make": "electron-forge make",
+    "make:mac": "electron-forge make --platform=darwin --arch=x64",
+    "make:mac-arm": "electron-forge make --platform=darwin --arch=arm64",
+    "make:windows": "electron-forge make --platform=win32 --arch=x64",
+    "make:linux": "electron-forge make --platform=linux --arch=x64",
+    "make:all": "npm run make:mac && npm run make:mac-arm && npm run make:windows && npm run make:linux"
+  }
+}
