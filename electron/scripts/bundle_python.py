@@ -63,7 +63,7 @@ def download_python():
 
 def install_dependencies():
     pip_path = python_dir / "bin" / "pip"
-    print(f"Installing aiconsole and dependencies using {pip_path}..")
+    print(f"Installing aiconsole and dependencies  ({pip_path}) ...")
     subprocess.run([pip_path, "install", Path("..") / "backend"], check=True)
 
 def main():
