@@ -32,5 +32,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install poetry
         cd backend && poetry install
+    - name: Build package
+      run: cd backend && poetry build
     - name: Publish package
       run: cd backend && poetry publish --username __token__ --password ${{ secrets.PYPI_API_TOKEN }}
