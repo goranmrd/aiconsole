@@ -33,4 +33,4 @@ jobs:
         pip install poetry
         cd backend && poetry install
     - name: Publish package
-      run: cd backend && poetry publish --user __token__ --password ${{ secrets.PYPI_API_TOKEN }}
+      run: cd backend && poetry publish --username __token__ --password ${{ secrets.PYPI_API_TOKEN }}
