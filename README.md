@@ -44,12 +44,12 @@ In your project directory, aiconsole will create a bunch of working files like s
 
 In order to run the non electron development version of AIConsole:
 
-1. To run the standalone backend: `cd backend && poetry install && poetry run aiconsole-dev`
+1. To run the standalone backend: `cd backend && poetry install && poetry run dev`
 2. To run the standalone frontend: `cd frontend && yarn && yarn dev`
 
 ## Buiding the desktop app
 
-1. To run the development version of electron bundle: `cd electron && yarn start`
+1. To run the development version of electron bundle: `cd electron && yarn dev`
 2. To bundle the desktop app: `cd electron && yarn && yarn make`
 3. To publish the desktop app: `cd electron && yarn && yarn publish`
 

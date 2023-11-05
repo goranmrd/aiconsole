@@ -37,4 +37,4 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 aiconsole = "aiconsole.init:aiconsole"
-aiconsole-dev = "aiconsole.init:aiconsole_dev"
+dev = "aiconsole.init:aiconsole_dev"
