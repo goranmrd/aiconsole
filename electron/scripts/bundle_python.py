@@ -5,7 +5,7 @@ import requests
 import tarfile
 import os
 
-python_dir = Path("./python")
+python_dir = Path(".") / "python"
 
 def check_installation():
     if python_dir.is_dir():
