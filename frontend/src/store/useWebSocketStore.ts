@@ -22,6 +22,7 @@ import { OutgoingWSMessage } from '../types/outgoingMessages';
 import { IncomingWSMessage } from '../types/incomingMessages';
 import { useAnalysisStore } from '@/store/useAnalysisStore';
 import showNotification from '@/utils/showNotification';
+import { useAPIStore } from './useAPIStore';
 
 export type WebSockeStore = {
   ws: ReconnectingWebSocket | null;
@@ -41,7 +42,8 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
     if (get().initStarted) return;
     set({ initStarted: true });
 
-    const ws = new ReconnectingWebSocket(`ws://localhost:8000/ws`);
+    const getBaseHostWithPort = useAPIStore.getState().getBaseHostWithPort;
+    const ws = new ReconnectingWebSocket(`ws://${getBaseHostWithPort()}/ws`);
 
     ws.onopen = () => {
       set({ ws });

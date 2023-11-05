@@ -16,6 +16,7 @@
 
 from logging import config
 from contextlib import asynccontextmanager
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from aiconsole import projects
@@ -35,12 +36,18 @@ async def lifespan(app: FastAPI):
 
 config.dictConfig(log_config)
 
+
 def app():
+    origin = os.getenv('CORS_ORIGIN', None)
+
+    if origin is None:
+        raise Exception("CORS_ORIGIN environment variable not set")
+
     app = FastAPI(title="AI Console", lifespan=lifespan)
 
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=ORIGINS,
+        allow_origins=[origin],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],

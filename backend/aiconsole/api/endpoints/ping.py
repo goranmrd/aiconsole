@@ -14,17 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
     
-import pytest
-from fastapi.testclient import TestClient
+from fastapi import APIRouter
 
-from aiconsole.init import create_app
+router = APIRouter()
 
-
-@pytest.fixture()
-def app():
-    return app()
-
-
-@pytest.fixture()
-def client(app):
-    return TestClient(app)
+@router.get("/api/ping")
+async def ping():
+    pass

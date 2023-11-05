@@ -31,6 +31,7 @@ import { MaterialSlice, createMaterialSlice } from './MetarialSlice';
 import { useAnalysisStore } from './useAnalysisStore';
 import { useWebSocketStore } from './useWebSocketStore';
 import { useRecentProjectsStore } from './home/useRecentProjectsStore';
+import { useAPIStore } from './useAPIStore';
 
 export type AICStore = MessageSlice &
   CommandSlice &
@@ -50,7 +51,8 @@ export const useAICStore = create<AICStore>()((...a) => ({
   ...createMaterialSlice(...a),
 }));
 
-export const initStore = () => {
+export const initStore = async () => {
+  await useAPIStore.getState().initAPIStore();
   useAnalysisStore.getState().initAnalytics();
   useAICStore.getState().initSettings();
   useWebSocketStore.getState().initWebSocket();

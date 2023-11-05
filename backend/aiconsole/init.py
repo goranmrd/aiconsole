@@ -14,48 +14,49 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import argparse
 import logging
-import webbrowser
-import requests
-import time
-
+from logging import config
+from contextlib import asynccontextmanager
+import os
+from fastapi import FastAPI
+from aiconsole import projects
+from aiconsole.project_settings import project_settings
+from aiconsole.consts import log_config
 from uvicorn import run
 
-log = logging.getLogger(__name__)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await project_settings.init()
+    if projects.is_project_initialized():
+        await projects.reinitialize_project()
+    yield
 
-def open_browser_when_frontend_is_up(url:str):
-    log.info("Waiting for the frontend to start ...")
-    
-    while True:
-        try:
-            requests.get(url)
-            break
-        except requests.exceptions.ConnectionError:
-            log.debug("Waiting for the frontend to start ...")
-            time.sleep(0.2)
 
-    webbrowser.open(url)
+config.dictConfig(log_config)
+
+_log = logging.getLogger(__name__)
 
 
 def run_aiconsole(dev: bool):
-    threads = []
+    parser = argparse.ArgumentParser(description='Start the backend server.')
+    parser.add_argument('--port', type=int, required=True, help='Port to listen on.')
+    parser.add_argument('--origin', type=str, required=True, help='Origin for the frontend.')
 
-    for thread in threads:
-        thread.start()
-
+    port = parser.parse_args().port
+    origin = parser.parse_args().origin
+    os.environ['CORS_ORIGIN'] = origin
+    
     try:
         run(
             "aiconsole.app:app",
             host="0.0.0.0",
-            port=8000,
+            port=port,
             reload=dev,
             factory=True,
         )
     except KeyboardInterrupt:
-        log.info("Exiting ...")
-
-        for thread in threads:
-            thread.join()
+        _log.info("Exiting ...")
 
 
 def aiconsole_dev():
@@ -64,6 +65,7 @@ def aiconsole_dev():
 
 def aiconsole():
     run_aiconsole(dev=False)
+
 
 if __name__ == "__main__":
     aiconsole_dev()

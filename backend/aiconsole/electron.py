@@ -1,4 +1,3 @@
-from pdb import run
 from aiconsole.init import run_aiconsole
 
 if __name__ == "__main__":

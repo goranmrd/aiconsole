@@ -22,8 +22,8 @@ import { duotoneDark as vs2015 } from 'react-syntax-highlighter/dist/cjs/styles/
 import { AICMessage, AICMessageGroup } from '@/types/types';
 import { useAICStore } from '@/store/AICStore';
 import { BlinkingCursor } from '@/components/chat/BlinkingCursor';
-import { BASE_URL } from '@/api/Api';
 import { EditableContentMessage } from './EditableContentMessage';
+import { useAPIStore } from '@/store/useAPIStore';
 
 interface MessageProps {
   group: AICMessageGroup;
@@ -34,6 +34,7 @@ interface MessageProps {
 export function TextMessage({ group, message, isStreaming }: MessageProps) {
   const removeMessageFromGroup = useAICStore((state) => state.removeMessageFromGroup);
   const editMessageContent = useAICStore((state) => state.editMessageContent);
+  const getBaseURL = useAPIStore((state) => state.getBaseURL);
 
   const handleRemoveClick = useCallback(() => {
     removeMessageFromGroup(group.id, message.id);
@@ -61,9 +62,9 @@ export function TextMessage({ group, message, isStreaming }: MessageProps) {
                 components={{
                   img: ({ src, ...props }) => {
                     return (
-                      <a href={`${BASE_URL}/image?path=${src}`} target="_blank">
+                      <a href={`${getBaseURL()}/image?path=${src}`} target="_blank">
                         <img
-                          src={`${BASE_URL}/image?path=${src}`}
+                          src={`${getBaseURL()}/image?path=${src}`}
                           {...props}
                           className=" max-w-xs rounded-md mr-5"
                           alt={props.alt}

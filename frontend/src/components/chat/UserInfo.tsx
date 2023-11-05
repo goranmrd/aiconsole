@@ -17,6 +17,7 @@
 import { Link } from 'react-router-dom';
 
 import { useAICStore } from '@/store/AICStore';
+import { useAPIStore } from '@/store/useAPIStore';
 
 export function UserInfo({
   agent_id,
@@ -28,13 +29,14 @@ export function UserInfo({
   task?: string;
 }) {
   const agent = useAICStore((state) => state.getAgent(agent_id));
+  const getBaseURL = useAPIStore((state) => state.getBaseURL);
 
   return (
     <div className="flex-none items-center flex flex-col">
       {agent && (
         <img
           title={`${agent?.name || agent?.id}${task ? ` tasked with:\n${task}` : ``}`}
-          src={`http://localhost:8000/profile/${agent.id}.jpg`}
+          src={`${getBaseURL()}/profile/${agent.id}.jpg`}
           className="w-14 h-14 rounded-full mb-3  border shadow-md border-slate-800"
         />
       )}

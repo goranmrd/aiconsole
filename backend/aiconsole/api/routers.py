@@ -16,12 +16,13 @@
     
 from fastapi import APIRouter
 
-from aiconsole.api.endpoints import analyse, chats, commands_history, execute, profile, image, agents, run_code, ws, \
+from aiconsole.api.endpoints import analyse, chats, commands_history, execute, profile, image, agents, run_code, ping, ws, \
     materials, projects, project_settings
 
 
 app_router = APIRouter()
 
+app_router.include_router(ping.router)
 app_router.include_router(image.router)
 app_router.include_router(analyse.router)
 app_router.include_router(execute.router)
