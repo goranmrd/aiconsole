@@ -25,7 +25,7 @@ export function Analysis() {
   if (analysis.isAnalysisRunning || analysis.thinking_process) {
     return (
       <div className={cn('flex flex-row py-10 text-stone-400/50')}>
-        <div className="container flex mx-auto gap-5">
+        <div className="container flex mx-auto gap-5 ">
           <UserInfo
             agent_id={
               analysis.agent_id !== 'user' ? analysis.agent_id || '' : ''
@@ -42,7 +42,9 @@ export function Analysis() {
             {analysis.next_step && (
               <>
                 <br /> Next step:{' '}
-                <span className="text-secondary/50">{analysis.next_step}</span>
+                <span className="text-secondary/50 leading-[24px]">
+                  {analysis.next_step}
+                </span>
               </>
             )}{' '}
             {analysis.isAnalysisRunning && <BlinkingCursor />}
