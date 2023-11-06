@@ -32,7 +32,9 @@ interface MessageProps {
 }
 
 export function TextMessage({ group, message, isStreaming }: MessageProps) {
-  const removeMessageFromGroup = useAICStore((state) => state.removeMessageFromGroup);
+  const removeMessageFromGroup = useAICStore(
+    (state) => state.removeMessageFromGroup,
+  );
   const editMessageContent = useAICStore((state) => state.editMessageContent);
   const getBaseURL = useAPIStore((state) => state.getBaseURL);
 
@@ -57,12 +59,15 @@ export function TextMessage({ group, message, isStreaming }: MessageProps) {
       <>
         {group.role !== 'user' && (
           <div className="flex-grow">
-            <div className="prose prose-stone dark:prose-invert">
+            <div className="prose prose-stone dark:prose-invert ">
               <ReactMarkdown
                 components={{
                   img: ({ src, ...props }) => {
                     return (
-                      <a href={`${getBaseURL()}/image?path=${src}`} target="_blank">
+                      <a
+                        href={`${getBaseURL()}/image?path=${src}`}
+                        target="_blank"
+                      >
                         <img
                           src={`${getBaseURL()}/image?path=${src}`}
                           {...props}
@@ -74,7 +79,8 @@ export function TextMessage({ group, message, isStreaming }: MessageProps) {
                   },
                   code(props) {
                     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                    const { children, className, inline, node, ...rest } = props;
+                    const { children, className, inline, node, ...rest } =
+                      props;
                     const match = /language-(\w+)/.exec(className || '');
                     return !inline && match ? (
                       <SyntaxHighlighter

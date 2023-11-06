@@ -20,36 +20,56 @@ import { v4 as uuidv4 } from 'uuid';
 import { useAICStore } from '@/store/AICStore';
 import showNotification from '@/utils/showNotification';
 import { Button } from './Button';
-import { ArrowLeft, Settings, FolderOpen, FolderPlus } from 'lucide-react';
-import { Api } from '@/api/Api';
+import { ArrowLeft, FolderOpen, FolderPlus, Settings } from 'lucide-react';
+import { Api, getBaseURL } from '@/api/Api';
 import { useRecentProjectsStore } from '@/store/home/useRecentProjectsStore';
+import { MouseEvent, useEffect, useState } from 'react';
+import { cn } from '@/utils/styles';
 
 interface TopBarProps {
   variant?: 'recentProjects' | 'chat';
 }
 
 export function TopBar({ variant = 'chat' }: TopBarProps) {
+  const [isMenuActive, setMenuActive] = useState(false);
   const chooseProject = useAICStore((state) => state.chooseProject);
   const projectName = useAICStore((state) => state.projectName);
   const isProjectOpen = useAICStore((state) => state.isProjectOpen());
-  const recentProjects = useRecentProjectsStore((state) => state.recentProjects);
+  const recentProjects = useRecentProjectsStore(
+    (state) => state.recentProjects,
+  );
 
   const handleOpenClick = () => chooseProject();
+  const hideMenu = () => setMenuActive(false);
 
   const handleBackToProjects = () => Api.closeProject();
 
+  const toggle = (e: MouseEvent) => {
+    e.stopPropagation();
+    setMenuActive((prev) => !prev);
+  };
+
+  useEffect(() => {
+    window.addEventListener('click', hideMenu);
+
+    return () => {
+      window.removeEventListener('click', hideMenu);
+    };
+  }, []);
   return (
-    <div className="flex w-full flex-col px-[30px] py-[26px] border-b drop-shadow-md bg-transparent border-white/10">
+    <div className="flex w-full flex-col px-[30px] py-[26px] border-b drop-shadow-md bg-transparent border-white/10 relative z-40">
       <div className="flex gap-2 items-center">
         {variant === 'recentProjects' ? (
-          recentProjects.length > 0  && <div className="flex gap-[20px]">
-            <Button small onClick={handleOpenClick}>
-            <FolderPlus /> New Project ... 
-            </Button>
-            <Button small variant="secondary"  onClick={handleOpenClick}>
-              <FolderOpen /> Open Project ...
-            </Button>
-          </div>
+          recentProjects.length > 0 && (
+            <div className="flex gap-[20px]">
+              <Button small onClick={handleOpenClick}>
+                <FolderPlus /> New Project ...
+              </Button>
+              <Button small variant="secondary" onClick={handleOpenClick}>
+                <FolderOpen /> Open Project ...
+              </Button>
+            </div>
+          )
         ) : (
           <>
             <div className="flex font-bold text-sm gap-2 items-center pr-5">
@@ -57,7 +77,10 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
                 className="hover:animate-pulse cursor-pointer flex gap-2 items-center mr-[20px]"
                 to={`/chats/${uuidv4()}`}
               >
-                <img src={`favicon.svg`} className="h-[48px] w-[48px] cursor-pointer filter" />
+                <img
+                  src={`favicon.svg`}
+                  className="h-[48px] w-[48px] cursor-pointer filter"
+                />
               </Link>
               <Button small variant="secondary" onClick={handleBackToProjects}>
                 <ArrowLeft />
@@ -69,7 +92,10 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
             </div>
             {/* TODO: remove "materials" and "agents" links when sidebar ready */}
             <div className="flex gap-4">
-              <Link to="/materials" className="cursor-pointer text-sm  hover:text-gray-400 hover:animate-pulse">
+              <Link
+                to="/materials"
+                className="cursor-pointer text-sm  hover:text-gray-400 hover:animate-pulse"
+              >
                 MATERIALS
               </Link>
               <Link
@@ -88,34 +114,56 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
             </div>
           </>
         )}
-        <div className="ml-auto flex gap-[20px]">
-          {isProjectOpen && <Button
-            small
-            variant="secondary"
-            onClick={() =>
-              showNotification({
-                title: 'Not implemented',
-                message: 'Project settings is not implemented yet',
-                variant: 'error',
-              })
-            }
+        <div
+          className="text-gray-300 ml-auto flex gap-[20px]"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div
+            className={cn(
+              'flex flex-col p-4 rounded-[10px] border border-transparent justify-end items-end  absolute top-[10px] right-[14px]',
+              {
+                'bg-gray-900 shadow  border-gray-700': isMenuActive,
+              },
+            )}
           >
-            Project {projectName} settings
-          </Button> }
-          <Button
-            iconOnly
-            small
-            variant="secondary"
-            onClick={() =>
-              showNotification({
-                title: 'Not implemented',
-                message: 'Settings is not implemented yet',
-                variant: 'error',
-              })
-            }
-          >
-            <Settings />
-          </Button>
+            <img
+              src={`${getBaseURL()}/profile/user.jpg` || ''}
+              className="h-11 w-11 rounded-full border cursor-pointer shadow-md border-primary mb-3"
+              onClick={toggle}
+            />
+            {isMenuActive && (
+              <>
+                <div className="border-t border-gray-700 w-full my-[14px]"></div>
+                {isProjectOpen && (
+                  <div
+                    className="text-[14px] p-[8px] rounded-[5px] hover:bg-gray-700 cursor-pointer gap-[10px] w-full mb-[5px]"
+                    onClick={() =>
+                      showNotification({
+                        title: 'Not implemented',
+                        message: 'Project settings is not implemented yet',
+                        variant: 'error',
+                      })
+                    }
+                  >
+                    Project <span className="text-primary">{projectName} </span>{' '}
+                    settings
+                  </div>
+                )}
+                <div
+                  className="flex items-center text-[14px] p-[8px] rounded-[5px] hover:bg-gray-700 cursor-pointer gap-[10px] w-full"
+                  onClick={() =>
+                    showNotification({
+                      title: 'Not implemented',
+                      message: 'Settings is not implemented yet',
+                      variant: 'error',
+                    })
+                  }
+                >
+                  <Settings className="w-[18px] h-[18px]" /> Settings
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>
