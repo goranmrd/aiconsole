@@ -66,7 +66,7 @@ export function ConfirmationModal({
           <Button variant="secondary" bold small onClick={close}>
             {cancelButtonText}
           </Button>
-          <Button variant="primary" small onClick={handleConfirm}>
+          <Button variant="primary" small onClick={handleConfirm} dataAutofocus>
             {confirmButtonText}
           </Button>
         </div>
