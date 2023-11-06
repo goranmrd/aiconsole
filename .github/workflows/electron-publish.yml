@@ -14,8 +14,8 @@ jobs:
       matrix:
         os:
           [
-            # { name: 'linux', image: 'ubuntu-latest' },
-            { name: 'windows', image: 'windows-latest' },
+            { name: 'linux', image: 'ubuntu-latest' },
+            # { name: 'windows', image: 'windows-latest' },
             # { name: 'macos-x86', image: 'macos-latest' },
             # { name: 'macos-arm64', image: 'macos-latest-xlarge' },
           ]
