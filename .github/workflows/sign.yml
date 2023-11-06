@@ -37,7 +37,10 @@ jobs:
           node-version: 20
 
       - name: Make app
-        run: cd electron && yarn run make
+        run: |
+          cd electron && yarn run make
+          ls -l
+          tree
   
       - name: Zip the app for notarization
         run: ditto -c -k --keepParent "MyApp.app" "MyApp.zip"
