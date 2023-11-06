@@ -19,7 +19,7 @@ import hljs from 'highlight.js';
 import 'highlight.js/styles/vs2015.css';
 
 import { cn } from '@/utils/styles';
-import { useState } from 'react';
+import { FocusEvent, useState } from 'react';
 
 interface CodeInputProps {
   label?: string;
@@ -61,7 +61,11 @@ export function CodeInput({
     }
   };
 
-  const handleBlur = () => {
+  const handleBlur = (e: FocusEvent<HTMLDivElement> & FocusEvent<HTMLTextAreaElement>) => {
+    if (e.relatedTarget?.tagName.toUpperCase() === 'BUTTON') {
+      return;
+    }
+
     setFocus(false);
     onBlur?.();
   };
