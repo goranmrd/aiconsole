@@ -3,7 +3,7 @@ include = [
     "aiconsole/static/**/*"
 ]
 name = "aiconsole"
-version = "0.2.1"
+version = "0.2.1a2"
 description = "Run and expand your personal AI tools"
 authors = ["Maciej Cielecki <maciej.cielecki@10clouds.com>"]
 license = "Apache-2.0"
