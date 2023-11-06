@@ -1,10 +1,64 @@
 usage = "Notes on what AIConsole is and what it can do."
 content_type = "static_text"
 content_static_text = """
-# Notes on what AIConsole is and what it can do.
 
-AIConsole can be used as a personal assistant in your various projects.
+## Era of Hyper-Personalisation
 
+I think that not many people talk about one good thing that comes with AI, there are many talks that it will take our jobs, or that it's a treat to humanity.
+
+I belive that AI will actually do the opposity and put the power into the hands of the people.
+
+We are leaving the software area in which big monolith winner takes all startups like Uber or Facebook dominate.
+
+We are entering the area of hyper-personalisation and end user empowerment, which will be all about the power of the individual.
+
+In essence everyone will be running their own LLMs on their own needs and their own data, those AIs will engage with digital world for you.
+
+At 10Clouds AI Labs we have built a tool around those principles, an open source tool called AIConsole.
+
+What AIConsole is?
+* A ChatGPT like chatbot, but with multi agent support and ability to craft and store your own pieces of context.
+* A desktop application that you can run locally, console can do all the things that you can on your machine.
+* An editor that allows you to build and share your domain specfic AI tools (for example on github)
+* Describe in plain text how to perform a given task once and then AIConsole knows how to do it forever.
+* AIConsole is not based on vector databsase, it maximizes output from AI for each step of your tasks: A precise, efficient and automatic multi-agent RAG system on par with expert prompt engineering.
+* With AIConsole you can use plain English to build local, personalized AI tools that will get the job done.
+
+You can check out the test release on https://aiconsole.ai
+
+## How does it work in practice?
+
+Let's say I want to be able to send messages to my girlfriend using AI:
+
+1. Install it using instructions provided here: from github.com/10clouds/aiconsole
+2. Creatte a new project directory, for example personal-aiconsole
+3. Run aiconsole in that directory
+4. Try "Send an imessage to my girlfriend with a my calendar for Today".
+5. AIConsole will try to figure out how to do it and most likely fail, due to the fact that it does not know key things: Who is your girlfriends, where is your calendar, how to access it, how to send an imessage.
+6. Let's teach it those
+7. First create a "Social Circle" material in AIConsole and put there information about who is your girlfriend, if you are on a mac, AIConsole will know how to access your contacts app based on the name provided, but you can also supply full contact information here.
+8. Create a "Calendar Manual" material in AIConsole and put there information on where it is located, is it a google calendar local calendar. This will require experimentation as if you will be using local apps you will most likely do not need credentials, and when querying google calendar you will need to provide them along with maybe examples of code that work for it.
+We are currently working on creating a library of materials for common tools, and we want to work with community to build and share those materials.
+9. We already have build in imessage manual.
+10. Now try to re run the command, it should work. If it stumbles for any reason, reedit the materials, give additional information or instructions and try again.
+
+This way you can teach your AIConsole to do anything for you, you can also provide information about who you are, what you care about, your company services etc so for example it can write blog posts for you or respond in your name, you can provide access to various tools of yours etc.
+
+Looks good but first figure out how to structure those ideas into a blog post because maybe some of those should be put in seperate conceptual "buckets", also  besides the philosophical points include in the final blogpost more concrete information on what the current AIConsole provides:
+
+User can create projects for various domains, a book that they are writing, their personal and professional life, a RPG session that they are conducting or central information for accessing their startup data.
+
+In a project a user can create materials: both textual and small snippets of code that helps AIConsole in executing tasks.  They can also create agents which specialise in given tasks, like writing content. executing code or giving emotional support.
+
+The system will select the agents and materials needed for a given step of what the user needs.
+
+The user can use this in a similar way they would use ChatGPT but storing in it private data, manipulate their browser, manipulate and extract data from their local files, access apis. While right now it's designed for AI power user, with time it will become more and more accessible as we develop additional features.
+
+Everyone can get it from https://aiconsole.ai
+
+
+## More info:
+* AIConsole can be used as a personal assistant in your various projects.
 * AIConsole allows you to build your own AI-Powered, domain specific, multi-agent personal assistant
 * AIConsole offers you the ability to add or edit agents and materials. The more you spend time on it, the better it gets.
 * AIConsole can be run locally on a user machine
