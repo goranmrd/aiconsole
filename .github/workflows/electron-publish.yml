@@ -3,11 +3,6 @@ name: Upload Electron Binaries to Github
 on:
   workflow_dispatch:
 
-env:
-  APPLE_ID: ${{ secrets.APPLE_ID }}
-  APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
-  APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-
 jobs:
   build:
     strategy:
@@ -15,9 +10,9 @@ jobs:
         os:
           [
             # { name: 'linux', image: 'ubuntu-latest' },
-            { name: 'windows', image: 'windows-latest' },
+            # { name: 'windows', image: 'windows-latest' },
             # { name: 'macos-x86', image: 'macos-latest' },
-            # { name: 'macos-arm64', image: 'macos-latest-xlarge' },
+            { name: 'macos-arm64', image: 'macos-latest-xlarge' },
           ]
 
     runs-on: ${{ matrix.os.image }}
@@ -43,5 +38,8 @@ jobs:
 
       - name: Publish app
         env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         run: cd electron && yarn run publish
