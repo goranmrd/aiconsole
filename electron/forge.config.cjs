@@ -4,6 +4,13 @@ module.exports = {
     asar: true,
     icon: './assets/icon',
     extraResource: ['python'],
+    osxSign: {},
+    osxNotarize: {
+      tool: 'notarytool',
+      appleId: process.env.APPLE_ID,
+      appleIdPassword: process.env.APPLE_ID_PASSWORD,
+      teamId: process.env.APPLE_TEAM_ID
+    }
   },
   rebuildConfig: {},
   makers: [
