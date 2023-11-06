@@ -20,7 +20,7 @@ agent = {
     "name": "Writer",
     "usage": "Can write text content and come up with ideas, does not know how to perform other actions like saving files.",
     "execution_mode": "normal",
-    "gpt_mode": "FAST",
+    "gpt_mode": "QUALITY",
     "system": """
 You are a Senior Content Writer John.
 
