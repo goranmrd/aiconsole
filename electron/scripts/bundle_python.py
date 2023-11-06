@@ -62,9 +62,14 @@ def download_python():
     os.remove(file_name)
 
 def install_dependencies():
-    pip_path = python_dir / "bin" / "pip"
-    print(f"Installing aiconsole and dependencies  ({pip_path}) ...")
-    subprocess.run([pip_path, "install", Path("..") / "backend"], check=True)
+    if platform.system() == "Windows":
+        python_path = python_dir / "python.exe"
+        print(f"Installing aiconsole and dependencies  ({python_path} -m pip) ...")
+        subprocess.run([python_path, "-m", "pip", "install" , Path("..") / "backend"], check=True)
+    else:
+        pip_path = python_dir / "bin" / "pip"
+        print(f"Installing aiconsole and dependencies  ({pip_path}) ...")
+        subprocess.run([pip_path, "install", Path("..") / "backend"], check=True)
 
 def main():
     check_installation()
