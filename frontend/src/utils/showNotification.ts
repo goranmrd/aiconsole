@@ -10,11 +10,11 @@ type Notification = {
 type NotificationVariant = 'success' | 'error' | 'info';
 
 const getStyles = (variant: NotificationVariant) => {
-  let bodyClassNames = 'pl-5 border-l-[3px]';
-  const rootClassNames = 'w-[400px] ml-auto !bg-gray-600 !rounded-lg !py-5 !px-4 gap-5 !shadow-dark before:!hidden';
-  const titleClassNames = '!text-white !font-semibold !text-base';
-  const descriptionClassNames = '!text-gray-300 !font-normal !text-[15px]';
-  const closeButtonClassNames = '!text-gray-300 hover:!text-white hover:!bg-transparent self-start';
+  let bodyClassNames = 'pl-4 border-l-[3px]';
+  const rootClassNames = 'w-[400px] ml-auto !bg-gray-600 !rounded-lg !p-4 gap-5 !shadow-dark before:!hidden';
+  const titleClassNames = '!text-white !font-semibold !text-sm';
+  const descriptionClassNames = '!text-gray-300 !font-normal !text-[13px]';
+  const closeButtonClassNames = '!text-gray-300 hover:!text-white hover:!bg-transparent self-start !h-[16px] !w-[16px]';
 
   switch (variant) {
     case 'success':
@@ -24,7 +24,7 @@ const getStyles = (variant: NotificationVariant) => {
       bodyClassNames = cn(bodyClassNames, 'border-red-400')
       break;
     case 'info':
-      bodyClassNames = cn(bodyClassNames, 'border-gray-400')
+      bodyClassNames = cn(bodyClassNames, 'border-primary-dark')
       break;
   }
 
@@ -41,7 +41,10 @@ const showNotification = ({ title, message, variant = 'info' }: Notification) =>
   notifications.show({
     title,
     message,
-    classNames: {...getStyles(variant)}
+    classNames: {...getStyles(variant)},
+    closeButtonProps: {
+      size: 1
+    }
   });
 };
 
