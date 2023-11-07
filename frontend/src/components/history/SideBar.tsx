@@ -32,10 +32,6 @@ const SideBar = () => {
     event.stopPropagation();
     event.preventDefault();
 
-    if (!window.confirm('Are you sure you want to delete this chat?')) {
-      return;
-    }
-
     useAICStore.getState().deleteChat(id);
     useAICStore.getState().setChatId(uuidv4());
   }

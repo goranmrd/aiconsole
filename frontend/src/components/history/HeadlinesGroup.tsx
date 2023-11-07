@@ -20,6 +20,7 @@ import { Link } from 'react-router-dom';
 import { ChatHeadline } from '@/types/types';
 import { cn } from '@/utils/styles';
 import { Trash, Pencil, Check, X } from 'lucide-react';
+import { ConfirmationModal } from '../system/ConfirmationModal';
 
 export type HeadlinesGroupProps = {
   title: string;
@@ -99,9 +100,12 @@ const HeadlinesGroup = ({
                   className="h-4 w-4 flex-none"
                   onClick={() => onChatEdit(chat.message)}
                 />
-                <Trash
-                  className="h-4 w-4 flex-none"
-                  onClick={(e) => onChatDelete(e, chat.id)}
+                <ConfirmationModal
+                  confirmButtonText="Yes"
+                  cancelButtonText="No"
+                  onConfirm={(event) => onChatDelete(event, chat.id)}
+                  title={`Are you sure you want to remove ${chat.message} chat?`}
+                  openModalButton={<Trash className="h-4 w-4 flex-none" />}
                 />
               </>
             )}
