@@ -89,6 +89,12 @@ export const createProjectSlice: StateCreator<
     return !!get().projectPath;
   },
   chooseProject: async (path?: string) => {
+    // If we are in electron environment, use electron dialog, otherwise rely on the backend to open the dialog
+    if (!path && window?.electron?.openDirectoryPicker) {
+      path = await window?.electron?.openDirectoryPicker();
+      (await Api.chooseProject(path).json()) as { name: string; path: string };
+    }
+
     (await Api.chooseProject(path).json()) as { name: string; path: string };
   },
   initSettings: async () => {
