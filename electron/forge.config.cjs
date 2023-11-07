@@ -48,6 +48,7 @@ module.exports = {
     {
       name: '@electron-forge/maker-wix',
       config: {
+        authors: '10Clouds',
         icon: './assets/icon.ico',
       },
     },
