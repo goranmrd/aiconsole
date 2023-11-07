@@ -43,6 +43,7 @@ module.exports = {
       config: {
         icon: './assets/icon.icns',
       },
+    },
   ],
   publishers: [
     {
