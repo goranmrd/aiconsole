@@ -25,9 +25,11 @@ jobs:
         run: |
           if (-not (Test-Path "C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe")) {
             Write-Output "WiX Toolset is not installed"
+            exit 1
           }
           if (-not (Test-Path "C:\Program Files (x86)\WiX Toolset v3.11\bin\light.exe")) {
             Write-Output "WiX Toolset is not installed"
+            exit 1
           }
       # - name: Set up Python
       #   uses: actions/setup-python@v4
