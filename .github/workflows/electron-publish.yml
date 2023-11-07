@@ -29,6 +29,9 @@ jobs:
         run: |
           "C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe" -?
 
+      - name: Display system PATH
+        run: echo $Env:Path
+
       # - name: Set up Python
       #   uses: actions/setup-python@v4
       #   with:
