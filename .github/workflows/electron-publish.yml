@@ -24,15 +24,12 @@ jobs:
       - name: Add WiX Toolset to PATH
         shell: PowerShell
         run: |
-          $env:Path += ";C:\Program Files (x86)\WiX Toolset v3.11\bin"
+          $env:GITHUB_PATH += ";C:\Program Files (x86)\WiX Toolset v3.11\bin"
 
       - name: Check if WiX Toolset is installed
         shell: cmd
         run: |
-          echo $env:Path
-
-      - name: Display system PATH
-        run: echo $Env:Path
+          echo $env:GITHUB_PATH
 
       # - name: Set up Python
       #   uses: actions/setup-python@v4
