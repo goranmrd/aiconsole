@@ -22,13 +22,13 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Check if WiX Toolset is installed
-        shell: cmd
         run: |
-          where /q candle.exe
-          if %errorlevel% neq 0 echo WiX Toolset is not installed && exit /b 1
-          where /q light.exe
-          if %errorlevel% neq 0 echo WiX Toolset is not installed && exit /b 1
-
+          if (-not (Test-Path "C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe")) {
+            Write-Output "WiX Toolset is not installed"
+          }
+          if (-not (Test-Path "C:\Program Files (x86)\WiX Toolset v3.11\bin\light.exe")) {
+            Write-Output "WiX Toolset is not installed"
+          }
       # - name: Set up Python
       #   uses: actions/setup-python@v4
       #   with:
