@@ -21,9 +21,12 @@ jobs:
       - name: Github checkout
         uses: actions/checkout@v3
 
-      - name: Check if light.exe exists on Windows
+      - name: Check if WiX Toolset is installed
         run: |
-          dir "C:\Program Files (x86)\Windows Kits\10\bin\x86" /b
+          where /q candle.exe
+          if %errorlevel% neq 0 echo WiX Toolset is not installed && exit /b 1
+          where /q light.exe
+          if %errorlevel% neq 0 echo WiX Toolset is not installed && exit /b 1
 
       # - name: Set up Python
       #   uses: actions/setup-python@v4
