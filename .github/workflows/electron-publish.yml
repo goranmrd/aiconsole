@@ -21,25 +21,29 @@ jobs:
       - name: Github checkout
         uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-
-      - name: Install Python packages
+      - name: Check if light.exe exists on Windows
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install requests
+          dir "C:\Program Files (x86)\Windows Kits\10\bin\x86" /b
 
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
+      # - name: Set up Python
+      #   uses: actions/setup-python@v4
+      #   with:
+      #     python-version: '3.10'
 
-      - name: Publish app
-        env:
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: cd electron && yarn run publish
+      # - name: Install Python packages
+      #   run: |
+      #     python -m pip install --upgrade pip
+      #     python -m pip install requests
+
+      # - name: Use Node.js
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: 20
+
+      # - name: Publish app
+      #   env:
+      #     APPLE_ID: ${{ secrets.APPLE_ID }}
+      #     APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+      #     APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      #     GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      #   run: cd electron && yarn run publish
