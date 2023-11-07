@@ -13,7 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
+
 from enum import Enum
 from typing import Dict, Literal
 from pydantic import BaseModel
@@ -23,6 +23,7 @@ class GPTModel(str, Enum):
     GPT_4_0613 = "gpt-4-0613"
     GPT_35_TURBO_0613 = "gpt-3.5-turbo-0613"
     GPT_35_TURBO_16k_0613 = "gpt-3.5-turbo-16k-0613"
+    GPT_4_11106_PREVIEW =  "gpt-4-1106-preview"
 
 
 class GPTMode(str, Enum):
@@ -55,5 +56,9 @@ MODEL_DATA: Dict[str, GPTModelData] = {
     GPTModel.GPT_35_TURBO_16k_0613: GPTModelData(
         max_tokens=16384,
         encoding=GPTEncoding.GPT_35,
+    ),
+    GPTModel.GPT_4_11106_PREVIEW: GPTModelData(
+        max_tokens=128000,
+        encoding=GPTEncoding.GPT_4,
     ),
 }

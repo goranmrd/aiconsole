@@ -152,7 +152,7 @@ class GPTRequest:
             )
 
     def get_model(self, mode: GPTMode) -> str:
-        model = GPTModel.GPT_4_0613
+        model = GPTModel.GPT_4_11106_PREVIEW
         if mode == GPTMode.FAST:
             model = GPTModel.GPT_35_TURBO_16k_0613
             used_tokens = self.count_tokens_for_model(model) + self.max_tokens
