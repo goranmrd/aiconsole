@@ -153,11 +153,11 @@ class GPTRequest:
 
     def get_model(self, mode: GPTMode) -> str:
         model = GPTModel.GPT_4_11106_PREVIEW
-        if mode == GPTMode.FAST:
-            model = GPTModel.GPT_35_TURBO_16k_0613
-            used_tokens = self.count_tokens_for_model(model) + self.max_tokens
-
-            if used_tokens < MODEL_DATA[GPTModel.GPT_35_TURBO_0613].max_tokens * 0.9:
-                model = GPTModel.GPT_35_TURBO_0613
+        # if mode == GPTMode.FAST:
+        #     model = GPTModel.GPT_35_TURBO_16k_0613
+        #     used_tokens = self.count_tokens_for_model(model) + self.max_tokens
+        # 
+        #     if used_tokens < MODEL_DATA[GPTModel.GPT_35_TURBO_0613].max_tokens * 0.9:
+        #        model = GPTModel.GPT_35_TURBO_0613
 
         return model.value
