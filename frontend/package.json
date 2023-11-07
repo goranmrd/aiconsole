@@ -8,7 +8,7 @@
     "build": "tsc && vite build --config vite.renderer.config.ts",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "postinstall": "if [ \"$npm_config_platform\" != \"win32\" ]; then npm install fs-xattr@^0.4.0; fi"
+    "postinstall": "node postinstall.js"
   },
   "productName": "Electron Starter",
   "main": ".vite/build/main.js",
