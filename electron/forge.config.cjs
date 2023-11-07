@@ -17,7 +17,6 @@ module.exports = {
     {
       name: '@electron-forge/maker-squirrel',
       config: {
-        authors: '10Clouds',
         // An URL to an ICO file to use as the application icon (displayed in Control Panel > Programs and Features).
         iconUrl: 'https://url/to/icon.ico',
         // The ICO file to use as the icon for the generated Setup.exe
@@ -44,14 +43,6 @@ module.exports = {
       config: {
         icon: './assets/icon.icns',
       },
-    },
-    {
-      name: '@electron-forge/maker-wix',
-      config: {
-        authors: '10Clouds',
-        icon: './assets/icon.ico',
-      },
-    },
   ],
   publishers: [
     {
