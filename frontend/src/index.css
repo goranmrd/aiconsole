@@ -29,7 +29,7 @@ body {
 
 * {
   font-family: 'Inter', sans-serif;
-  line-height: normal;
+  line-height: 24px;
 }
 
 .downlight {
