@@ -21,13 +21,16 @@ jobs:
       - name: Github checkout
         uses: actions/checkout@v3
 
+      - name: Add WiX Toolset to PATH
+        run: echo "C:\Program Files (x86)\WiX Toolset v3.11\bin" >> $GITHUB_PATH
+
       - name: Check if WiX Toolset is installed
         run: |
-          if (-not (Test-Path "C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe")) {
+          if (-not (Get-Command candle.exe -ErrorAction SilentlyContinue)) {
             Write-Output "WiX Toolset is not installed"
             exit 1
           }
-          if (-not (Test-Path "C:\Program Files (x86)\WiX Toolset v3.11\bin\light.exe")) {
+          if (-not (Get-Command light.exe -ErrorAction SilentlyContinue)) {
             Write-Output "WiX Toolset is not installed"
             exit 1
           }
