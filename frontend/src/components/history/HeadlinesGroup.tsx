@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { ChatHeadline } from '@/types/types';
@@ -29,6 +29,16 @@ export type HeadlinesGroupProps = {
   onHeadlineChange: (chatId: string, newHeadline: string) => void;
 };
 
+const addEventListeners = (callbackFn: (event: MouseEvent | KeyboardEvent) => void) => {
+  document.addEventListener('mousedown', callbackFn);
+  document.addEventListener('keydown', callbackFn);
+}
+
+const removeEventListeners = (callbackFn: (event: MouseEvent | KeyboardEvent) => void) => {
+  document.removeEventListener('mousedown', callbackFn);
+  document.removeEventListener('keydown', callbackFn);
+}
+
 const HeadlinesGroup = ({
   title,
   headlines,
@@ -39,10 +49,53 @@ const HeadlinesGroup = ({
   const [isEditMode, setIsEditMode] = useState(false);
   const [inputText, setInputText] = useState('');
 
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const closeButtonRef = useRef<SVGSVGElement | null>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent | KeyboardEvent) => {
+      if (event.type === 'keydown') {
+        if ((event as KeyboardEvent).key === 'Escape') {
+          disableEditMode();
+          return;
+        }
+
+        if ((event as KeyboardEvent).key === 'Enter') {
+          onAccept(currentChatId);
+          return;
+        }
+      }
+
+      if (
+        inputRef.current &&
+        !inputRef.current.contains(event.target as Node) &&
+        closeButtonRef.current &&
+        !closeButtonRef.current.contains(event.target as Node)
+      ) {
+        onAccept(currentChatId);
+      }
+    }
+
+    if (isEditMode) {
+      addEventListeners(handleClickOutside);
+    } else {
+      removeEventListeners(handleClickOutside);
+    }
+
+    return () => {
+      removeEventListeners(handleClickOutside);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEditMode])
+
+  const disableEditMode = () => {
+    setIsEditMode(false);
+    setInputText('');
+  }
+
   const handleLinkClick = (chatId: string) => {
     if (chatId !== currentChatId && isEditMode) {
-      setIsEditMode(false);
-      setInputText('');
+      disableEditMode();
     }
   };
 
@@ -51,8 +104,8 @@ const HeadlinesGroup = ({
     setInputText(message);
   };
 
-  const OnAccept = (chatId: string) => {
-    onHeadlineChange(chatId, inputText);
+  const onAccept = (chatId: string) => {
+    onHeadlineChange(chatId, inputRef.current?.value || '');
     setIsEditMode(false);
   };
 
@@ -81,13 +134,14 @@ const HeadlinesGroup = ({
                   className="font-normal outline-1 outline-white/20 ring-secondary/30 bg-black resize-none overflow-hidden rounded-lg outline focus:outline-none focus:ring-2"
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
+                  ref={inputRef}
                 />
                 <div className="flex-grow flex items-center gap-2">
                   <Check
                     className="h-4 w-4"
-                    onClick={() => OnAccept(chat.id)}
+                    onClick={() => onAccept(chat.id)}
                   />
-                  <X className="h-4 w-4" onClick={() => setIsEditMode(false)} />
+                  <X className="h-4 w-4" onClick={() => setIsEditMode(false)} ref={closeButtonRef} />
                 </div>
               </div>
             ) : (
