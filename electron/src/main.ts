@@ -132,10 +132,18 @@ async function createWindow() {
 }
 
 function findPathToPython() {
-  if (isPackaged) {
-    return path.join(process.resourcesPath, "python/bin/python3.10");
+  let pythonPath;
+
+  if (process.platform === "win32") {
+    pythonPath = path.join("python", "python.exe");
   } else {
-    return path.join(__dirname, "../..", "python/bin/python3.10");
+    pythonPath = path.join("python", "bin", "python3.10"); //"python/bin/python3.10"
+  }
+
+  if (isPackaged) {
+    return path.join(process.resourcesPath, pythonPath);
+  } else {
+    return path.join(__dirname, "../..", pythonPath);
   }
 }
 
