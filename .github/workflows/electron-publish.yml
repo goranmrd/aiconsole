@@ -30,8 +30,6 @@ jobs:
         shell: cmd
         run: |
           echo $env:Path
-          "candle.exe" -?
-          "light.exe" -?
 
       - name: Display system PATH
         run: echo $Env:Path
