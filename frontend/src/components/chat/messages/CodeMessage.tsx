@@ -43,14 +43,14 @@ export function CodeMessage({ group, message, isStreaming }: MessageProps) {
   const [folded, setFolded] = useState(alwaysExecuteCode);
   const doRun = useAICStore((state) => state.doRun);
   const enableAutoCodeExecution = useAICStore(
-    (state) => state.enableAutoCodeExecution,
+    (state) => state.setAutoCodeExecution,
   );
   const isViableForRunningCode = useAICStore(
     (state) => state.isViableForRunningCode,
   );
 
   const handleAlwaysRunClick = () => {
-    enableAutoCodeExecution();
+    enableAutoCodeExecution(true);
     doRun(group.id, message.id);
   };
 
@@ -70,7 +70,8 @@ export function CodeMessage({ group, message, isStreaming }: MessageProps) {
   }, [message.id, group.id, removeMessageFromGroup]);
 
   //Either executing or streaming while there are still no output messages
-  const shouldDisplaySpinner = message.is_code_executing || (isStreaming && message.outputs.length === 0)
+  const shouldDisplaySpinner =
+    message.is_code_executing || (isStreaming && message.outputs.length === 0);
 
   return (
     <div className="flex justify-between items-center">

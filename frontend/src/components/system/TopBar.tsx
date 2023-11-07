@@ -20,11 +20,12 @@ import { v4 as uuidv4 } from 'uuid';
 import { useAICStore } from '@/store/AICStore';
 import showNotification from '@/utils/showNotification';
 import { Button } from './Button';
-import { ArrowLeft, FolderOpen, FolderPlus, Settings } from 'lucide-react';
+import { ArrowLeft, FolderOpen, FolderPlus } from 'lucide-react';
 import { Api, getBaseURL } from '@/api/Api';
 import { useRecentProjectsStore } from '@/store/home/useRecentProjectsStore';
 import { MouseEvent, useEffect, useState } from 'react';
 import { cn } from '@/utils/styles';
+import { GlobalSettings } from '../modals/GlobalSettings';
 
 interface TopBarProps {
   variant?: 'recentProjects' | 'chat';
@@ -56,6 +57,7 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
       window.removeEventListener('click', hideMenu);
     };
   }, []);
+
   return (
     <div className="flex w-full flex-col px-[30px] py-[26px] border-b drop-shadow-md bg-transparent border-white/10 relative z-40">
       <div className="flex gap-2 items-center">
@@ -149,18 +151,7 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
                     settings
                   </div>
                 )}
-                <div
-                  className="flex items-center text-[14px] p-[8px] rounded-[5px] hover:bg-gray-700 cursor-pointer gap-[10px] w-full"
-                  onClick={() =>
-                    showNotification({
-                      title: 'Not implemented',
-                      message: 'Settings is not implemented yet',
-                      variant: 'error',
-                    })
-                  }
-                >
-                  <Settings className="w-[18px] h-[18px]" /> Settings
-                </div>
+                <GlobalSettings onClick={hideMenu} />
               </>
             )}
           </div>
