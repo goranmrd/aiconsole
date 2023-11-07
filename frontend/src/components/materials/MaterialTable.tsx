@@ -20,7 +20,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { useAICStore } from '@/store/AICStore';
 import { ConfirmationModal } from '../system/ConfirmationModal';
-import { Trash, Zap, Check, Ban, Layers2, Lock } from 'lucide-react';
+import { Trash, Zap, Check, Ban, Layers2, Lock, Copy } from 'lucide-react';
 import { cn } from '@/utils/styles';
 
 interface MaterialTableProps {
@@ -97,7 +97,7 @@ export function MaterialTable({ materials }: MaterialTableProps) {
             </td>
             <td className="p-4">
               <div className=" flex flex-row items-center justify-center w-full h-full gap-2">
-                <Layers2
+                <Copy
                   onClick={redirectToMaterialPage(`new?copy=${material.id}`)}
                   className="h-5 w-5 cursor-pointer"
                 />
