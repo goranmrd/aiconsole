@@ -25,11 +25,11 @@ jobs:
         shell: PowerShell
         run: |
           $env:Path += ";C:\Program Files (x86)\WiX Toolset v3.11\bin"
-          echo $env:Path
 
       - name: Check if WiX Toolset is installed
         shell: cmd
         run: |
+          echo $env:Path
           "candle.exe" -?
           "light.exe" -?
 
