@@ -25,15 +25,10 @@ jobs:
         run: echo "C:\Program Files (x86)\WiX Toolset v3.11\bin" >> $GITHUB_PATH
 
       - name: Check if WiX Toolset is installed
+        shell: cmd
         run: |
-          if (-not (Get-Command candle.exe -ErrorAction SilentlyContinue)) {
-            Write-Output "WiX Toolset is not installed"
-            exit 1
-          }
-          if (-not (Get-Command light.exe -ErrorAction SilentlyContinue)) {
-            Write-Output "WiX Toolset is not installed"
-            exit 1
-          }
+          "C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe" -?
+
       # - name: Set up Python
       #   uses: actions/setup-python@v4
       #   with:
