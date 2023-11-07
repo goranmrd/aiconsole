@@ -35,7 +35,7 @@ export function MaterialsPage() {
       </Link>
 
       <div className="flex flex-col h-full overflow-y-auto p-12">
-      {materials && <MaterialTable materials={materials} />}
+        {materials && <MaterialTable materials={materials} />}
       </div>
     </div>
   );

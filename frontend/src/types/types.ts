@@ -39,11 +39,23 @@ export type AICMessageGroup = {
 };
 
 export type MaterialDefinedIn = 'aiconsole' | 'project';
-export const materialDefinedInOptions: MaterialDefinedIn[] = ['aiconsole', 'project'];
+export const materialDefinedInOptions: MaterialDefinedIn[] = [
+  'aiconsole',
+  'project',
+];
 export type MaterialStatus = 'disabled' | 'enabled' | 'forced';
-export const materialStatusOptions: MaterialStatus[] = ['disabled', 'enabled', 'forced'];
+export const materialStatusOptions: MaterialStatus[] = [
+  'disabled',
+  'enabled',
+  'forced',
+];
 export type MaterialContentType = 'static_text' | 'dynamic_text' | 'api';
-export const materialContenTypeOptions: MaterialContentType[] = ['static_text', 'dynamic_text', 'api'];
+export const materialContenTypeOptions: MaterialContentType[] = [
+  'static_text',
+  'dynamic_text',
+  'api',
+];
+export type TabsValues = 'chats' | 'materials' | 'agents';
 
 export type Material = {
   id: string;

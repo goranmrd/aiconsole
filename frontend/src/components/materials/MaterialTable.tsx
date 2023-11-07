@@ -41,7 +41,7 @@ export function MaterialTable({ materials }: MaterialTableProps) {
     event.stopPropagation();
     event.preventDefault();
     deleteMaterial(id);
-  }
+  };
 
   return (
     <table className="w-full table-auto text-left">
@@ -83,7 +83,7 @@ export function MaterialTable({ materials }: MaterialTableProps) {
               onClick={redirectToMaterialPage(material.id)}
             >
               <div className="flex items-center">
-                  {material.name}
+                {material.name}
                 {material.defined_in === 'aiconsole' && (
                   <Lock className="w-4 h-5 inline ml-2" />
                 )}

@@ -47,7 +47,7 @@ export default {
         'primary-dark': '#966CFF',
         'secondary': '#F1FF99',
         'secondary-light': '#FFFFEE',
-        'secondary-dark': '#D5FF00',
+        'secondary-dark': '#D5FF00', 
         'danger': '#CF4840',
         'success': '#60C164',
         'gray': {

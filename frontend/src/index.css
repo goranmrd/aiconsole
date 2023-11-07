@@ -111,3 +111,8 @@ body {
   /* Change the color of the thumb on general hover to a visible color, with 60% opacity. */
   background-color: #ffffff99;
 }
+
+.tab-hover:hover {
+  border-color: #A6A6A6;
+  transition: .3s all ease;
+}

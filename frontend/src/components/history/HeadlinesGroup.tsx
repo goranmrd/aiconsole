@@ -18,8 +18,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { ChatHeadline } from '@/types/types';
-import { cn } from '@/utils/styles';
-import { Trash, Pencil, Check, X } from 'lucide-react';
+import SideBarItem from './SideBarItem';
 
 export type HeadlinesGroupProps = {
   title: string;
@@ -37,28 +36,20 @@ const HeadlinesGroup = ({
   onHeadlineChange,
 }: HeadlinesGroupProps) => {
   const [isEditMode, setIsEditMode] = useState(false);
-  const [inputText, setInputText] = useState('');
 
   const handleLinkClick = (chatId: string) => {
     if (chatId !== currentChatId && isEditMode) {
       setIsEditMode(false);
-      setInputText('');
     }
   };
 
-  const onChatEdit = (message: string) => {
-    setIsEditMode(true);
-    setInputText(message);
-  };
-
-  const OnAccept = (chatId: string) => {
-    onHeadlineChange(chatId, inputText);
-    setIsEditMode(false);
+  const rename = (value: string, chatId: string) => {
+    onHeadlineChange(chatId, value);
   };
 
   return (
     <>
-      <h3 className="uppercase px-6 py-2 text-gray-400 text-xs leading-5">
+      <h3 className="uppercase px-[9px] py-[5px] text-gray-400 text-[12px] leading-[18px]">
         {title}
       </h3>
       {headlines.map((chat) => {
@@ -68,43 +59,17 @@ const HeadlinesGroup = ({
           <Link
             to={`/chats/${chat.id}`}
             onClick={() => handleLinkClick(chat.id)}
-            className={cn(
-              ' hover:bg-white/5 px-6 h-full py-3 cursor-pointer flex flex-row gap-3 items-center text-base text-gray-300 leading-[27px]',
-              selected ? 'bg-white/5 font-bold text-white' : '',
-            )}
             title={chat.message}
             key={chat.id}
           >
-            {isEditMode && selected ? (
-              <div className="flex gap-2 w-full">
-                <input
-                  className="font-normal outline-1 outline-white/20 ring-secondary/30 bg-black resize-none overflow-hidden rounded-lg outline focus:outline-none focus:ring-2"
-                  value={inputText}
-                  onChange={(e) => setInputText(e.target.value)}
-                />
-                <div className="flex-grow flex items-center gap-2">
-                  <Check
-                    className="h-4 w-4"
-                    onClick={() => OnAccept(chat.id)}
-                  />
-                  <X className="h-4 w-4" onClick={() => setIsEditMode(false)} />
-                </div>
-              </div>
-            ) : (
-              <div className="truncate flex-grow">{chat.message}</div>
-            )}
-            {selected && !isEditMode && (
-              <>
-                <Pencil
-                  className="h-4 w-4 flex-none"
-                  onClick={() => onChatEdit(chat.message)}
-                />
-                <Trash
-                  className="h-4 w-4 flex-none"
-                  onClick={(e) => onChatDelete(e, chat.id)}
-                />
-              </>
-            )}
+            <SideBarItem
+              type="chats"
+              active={selected}
+              id={chat.id}
+              label={chat.message}
+              onDelete={(event) => onChatDelete(event, chat.id)}
+              onRename={(value) => rename(value, chat.id)}
+            />
           </Link>
         );
       })}

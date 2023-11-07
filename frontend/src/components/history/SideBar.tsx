@@ -14,87 +14,49 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Link } from 'react-router-dom';
-import { v4 as uuidv4 } from 'uuid';
-import { Plus } from 'lucide-react';
-import { useAICStore } from '@/store/AICStore';
-import useGroupByDate from '@/hooks/useGroupByDate';
-import HeadlinesGroup from '@/components/history/HeadlinesGroup';
+import { Tabs } from '@mantine/core';
+import { useState } from 'react';
+import { ChatSidebarTab } from './ChatSidebarTab';
+import { MaterialsSidebarTab } from './MaterialsSidebarTab';
+import { AgentsSidebarTab } from './AgentsSidebarTab';
+import { TabsValues } from '@/types/types';
 
 const SideBar = () => {
-  const chatHeadlines = useAICStore((state) => state.chatHeadlines);
-  const chatId = useAICStore((state) => state.chatId);
-
-  const { today, yesterday, previous7Days, older } =
-    useGroupByDate(chatHeadlines);
-
-  function handleDelete(event: React.MouseEvent, id: string) {
-    event.stopPropagation();
-    event.preventDefault();
-
-    if (!window.confirm('Are you sure you want to delete this chat?')) {
-      return;
-    }
-
-    useAICStore.getState().deleteChat(id);
-    useAICStore.getState().setChatId(uuidv4());
-  }
-
-  const handleHeadlineChange = (chatId: string, newHeadline: string) => {
-    useAICStore.getState().updateChatHeadline(chatId, newHeadline);
-  };
+  const [activeTab, setActiveTab] = useState<TabsValues | string | null>(
+    'chats',
+  );
 
   return (
     <div
-      className={`min-w-[240px] w-[240px] h-full bg-gray-900/30 p-1 drop-shadow-md flex flex-col border-r border-white/10`}
+      className={`min-w-[336px] w-[336px] h-full bg-gray-900 pl-[30px] py-[20px] drop-shadow-md flex flex-col border-r border-t border-gray-600`}
     >
-      <Link
-        to={`/chats/${uuidv4()}`}
-        className="cursor-pointer p-6 flex font-bold text-sm"
+      <Tabs
+        value={activeTab}
+        onChange={setActiveTab}
+        color="#F1FF99"
+        classNames={{
+          tab: 'px-[26px] py-[10px] [&:first-letter:] tab-hover font-medium',
+        }}
+        vars={() => ({
+          root: {},
+          list: { '--_tab-border-color': '#3E3E3E' },
+          tab: {
+            '--mantine-spacing-xs': '10px 0px',
+            '--mantine-spacing-md': '25px 0px',
+            '--mantine-font-size-sm': '14px',
+            '--_tab-hover-color': 'transparent',
+          },
+        })}
       >
-        <button className=" bg-white/5 w-full hover:bg-white/10 p-2 h-10 rounded-full flex flex-row gap-2 items-center border border-white/10 pl-3 pr-2">
-          <span className="flex-grow text-left">New Chat</span>{' '}
-          <Plus className="w-5 h-5" />
-        </button>
-      </Link>
-      <div className="overflow-y-auto flex flex-col text-sm">
-        {!!today.length && (
-          <HeadlinesGroup
-            title="Today"
-            headlines={today}
-            currentChatId={chatId}
-            onChatDelete={handleDelete}
-            onHeadlineChange={handleHeadlineChange}
-          />
-        )}
-        {!!yesterday.length && (
-          <HeadlinesGroup
-            title="Yesterday"
-            headlines={yesterday}
-            currentChatId={chatId}
-            onChatDelete={handleDelete}
-            onHeadlineChange={handleHeadlineChange}
-          />
-        )}
-        {!!previous7Days.length && (
-          <HeadlinesGroup
-            title="Previous 7 days"
-            headlines={previous7Days}
-            currentChatId={chatId}
-            onChatDelete={handleDelete}
-            onHeadlineChange={handleHeadlineChange}
-          />
-        )}
-        {!!older.length && (
-          <HeadlinesGroup
-            title="Older than 7 days"
-            headlines={older}
-            currentChatId={chatId}
-            onChatDelete={handleDelete}
-            onHeadlineChange={handleHeadlineChange}
-          />
-        )}
-      </div>
+        <Tabs.List grow justify="center" className="mb-[15px] mr-[30px]">
+          <Tabs.Tab value="chats">Chats</Tabs.Tab>
+          <Tabs.Tab value="materials">Materials</Tabs.Tab>
+          <Tabs.Tab value="agents">Agents</Tabs.Tab>
+        </Tabs.List>
+        <ChatSidebarTab />
+        <MaterialsSidebarTab />
+        <AgentsSidebarTab />
+      </Tabs>
     </div>
   );
 };
