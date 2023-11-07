@@ -230,26 +230,28 @@ app.whenReady().then(() => {
 
 // This should be placed in your main process code
 app.on("ready", () => {
-  // Define a template for your menu
-  const dockMenu = Menu.buildFromTemplate([
-    {
-      label: "New Window",
-      click() {
-        createWindow();
+  if (process.platform === "darwin") {
+    // Define a template for your menu
+    const dockMenu = Menu.buildFromTemplate([
+      {
+        label: "New Window",
+        click() {
+          createWindow();
+        },
       },
-    },
-    { type: "separator" },
-    {
-      label: "Settings",
-      click() {
-        console.log("Settings");
-        // Code to open settings
+      { type: "separator" },
+      {
+        label: "Settings",
+        click() {
+          console.log("Settings");
+          // Code to open settings
+        },
       },
-    },
-  ]);
+    ]);
 
-  // Set the menu for the dock
-  app.dock.setMenu(dockMenu);
+    // Set the menu for the dock
+    app.dock.setMenu(dockMenu);
+  }
 });
 
 app.on("ready", () => {
