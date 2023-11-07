@@ -130,19 +130,23 @@ const SideBarItem = ({
     }, 0);
   };
 
-  const hideRenameInput = () => {
+  const hideInput = () => {
     setIsEditMode(false);
   };
 
   const handleRename = () => {
-    onRename?.(inputText);
-    hideRenameInput();
+    if (inputText === '') {
+      setInputText(label);
+    } else {
+      onRename?.(inputText);
+    }
+    hideInput();
   };
 
   const handleKeyDown = (event: KeyboardEvent) => {
     if (event.code === 'Escape') {
       setInputText(label);
-      hideRenameInput();
+      hideInput();
     }
 
     if (event.code === 'Enter') {
@@ -204,9 +208,10 @@ const SideBarItem = ({
               className="min-w-[24px] min-h-[24px] w-[24px] h-[24px] "
               style={{ color }}
             />
+            {/* TODO: add validation for empty input value */}
             {isEditMode ? (
               <input
-                className="font-normal outline-none border border-gray-400 text-[14px] p-[5px] w-full text-white bg-gray-600 focus:border-primary resize-none overflow-hidden rounded-[4px]  focus:outline-none"
+                className="font-normal outline-none border h-[24px] border-gray-400 text-[14px] p-[5px] w-full text-white bg-gray-600 focus:border-primary resize-none overflow-hidden rounded-[4px]  focus:outline-none"
                 value={inputText}
                 ref={inputRef}
                 onBlur={handleRename}
