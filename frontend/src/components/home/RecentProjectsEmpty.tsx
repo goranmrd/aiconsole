@@ -18,9 +18,19 @@ import { useAICStore } from '@/store/AICStore';
 import { Button } from '../system/Button';
 import { FolderOpen, FolderPlus } from 'lucide-react';
 import { useState } from 'react';
+import { useProjectFileManager } from '@/hooks/useProjectFileManager';
+import { ConfirmationModal } from '../system/ConfirmationModal';
 
 export function RecentProjectsEmpty() {
-  const chooseProject = useAICStore((state) => state.chooseProject);
+  const {
+    isProject,
+    isNewProjectModalOpen,
+    isOpenProjectModalOpen,
+    openProject,
+    newProject,
+    resetIsProjectFlag,
+    openProjectConfirmation,
+  } = useProjectFileManager();
   const openAiApiKey = useAICStore((state) => state.openAiApiKey);
 
   const [inputText, setInputText] = useState('');
@@ -29,10 +39,6 @@ export function RecentProjectsEmpty() {
 
   const onFormSubmit = () => {
     setOpenAiApiKey(inputText);
-  };
-
-  const handleOpenClick = async () => {
-    await chooseProject();
   };
 
   return (
@@ -48,10 +54,28 @@ export function RecentProjectsEmpty() {
         </h1>
         {openAiApiKey ? (
           <div className="flex justify-center gap-[20px] mt-[36px]">
-            <Button small onClick={handleOpenClick}>
-              <FolderPlus /> Create Your First Project ...
+            <ConfirmationModal
+              confirmButtonText="Yes"
+              cancelButtonText="No"
+              opened={isProject === true && isNewProjectModalOpen}
+              onClose={resetIsProjectFlag}
+              onConfirm={openProjectConfirmation}
+              title={`This project already exists, do you want to open it?`}
+            />
+            <ConfirmationModal
+              confirmButtonText="Yes"
+              cancelButtonText="No"
+              opened={isProject === false && isOpenProjectModalOpen}
+              onClose={resetIsProjectFlag}
+              onConfirm={openProjectConfirmation}
+              title={`This project does not exists, do you want to create one?`}
+            />
+
+            <Button small onClick={newProject}>
+              <FolderPlus /> New Project ...
             </Button>
-            <Button small variant="secondary" onClick={handleOpenClick}>
+
+            <Button small variant="secondary" onClick={openProject}>
               <FolderOpen /> Open Project ...
             </Button>
           </div>

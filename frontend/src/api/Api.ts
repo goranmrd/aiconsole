@@ -129,6 +129,13 @@ const chooseProject = (path?: string) =>
     timeout: false,
   });
 
+const checkPath = (path?: string) =>
+  ky.post(`${getBaseURL()}/api/projects/checkPath`, {
+    json: { directory: path },
+    hooks,
+    timeout: false,
+  });
+
 const getCurrentProject = () =>
   ky.get(`${getBaseURL()}/api/projects/current`, { hooks });
 
@@ -223,6 +230,7 @@ export const Api = {
   previewMaterial,
   closeProject,
   chooseProject,
+  checkPath,
   getCurrentProject,
   getRecentProjects,
   removeRecentProject,

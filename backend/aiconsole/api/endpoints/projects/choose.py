@@ -46,13 +46,24 @@ def _ask_directory():
 class ChooseParams(BaseModel):
     directory: Optional[str] = None
 
-@router.post("/choose")
-async def choose_project(params: ChooseParams):
+@router.post("/checkPath")
+async def checkPath(params: ChooseParams):
     directory = Path(params.directory) if params.directory else None
-    
+
     if not directory:
         # Show a system select directory dialog
         directory = _ask_directory()
 
+    isProject = directory.joinpath("material").is_dir() or directory.joinpath("agent").is_dir()
+
+    return {"isProject": isProject, "path": str(directory)}
+        
+@router.post("/choose")
+async def choose_project(params: ChooseParams):
+    directory = Path(params.directory) if params.directory else None
+
     if directory:
         await change_project_directory(directory)
+        
+
+

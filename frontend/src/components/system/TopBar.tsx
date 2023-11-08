@@ -27,6 +27,8 @@ import { MouseEvent, useEffect, useState } from 'react';
 import { cn } from '@/utils/styles';
 import { GlobalSettings } from '../modals/GlobalSettings';
 import ImageWithFallback from './ImageWithFallback';
+import { ConfirmationModal } from './ConfirmationModal';
+import { useProjectFileManager } from '@/hooks/useProjectFileManager';
 
 interface TopBarProps {
   variant?: 'recentProjects' | 'chat';
@@ -34,22 +36,22 @@ interface TopBarProps {
 
 export function TopBar({ variant = 'chat' }: TopBarProps) {
   const [isMenuActive, setMenuActive] = useState(false);
-  const chooseProject = useAICStore((state) => state.chooseProject);
+  const {
+    isProject,
+    isNewProjectModalOpen,
+    isOpenProjectModalOpen,
+    openProject,
+    newProject,
+    resetIsProjectFlag,
+    openProjectConfirmation,
+  } = useProjectFileManager();
   const projectName = useAICStore((state) => state.projectName);
   const isProjectOpen = useAICStore((state) => state.isProjectOpen());
   const recentProjects = useRecentProjectsStore(
     (state) => state.recentProjects,
   );
 
-  const handleOpenClick = () => chooseProject();
   const hideMenu = () => setMenuActive(false);
-
-  const handleBackToProjects = () => Api.closeProject();
-
-  const toggle = (e: MouseEvent) => {
-    e.stopPropagation();
-    setMenuActive((prev) => !prev);
-  };
 
   useEffect(() => {
     window.addEventListener('click', hideMenu);
@@ -59,16 +61,41 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
     };
   }, []);
 
+  const handleBackToProjects = () => Api.closeProject();
+
+  const toggle = (e: MouseEvent) => {
+    e.stopPropagation();
+    setMenuActive((prev) => !prev);
+  };
+
   return (
     <div className="flex w-full flex-col px-[30px] py-[26px] border-b drop-shadow-md bg-transparent border-white/10 relative z-40 h-[101px]">
       <div className="flex gap-2 items-center">
         {variant === 'recentProjects' ? (
           recentProjects.length > 0 && (
             <div className="flex gap-[20px]">
-              <Button small onClick={handleOpenClick}>
+              <ConfirmationModal
+                confirmButtonText="Yes"
+                cancelButtonText="No"
+                opened={isProject === true && isNewProjectModalOpen}
+                onClose={resetIsProjectFlag}
+                onConfirm={openProjectConfirmation}
+                title={`This project already exists, do you want to open it?`}
+              />
+              <ConfirmationModal
+                confirmButtonText="Yes"
+                cancelButtonText="No"
+                opened={isProject === false && isOpenProjectModalOpen}
+                onClose={resetIsProjectFlag}
+                onConfirm={openProjectConfirmation}
+                title={`This project does not exists, do you want to create one?`}
+              />
+
+              <Button small onClick={newProject}>
                 <FolderPlus /> New Project ...
               </Button>
-              <Button small variant="secondary" onClick={handleOpenClick}>
+
+              <Button small variant="secondary" onClick={openProject}>
                 <FolderOpen /> Open Project ...
               </Button>
             </div>
