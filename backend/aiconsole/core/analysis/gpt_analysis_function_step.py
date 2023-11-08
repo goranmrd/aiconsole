@@ -15,12 +15,13 @@
 # limitations under the License.
 
 import logging
-from typing import List, Optional
+from typing import List, Optional, cast
 
 from aiconsole.api.websockets.outgoing_messages import AnalysisUpdatedWSMessage
 from aiconsole.consts import DIRECTOR_MIN_TOKENS, DIRECTOR_PREFERRED_TOKENS
 from aiconsole.core.assets.agents.agent import Agent
 from aiconsole.core.analysis.create_plan_class import create_plan_class
+from aiconsole.core.assets.asset import AssetLocation
 from aiconsole.core.chat.types import Chat
 from aiconsole.core.execution_modes.normal import execution_mode_normal
 from aiconsole.core.gpt.consts import GPTMode
@@ -48,7 +49,7 @@ def pick_agent(arguments, chat: Chat) -> Agent:
     picked_agent (Agent): The chosen agent object.
     """
 
-    available_agents = project.get_project_agents().all_assets()
+    available_agents = cast(list[Agent], project.get_project_agents().all_assets())
 
     # Try support first
     default_agent = next(
@@ -68,7 +69,7 @@ def pick_agent(arguments, chat: Chat) -> Agent:
             name="User",
             usage="When a human user needs to respond",
             system="",
-            execution_mode=execution_mode_normal,
+            defined_in=AssetLocation.AICONSOLE_CORE,
             gpt_mode=GPTMode.QUALITY,
         )
     else:
@@ -102,12 +103,12 @@ class AnalysisStepWithFunctionReturnValue(BaseModel):
 def _get_relevant_materials(relevant_material_ids: List[str]) -> List[Material]:
     # Maximum of 5 materials
     relevant_materials = [
-        k
+        cast(Material, k)
         for k in project.get_project_materials().enabled_assets()
         if k.id in relevant_material_ids
     ][:5]
 
-    relevant_materials += project.get_project_materials().forced_assets()
+    relevant_materials += cast(list[Material], project.get_project_materials().forced_assets())
 
     return relevant_materials
 
