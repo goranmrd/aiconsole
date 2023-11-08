@@ -1,6 +1,6 @@
 module.exports = {
   packagerConfig: {
-    executableName: 'AIConsole',
+    executableName: 'aiconsole',
     asar: true,
     icon: './assets/icon',
     extraResource: ['python'],
