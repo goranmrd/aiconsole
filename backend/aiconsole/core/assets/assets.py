@@ -107,7 +107,7 @@ class Assets:
             if material.defined_in == AssetLocation.AICONSOLE_CORE
         }
     
-    async def save_asset(self, asset: Material, new: bool, old_asset_id: Optional[str] = None):
+    async def save_asset(self, asset: Asset, new: bool, old_asset_id: Optional[str] = None):
         self._assets[asset.id] = await save_asset_to_fs(asset, new, old_asset_id)
 
     def delete_asset(self, asset_id):

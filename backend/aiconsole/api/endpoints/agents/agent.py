@@ -14,9 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from aiconsole.core.assets.agents.agent import Agent, AgentWithStatus
 from aiconsole.core.assets.asset import AssetLocation, AssetStatus
-from aiconsole.core.assets.materials.material import (Material,
-                                                      MaterialWithStatus)
+from aiconsole.core.gpt.consts import GPTMode
 from aiconsole.core.project import project
 from aiconsole.core.settings.project_settings import get_aiconsole_settings
 from fastapi import APIRouter, HTTPException
@@ -25,82 +25,85 @@ from pydantic import BaseModel
 
 router = APIRouter()
 
+
 class StatusChangePostBody(BaseModel):
     status: AssetStatus
     to_global: bool
 
 
-@router.get("/{material_id}")
-async def material_get(material_id: str):
+@router.get("/{agent_id}")
+async def agent_get(agent_id: str):
     try:
         settings = get_aiconsole_settings()
-        material = project.get_project_materials().get_asset(material_id)
+        agent = project.get_project_agents().get_asset(agent_id)
         return JSONResponse({
-            **material.model_dump(),
-            "status": settings.get_asset_status(material.id),
+            **agent.model_dump(),
+            "status": settings.get_asset_status(agent.id),
         })
     except KeyError:
-        # A new material
-        return JSONResponse(MaterialWithStatus(
+        # A new agent
+        return JSONResponse(AgentWithStatus(
             id="",
             name="",
             usage="",
             status=AssetStatus.ENABLED,
             defined_in=AssetLocation.PROJECT_DIR,
+            gpt_mode=GPTMode.QUALITY,
+            system=""
         ).model_dump())
 
 
-@router.patch("/{material_id}")
-async def material_patch(material_id: str, material: Material):
+@router.patch("/{agent_id}")
+async def agent_patch(agent_id: str, agent: Agent):
     try:
-        await project.get_project_materials().save_asset(material, new=False, old_asset_id=material_id)
+        await project.get_project_agents().save_asset(agent, new=False, old_asset_id=agent_id)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
     return JSONResponse({"status": "ok"})
 
 
-@router.post("/{material_id}")
-async def material_post(material_id: str, material: Material):
+@router.post("/{agent_id}")
+async def agent_post(agent_id: str, agent: Agent):
     try:
-        await project.get_project_materials().save_asset(material, new=True, old_asset_id=material_id)
+        await project.get_project_agents().save_asset(agent, new=True, old_asset_id=agent_id)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
     return JSONResponse({"status": "ok"})
 
 
-@router.post("/{material_id}/status-change")
-async def material_status_change(
-    material_id: str,
+@router.post("/{agent_id}/status-change")
+async def agent_status_change(
+    agent_id: str,
     body: StatusChangePostBody
 ):
     """
-    Change the status of a material.
+    Change the status of a agent.
 
     Args:
-        material_id (str): The ID of the material.
+        agent_id (str): The ID of the agent.
         body (StatusChangePostBody): POST body, only with "status"
 
     Returns:
         JSONResponse: JSON response indicating the result.
     """
     try:
-        project.get_project_materials().get_asset(material_id)
-        get_aiconsole_settings().set_material_status(
-            material_id=material_id, status=body.status, to_global=body.to_global
+        project.get_project_agents().get_asset(agent_id)
+        get_aiconsole_settings().set_agent_status(
+            agent_id=agent_id, status=body.status, to_global=body.to_global
         )
         return JSONResponse({"status": "ok"})
     except KeyError:
-        raise HTTPException(status_code=404, detail="Material not found")
+        raise HTTPException(status_code=404, detail="Agent not found")
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.delete("/{material_id}")
-async def delete_material(material_id: str):
+@router.delete("/{agent_id}")
+async def delete_agent(agent_id: str):
     try:
-        project.get_project_materials().delete_asset(material_id)
+        project.get_project_agents().delete_asset(agent_id)
         return JSONResponse({"status": "ok"})
     except KeyError:
-        raise HTTPException(status_code=404, detail="Material not found")
+        raise HTTPException(status_code=404, detail="Agent not found")

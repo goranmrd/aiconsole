@@ -15,7 +15,7 @@
 # limitations under the License.
     
 from typing import List
-from aiconsole.core.assets.asset import Asset, AssetType
+from aiconsole.core.assets.asset import Asset, AssetStatus, AssetType
 from pydantic import BaseModel
 from aiconsole.core.chat.types import Chat
 
@@ -29,6 +29,9 @@ class Agent(Asset):
     system: str
     gpt_mode: GPTMode
     execution_mode: str = "normal"
+
+class AgentWithStatus(Agent):
+    status: AssetStatus = AssetStatus.ENABLED
 
 class ExecutionModeContext(BaseModel):
     chat: Chat

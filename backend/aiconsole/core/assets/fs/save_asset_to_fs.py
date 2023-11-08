@@ -23,7 +23,7 @@ from aiconsole.core.project.paths import get_project_assets_directory
 import tomlkit
 
 
-async def save_asset_to_fs(asset: Material, create: bool, old_asset_id: str | None = None):
+async def save_asset_to_fs(asset: Asset, create: bool, old_asset_id: str | None = None):
     if asset.defined_in != AssetLocation.PROJECT_DIR:
         raise Exception("Cannot save asset not defined in project.")
 
