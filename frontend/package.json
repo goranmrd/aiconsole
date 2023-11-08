@@ -7,7 +7,8 @@
     "watch": "vite build --watch",
     "build": "tsc && vite build --config vite.renderer.config.ts",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "postinstall": "node postinstall.js"
   },
   "productName": "Electron Starter",
   "main": ".vite/build/main.js",
@@ -22,6 +23,7 @@
     "@tailwindcss/typography": "^0.5.10",
     "clsx": "^2.0.0",
     "date-fns": "^2.30.0",
+    "fs-xattr": "^0.4.0",
     "highlight.js": "^11.9.0",
     "ky": "^1.0.1",
     "lucide-react": "^0.291.0",
@@ -59,8 +61,5 @@
     "tailwindcss": "^3.3.3",
     "typescript": "^5.0.2",
     "vite": "^4.4.5"
-  },
-  "optionalDependencies": {
-    "fs-xattr": "^0.4.0"
   }
 }
