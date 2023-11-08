@@ -1,6 +1,6 @@
 module.exports = {
   packagerConfig: {
-    executableName: 'aiconsole',
+    executableName: 'AIConsole',
     asar: true,
     icon: './assets/icon',
     extraResource: ['python'],
@@ -25,18 +25,28 @@ module.exports = {
     },
     {
       name: '@electron-forge/maker-zip',
+      config: {
+        options: {
+          icon: './assets/icon.png',
+          name: 'aiconsole',
+        }
+      },
     },
     {
       name: '@electron-forge/maker-deb',
       config: {
         options: {
           icon: './assets/icon.png',
+          name: 'aiconsole',
         },
       },
     },
     {
       name: '@electron-forge/maker-rpm',
-      config: {},
+      config: {
+        icon: './assets/icon.png',
+        name: 'aiconsole',
+      },
     },
     {
       name: '@electron-forge/maker-dmg',
