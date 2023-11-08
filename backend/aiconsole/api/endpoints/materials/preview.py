@@ -17,12 +17,12 @@
 from datetime import datetime
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-from aiconsole.agents.types import Agent
-from aiconsole.chat.types import Chat
-from aiconsole.execution_modes.normal import execution_mode_normal
-from aiconsole.gpt.consts import GPTMode
-from aiconsole.materials.content_evaluation_context import ContentEvaluationContext
-from aiconsole.materials.material import Material
+from aiconsole.core.agents.types import Agent
+from aiconsole.core.chat.types import Chat
+from aiconsole.core.execution_modes.normal import execution_mode_normal
+from aiconsole.core.gpt.consts import GPTMode
+from aiconsole.core.materials.content_evaluation_context import ContentEvaluationContext
+from aiconsole.core.materials.material import Material
 
 router = APIRouter()
 

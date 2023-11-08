@@ -17,14 +17,14 @@
 import { MouseEventHandler, ReactNode } from 'react';
 import { cn } from '../../utils/styles';
 
-type StatusColor = 'green' | 'red' | 'purple';
+type StatusColor = 'green' | 'red' | 'purple' | 'base';
 
 const getStatusColor = (statusColor?: StatusColor) => {
   switch (statusColor) {
     case 'green':
-      return ' border-success text-gray-300 [&>svg]:text-success bg-gray-700';
+      return ' border-success text-gray-300 [&>svg]:text-success bg-gray-700 focus:border-success hover:border-success focus:bg-gray-700 hover:bg-gray-700 [&>svg]:hover:text-success [&>svg]:focus:text-success';
     case 'red':
-      return 'border-danger text-gray-300 [&>svg]:text-danger bg-gray-700';
+      return 'border-danger text-gray-300 [&>svg]:text-danger bg-gray-700 focus:border-danger hover:border-danger focus:bg-gray-700 hover:bg-gray-700 [&>svg]:hover:text-danger [&>svg]:focus:text-danger';
     case 'purple':
       return 'border-primary text-gray-300 [&>svg]:text-primary bg-gray-700';
     default:
@@ -61,7 +61,7 @@ export function Button({
   statusColor,
   bold,
   classNames,
-  dataAutofocus
+  dataAutofocus,
 }: ButtonProps) {
   const getVariant = () => {
     switch (variant) {
@@ -83,7 +83,7 @@ export function Button({
     <button
       onClick={onClick}
       onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave} 
+      onMouseLeave={onMouseLeave}
       data-autofocus={dataAutofocus}
       className={cn(
         'rounded-[36px]  px-[30px] py-[20px] outline-none w-[fit-content]  font-semibold flex items-center justify-center gap-2 max-h-[60px] border border-secondary button hover:bg-gray-600 hover:text-secondary  transition-colors duration-200 focus:bg-gray-600 focus:text-secondary',

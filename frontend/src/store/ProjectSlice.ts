@@ -24,14 +24,14 @@ export type ProjectSlice = {
   projectName?: string;
   alwaysExecuteCode: boolean;
   openAiApiKey?: string | null;
-  chooseProject:  (path?: string) => Promise<void>;
+  chooseProject: (path?: string) => Promise<void>;
   initSettings: () => Promise<void>;
   isProjectLoading: () => boolean;
   isProjectOpen: () => boolean;
   setProject: ({ path, name }: { path: string; name: string }) => Promise<void>;
   closeProject: () => Promise<void>;
   markProjectAsLoading: () => void;
-  enableAutoCodeExecution: () => void;
+  setAutoCodeExecution: (autoRun: boolean) => void;
   setOpenAiApiKey: (key: string) => Promise<void>;
 };
 
@@ -45,9 +45,9 @@ export const createProjectSlice: StateCreator<
   projectName: undefined,
   alwaysExecuteCode: false,
   openAiApiKey: undefined,
-  enableAutoCodeExecution: async () => {
-    await Api.saveSettings({ code_autorun: true, to_global: true});
-    set({ alwaysExecuteCode: true });
+  setAutoCodeExecution: async (autoRun: boolean) => {
+    await Api.saveSettings({ code_autorun: autoRun, to_global: true });
+    set({ alwaysExecuteCode: autoRun });
   },
   setOpenAiApiKey: async (key: string) => {
     await Api.saveSettings({ openai_api_key: key, to_global: true });
@@ -67,7 +67,6 @@ export const createProjectSlice: StateCreator<
       get().initAgents(),
       get().initSettings(),
     ]);
-    
   },
   closeProject: async () => {
     set(() => ({
@@ -101,7 +100,7 @@ export const createProjectSlice: StateCreator<
     const result = await Api.getSettings();
     set({
       alwaysExecuteCode: result.code_autorun,
-      openAiApiKey: result.openai_api_key
+      openAiApiKey: result.openai_api_key,
     });
   },
 });

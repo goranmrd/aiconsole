@@ -17,17 +17,17 @@
 import json
 import os
 
-from fastapi import APIRouter
-from aiconsole import projects
-from aiconsole.chat.types import Command
-
 from aiconsole.consts import COMMANDS_HISTORY_JSON, HISTORY_LIMIT
+from aiconsole.core.chat.types import Command
+from aiconsole.core.project import project
+from aiconsole.core.project.paths import get_aic_directory
+from fastapi import APIRouter
 
 router = APIRouter()
 
 @router.get("/commands/history")
 def get_history():
-    file_path = os.path.join(projects.get_aic_directory(), COMMANDS_HISTORY_JSON)
+    file_path = os.path.join(get_aic_directory(), COMMANDS_HISTORY_JSON)
 
     if os.path.exists(file_path):
         with open(file_path, "r") as f:
@@ -43,7 +43,7 @@ def save_history(command: Command):
     """
     Saves the history of sent commands to <commands_history_dir>/<commands_history_json>
     """
-    file_path = os.path.join(projects.get_aic_directory(), COMMANDS_HISTORY_JSON)
+    file_path = os.path.join(get_aic_directory(), COMMANDS_HISTORY_JSON)
 
     if os.path.exists(file_path):
         with open(file_path, "r") as f:
