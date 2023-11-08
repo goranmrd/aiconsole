@@ -38,7 +38,7 @@ from typing import TYPE_CHECKING, List
 from ..subprocess_code_interpreter import SubprocessCodeInterpreter
 
 if TYPE_CHECKING:
-    from aiconsole.core.materials.materials import Materials
+    from aiconsole.core.assets.agents import Assets
 
 class AppleScript(SubprocessCodeInterpreter):
     file_extension = "applescript"
@@ -48,7 +48,7 @@ class AppleScript(SubprocessCodeInterpreter):
         super().__init__()
         self.start_cmd = os.environ.get('SHELL', '/bin/zsh')
 
-    def preprocess_code(self, code, materials: List['Materials']):
+    def preprocess_code(self, code, materials: List['Assets']):
         """
         Inserts an end_of_execution marker and adds active line indicators.
         """

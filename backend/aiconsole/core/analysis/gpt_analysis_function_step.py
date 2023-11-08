@@ -19,7 +19,7 @@ from typing import List, Optional
 
 from aiconsole.api.websockets.outgoing_messages import AnalysisUpdatedWSMessage
 from aiconsole.consts import DIRECTOR_MIN_TOKENS, DIRECTOR_PREFERRED_TOKENS
-from aiconsole.core.agents.types import Agent
+from aiconsole.core.assets.agents.agent import Agent
 from aiconsole.core.analysis.create_plan_class import create_plan_class
 from aiconsole.core.chat.types import Chat
 from aiconsole.core.execution_modes.normal import execution_mode_normal
@@ -27,7 +27,7 @@ from aiconsole.core.gpt.consts import GPTMode
 from aiconsole.core.gpt.gpt_executor import GPTExecutor
 from aiconsole.core.gpt.request import GPTRequest
 from aiconsole.core.gpt.types import EnforcedFunctionCall, GPTMessage
-from aiconsole.core.materials.material import Material
+from aiconsole.core.assets.materials.material import Material
 from aiconsole.core.project import project
 from aiconsole.utils.convert_messages import convert_messages
 from pydantic import BaseModel
@@ -48,7 +48,7 @@ def pick_agent(arguments, chat: Chat) -> Agent:
     picked_agent (Agent): The chosen agent object.
     """
 
-    available_agents = project.get_project_agents().all_agents()
+    available_agents = project.get_project_agents().all_assets()
 
     # Try support first
     default_agent = next(
@@ -103,11 +103,11 @@ def _get_relevant_materials(relevant_material_ids: List[str]) -> List[Material]:
     # Maximum of 5 materials
     relevant_materials = [
         k
-        for k in project.get_project_materials().enabled_materials()
+        for k in project.get_project_materials().enabled_assets()
         if k.id in relevant_material_ids
     ][:5]
 
-    relevant_materials += project.get_project_materials().forced_materials()
+    relevant_materials += project.get_project_materials().forced_assets()
 
     return relevant_materials
 

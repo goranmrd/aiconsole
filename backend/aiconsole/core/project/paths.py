@@ -16,30 +16,18 @@
 
 import os
 from pathlib import Path
+from aiconsole.core.assets.asset import AssetType
 from aiconsole.core.project.project import is_project_initialized
 from aiconsole.utils.resource_to_path import resource_to_path
 
-
-def get_project_materials_directory(project_path: Path | None = None):
+def get_project_assets_directory(asset_type: AssetType, project_path: Path | None = None):
     if not is_project_initialized() and not project_path:
         raise ValueError("Project settings are not initialized")
 
-    return get_project_directory(project_path) / "materials"
+    return get_project_directory(project_path) / asset_type.value
 
-
-def get_core_materials_directory():
-    return resource_to_path("aiconsole.preinstalled.materials")
-
-
-def get_project_agents_directory(project_path: Path | None = None):
-    if not is_project_initialized() and not project_path:
-        raise ValueError("Project settings are not initialized")
-
-    return get_project_directory(project_path) / "agents"
-
-
-def get_core_agents_directory():
-    return resource_to_path("aiconsole.preinstalled.agents")
+def get_core_assets_directory(asset_type: AssetType):
+    return resource_to_path(f"aiconsole.preinstalled.{asset_type.value}s")
 
 
 def get_history_directory(project_path: Path | None = None):

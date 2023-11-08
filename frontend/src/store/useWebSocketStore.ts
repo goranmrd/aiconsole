@@ -87,12 +87,23 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
         case 'ProjectLoadingWSMessage':
           useAICStore.getState().markProjectAsLoading();
           break;
-        case 'MaterialsUpdatedWSMessage':
-          useAICStore.getState().fetchMaterials();
-          showNotification({
-            title: 'Materials updated',
-            message: `${data.count} materials updated`,
-          });
+        case 'AssetsUpdatedWSMessage':
+          if (data.asset_type === 'agent') {
+            //TODO: Fetch agents
+            useAICStore.getState().fetchMaterials();
+            showNotification({
+              title: 'Agents updated',
+              message: `${data.count} agents updated`,
+            });
+          }
+
+          if (data.asset_type === 'material') {
+            useAICStore.getState().fetchMaterials();
+            showNotification({
+              title: 'Materials updated',
+              message: `${data.count} materials updated`,
+            });
+          }
           break;
         case 'AnalysisUpdatedWSMessage':
           useAnalysisStore.setState({

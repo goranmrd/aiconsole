@@ -53,8 +53,9 @@ export type AnalysisUpdatedWSMessage = {
   thinking_process?: string;
 };
 
-export type MaterialsUpdatedWSMessage = {
-  type: 'MaterialsUpdatedWSMessage';
+export type AssetsUpdatedWSMessage = {
+  type: 'AssetsUpdatedWSMessage';
+  asset_type: "agent" | "material";
   count: number;
 };
 
@@ -70,5 +71,5 @@ export type IncomingWSMessage =
   | ProjectClosedWSMessage
   | ProjectLoadingWSMessage
   | AnalysisUpdatedWSMessage
-  | MaterialsUpdatedWSMessage
+  | AssetsUpdatedWSMessage
   | SettingsWSMessage

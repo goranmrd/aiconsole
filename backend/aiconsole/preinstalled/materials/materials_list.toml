@@ -5,6 +5,6 @@ from aiconsole import projects
 
 def content(context):
     newline = "\\n"
-    materials_list = newline.join(f"* {material.id} - {material.usage}" for material in projects.get_project_materials().all_materials())
+    materials_list = newline.join(f"* {material.id} - {material.usage}" for material in projects.get_project_materials().all_assets())
     return f"# List of Materials{newline}{newline}Available materials:{newline}{materials_list}"
 '''

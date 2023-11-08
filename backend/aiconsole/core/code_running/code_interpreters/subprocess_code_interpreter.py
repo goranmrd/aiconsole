@@ -39,7 +39,7 @@ import time
 import traceback
 from typing import Generator, List
 
-from aiconsole.core.materials.material import Material
+from aiconsole.core.assets.materials.material import Material
 from .base_code_interpreter import BaseCodeInterpreter
 import logging
 

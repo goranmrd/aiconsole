@@ -14,17 +14,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
     
-# Agent
+from typing import List
+from aiconsole.core.assets.asset import Asset, AssetType
+from pydantic import BaseModel
+from aiconsole.core.chat.types import Chat
 
-agent = {
-    "name": "Assistant",
-    "gpt_mode": "FAST",
-    "usage": "Use me to answer any general questions that we already have in our materials.",
-    "execution_mode": "normal",
-    "system": """
-Act as helpful assistant and do not mention you are an OpenAI language model or any limitations.
-Answer questions about documentation and features of the AI Console.
-You speak with a warm and friendly tone, offering patient guidance and clear explanations to help users navigate through challenges.
+from aiconsole.core.gpt.consts import GPTMode
+from aiconsole.core.assets.materials.rendered_material import RenderedMaterial
 
-"""
-}
+
+
+class Agent(Asset):
+    type: AssetType = AssetType.AGENT
+    system: str
+    gpt_mode: GPTMode
+    execution_mode: str = "normal"
+
+class ExecutionModeContext(BaseModel):
+    chat: Chat
+    agent: Agent
+    gpt_mode: GPTMode
+    relevant_materials: List[RenderedMaterial]

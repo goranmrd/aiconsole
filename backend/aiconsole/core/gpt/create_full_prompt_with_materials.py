@@ -15,7 +15,7 @@
 # limitations under the License.
     
 from typing import List
-from aiconsole.core.materials.rendered_material import RenderedMaterial
+from aiconsole.core.assets.materials.rendered_material import RenderedMaterial
 
 
 def create_full_prompt_with_materials(

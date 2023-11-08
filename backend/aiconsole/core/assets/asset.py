@@ -13,29 +13,31 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
-from typing import AsyncGenerator, Callable, List
+
+from enum import Enum
 from pydantic import BaseModel
-from aiconsole.core.chat.types import Chat
-
-from aiconsole.core.gpt.consts import GPTMode
-from aiconsole.core.materials.rendered_material import RenderedMaterial
 
 
-class AgentBase(BaseModel):
+class AssetLocation(str, Enum):
+    AICONSOLE_CORE = "aiconsole"
+    PROJECT_DIR = "project"
+
+
+class AssetType(str, Enum):
+    AGENT = "agent"
+    MATERIAL = "material"
+
+class AssetStatus(str, Enum):
+    DISABLED = "disabled"
+    ENABLED = "enabled"
+    FORCED = "forced"
+
+
+class Asset(BaseModel):
     id: str
     name: str
+    version: str = "0.0.1"
     usage: str
-    system: str
-    gpt_mode: GPTMode
-
-
-class Agent(AgentBase):
-    execution_mode: Callable[['ExecutionModeContext'],
-                             AsyncGenerator[str, None]]
-
-class ExecutionModeContext(BaseModel):
-    chat: Chat
-    agent: Agent
-    gpt_mode: GPTMode
-    relevant_materials: List[RenderedMaterial]
+    defined_in: AssetLocation
+    type: AssetType
+    status: AssetStatus = AssetStatus.ENABLED

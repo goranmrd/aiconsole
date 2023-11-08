@@ -15,6 +15,7 @@
 # limitations under the License.
 
 from typing import List, Optional
+from aiconsole.core.assets.asset import AssetType
 from pydantic import BaseModel
 
 
@@ -60,7 +61,8 @@ class ProjectClosedWSMessage(BaseWSMessage):
 class ProjectLoadingWSMessage(BaseWSMessage):
     pass
 
-class MaterialsUpdatedWSMessage(BaseWSMessage):
+class AssetsUpdatedWSMessage(BaseWSMessage):
+    asset_type: AssetType
     count: int
 
 

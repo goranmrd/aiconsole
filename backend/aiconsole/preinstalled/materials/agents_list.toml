@@ -5,7 +5,7 @@ from aiconsole import projects
 
 def content(context):
     newline = "\\n"
-    agents_list = newline.join(f"* {agent.id} - {agent.usage}" for agent in projects.get_project_agents().all_agents())
+    agents_list = newline.join(f"* {agent.id} - {agent.usage}" for agent in projects.get_project_agents().all_assets())
     return f""\"
 # List of Agents
 

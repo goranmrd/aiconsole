@@ -14,18 +14,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
     
-from aiconsole.core.project.paths import get_project_materials_directory
+from aiconsole.core.assets.asset import AssetType
+from aiconsole.core.project.paths import get_project_assets_directory
 
 
-def delete_material_from_fs(material_id):
+def delete_asset_from_fs(asset_type: AssetType, id):
     """
-    Delete a specific material.
+    Delete a specific agent.
     """
 
     # check if the file exists in project directory
-    material_file_path = get_project_materials_directory() / f"{material_id}.toml"
-    if material_file_path.exists():
-        material_file_path.unlink()
+    asset_file_path = get_project_assets_directory(asset_type) / f"{id}.toml"
+    if asset_file_path.exists():
+        asset_file_path.unlink()
         return
 
-    raise KeyError(f"Material with ID {material_id} not found")
+    raise KeyError(f"Agent with ID {id} not found")

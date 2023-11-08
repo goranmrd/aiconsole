@@ -36,7 +36,7 @@ async def run_code(request: Request, code_to_run: CodeToRun, chat_id: str) -> St
         try:
             _log.debug("Running code: %s", code_to_run.code)
 
-            mats = [project.get_project_materials().get_material(mid) for mid in code_to_run.materials_ids]
+            mats = [project.get_project_materials().get_asset(mid) for mid in code_to_run.materials_ids]
 
             # If the code starts with a !, that means a shell command
             if code_to_run.language == "python" and code_to_run.code.startswith("!"):

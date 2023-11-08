@@ -16,7 +16,7 @@
     
 import logging
 from typing import AsyncGenerator
-from aiconsole.core.agents.types import ExecutionModeContext
+from aiconsole.core.assets.agents.agent import ExecutionModeContext
 from aiconsole.core.code_running.code_interpreters.language_map import language_map
 from aiconsole.core.execution_modes.get_agent_system_message import get_agent_system_message
 from aiconsole.core.gpt.create_full_prompt_with_materials import create_full_prompt_with_materials

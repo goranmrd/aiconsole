@@ -13,31 +13,31 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
-import logging
+
+from aiconsole.core.assets.asset import AssetLocation
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from aiconsole.core.project import project
-from aiconsole.core.agents.types import AgentBase
+from aiconsole.core.assets.agents.agent import Agent
 from aiconsole.core.gpt.consts import GPTMode
 
 router = APIRouter()
 
-_log = logging.getLogger(__name__)
-
 @router.get("/agents")
 async def agents_handler():
-    all_agents = project.get_project_agents().all_agents()
+    all_agents = project.get_project_agents().all_assets()
 
     all_agents = [
-        AgentBase(id= "user", name= "User", gpt_mode=GPTMode.QUALITY, usage= "", system= ""),
+        Agent(id="user", name="User", defined_in=AssetLocation.AICONSOLE_CORE,
+              gpt_mode=GPTMode.QUALITY, usage="", system=""),
         *[agent for agent in all_agents]
     ]
 
-    return JSONResponse([AgentBase(
+    return JSONResponse([Agent(
         id=agent.id,
         name=agent.name,
         gpt_mode=agent.gpt_mode,
         usage=agent.usage,
         system=agent.system,
+        defined_in=agent.defined_in,
     ).model_dump() for agent in all_agents])

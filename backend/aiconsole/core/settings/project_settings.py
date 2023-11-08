@@ -28,7 +28,7 @@ from typing import Any, Dict, List, Optional
 from watchdog.observers import Observer
 from tomlkit import TOMLDocument
 
-from aiconsole.core.materials.material import MaterialStatus
+from aiconsole.core.assets.asset import AssetStatus
 from aiconsole.core.project.project import is_project_initialized
 from aiconsole.utils.BatchingWatchDogHandler import BatchingWatchDogHandler
 from aiconsole.utils.recursive_merge import recursive_merge
@@ -117,32 +117,32 @@ class Settings:
         self._settings = await self.__load()#
         await SettingsWSMessage().send_to_all()
 
-    def get_material_status(self, material_id: str) -> MaterialStatus:
+    def get_asset_status(self, material_id: str) -> AssetStatus:
         s = self._settings
         if material_id in s.forced_materials:
-            return MaterialStatus.FORCED
+            return AssetStatus.FORCED
         if material_id in s.disabled_materials:
-            return MaterialStatus.DISABLED
-        return MaterialStatus.ENABLED
+            return AssetStatus.DISABLED
+        return AssetStatus.ENABLED
 
-    def get_agent_status(self, agent_id: str) -> MaterialStatus:
+    def get_agent_status(self, agent_id: str) -> AssetStatus:
         s = self._settings
         if agent_id in s.forced_agents:
-            return MaterialStatus.FORCED
+            return AssetStatus.FORCED
         if agent_id in s.disabled_agents:
-            return MaterialStatus.DISABLED
-        return MaterialStatus.ENABLED
+            return AssetStatus.DISABLED
+        return AssetStatus.ENABLED
 
     def set_material_status(self,
                             material_id: str,
-                            status: MaterialStatus,
+                            status: AssetStatus,
                             to_global: bool = False) -> None:
 
 
         partial_settings = {
-            MaterialStatus.DISABLED: PartialSettingsData(disabled_materials=[material_id]),
-            MaterialStatus.ENABLED: PartialSettingsData(enabled_materials=[material_id]),
-            MaterialStatus.FORCED: PartialSettingsData(forced_materials=[material_id])
+            AssetStatus.DISABLED: PartialSettingsData(disabled_materials=[material_id]),
+            AssetStatus.ENABLED: PartialSettingsData(enabled_materials=[material_id]),
+            AssetStatus.FORCED: PartialSettingsData(forced_materials=[material_id])
         }
 
         self.save(partial_settings[status],
@@ -150,12 +150,12 @@ class Settings:
 
     def set_agent_status(self,
                          agent_id: str,
-                         status: MaterialStatus,
+                         status: AssetStatus,
                          to_global: bool = False) -> None:
         partial_settings = {
-            MaterialStatus.DISABLED: PartialSettingsData(disabled_agents=[agent_id]),
-            MaterialStatus.ENABLED: PartialSettingsData(enabled_agents=[agent_id]),
-            MaterialStatus.FORCED: PartialSettingsData(forced_agents=[agent_id])
+            AssetStatus.DISABLED: PartialSettingsData(disabled_agents=[agent_id]),
+            AssetStatus.ENABLED: PartialSettingsData(enabled_agents=[agent_id]),
+            AssetStatus.FORCED: PartialSettingsData(forced_agents=[agent_id])
         }
 
         self.save(partial_settings[status],
@@ -196,20 +196,20 @@ class Settings:
             disabled_materials=[
                 material
                 for material, status in settings.get('materials', {}).items()
-                if status == MaterialStatus.DISABLED
+                if status == AssetStatus.DISABLED
             ],
             disabled_agents=[
                 agent for agent, status in settings.get('agents', {}).items()
-                if status == MaterialStatus.DISABLED
+                if status == AssetStatus.DISABLED
             ],
             forced_materials=[
                 material
                 for material, status in settings.get('materials', {}).items()
-                if status == MaterialStatus.FORCED
+                if status == AssetStatus.FORCED
             ],
             forced_agents=[
                 agent for agent, status in settings.get('agents', {}).items()
-                if status == MaterialStatus.DISABLED
+                if status == AssetStatus.DISABLED
             ])
         
         _set_openai_api_key_environment(settings_data)
@@ -259,27 +259,27 @@ class Settings:
 
         if settings_data.disabled_materials is not None:
             for material in settings_data.disabled_materials:
-                doc_materials[material] = MaterialStatus.DISABLED.value
+                doc_materials[material] = AssetStatus.DISABLED.value
 
         if settings_data.forced_materials is not None:
             for material in settings_data.forced_materials:
-                doc_materials[material] = MaterialStatus.FORCED.value
+                doc_materials[material] = AssetStatus.FORCED.value
 
         if settings_data.enabled_materials is not None:
             for material in settings_data.enabled_materials:
-                doc_materials[material] = MaterialStatus.ENABLED.value
+                doc_materials[material] = AssetStatus.ENABLED.value
 
         if settings_data.disabled_agents is not None:
             for agent in settings_data.disabled_agents:
-                doc_agents[agent] = MaterialStatus.DISABLED.value
+                doc_agents[agent] = AssetStatus.DISABLED.value
 
         if settings_data.forced_agents is not None:
             for agent in settings_data.forced_agents:
-                doc_agents[agent] = MaterialStatus.FORCED.value
+                doc_agents[agent] = AssetStatus.FORCED.value
 
         if settings_data.enabled_agents is not None:
             for agent in settings_data.enabled_agents:
-                doc_agents[agent] = MaterialStatus.ENABLED.value
+                doc_agents[agent] = AssetStatus.ENABLED.value
 
         file_path.parent.mkdir(parents=True, exist_ok=True)
         with file_path.open('w') as file:

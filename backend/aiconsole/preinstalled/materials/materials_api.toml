@@ -41,7 +41,7 @@ def list_materials():
     ```
     ""\"
     return [{"id": material.id, "usage": material.usage} for material in
-            projects.get_project_materials().all_materials()]
+            projects.get_project_materials().all_assets()]
 
 def create_material(id: str, usage: str, content_type: str, content: str) -> str:
     ""\"

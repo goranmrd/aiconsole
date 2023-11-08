@@ -18,22 +18,22 @@ import os
 import sys
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional
+from aiconsole.core.assets.asset import AssetType
 
 from aiconsole.core.code_running.run_code import reset_code_interpreters
 
 from aiconsole.api.websockets.connection_manager import AICConnection
 from aiconsole.api.websockets.outgoing_messages import (BaseWSMessage,
-                                                    ProjectClosedWSMessage,
-                                                    ProjectLoadingWSMessage,
-                                                    ProjectOpenedWSMessage)
+                                                        ProjectClosedWSMessage,
+                                                        ProjectLoadingWSMessage,
+                                                        ProjectOpenedWSMessage)
 
 if TYPE_CHECKING:
-    from aiconsole.core.agents import agents
-    from aiconsole.core.materials import materials
+    from aiconsole.core.assets import assets
 
 
-_materials: Optional['materials.Materials'] = None
-_agents: Optional['agents.Agents'] = None
+_materials: Optional['assets.Assets'] = None
+_agents: Optional['assets.Assets'] = None
 _project_initialized = False
 
 
@@ -72,18 +72,16 @@ async def send_project_init(connection: AICConnection):
     await connection.send(_create_project_message())
 
 
-def get_project_materials() -> 'materials.Materials':
+def get_project_materials() -> 'assets.Assets':
     if not _materials:
         raise ValueError("Project materials are not initialized")
     return _materials
 
 
-def get_project_agents() -> 'agents.Agents':
+def get_project_agents() -> 'assets.Assets':
     if not _agents:
         raise ValueError("Project agents are not initialized")
     return _agents
-
-
 
 
 def is_project_initialized() -> bool:
@@ -100,8 +98,7 @@ async def reinitialize_project():
     from aiconsole.core.project.paths import get_project_directory
     from aiconsole.core.recent_projects.recent_projects import add_to_recent_projects
     from aiconsole.core.settings.project_settings import reload_settings
-    from aiconsole.core.agents import agents
-    from aiconsole.core.materials import materials
+    from aiconsole.core.assets import assets
 
     await ProjectLoadingWSMessage().send_to_all()
 
@@ -117,8 +114,8 @@ async def reinitialize_project():
 
     await add_to_recent_projects(project_dir)
 
-    _agents = agents.Agents()
-    _materials = materials.Materials()
+    _agents = assets.Assets(asset_type=AssetType.AGENT)
+    _materials = assets.Assets(asset_type=AssetType.MATERIAL)
 
     await _materials.reload()
     await _agents.reload()

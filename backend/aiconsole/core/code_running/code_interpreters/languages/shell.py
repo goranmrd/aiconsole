@@ -35,7 +35,7 @@
 import platform
 from typing import List
 
-from aiconsole.core.materials.material import Material
+from aiconsole.core.assets.materials.material import Material
 from ..subprocess_code_interpreter import SubprocessCodeInterpreter
 import os
 

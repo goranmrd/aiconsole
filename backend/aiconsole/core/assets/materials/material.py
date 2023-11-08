@@ -16,19 +16,14 @@
     
 from enum import Enum
 import traceback
-from aiconsole.core.materials.documentation_from_code import documentation_from_code
-from aiconsole.core.materials.rendered_material import RenderedMaterial
-from pydantic import BaseModel
+from aiconsole.core.assets.asset import Asset, AssetLocation, AssetType
+from aiconsole.core.assets.asset import AssetStatus
+from aiconsole.core.assets.materials.documentation_from_code import documentation_from_code
+from aiconsole.core.assets.materials.rendered_material import RenderedMaterial
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from aiconsole.core.materials.content_evaluation_context import ContentEvaluationContext
-
-
-class MaterialStatus(str, Enum):
-    DISABLED = "disabled"
-    ENABLED = "enabled"
-    FORCED = "forced"
+    from aiconsole.core.assets.materials.content_evaluation_context import ContentEvaluationContext
 
 
 class MaterialContentType(str, Enum):
@@ -37,19 +32,13 @@ class MaterialContentType(str, Enum):
     API = "api"
 
 
-class MaterialLocation(str, Enum):
-    AICONSOLE_CORE = "aiconsole"
-    PROJECT_DIR = "project"
-
-
-
-
-class Material(BaseModel):
+class Material(Asset):
+    type: AssetType = AssetType.MATERIAL
     id: str
     name: str
     version: str = "0.0.1"
     usage: str
-    defined_in: MaterialLocation
+    defined_in: AssetLocation
     
     # Content, either static or dynamic
     content_type: MaterialContentType = MaterialContentType.STATIC_TEXT
@@ -162,4 +151,4 @@ def fibonacci(n):
         raise ValueError("Material has no content")
 
 class MaterialWithStatus(Material):
-    status: MaterialStatus = MaterialStatus.ENABLED
+    status: AssetStatus = AssetStatus.ENABLED

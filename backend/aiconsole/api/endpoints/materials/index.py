@@ -29,7 +29,7 @@ async def materials_get():
         [
             {
                 **material.model_dump(),
-                "status": settings.get_material_status(material.id),
-            } for material in project.get_project_materials().all_materials()
+                "status": settings.get_asset_status(material.id),
+            } for material in project.get_project_materials().all_assets()
         ]
     )

@@ -14,20 +14,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
     
-from aiconsole.core.project.paths import get_project_materials_directory
 
 
-def move_material_in_fs(old_material_id: str, new_material_id: str) -> None:
-    old_material_file_path = get_project_materials_directory() / f"{old_material_id}.toml"
-    new_material_file_path = get_project_materials_directory() / f"{new_material_id}.toml"
+from aiconsole.core.assets.asset import AssetType
+from aiconsole.core.project.paths import get_project_assets_directory
+
+
+def move_asset_in_fs(asset_type: AssetType, old_id: str, new_id: str) -> None:
+    old_file_path = get_project_assets_directory(asset_type) / f"{old_id}.toml"
+    new_file_path = get_project_assets_directory(asset_type) / f"{new_id}.toml"
 
     # Check if the old file exists
-    if not old_material_file_path.exists():
-        raise FileNotFoundError(f"'{old_material_id}' does not exist.")
+    if not old_file_path.exists():
+        raise FileNotFoundError(f"'{old_id}' does not exist.")
 
     # Check if the new file already exists
-    if new_material_file_path.exists():
-        raise FileExistsError(f"'{new_material_id}' already exists.")
+    if new_file_path.exists():
+        raise FileExistsError(f"'{new_id}' already exists.")
 
     # Move (rename) the file
-    old_material_file_path.rename(new_material_file_path)
+    old_file_path.rename(new_file_path)

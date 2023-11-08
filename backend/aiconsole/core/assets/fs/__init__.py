@@ -13,26 +13,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
-from aiconsole.core.project import project
-
-
-import random
-
-
-def create_agents_str() -> str:
-    """
-    Randomization of agents is done because LLMs have a tendency to overfit to the first few examples.
-    """
-    available_agents = project.get_project_agents().all_assets()
-
-    new_line = "\n"
-
-    random_agents = new_line.join(
-        [
-            f"* {c.id} - {c.usage}"
-            for c in random.sample(available_agents, len(available_agents))
-        ]
-    )
-
-    return random_agents

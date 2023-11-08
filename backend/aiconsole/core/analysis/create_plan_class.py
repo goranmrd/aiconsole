@@ -26,8 +26,8 @@ from typing import List
 
 
 def create_plan_class():
-    enabled_materials = project.get_project_materials().enabled_materials()
-    available_agents = project.get_project_agents().all_agents()
+    enabled_materials = project.get_project_materials().enabled_assets()
+    available_agents = project.get_project_agents().all_assets()
 
     class Plan(OpenAISchema):
 
