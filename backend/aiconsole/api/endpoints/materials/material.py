@@ -57,7 +57,7 @@ async def material_get(material_id: str):
 @router.patch("/{material_id}")
 async def material_patch(material_id: str, material: Material):
     try:
-        await project.get_project_materials().save_material(material, new=False, old_material_id=material_id)
+        await project.get_project_materials().save_asset(material, new=False, old_asset_id=material_id)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -67,7 +67,7 @@ async def material_patch(material_id: str, material: Material):
 @router.post("/{material_id}")
 async def material_post(material_id: str, material: Material):
     try:
-        await project.get_project_materials().save_material(material, new=True, old_material_id=material_id)
+        await project.get_project_materials().save_asset(material, new=True, old_asset_id=material_id)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
