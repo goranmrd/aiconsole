@@ -9,7 +9,7 @@ authors = ["Maciej Cielecki <maciej.cielecki@10clouds.com>"]
 license = "Apache-2.0"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 tiktoken = "^0.5.1"
 openai-function-call = "^0.2.6"
 watchdog = "^3.0.0"
