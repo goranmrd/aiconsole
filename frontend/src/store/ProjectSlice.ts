@@ -21,10 +21,14 @@ import { AICStore } from './AICStore';
 
 export type ProjectSlice = {
   projectPath?: string; //undefined means loading, '' means no project, otherwise path
+  tempPath?: string;
   projectName?: string;
+  isProject?: boolean | undefined;
   alwaysExecuteCode: boolean;
   openAiApiKey?: string | null;
   chooseProject: (path?: string) => Promise<void>;
+  resetIsProjectFlag: () => void;
+  checkPath: (path?: string) => Promise<void>;
   initSettings: () => Promise<void>;
   isProjectLoading: () => boolean;
   isProjectOpen: () => boolean;
@@ -35,8 +39,15 @@ export type ProjectSlice = {
   setOpenAiApiKey: (key: string) => Promise<void>;
 };
 
-export const createProjectSlice: StateCreator<AICStore, [], [], ProjectSlice> = (set, get) => ({
+export const createProjectSlice: StateCreator<
+  AICStore,
+  [],
+  [],
+  ProjectSlice
+> = (set, get) => ({
   projectPath: undefined,
+  tempPath: undefined,
+  isProject: undefined,
   projectName: undefined,
   alwaysExecuteCode: false,
   openAiApiKey: undefined,
@@ -82,19 +93,52 @@ export const createProjectSlice: StateCreator<AICStore, [], [], ProjectSlice> = 
   isProjectOpen: () => {
     return !!get().projectPath;
   },
+  resetIsProjectFlag: () => {
+    set({
+      isProject: undefined,
+      tempPath: '',
+    });
+  },
   chooseProject: async (path?: string) => {
     // If we are in electron environment, use electron dialog, otherwise rely on the backend to open the dialog
     if (!path && window?.electron?.openDirectoryPicker) {
       const path = await window?.electron?.openDirectoryPicker();
 
       if (path) {
-        (await Api.chooseProject(path).json()) as { name: string; path: string };
+        (await Api.chooseProject(path).json()) as {
+          name: string;
+          path: string;
+        };
       }
 
       return;
     }
+    (await Api.chooseProject(path).json()) as {
+      name: string;
+      path: string;
+    };
+  },
+  checkPath: async (pathToCheck?: string) => {
+    // If we are in electron environment, use electron dialog, otherwise rely on the backend to open the dialog
+    let path = pathToCheck;
+    if (!path && window?.electron?.openDirectoryPicker) {
+      path = await window?.electron?.openDirectoryPicker();
+    }
 
-    (await Api.chooseProject(path).json()) as { name: string; path: string };
+    const { isProject, path: tkPath } = (await Api.checkPath(path).json()) as {
+      isProject: boolean;
+      path: string;
+    };
+    set({
+      isProject,
+      tempPath: tkPath,
+    });
+    if (isProject === undefined && !tkPath) {
+      (await Api.chooseProject(path).json()) as {
+        name: string;
+        path: string;
+      };
+    }
   },
   initSettings: async () => {
     const result = await Api.getSettings();

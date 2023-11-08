@@ -18,7 +18,6 @@ import { TopBar } from '@/components/system/TopBar';
 import { ProjectCard } from './ProjectCard';
 import { useAICStore } from '@/store/AICStore';
 import { RecentProjectsEmpty } from './RecentProjectsEmpty';
-import OpenAiApiKeyForm from './OpenAiApiKeyForm';
 import { useRecentProjectsStore } from '@/store/home/useRecentProjectsStore';
 
 export function Home() {
