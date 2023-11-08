@@ -21,11 +21,6 @@ jobs:
       - name: Github checkout
         uses: actions/checkout@v3
 
-      - name: Add WiX Toolset to PATH
-        if: matrix.os.name == 'windows'
-        shell: pwsh
-        run: echo "C:\Program Files (x86)\WiX Toolset v3.11\bin" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
-
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -41,7 +36,7 @@ jobs:
         with:
           node-version: 20
 
-      - name: Sign the app
+      - name: Create the certificates
         if: matrix.os.name == 'macos-arm64' || matrix.os.name == 'macos-x86'
         env:
           APPLE_DEVELOPER_ID_APPLICATION_CERT: ${{ secrets.APPLE_DEVELOPER_ID_APPLICATION_CERT }}
