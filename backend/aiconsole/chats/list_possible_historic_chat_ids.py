@@ -1,6 +1,7 @@
-from typing import Optional
-from aiconsole import projects
 import os
+from typing import Optional
+
+from aiconsole import projects
 
 
 def list_possible_historic_chat_ids(project_path: Optional[str] = None):

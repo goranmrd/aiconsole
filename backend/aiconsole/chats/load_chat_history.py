@@ -14,16 +14,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
     
-from datetime import datetime
-from typing import Optional
-import uuid
-from aiconsole import projects
-from aiconsole.chat.types import Chat
-
-
 import json
 import os
+import uuid
+from datetime import datetime
+from typing import Optional
 
+from aiconsole.chat.types import Chat
+
+from aiconsole import projects
 
 
 def load_chat_history(id: str, project_path: Optional[str] = None) -> Chat:

@@ -14,11 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from aiconsole import projects
-from aiconsole.chat.types import Chat
-
 import json
 import os
+
+from aiconsole.chat.types import Chat
+
+from aiconsole import projects
 
 
 def save_chat_history(chat: Chat):
