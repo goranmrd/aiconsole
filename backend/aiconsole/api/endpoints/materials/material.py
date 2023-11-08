@@ -19,9 +19,9 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-from aiconsole import projects
-from aiconsole.materials.material import MaterialLocation, Material, MaterialStatus, MaterialWithStatus
-from aiconsole.project_settings.project_settings import get_aiconsole_settings
+from aiconsole.core.project import project
+from aiconsole.core.materials.material import MaterialLocation, Material, MaterialStatus, MaterialWithStatus
+from aiconsole.core.settings.project_settings import get_aiconsole_settings
 
 router = APIRouter()
 
@@ -37,7 +37,7 @@ class StatusChangePostBody(BaseModel):
 async def material_get(material_id: str):
     try:
         settings = get_aiconsole_settings()
-        material = projects.get_project_materials().get_material(material_id)
+        material = project.get_project_materials().get_material(material_id)
         return JSONResponse({
             **material.model_dump(),
             "status": settings.get_material_status(material.id),
@@ -56,7 +56,7 @@ async def material_get(material_id: str):
 @router.patch("/{material_id}")
 async def material_patch(material_id: str, material: Material):
     try:
-        projects.get_project_materials().save_material(material, new=False, old_material_id=material_id)
+        project.get_project_materials().save_material(material, new=False, old_material_id=material_id)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -66,7 +66,7 @@ async def material_patch(material_id: str, material: Material):
 @router.post("/{material_id}")
 async def material_post(material_id: str, material: Material):
     try:
-        projects.get_project_materials().save_material(material, new=True, old_material_id=material_id)
+        project.get_project_materials().save_material(material, new=True, old_material_id=material_id)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -89,7 +89,7 @@ async def material_status_change(
         JSONResponse: JSON response indicating the result.
     """
     try:
-        projects.get_project_materials().get_material(material_id)
+        project.get_project_materials().get_material(material_id)
         get_aiconsole_settings().set_material_status(
             material_id=material_id, status=body.status, to_global=body.to_global
         )
@@ -103,7 +103,7 @@ async def material_status_change(
 @router.delete("/{material_id}")
 async def delete_material(material_id: str):
     try:
-        projects.get_project_materials().delete_material(material_id)
+        project.get_project_materials().delete_material(material_id)
         return JSONResponse({"status": "ok"})
     except KeyError:
         raise HTTPException(status_code=404, detail="Material not found")

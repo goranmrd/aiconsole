@@ -19,10 +19,10 @@ import logging
 
 from fastapi import APIRouter, Request
 
-from aiconsole.analysis.director import director_analyse
-from aiconsole.chat.types import Chat
+from aiconsole.core.analysis.director import director_analyse
+from aiconsole.core.chat.types import Chat
 from aiconsole.utils.cancel_on_disconnect import cancelable_endpoint
-from aiconsole.websockets.outgoing_messages import ErrorWSMessage
+from aiconsole.api.websockets.outgoing_messages import ErrorWSMessage
 
 router = APIRouter()
 _log = logging.getLogger(__name__)

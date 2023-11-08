@@ -14,20 +14,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from pathlib import Path
+from aiconsole.core.recent_projects.recent_projects import get_recent_project, remove_from_recent_projects
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-from aiconsole.recent_projects import recent_projects
 from pydantic import BaseModel
 
 class _DeleteProjectPayload(BaseModel):
-    path: str
+    path: Path
 
 router = APIRouter()
 
 @router.get("/recent")
 async def choose_project():
-    return JSONResponse(await recent_projects.get_recent_project())
+    return JSONResponse([rp.model_dump() for rp in await get_recent_project()])
 
 @router.delete("/recent")
 async def delete_project(data: _DeleteProjectPayload):
-    await recent_projects.remove_from_recent_projects(data.path)
+    await remove_from_recent_projects(data.path)

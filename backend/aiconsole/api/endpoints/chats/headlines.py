@@ -17,9 +17,9 @@
 import logging
 from fastapi import Request
 from aiconsole.api.endpoints.chats.history import router
-from aiconsole.chats.list_possible_historic_chat_ids import list_possible_historic_chat_ids
-from aiconsole.chats.load_chat_history import load_chat_history
-from aiconsole.chats.save_chat_history import save_chat_history
+from aiconsole.core.chats.list_possible_historic_chat_ids import list_possible_historic_chat_ids
+from aiconsole.core.chats.load_chat_history import load_chat_history
+from aiconsole.core.chats.save_chat_history import save_chat_history
 
 _log = logging.getLogger(__name__)
 

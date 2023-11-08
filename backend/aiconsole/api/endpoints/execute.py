@@ -15,16 +15,17 @@
 # limitations under the License.
     
 import asyncio
+import logging
+
+from aiconsole.api.websockets.outgoing_messages import ErrorWSMessage
+from aiconsole.core.agents.types import ExecutionModeContext
+from aiconsole.core.chat.types import ChatWithAgentAndMaterials
+from aiconsole.core.materials.content_evaluation_context import \
+    ContentEvaluationContext
+from aiconsole.core.project import project
+from aiconsole.utils.cancel_on_disconnect import cancelable_endpoint
 from fastapi import APIRouter, Request
 from fastapi.responses import StreamingResponse
-from aiconsole import projects
-import logging
-from aiconsole.agents.types import ExecutionModeContext
-from aiconsole.chat.types import ChatWithAgentAndMaterials
-from aiconsole.materials.content_evaluation_context import ContentEvaluationContext
-from aiconsole.utils.cancel_on_disconnect import cancelable_endpoint
-from aiconsole.websockets.outgoing_messages import ErrorWSMessage
-
 
 router = APIRouter()
 _log = logging.getLogger(__name__)
@@ -33,13 +34,13 @@ _log = logging.getLogger(__name__)
 @router.post("/execute")
 @cancelable_endpoint
 async def execute(request: Request, chat: ChatWithAgentAndMaterials) -> StreamingResponse:
-    agent = projects.get_project_agents().agents[chat.agent_id]
+    agent = project.get_project_agents().agents[chat.agent_id]
 
     content_context = ContentEvaluationContext(
         chat=chat,
         agent=agent,
         gpt_mode=agent.gpt_mode,
-        relevant_materials=[projects.get_project_materials().get_material(id) for id in chat.relevant_materials_ids],
+        relevant_materials=[project.get_project_materials().get_material(id) for id in chat.relevant_materials_ids],
     )
 
     rendered_materials = [await material.render(content_context) for material in content_context.relevant_materials]

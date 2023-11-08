@@ -14,16 +14,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
     
-import os
+from pathlib import Path
 
 
-def list_files_in_file_system(path: str):
+def list_files_in_file_system(path: Path):
     """
     Recursivelly list all paths to files in path
     """
 
-    for entry in os.listdir(path):
-        if os.path.isfile(os.path.join(path, entry)):
-            yield os.path.join(path, entry)
+    if not path.exists():
+        return
+
+    for entry in path.iterdir():
+        if entry.is_file():
+            yield entry
         else:
-            yield from list_files_in_file_system(os.path.join(path, entry))
+            yield from list_files_in_file_system(entry)

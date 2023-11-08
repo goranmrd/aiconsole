@@ -17,15 +17,18 @@
 
 import json
 import os
-from typing import List, Dict
-from aiconsole import projects
+from typing import Dict, List
+
+from aiconsole.core.project import project
+from aiconsole.core.project.paths import get_credentials_directory
+
 
 class MissingCredentialException(Exception):
     pass
 
 def save_credential(module: str, credential: str, value: str):
     # Specify the path for the credential file
-    file_path = os.path.join(projects.get_credentials_directory(), module + ".json")
+    file_path = get_credentials_directory() / (module + ".json")
     
     # Ensure the directory for the file exists
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
@@ -56,7 +59,7 @@ def load_credentials(module: str, credentials: List[str]) -> Dict[str, str]:
         
         # Try file
         try: 
-            with open(os.path.join(projects.get_credentials_directory(), module + ".json"), "r") as f:
+            with open(get_credentials_directory() / (module + ".json"), "r") as f:
                 value = str(json.loads(f.read())[credential])
                 if value:
                     result[credential] = value

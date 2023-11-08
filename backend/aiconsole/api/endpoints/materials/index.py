@@ -16,8 +16,8 @@
     
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-from aiconsole import projects
-from aiconsole.project_settings.project_settings import get_aiconsole_settings
+from aiconsole.core.project import project
+from aiconsole.core.settings.project_settings import get_aiconsole_settings
 
 router = APIRouter()
 
@@ -30,6 +30,6 @@ async def materials_get():
             {
                 **material.model_dump(),
                 "status": settings.get_material_status(material.id),
-            } for material in projects.get_project_materials().all_materials()
+            } for material in project.get_project_materials().all_materials()
         ]
     )

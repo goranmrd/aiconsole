@@ -14,10 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
     
+from aiconsole.api.endpoints import run_code
+from aiconsole.api.endpoints import projects
 from fastapi import APIRouter
 
-from aiconsole.api.endpoints import analyse, chats, commands_history, execute, profile, image, agents, run_code, ping, ws, \
-    materials, projects, project_settings
+from aiconsole.api.endpoints import analyse, chats, commands_history, execute, profile, image, agents, ping, ws, \
+    materials, project_settings
 
 
 app_router = APIRouter()

@@ -20,16 +20,16 @@ from logging import config
 from contextlib import asynccontextmanager
 import os
 from fastapi import FastAPI
-from aiconsole import projects
-from aiconsole.project_settings import project_settings
+from aiconsole.core.project import project
+from aiconsole.core.settings import project_settings
 from aiconsole.consts import log_config
 from uvicorn import run
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await project_settings.init()
-    if projects.is_project_initialized():
-        await projects.reinitialize_project()
+    if project.is_project_initialized():
+        await project.reinitialize_project()
     yield
 
 
