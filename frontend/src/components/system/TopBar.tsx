@@ -26,6 +26,7 @@ import { useRecentProjectsStore } from '@/store/home/useRecentProjectsStore';
 import { MouseEvent, useEffect, useState } from 'react';
 import { cn } from '@/utils/styles';
 import { GlobalSettings } from '../modals/GlobalSettings';
+import ImageWithFallback from './ImageWithFallback';
 
 interface TopBarProps {
   variant?: 'recentProjects' | 'chat';
@@ -59,7 +60,7 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
   }, []);
 
   return (
-    <div className="flex w-full flex-col px-[30px] py-[26px] border-b drop-shadow-md bg-transparent border-white/10 relative z-40">
+    <div className="flex w-full flex-col px-[30px] py-[26px] border-b drop-shadow-md bg-transparent border-white/10 relative z-40 h-[101px]">
       <div className="flex gap-2 items-center">
         {variant === 'recentProjects' ? (
           recentProjects.length > 0 && (
@@ -80,7 +81,7 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
                 to={`/chats/${uuidv4()}`}
               >
                 <img
-                  src={`favicon.svg`}
+                  src="favicon.svg"
                   className="h-[48px] w-[48px] cursor-pointer filter"
                 />
               </Link>
@@ -128,8 +129,9 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
               },
             )}
           >
-            <img
+            <ImageWithFallback
               src={`${getBaseURL()}/profile/user.jpg` || ''}
+              fallback="avatar-fallback.png"
               className="h-11 w-11 rounded-full border cursor-pointer shadow-md border-primary mb-3"
               onClick={toggle}
             />
