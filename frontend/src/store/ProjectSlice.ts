@@ -35,12 +35,7 @@ export type ProjectSlice = {
   setOpenAiApiKey: (key: string) => Promise<void>;
 };
 
-export const createProjectSlice: StateCreator<
-  AICStore,
-  [],
-  [],
-  ProjectSlice
-> = (set, get) => ({
+export const createProjectSlice: StateCreator<AICStore, [], [], ProjectSlice> = (set, get) => ({
   projectPath: undefined,
   projectName: undefined,
   alwaysExecuteCode: false,
@@ -90,8 +85,13 @@ export const createProjectSlice: StateCreator<
   chooseProject: async (path?: string) => {
     // If we are in electron environment, use electron dialog, otherwise rely on the backend to open the dialog
     if (!path && window?.electron?.openDirectoryPicker) {
-      path = await window?.electron?.openDirectoryPicker();
-      (await Api.chooseProject(path).json()) as { name: string; path: string };
+      const path = await window?.electron?.openDirectoryPicker();
+
+      if (path) {
+        (await Api.chooseProject(path).json()) as { name: string; path: string };
+      }
+
+      return;
     }
 
     (await Api.chooseProject(path).json()) as { name: string; path: string };

@@ -159,12 +159,19 @@ const handleDirPicker = async (event) => {
     return;
   }
 
-  const { cancelled, filePaths } = await dialog.showOpenDialog(window.browserWindow, {
-    properties: ['openDirectory',  'createDirectory'],
-  });
+  try {
+    const { cancelled, filePaths } = await dialog.showOpenDialog(
+      window.browserWindow,
+      {
+        properties: ["openDirectory", "createDirectory"],
+      }
+    );
 
-  if (!cancelled) {
-    return filePaths[0];
+    if (!cancelled && filePaths?.length) {
+      return filePaths[0];
+    }
+  } catch (error) {
+    console.error(error);
   }
 };
 
