@@ -13,7 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
+
 from datetime import datetime
 from typing import List, Union
 
@@ -23,23 +23,27 @@ from pydantic import BaseModel
 
 
 class AICContentMessage(BaseModel):
-  id: str
-  timestamp: str
-  content: str
+    id: str
+    timestamp: str
+    content: str
+
 
 class AICCodeMessage (AICContentMessage):
-  language: LanguageStr
-  outputs: List[AICContentMessage]
+    language: LanguageStr
+    outputs: List[AICContentMessage]
+
 
 AICMessage = Union[AICCodeMessage, AICContentMessage]
 
+
 class AICMessageGroup(BaseModel):
-  id: str
-  agent_id: str
-  role: GPTRole
-  task: str
-  materials_ids: List[str]
-  messages: List[AICMessage]
+    id: str
+    agent_id: str
+    role: GPTRole
+    task: str
+    materials_ids: List[str]
+    messages: List[AICMessage]
+
 
 class Chat(BaseModel):
     id: str
@@ -53,6 +57,7 @@ class Chat(BaseModel):
             **super().model_dump(**kwargs),
             "last_modified": self.last_modified.isoformat(),
         }
+
 
 class ChatWithAgentAndMaterials(Chat):
     agent_id: str
