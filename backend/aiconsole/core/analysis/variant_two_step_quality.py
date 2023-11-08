@@ -14,13 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
     
-from aiconsole.analysis.AnalysisResponse import AnalysisResponse
-from aiconsole.analysis.create_agents_str import create_agents_str
-from aiconsole.analysis.create_materials_str import create_materials_str
-from aiconsole.analysis.gpt_analysis_function_step import gpt_analysis_function_step
-from aiconsole.analysis.gpt_analysis_text_step import gpt_analysis_text_step
-from aiconsole.chat.types import Chat
-from aiconsole.gpt.consts import GPTMode
+from aiconsole.core.analysis.AnalysisResponse import AnalysisResponse
+from aiconsole.core.analysis.create_agents_str import create_agents_str
+from aiconsole.core.analysis.create_materials_str import create_materials_str
+from aiconsole.core.analysis.gpt_analysis_function_step import gpt_analysis_function_step
+from aiconsole.core.analysis.gpt_analysis_text_step import gpt_analysis_text_step
+from aiconsole.core.chat.types import Chat
+from aiconsole.core.gpt.consts import GPTMode
 
 
 async def variant_two_step_quality(chat: Chat) -> AnalysisResponse:
