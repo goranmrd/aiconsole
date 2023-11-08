@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { ChatHeadline } from '@/types/types';
@@ -40,19 +40,41 @@ const HeadlinesGroup = ({
   const [isEditMode, setIsEditMode] = useState(false);
   const [inputText, setInputText] = useState('');
 
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+
+  const handleInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    if (e.relatedTarget === closeButtonRef.current) {
+      disableEditMode();
+    } else {
+      onAccept(currentChatId);
+    }
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      onAccept(currentChatId);
+    } else if (e.key === 'Escape') {
+      disableEditMode();
+    }
+  }
+
   const handleLinkClick = (chatId: string) => {
     if (chatId !== currentChatId && isEditMode) {
-      setIsEditMode(false);
-      setInputText('');
+      disableEditMode();
     }
   };
+
+  const disableEditMode = () => {
+    setIsEditMode(false);
+    setInputText('');
+  }
 
   const onChatEdit = (message: string) => {
     setIsEditMode(true);
     setInputText(message);
   };
 
-  const OnAccept = (chatId: string) => {
+  const onAccept = (chatId: string) => {
     onHeadlineChange(chatId, inputText);
     setIsEditMode(false);
   };
@@ -82,13 +104,19 @@ const HeadlinesGroup = ({
                   className="font-normal outline-1 outline-white/20 ring-secondary/30 bg-black resize-none overflow-hidden rounded-lg outline focus:outline-none focus:ring-2"
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
+                  onBlur={handleInputBlur}
+                  onKeyDown={handleKeyDown}
                 />
                 <div className="flex-grow flex items-center gap-2">
-                  <Check
-                    className="h-4 w-4"
-                    onClick={() => OnAccept(chat.id)}
-                  />
-                  <X className="h-4 w-4" onClick={() => setIsEditMode(false)} />
+                  <button>
+                    <Check
+                      className="h-4 w-4"
+                      onClick={() => onAccept(chat.id)}
+                    />
+                  </button>
+                  <button onClick={() => setIsEditMode(false)} ref={closeButtonRef} >
+                    <X className="h-4 w-4"/>
+                  </button>
                 </div>
               </div>
             ) : (
