@@ -14,14 +14,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { useAICStore } from '@/store/AICStore';
 import { Button } from '../system/Button';
 import { FolderOpen, FolderPlus } from 'lucide-react';
-import { useState } from 'react';
 import { useProjectFileManager } from '@/hooks/useProjectFileManager';
 import { ConfirmationModal } from '../system/ConfirmationModal';
+import OpenAiApiKeyForm from './OpenAiApiKeyForm';
 
-export function RecentProjectsEmpty() {
+interface RecentProjectsEmptyProps {
+  openAiApiKey: string | null | undefined;
+  isApiKeyValid: boolean | undefined;
+}
+
+export function RecentProjectsEmpty({
+  openAiApiKey,
+  isApiKeyValid,
+}: RecentProjectsEmptyProps) {
   const {
     isProject,
     isNewProjectModalOpen,
@@ -31,18 +38,9 @@ export function RecentProjectsEmpty() {
     resetIsProjectFlag,
     openProjectConfirmation,
   } = useProjectFileManager();
-  const openAiApiKey = useAICStore((state) => state.openAiApiKey);
-
-  const [inputText, setInputText] = useState('');
-
-  const setOpenAiApiKey = useAICStore((state) => state.setOpenAiApiKey);
-
-  const onFormSubmit = () => {
-    setOpenAiApiKey(inputText);
-  };
 
   return (
-    <div className="flex justify-center items-center flex-col min-h-[calc(100vh-181px)] px-[60px] m-20 relative">
+    <div className="flex justify-center items-center flex-col min-h-[100vh] p-[60px] pt-[140px]  relative">
       <div className="absolute top-50% translate-y-[-150%]">
         <img
           src="favicon.svg"
@@ -52,7 +50,7 @@ export function RecentProjectsEmpty() {
         <h1 className="text-[56px] text-center font-black text-white ">
           Welcome to <span className=" text-primary">AIConsole!</span>
         </h1>
-        {openAiApiKey ? (
+        {openAiApiKey && isApiKeyValid ? (
           <div className="flex justify-center gap-[20px] mt-[36px]">
             <ConfirmationModal
               confirmButtonText="Yes"
@@ -81,26 +79,13 @@ export function RecentProjectsEmpty() {
           </div>
         ) : (
           <div className="mb-[-40px]">
-            <p className="mt-10 mb-4 text-lg text-center font-semibold text-white">
-              First, provide your OpenAI API key with GPT-4 access.
-            </p>
-            <div className="flex justify-center gap-5">
-              <input
-                className="border-white/20 ring-secondary/30 text-white bg-black flex-grow resize-none overflow-hidden rounded-3xl border px-4 py-2 focus:outline-none focus:ring-2"
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                placeholder="OpenAI API key..."
-              />
-              <Button small onClick={onFormSubmit} disabled={!inputText}>
-                Submit
-              </Button>
-            </div>
+            <OpenAiApiKeyForm />
           </div>
         )}
       </div>
       <img
         src="recent-projects-empty-image.png"
-        className="mx-auto my-[100px]"
+        className="mx-auto mt-[100px] "
         alt="aiconsole chat image"
       />
     </div>
