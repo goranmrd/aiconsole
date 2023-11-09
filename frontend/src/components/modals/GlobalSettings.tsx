@@ -3,6 +3,7 @@ import { SettingsModal } from './SettingsModal';
 import { useAICStore } from '@/store/AICStore';
 import { useState } from 'react';
 import { Button } from '../system/Button';
+import { useApiKey } from '@/hooks/useApiKey';
 
 interface GlobalSettingsProps {
   onClose: () => void;
@@ -10,19 +11,20 @@ interface GlobalSettingsProps {
 // TODO: implement other features from figma like api for azure, user profile and tutorial
 export const GlobalSettings = ({ onClose }: GlobalSettingsProps) => {
   const openAiApiKey = useAICStore((state) => state.openAiApiKey);
+
   const alwaysExecuteCode = useAICStore((state) => state.alwaysExecuteCode);
   const [inputText, setInputText] = useState(openAiApiKey ?? '');
   const [isAutoRun, setIsAutoRun] = useState(alwaysExecuteCode);
-
-  const setOpenAiApiKey = useAICStore((state) => state.setOpenAiApiKey);
+  const { loading: checkApiKeyLoading, setApiKey } = useApiKey();
 
   const enableAutoCodeExecution = useAICStore(
     (state) => state.setAutoCodeExecution,
   );
 
-  const save = () => {
+  const save = async () => {
     enableAutoCodeExecution(isAutoRun);
-    setOpenAiApiKey(inputText);
+    await setApiKey(inputText);
+
     onClose();
   };
 
@@ -30,6 +32,7 @@ export const GlobalSettings = ({ onClose }: GlobalSettingsProps) => {
     <SettingsModal
       onSubmit={save}
       onClose={onClose}
+      loading={checkApiKeyLoading}
       title="AI Console Settings"
       openModalButton={
         <div className="flex items-center text-[14px] p-[8px] rounded-[5px] hover:bg-gray-700 cursor-pointer gap-[10px] w-full">

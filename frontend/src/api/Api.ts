@@ -211,6 +211,14 @@ const analyse = (body: Chat, signal?: AbortSignal) =>
 
 // Settings
 
+const checkKey = (key: string) => {
+  return ky.post(`${getBaseURL()}/api/check_key`, {
+    json: { key },
+    hooks,
+    timeout: false,
+  });
+};
+
 async function saveSettings(params: { to_global: boolean } & Settings) {
   return ky.patch(`${getBaseURL()}/api/settings`, { json: params, hooks });
 }
@@ -246,4 +254,5 @@ export const Api = {
   updateChatHeadline,
   saveSettings,
   getSettings,
+  checkKey,
 };

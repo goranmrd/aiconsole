@@ -26,6 +26,8 @@ export type ProjectSlice = {
   isProject?: boolean | undefined;
   alwaysExecuteCode: boolean;
   openAiApiKey?: string | null;
+  isApiKeyValid?: boolean;
+  setApiKeyValid: (valid: boolean) => void;
   chooseProject: (path?: string) => Promise<void>;
   resetIsProjectFlag: () => void;
   checkPath: (path?: string) => Promise<void>;
@@ -48,6 +50,7 @@ export const createProjectSlice: StateCreator<
   projectPath: undefined,
   tempPath: undefined,
   isProject: undefined,
+  isApiKeyValid: false,
   projectName: undefined,
   alwaysExecuteCode: false,
   openAiApiKey: undefined,
@@ -55,8 +58,15 @@ export const createProjectSlice: StateCreator<
     await Api.saveSettings({ code_autorun: autoRun, to_global: true });
     set({ alwaysExecuteCode: autoRun });
   },
+  setApiKeyValid: async (valid: boolean) => {
+    set({ isApiKeyValid: valid });
+  },
   setOpenAiApiKey: async (key: string) => {
-    await Api.saveSettings({ openai_api_key: key, to_global: true });
+    await Api.saveSettings({
+      openai_api_key: key,
+      to_global: true,
+    });
+
     set({ openAiApiKey: key });
   },
   setProject: async ({ path, name }: { path: string; name: string }) => {
@@ -103,7 +113,6 @@ export const createProjectSlice: StateCreator<
     // If we are in electron environment, use electron dialog, otherwise rely on the backend to open the dialog
     if (!path && window?.electron?.openDirectoryPicker) {
       const path = await window?.electron?.openDirectoryPicker();
-
       if (path) {
         (await Api.chooseProject(path).json()) as {
           name: string;

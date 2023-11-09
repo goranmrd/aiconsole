@@ -8,6 +8,7 @@ interface SettingsModalProps {
   children: ReactNode;
   openModalButton: ReactElement;
   title: string;
+  loading?: boolean;
   onSubmit: () => void;
   onClose?: () => void;
 }
@@ -15,6 +16,7 @@ export const SettingsModal = ({
   children,
   openModalButton,
   title,
+  loading,
   onSubmit,
   onClose,
 }: SettingsModalProps) => {
@@ -62,7 +64,9 @@ export const SettingsModal = ({
             <Button variant="secondary" bold onClick={close}>
               Cancel
             </Button>
-            <Button onClick={onSubmit}>Save</Button>
+            <Button onClick={onSubmit}>
+              {loading ? 'Loading...' : 'Save'}
+            </Button>
           </div>
         </div>
       </Modal>
