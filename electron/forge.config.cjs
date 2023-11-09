@@ -85,12 +85,6 @@ module.exports = {
       const path = require('path');
       const fs = require('fs');
 
-      console.log('Current directory:', process.cwd());
-      console.log('Directory contents:', fs.readdirSync(process.cwd()));
-
-      const makeDir = path.join(process.cwd(), 'out', 'make');
-      console.log('The out/make directory contents:', fs.readdirSync(makeDir));
-
       for (let result of results) {
         for (let artifact of result.artifacts) {
           if (artifact.endsWith("AIConsole.dmg")) {
