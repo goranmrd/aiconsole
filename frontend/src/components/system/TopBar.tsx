@@ -128,19 +128,6 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
               >
                 MATERIALS
               </Link>
-              <Link
-                to="/materials"
-                className="cursor-pointer text-sm hover:text-gray-400 hover:animate-pulse"
-                onClick={() =>
-                  showNotification({
-                    title: 'Not implemented',
-                    message: 'Agents listing is not implemented yet',
-                    variant: 'error',
-                  })
-                }
-              >
-                AGENTS
-              </Link>
             </div>
           </>
         )}
@@ -165,7 +152,7 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
             {isMenuActive && (
               <>
                 <div className="border-t border-gray-700 w-full my-[14px]"></div>
-                {isProjectOpen && (
+                {isProjectOpen && false && (
                   <div
                     className="text-[14px] p-[8px] rounded-[5px] hover:bg-gray-700 cursor-pointer gap-[10px] w-full mb-[5px]"
                     onClick={() =>
@@ -180,7 +167,7 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
                     settings
                   </div>
                 )}
-                <GlobalSettings onClick={hideMenu} />
+                <GlobalSettings onClose={hideMenu} />
               </>
             )}
           </div>

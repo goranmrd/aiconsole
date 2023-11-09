@@ -5,10 +5,10 @@ import { useState } from 'react';
 import { Button } from '../system/Button';
 
 interface GlobalSettingsProps {
-  onClick: () => void;
+  onClose: () => void;
 }
 // TODO: implement other features from figma like api for azure, user profile and tutorial
-export const GlobalSettings = ({ onClick }: GlobalSettingsProps) => {
+export const GlobalSettings = ({ onClose }: GlobalSettingsProps) => {
   const openAiApiKey = useAICStore((state) => state.openAiApiKey);
   const alwaysExecuteCode = useAICStore((state) => state.alwaysExecuteCode);
   const [inputText, setInputText] = useState(openAiApiKey ?? '');
@@ -23,12 +23,13 @@ export const GlobalSettings = ({ onClick }: GlobalSettingsProps) => {
   const save = () => {
     enableAutoCodeExecution(isAutoRun);
     setOpenAiApiKey(inputText);
+    onClose();
   };
 
   return (
     <SettingsModal
       onSubmit={save}
-      onClose={onClick}
+      onClose={onClose}
       title="AI Console Settings"
       openModalButton={
         <div className="flex items-center text-[14px] p-[8px] rounded-[5px] hover:bg-gray-700 cursor-pointer gap-[10px] w-full">

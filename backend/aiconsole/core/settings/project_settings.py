@@ -13,28 +13,27 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import logging
 import os
-from aiconsole.core.project.paths import get_project_directory
-from aiconsole.core.gpt.check_key import check_key
-
-from appdirs import user_config_dir
-from pydantic import BaseModel
-import tomlkit
-import tomlkit.exceptions
-import tomlkit.container
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from watchdog.observers import Observer
-from tomlkit import TOMLDocument
-
+import litellm
+import tomlkit
+import tomlkit.container
+import tomlkit.exceptions
+from aiconsole.api.websockets.outgoing_messages import (NotificationWSMessage,
+                                                        SettingsWSMessage)
 from aiconsole.core.assets.asset import AssetStatus
+from aiconsole.core.gpt.check_key import check_key
+from aiconsole.core.project.paths import get_project_directory
 from aiconsole.core.project.project import is_project_initialized
 from aiconsole.utils.BatchingWatchDogHandler import BatchingWatchDogHandler
 from aiconsole.utils.recursive_merge import recursive_merge
-from aiconsole.api.websockets.outgoing_messages import NotificationWSMessage, SettingsWSMessage
-
-import logging
+from appdirs import user_config_dir
+from pydantic import BaseModel
+from tomlkit import TOMLDocument
+from watchdog.observers import Observer
 
 _log = logging.getLogger(__name__)
 
@@ -74,11 +73,7 @@ def _load_from_path(file_path: Path) -> Dict[str, Any]:
 def _set_openai_api_key_environment(settings: SettingsData) -> None:
     openai_api_key = settings.openai_api_key
 
-    if openai_api_key is None:
-        return
-
-    if os.environ.get("OPENAI_API_KEY", None) != openai_api_key:
-        os.environ["OPENAI_API_KEY"] = openai_api_key
+    litellm.openai_key = openai_api_key or "invalid key" # This is so we make sure that it's overiden and does not env variables etc
 
 class Settings:
 
