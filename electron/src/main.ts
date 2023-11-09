@@ -230,7 +230,7 @@ app.whenReady().then(() => {
   });
 
   app.on("window-all-closed", function () {
-    if (process.platform !== "darwin") app.quit();
+    app.quit();
   });
 
   app.on("activate", function () {
