@@ -1,7 +1,7 @@
 {
   "name": "aiconsole",
   "private": true,
-  "version": "0.2.1-alpha4",
+  "version": "0.2.1-alpha5",
   "scripts": {
     "dev": "vite",
     "watch": "vite build --watch",
