@@ -56,13 +56,12 @@ module.exports = {
     },
   ],
   hooks: {
-    afterMake: async (config, buildPath, electronVersion, platform, arch, target) => {
-      if (platform === 'darwin' && target.name === '@electron-forge/maker-dmg') {
-        const oldPath = path.join(buildPath[0], 'AIConsole.dmg');
-        const newPath = path.join(buildPath[0], `AIConsole-${electronVersion}-${platform}-${arch}.dmg`);
+    generateAssets: async (config, targets, paths) => {
+      if (targets.some(target => target.name === '@electron-forge/maker-dmg')) {
+        const oldPath = path.join(paths.make, 'AIConsole.dmg');
+        const newPath = path.join(paths.make, `AIConsole-${config.electronVersion}-darwin-${config.arch}.dmg`);
         await fs.promises.rename(oldPath, newPath);
       }
-      return buildPath;
     },
   },
   publishers: [
