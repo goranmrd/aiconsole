@@ -1,3 +1,27 @@
+const fs = require('fs');
+const path = require('path');
+const { version } = require('./package.json');
+const GitHub = require('@electron-forge/publisher-github').default;
+
+class CustomGitHubPublisher extends GitHub {
+  async publish({ makeResults }) {
+    // Modify the artifacts to include the renamed file
+    for (let result of makeResults) {
+      for (let i = 0; i < result.artifacts.length; i++) {
+        if (result.artifacts[i].endsWith("AIConsole.dmg")) {
+          result.artifacts[i] = path.join(
+            path.dirname(result.artifacts[i]),
+            `AIConsole-${version}-${result.arch}.dmg`
+          );
+        }
+      }
+    }
+
+    // Call the original publish method
+    return super.publish({ makeResults });
+  }
+}
+
 module.exports = {
   packagerConfig: {
     executableName: 'aiconsole',
@@ -82,16 +106,13 @@ module.exports = {
     }
   },
   publishers: [
-    {
-      name: '@electron-forge/publisher-github',
-      config: {
-        repository: {
-          owner: '10clouds',
-          name: 'aiconsole'
-        },
-        prerelease: true
-      }
-    }
+    new CustomGitHubPublisher({
+      repository: {
+        owner: '10clouds',
+        name: 'aiconsole'
+      },
+      prerelease: true
+    }),
   ],
   plugins: [
     {
