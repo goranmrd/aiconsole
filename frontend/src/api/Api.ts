@@ -114,7 +114,7 @@ const saveHistory = (chat: Chat) =>
 // Agents
 
 const getAgents: () => Promise<Agent[]> = async () =>
-  await ky.get(`${getBaseURL()}/agents`, { hooks }).json();
+  await ky.get(`${getBaseURL()}/api/agents`, { hooks }).json();
 
 // Projects
 

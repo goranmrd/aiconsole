@@ -14,6 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
     
+from aiconsole.core.assets.agents.agent import Agent
+from aiconsole.core.assets.asset import AssetLocation, AssetStatus
+from aiconsole.core.gpt.consts import GPTMode
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from aiconsole.core.project import project
@@ -23,13 +26,25 @@ router = APIRouter()
 
 
 @router.get("/")
-async def materials_get():
+async def agents_get():
     settings = get_aiconsole_settings()
     return JSONResponse(
         [
             {
-                **material.model_dump(),
-                "status": settings.get_asset_status(material.id),
-            } for material in project.get_project_materials().all_assets()
+                **(Agent(
+                    id="user",
+                    name="User",
+                    usage="",
+                    system="",
+                    defined_in=AssetLocation.AICONSOLE_CORE,
+                    gpt_mode=GPTMode.QUALITY,
+                ).model_dump()),
+                "status": AssetStatus.ENABLED,
+            },
+            *({
+                **agent.model_dump(),
+                "status": settings.get_asset_status(agent.id),
+            } for agent in project.get_project_agents().all_assets())
         ]
     )
+
