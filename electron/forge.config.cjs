@@ -56,13 +56,16 @@ module.exports = {
     },
   ],
   hooks: {
-    generateAssets: async (config, targets, paths) => {
-      if (targets.name === '@electron-forge/maker-dmg') {
-        const oldPath = paths.join(paths.make, 'AIConsole.dmg');
-        const newPath = paths.join(paths.make, `AIConsole-${config.electronVersion}-darwin-${config.arch}.dmg`);
-        await fs.promises.rename(oldPath, newPath);
+    postMake: async (forgeConfig, options) => {
+      if (options.platform === 'darwin') {
+        const { version } = require('./package.json');
+        const path = require('path');
+        const fs = require('fs');
+        const dmgPath = path.join(options.outDir, 'make', 'AIConsole.dmg')
+        const dmgPathWithVersionAndArch = path.join(options.outDir, 'make', `AIConsole_${version}_${options.arch}.dmg`);
+        await fs.promises.rename(dmgPath, dmgPathWithVersionAndArch);
       }
-    },
+    }
   },
   publishers: [
     {
