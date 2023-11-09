@@ -57,6 +57,23 @@ We welcome contributions from the community to make AI Console even better. If y
 
 You can also visit our [Discord channel](https://discord.gg/5hzqZqP4H5) for a further discussion.
 
+## Roadmap
+
+- [x] Initial PIP release
+- [x] Switch to GPT-4 Turbo
+- [ ] Release of the desktop app for MacOS, Windows and Linux
+- [ ] Integrating GPT-V
+- [ ] Integrating Dalle-3
+- [ ] IDE like experience
+- [ ] Handling of non-text materials and files (pdfs etc)
+- [ ] Better materials and integrations with various tools
+- [ ] Alternative interface to chat for working on a body of text
+- [ ] Ability to run on Azure OpenAI Models
+- [ ] Ability to run on other models than OpenAI
+- [ ] Using AI to modify materials
+- [ ] Generative UI
+- [ ] Web Hosted SaaS like version
+
 ## License
 
 AI Console is open-source software licensed under the [Apache License ver. 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt).
