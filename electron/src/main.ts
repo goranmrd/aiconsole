@@ -45,7 +45,10 @@ const windowManager: {
 
 async function waitForServerToStart(window: AIConsoleWindow) {
   const RETRY_INTERVAL = 100;
-  window.browserWindow.webContents.send("log", `Waiting for backend to start on port ${window.port}`);
+  window.browserWindow.webContents.send(
+    "log",
+    `Waiting for backend to start on port ${window.port}`
+  );
 
   const interval = setInterval(() => {
     fetch(`http://0.0.0.0:${window.port}/api/ping`)
@@ -167,7 +170,10 @@ const handleDirPicker = async (event) => {
       return filePaths[0];
     }
   } catch (error) {
-    window.browserWindow.webContents.send("error", `Error from backend process: ${error.message}`);
+    window.browserWindow.webContents.send(
+      "error",
+      `Error from backend process: ${error.message}`
+    );
   }
 };
 
@@ -188,8 +194,11 @@ ipcMain.on("request-backend-port", async (event, ...args) => {
         window.browserWindow.webContents.send("log", "Backend process exited");
       });
 
-      window.backendProcess.on('error', (error) => {
-        window.browserWindow.webContents.send('error', `Error from backend process: ${error.message}`);
+      window.backendProcess.on("error", (error) => {
+        window.browserWindow.webContents.send(
+          "error",
+          `Error from backend process: ${error.message}`
+        );
       });
 
       window.backendProcess.stdout.on("data", (data: Buffer) => {
@@ -197,7 +206,7 @@ ipcMain.on("request-backend-port", async (event, ...args) => {
         if (data[data.length - 1] == 10) {
           data = Uint8Array.prototype.slice.call(data, 0, -1);
         }
-        window.browserWindow.webContents.send('log', `${data}`);
+        window.browserWindow.webContents.send("log", `${data}`);
       });
 
       window.backendProcess.stderr.on("data", (data: Buffer) => {
@@ -206,11 +215,14 @@ ipcMain.on("request-backend-port", async (event, ...args) => {
           data = Uint8Array.prototype.slice.call(data, 0, -1);
         }
         // dialog.showErrorBox("Backend Error", data.toString());
-        window.browserWindow.webContents.send('error', `${data}`);
+        window.browserWindow.webContents.send("error", `${data}`);
       });
 
       window.backendProcess.on("exit", (code) => {
-        window.browserWindow.webContents.send('log', `FastAPI server exited with code ${code}`);
+        window.browserWindow.webContents.send(
+          "log",
+          `FastAPI server exited with code ${code}`
+        );
       });
 
       //wait for the server to come up online
@@ -337,7 +349,7 @@ app.on("ready", () => {
           label: "Learn More",
           click: async () => {
             const { shell } = require("electron");
-            await shell.openExternal("https://electronjs.org");
+            await shell.openExternal("https://github.com/10clouds/aiconsole");
           },
         },
       ],
