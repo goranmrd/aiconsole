@@ -63,10 +63,9 @@ module.exports = {
       for (let result of results) {
         for (let artifact of result.artifacts) {
           if (artifact.endsWith("AIConsole.dmg")) {
-            const dmgPath = path.join("out", "make", "AIConsole.dmg");
+            const dmgPath = path.join(artifact);
             const dmgPathWithVersionAndArch = path.join(
-              "out",
-              "make",
+              path.dirname(artifact),
               `AIConsole-${version}-${result.arch}.dmg`
             );
             await fs.promises.rename(dmgPath, dmgPathWithVersionAndArch);
