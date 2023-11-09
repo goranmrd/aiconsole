@@ -57,12 +57,17 @@ module.exports = {
   ],
   hooks: {
     postMake: async (forgeConfig, options) => {
+      console.log(`The options data is: ${JSON.stringify(options)}`)
       if (options.platform === 'darwin') {
         const { version } = require('./package.json');
         const path = require('path');
         const fs = require('fs');
         const dmgPath = path.join(options.outDir, 'make', 'AIConsole.dmg')
         const dmgPathWithVersionAndArch = path.join(options.outDir, 'make', `AIConsole_${version}_${options.arch}.dmg`);
+
+        console.log(`Renaming file from: ${dmgPath}`);
+        console.log(`To: ${dmgPathWithVersionAndArch}`);
+
         await fs.promises.rename(dmgPath, dmgPathWithVersionAndArch);
       }
     }
