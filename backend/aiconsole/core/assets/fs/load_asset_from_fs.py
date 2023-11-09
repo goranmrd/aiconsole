@@ -26,7 +26,7 @@ from aiconsole.core.project.paths import (get_core_assets_directory,
                                           get_project_assets_directory)
 
 
-async def load_asset_from_fs(asset_type: AssetType, asset_id: str) -> Material:
+async def load_asset_from_fs(asset_type: AssetType, asset_id: str) -> Asset:
     """
     Load a specific asset.
     """
@@ -78,15 +78,28 @@ async def load_asset_from_fs(asset_type: AssetType, asset_id: str) -> Material:
         return material
 
     if asset_type == AssetType.AGENT:
-        agent = Agent(
-            id=asset_id,
-            version=str(tomldoc.get("version", "0.0.1")).strip(),
-            name=str(tomldoc.get("name", asset_id)).strip(),
-            defined_in=location,
-            usage=str(tomldoc["usage"]).strip(),
-            system=str(tomldoc["system"]).strip(),
-            gpt_mode=GPTMode(str(tomldoc["gpt_mode"]).strip()),
-            execution_mode=str(tomldoc["execution_mode"]).strip())
+        if asset_id == "user":
+            raise KeyError("Agent 'user' is reserved.")
+        
+        params = {}
+
+        params["id"] = asset_id
+
+        if "version" in tomldoc:
+            params["version"] = str(tomldoc.get("version")).strip()
+        
+        params["name"] = str(tomldoc.get("name", asset_id)).strip()
+        params["defined_in"] = location
+        params["usage"] = str(tomldoc["usage"]).strip()
+        params["system"] = str(tomldoc["system"]).strip()
+
+        if "gpt_mode" in tomldoc:
+            params["gpt_mode"] = GPTMode(str(tomldoc["gpt_mode"]).strip())
+
+        if "execution_mode" in tomldoc:
+            params["execution_mode"] = str(tomldoc["execution_mode"]).strip()
+
+        agent = Agent(**params)
 
         return agent
 

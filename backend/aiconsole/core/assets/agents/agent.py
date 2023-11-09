@@ -13,7 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
+
 from typing import List
 from aiconsole.core.assets.asset import Asset, AssetStatus, AssetType
 from pydantic import BaseModel
@@ -23,15 +23,16 @@ from aiconsole.core.gpt.consts import GPTMode
 from aiconsole.core.assets.materials.rendered_material import RenderedMaterial
 
 
-
 class Agent(Asset):
     type: AssetType = AssetType.AGENT
     system: str
-    gpt_mode: GPTMode
+    gpt_mode: GPTMode = GPTMode.QUALITY
     execution_mode: str = "normal"
+
 
 class AgentWithStatus(Agent):
     status: AssetStatus = AssetStatus.ENABLED
+
 
 class ExecutionModeContext(BaseModel):
     chat: Chat

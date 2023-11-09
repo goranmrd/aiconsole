@@ -102,10 +102,12 @@ async def save_asset_to_fs(asset: Asset, create: bool, old_asset_id: str | None 
             }[asset.content_type]()
 
         if asset is Agent:
+            if asset.id == 'user':
+                raise Exception("Cannot save agent with id 'user'.")
+
             doc.append("system", tomlkit.string(asset.system))
             doc.append("gpt_mode", tomlkit.string(asset.gpt_mode))
             doc.append("execution_mode", tomlkit.string(asset.execution_mode))
-            
 
         file.write(doc.as_string())
 
