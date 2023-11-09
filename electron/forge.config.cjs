@@ -4,9 +4,9 @@ const { version } = require('./package.json');
 const GitHub = require('@electron-forge/publisher-github').default;
 
 class CustomGitHubPublisher extends GitHub {
-  async publish({ makeResults }) {
+  async publish(options) {
     // Modify the artifacts to include the renamed file
-    for (let result of makeResults) {
+    for (let result of options.makeResults) {
       for (let i = 0; i < result.artifacts.length; i++) {
         if (result.artifacts[i].endsWith("AIConsole.dmg")) {
           result.artifacts[i] = path.join(
@@ -18,7 +18,7 @@ class CustomGitHubPublisher extends GitHub {
     }
 
     // Call the original publish method
-    return super.publish({ makeResults });
+    return super.publish(options);
   }
 }
 
