@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { ChatHeadline } from '@/types/types';
@@ -48,7 +48,7 @@ const HeadlinesGroup = ({
     } else {
       onAccept(currentChatId);
     }
-  }
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -56,7 +56,7 @@ const HeadlinesGroup = ({
     } else if (e.key === 'Escape') {
       disableEditMode();
     }
-  }
+  };
 
   const handleLinkClick = (chatId: string) => {
     if (chatId !== currentChatId && isEditMode) {
@@ -67,7 +67,7 @@ const HeadlinesGroup = ({
   const disableEditMode = () => {
     setIsEditMode(false);
     setInputText('');
-  }
+  };
 
   const onChatEdit = (message: string) => {
     setIsEditMode(true);
@@ -114,8 +114,11 @@ const HeadlinesGroup = ({
                       onClick={() => onAccept(chat.id)}
                     />
                   </button>
-                  <button onClick={() => setIsEditMode(false)} ref={closeButtonRef} >
-                    <X className="h-4 w-4"/>
+                  <button
+                    onClick={() => setIsEditMode(false)}
+                    ref={closeButtonRef}
+                  >
+                    <X className="h-4 w-4" />
                   </button>
                 </div>
               </div>

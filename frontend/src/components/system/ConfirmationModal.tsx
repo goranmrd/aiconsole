@@ -26,7 +26,7 @@ interface ConfirmationModalProps {
   cancelButtonText?: string;
   title: string;
   openModalButton?: React.ReactElement;
-  opened: boolean;
+  opened?: boolean;
 }
 
 export function ConfirmationModal({
@@ -67,6 +67,11 @@ export function ConfirmationModal({
           header: {
             backgroundColor: '#1a1a1a',
             textAlign: 'center',
+          },
+          title: {
+            lineHeight: '24px',
+            textAlign: 'center',
+            width: '100%',
           },
           content: {
             backgroundColor: '#1a1a1a',
