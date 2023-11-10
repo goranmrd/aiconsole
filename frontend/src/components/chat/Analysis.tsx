@@ -38,7 +38,7 @@ export function Analysis() {
           />
           <div className="flex-grow mr-20">
             Analysing ...
-            {/*<>{` ${analysis.thinking_process || ''}`}{' '}
+            {<>{` ${analysis.thinking_process || ''}`}{' '}
             {analysis.next_step && (
               <>
                 <br /> Next step:{' '}
@@ -46,7 +46,7 @@ export function Analysis() {
                   {analysis.next_step}
                 </span>
               </>
-            )}{' '}</>*/}
+            )}{' '}</>}
             <BlinkingCursor />
           </div>
         </div>
