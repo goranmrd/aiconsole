@@ -47,9 +47,7 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
   } = useProjectFileManager();
   const projectName = useAICStore((state) => state.projectName);
   const isProjectOpen = useAICStore((state) => state.isProjectOpen());
-  const recentProjects = useRecentProjectsStore(
-    (state) => state.recentProjects,
-  );
+  const recentProjects = useRecentProjectsStore((state) => state.recentProjects);
 
   const hideMenu = () => setMenuActive(false);
 
@@ -103,35 +101,26 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
         ) : (
           <>
             <div className="flex font-bold text-sm gap-2 items-center pr-5">
-              
               <Button small variant="secondary" onClick={handleBackToProjects}>
                 <ArrowLeft />
                 Back to projects
               </Button>
               <Link
-                className="hover:animate-pulse cursor-pointer flex gap-2 items-center mr-[20px]"
                 to={`/chats/${uuidv4()}`}
+                className="font-black text-grey-300  uppercase text-primary hover:animate-pulse cursor-pointer flex gap-2 items-center ml-[20px]"
               >
+                {projectName}
               </Link>
-              <h3 className="font-black text-grey-300  uppercase text-primary ">
-               {projectName}
-              </h3>
             </div>
             {/* TODO: remove "materials" and "agents" links when sidebar ready */}
             <div className="flex gap-4">
-              <Link
-                to="/materials"
-                className="cursor-pointer text-sm  hover:text-gray-400 hover:animate-pulse"
-              >
+              <Link to="/materials" className="cursor-pointer text-sm  hover:text-gray-400 hover:animate-pulse">
                 MATERIALS
               </Link>
             </div>
           </>
         )}
-        <div
-          className="text-gray-300 ml-auto flex gap-[20px]"
-          onClick={(e) => e.stopPropagation()}
-        >
+        <div className="text-gray-300 ml-auto flex gap-[20px]" onClick={(e) => e.stopPropagation()}>
           <div
             className={cn(
               'flex flex-col p-4 rounded-[10px] border border-transparent justify-end items-end  absolute top-[10px] right-[14px]',
@@ -160,8 +149,7 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
                       })
                     }
                   >
-                    Project <span className="text-primary">{projectName} </span>{' '}
-                    settings
+                    Project <span className="text-primary">{projectName} </span> settings
                   </div>
                 )}
                 <GlobalSettings onClose={hideMenu} />
