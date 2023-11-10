@@ -28,7 +28,7 @@ export type ProjectSlice = {
   resetIsProjectFlag: () => void;
   checkPath: (path?: string) => Promise<void>;
   isProjectLoading: () => boolean;
-  isProjectOpen: () => boolean;
+  isProjectOpen: () => boolean | undefined;
   setProject: ({ path, name }: { path: string; name: string }) => Promise<void>;
   closeProject: () => Promise<void>;
   markProjectAsLoading: () => void;
@@ -65,7 +65,7 @@ export const createProjectSlice: StateCreator<AICStore, [], [], ProjectSlice> = 
     return get().projectPath === undefined;
   },
   isProjectOpen: () => {
-    return !!get().projectPath;
+    return !!get().projectPath || undefined;
   },
   resetIsProjectFlag: () => {
     set({
