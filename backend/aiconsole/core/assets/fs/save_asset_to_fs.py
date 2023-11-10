@@ -77,7 +77,7 @@ async def save_asset_to_fs(asset: Asset, create: bool, old_asset_id: str | None 
         doc.append("version", tomlkit.string(asset.version))
         doc.append("usage", tomlkit.string(asset.usage))
 
-        if asset is Material:
+        if isinstance(asset, Material):
             doc.append("content_type", tomlkit.string(asset.content_type))
 
             {
@@ -101,7 +101,7 @@ async def save_asset_to_fs(asset: Asset, create: bool, old_asset_id: str | None 
                         multiline=True)),
             }[asset.content_type]()
 
-        if asset is Agent:
+        if isinstance(asset, Agent):
             if asset.id == 'user':
                 raise Exception("Cannot save agent with id 'user'.")
 
