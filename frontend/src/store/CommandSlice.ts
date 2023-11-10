@@ -26,6 +26,8 @@ export type CommandSlice = {
   commandIndex: number;
   historyUp: () => void;
   historyDown: () => void;
+  scrollChatToBottom: undefined | ((props: {behavior: "auto" | "smooth" | undefined}) => void);
+  setScrollChatToBottom: (scrollChatToBottom: (props: {behavior: "auto" | "smooth" | undefined}) => void) => void;
   newCommand: () => Promise<void>;
   editCommand: (prompt: string) => void;
   getCommand: () => string;
@@ -37,12 +39,9 @@ export type CommandSlice = {
   initCommandHistory: () => Promise<void>;
 };
 
-export const createCommandSlice: StateCreator<
-  AICStore,
-  [],
-  [],
-  CommandSlice
-> = (set, get) => ({
+export const createCommandSlice: StateCreator<AICStore, [], [], CommandSlice> = (set, get) => ({
+  setScrollChatToBottom: (scrollChatToBottom) => set(() => ({ scrollChatToBottom })),
+  scrollChatToBottom: undefined,
   commandHistory: [''],
   commandIndex: 0,
   initCommandHistory: async () => {
@@ -121,6 +120,13 @@ export const createCommandSlice: StateCreator<
       );
 
       get().saveCommandAndMessagesToHistory(command, true);
+    }
+    const scrollChatToBottom = get().scrollChatToBottom;
+
+    if (scrollChatToBottom) {
+      scrollChatToBottom({
+        behavior: 'smooth'
+      });
     }
 
     await useAnalysisStore.getState().doAnalysis();
