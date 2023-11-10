@@ -22,7 +22,7 @@ Select the version suitable for your operating system:
 - [macOS (ARM)](https://github.com/10clouds/aiconsole/releases)
 - [Linux](https://github.com/10clouds/aiconsole/releases)
 
-# Basic flow of work
+# Basic Flow of Work
 
 Imagine you want to send your daily calendar schedule to your girlfriend through iMessage.
 
@@ -35,11 +35,23 @@ Imagine you want to send your daily calendar schedule to your girlfriend through
 
 After updating these materials, you can retry the step, and provided all the information is accurate, AIConsole will send the iMessage.
 
-# Manual editing of files in the project directory
+# Project Directory Structure
 
-Material, Agent and settings files are monitored and automatically loaded, then used as context. You can keep there API manuals, login information, prompts and other contextual information.
+Structure of a project folder
 
-You can see examples of materials in the ./preset/materials directory
+```/``` - root directory is added to the python system path, you can place here any custom modules that you want the python interpreter to have access to.
+
+```/agents``` - agent .toml files define available agents you can disable and enable them from the app. [example agents](../blob/master/backend/aiconsole/preinstalled/agents)
+
+```/materials``` - various materials, notes, manuals and APIs to be injected into GPT context. [examples materials](../blob/master/backend/aiconsole/preinstalled/materials)
+
+```/.aic```
+
+```/settings.toml``` - configuration file containing information about disabled materials
+
+Note that in your home app directory you have additional settings.toml which stored global settings.
+
+Material, Agent and settings files are monitored and automatically loaded, then used as context.
 
 # Roadmap
 
@@ -64,7 +76,7 @@ We welcome contributions from the community to make AI Console even better. If y
 
 You can also visit our [Discord channel](https://discord.gg/5hzqZqP4H5) for a further discussion.
 
-# Embedding the AIConsole backend in your app
+# Embedding the AIConsole Backend in Your App
 
 If you want to develop something on top of the aiconsole backend, you may install the backend part using:
 
@@ -77,7 +89,7 @@ In order to run the non electron development version of AIConsole:
 1. To run the standalone backend: `cd backend && poetry install && poetry run dev`
 2. To run the standalone frontend: `cd frontend && yarn && yarn dev`
 
-# Buiding the desktop app
+# Buiding the Desktop App
 
 1. To run the development version of electron bundle: `cd electron && yarn dev`
 2. To bundle the desktop app: `cd electron && yarn && yarn make`
