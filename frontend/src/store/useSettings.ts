@@ -21,33 +21,32 @@ import { create } from 'zustand';
 export type SettingsStore = {
   openAiApiKey?: string | null;
   isApiKeyValid?: boolean;
-  setApiKeyValid: (valid: boolean) => void;
   alwaysExecuteCode: boolean;
   initSettings: () => Promise<void>;
   setAutoCodeExecution: (autoRun: boolean) => void;
-  setOpenAiApiKey: (key: string) => Promise<void>;
-  validateApiKey: (key: string) => Promise<void>;
+  saveOpenAiApiKey: (key: string) => Promise<void>;
+  validateApiKey: (key: string) => Promise<boolean>;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const useSettings = create<SettingsStore>((set, get) => ({
   openAiApiKey: undefined,
   isApiKeyValid: false,
-  setApiKeyValid: async (valid: boolean) => {
-    set({ isApiKeyValid: valid });
-  },
   alwaysExecuteCode: false,
   setAutoCodeExecution: async (autoRun: boolean) => {
     await Api.saveSettings({ code_autorun: autoRun, to_global: true });
     set({ alwaysExecuteCode: autoRun });
   },
-  setOpenAiApiKey: async (key: string) => {
+  saveOpenAiApiKey: async (key: string) => {
     await Api.saveSettings({
       openai_api_key: key,
       to_global: true,
     });
 
-    set({ openAiApiKey: key });
+    set({
+      openAiApiKey: key,
+      isApiKeyValid: true // We assume that they key was validated before saving
+    });
   },
   initSettings: async () => {
     const result = await Api.getSettings();
@@ -56,12 +55,11 @@ export const useSettings = create<SettingsStore>((set, get) => ({
       openAiApiKey: result.openai_api_key,
       isApiKeyValid: !!result.openai_api_key,
     });
-    get().validateApiKey(result.openai_api_key || '');
+    set({ isApiKeyValid: await get().validateApiKey(result.openai_api_key || '') });
   },
   validateApiKey: async (key: string) => {
     if (!key) {
-      get().setApiKeyValid(false);
-      return;
+      return false;
     }
     const { key_ok } = (await Api.checkKey(key).json()) as {
       key_ok: boolean;
@@ -74,6 +72,6 @@ export const useSettings = create<SettingsStore>((set, get) => ({
         variant: 'error',
       });
     }
-    get().setApiKeyValid(key_ok);
-  }
+    return key_ok;
+  },
 }));

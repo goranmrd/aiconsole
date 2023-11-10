@@ -21,10 +21,14 @@ import { useApiKey } from '@/hooks/useApiKey';
 
 const OpenAiApiKeyForm = () => {
   const [inputText, setInputText] = useState('');
-  const { loading: checkApiKeyLoading, setApiKey } = useApiKey();
+  const { validating, setApiKey } = useApiKey();
 
   const onFormSubmit = async () => {
-    setApiKey(inputText);
+    const successfulySet = await setApiKey(inputText);
+
+    if (successfulySet) {
+      setInputText('');
+    }
   };
 
   return (
@@ -40,7 +44,7 @@ const OpenAiApiKeyForm = () => {
           placeholder="OpenAI API key..."
         />
         <Button small onClick={onFormSubmit} disabled={!inputText}>
-          {checkApiKeyLoading ? 'Loading...' : 'Submit'}
+          {validating ? 'Validating...' : 'Submit'}
         </Button>
       </div>
     </>

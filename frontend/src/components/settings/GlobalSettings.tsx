@@ -15,15 +15,24 @@ export const GlobalSettings = ({ onClose }: GlobalSettingsProps) => {
   const alwaysExecuteCode = useSettings((state) => state.alwaysExecuteCode);
   const [inputText, setInputText] = useState(openAiApiKey ?? '');
   const [isAutoRun, setIsAutoRun] = useState(alwaysExecuteCode);
-  const { loading: checkApiKeyLoading, setApiKey } = useApiKey();
+  const { validating, setApiKey } = useApiKey();
 
-  const enableAutoCodeExecution = useSettings(
+  const setAutoCodeExecution = useSettings(
     (state) => state.setAutoCodeExecution,
   );
 
   const save = async () => {
-    enableAutoCodeExecution(isAutoRun);
-    await setApiKey(inputText);
+    if (isAutoRun !== alwaysExecuteCode) {
+      setAutoCodeExecution(isAutoRun);
+    }
+
+    if (inputText !== openAiApiKey) {
+      const successfulySet = await setApiKey(inputText);
+      
+      if (!successfulySet) {
+        return
+      }
+    }
 
     onClose();
   };
@@ -32,7 +41,7 @@ export const GlobalSettings = ({ onClose }: GlobalSettingsProps) => {
     <SettingsModal
       onSubmit={save}
       onClose={onClose}
-      loading={checkApiKeyLoading}
+      validating={validating}
       title="AI Console Settings"
       openModalButton={
         <div className="flex items-center text-[14px] p-[8px] rounded-[5px] hover:bg-gray-700 cursor-pointer gap-[10px] w-full">
