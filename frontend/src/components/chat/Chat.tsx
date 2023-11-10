@@ -33,6 +33,8 @@ export function Chat({ chatId }: { chatId: string }) {
   const stopWork = useAICStore((state) => state.stopWork);
   const submitCommand = useAICStore((state) => state.submitCommand);
 
+  const isLastMessageFromUser = chat.message_groups.length > 0 && chat.message_groups[chat.message_groups.length - 1].agent_id === 'user';
+
   useEffect(() => {
     setChatId(chatId);
 
@@ -64,7 +66,7 @@ export function Chat({ chatId }: { chatId: string }) {
       <Analysis />
 
       <div className="flex items-center justify-center m-5">
-        {!isExecuteRunning && !isAnalysisRunning && <Button
+        {!isExecuteRunning && !isAnalysisRunning && !isLastMessageFromUser && <Button
           variant="secondary"
 
           onClick={() =>
