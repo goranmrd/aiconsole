@@ -93,11 +93,17 @@ export const createProjectSlice: StateCreator<AICStore, [], [], ProjectSlice> = 
   },
   checkPath: async (pathToCheck?: string) => {
     // If we are in electron environment, use electron dialog, otherwise rely on the backend to open the dialog
-    let path = pathToCheck;
-    if (!path && window?.electron?.openDirectoryPicker) {
-      path = await window?.electron?.openDirectoryPicker();
+    let pathFromElectron;
+
+    if (!pathToCheck && window?.electron?.openDirectoryPicker) {
+      pathFromElectron = await window?.electron?.openDirectoryPicker();
+
+      if (!pathFromElectron) {
+        return;
+      }
     }
 
+    const path = pathToCheck || pathFromElectron;
     const { is_project, path: tkPath } = await Api.isProjectDirectory(path);
     set({
       isProjectDirectory: is_project,
