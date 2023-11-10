@@ -46,7 +46,7 @@ class Assets:
 
         self.observer = watchdog.observers.Observer()
 
-        os.makedirs(get_project_assets_directory(asset_type), exist_ok=True)
+        get_project_assets_directory(asset_type).mkdir(parents=True, exist_ok=True)
         self.observer.schedule(BatchingWatchDogHandler(self.reload),
                                get_project_assets_directory(asset_type),
                                recursive=True)

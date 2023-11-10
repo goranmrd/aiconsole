@@ -81,7 +81,7 @@ class Settings:
         self._settings = SettingsData()
 
         self._global_settings_file_path = Path(user_config_dir('aiconsole')) / "settings.toml"
-        
+
         if project_path:
             self._project_settings_file_path = project_path / "settings.toml"
         else:
@@ -89,12 +89,15 @@ class Settings:
        
         self._observer = Observer()
 
+        self._global_settings_file_path.parent.mkdir(parents=True, exist_ok=True)
         self._observer.schedule(
             BatchingWatchDogHandler(self.reload, self._global_settings_file_path.name),
             str(self._global_settings_file_path.parent),
                                recursive=True)
+        
 
         if self._project_settings_file_path:
+            self._project_settings_file_path.parent.mkdir(parents=True, exist_ok=True)
             self._observer.schedule(
                 BatchingWatchDogHandler(self.reload, self._project_settings_file_path.name),
                 str(self._project_settings_file_path.parent),
