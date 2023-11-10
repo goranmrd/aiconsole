@@ -75,6 +75,7 @@ class SettingsWSMessage(BaseWSMessage):
 
 
 class AnalysisUpdatedWSMessage(BaseWSMessage):
+    analysis_request_id: str
     agent_id: Optional[str] = None
     relevant_material_ids: Optional[List[str]] = None
     next_step: Optional[str] = None

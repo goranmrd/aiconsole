@@ -26,14 +26,14 @@ export type CommandSlice = {
   commandIndex: number;
   historyUp: () => void;
   historyDown: () => void;
-  newCommand: () => void;
+  newCommand: () => Promise<void>;
   editCommand: (prompt: string) => void;
   getCommand: () => string;
   saveCommandAndMessagesToHistory: (
     command: string,
     isUserCommand: boolean,
   ) => Promise<void>;
-  submitCommand: (prompt: string) => void;
+  submitCommand: (prompt: string) => Promise<void>;
   initCommandHistory: () => Promise<void>;
 };
 
@@ -64,7 +64,7 @@ export const createCommandSlice: StateCreator<
   historyUp: () => {
     set((state) => ({ commandIndex: Math.max(0, state.commandIndex - 1) }));
   },
-  newCommand: () =>
+  newCommand: async () =>
     set((state) => ({
       commandHistory: [...state.commandHistory, ''],
       commandIndex: state.commandHistory.length,
@@ -100,9 +100,9 @@ export const createCommandSlice: StateCreator<
     get().saveCurrentChatHistory();
   },
   submitCommand: async (command: string) => {
-    //if is not currently streaming
-    if (get().isExecuteRunning || useAnalysisStore.getState().isAnalysisRunning) {
-      return;
+    
+    if (get().isExecuteRunning || useAnalysisStore.getState().currentAnalysisRequestId) {
+      await get().stopWork();
     }
     
     if (command.trim() !== '') {

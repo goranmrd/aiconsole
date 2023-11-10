@@ -26,6 +26,7 @@ from aiconsole.api.websockets.outgoing_messages import AnalysisUpdatedWSMessage
 
 async def gpt_analysis_text_step(
     chat: Chat,
+    analysis_request_id: str,
     gpt_mode: GPTMode,
     initial_system_prompt: str,
     last_system_prompt: str,
@@ -46,6 +47,7 @@ async def gpt_analysis_text_step(
 
     async for chunk in gpt_executor.execute(request):
         await AnalysisUpdatedWSMessage(
+            analysis_request_id=analysis_request_id,
             agent_id=None,
             relevant_material_ids=None,
             next_step=None,

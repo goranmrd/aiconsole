@@ -115,6 +115,7 @@ def _get_relevant_materials(relevant_material_ids: List[str]) -> List[Material]:
 
 async def gpt_analysis_function_step(
     chat: Chat,
+    analysis_request_id: str,
     gpt_mode: GPTMode,
     initial_system_prompt: str,
     last_system_prompt: str,
@@ -146,6 +147,7 @@ async def gpt_analysis_function_step(
             arguments = function_call.arguments
             if not isinstance(arguments, str):
                 await AnalysisUpdatedWSMessage(
+                    analysis_request_id=analysis_request_id,
                     agent_id=arguments.get("agent_id", None),
                     relevant_material_ids=arguments.get(
                         "relevant_material_ids", None),
@@ -154,6 +156,7 @@ async def gpt_analysis_function_step(
                 ).send_to_chat(chat.id)
         else:
             await AnalysisUpdatedWSMessage(
+                analysis_request_id=analysis_request_id,
                 agent_id=None,
                 relevant_material_ids=None,
                 next_step=None,

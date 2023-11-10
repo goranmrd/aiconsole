@@ -23,12 +23,13 @@ from aiconsole.core.chat.types import Chat
 from aiconsole.core.gpt.consts import GPTMode
 
 
-async def variant_fast_propose_solution_and_fix(chat: Chat) -> AnalysisResponse:
+async def variant_fast_propose_solution_and_fix(chat: Chat, analysis_request_id: str) -> AnalysisResponse:
     """
     Using FAST mode propose a solution and then fix it
     """
 
     proposed_solution = await gpt_analysis_text_step(
+        analysis_request_id=analysis_request_id,
         chat=chat,
         gpt_mode=GPTMode.FAST,
         initial_system_prompt="""
@@ -60,6 +61,7 @@ Your job:
     )
 
     result = await gpt_analysis_function_step(
+        analysis_request_id=analysis_request_id,
         chat=chat,
         gpt_mode=GPTMode.FAST,
         initial_system_prompt=f"""

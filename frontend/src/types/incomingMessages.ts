@@ -53,6 +53,7 @@ export type InitialProjectStatusWSMessage = {
 
 export type AnalysisUpdatedWSMessage = {
   type: 'AnalysisUpdatedWSMessage';
+  analysis_request_id: string;
   agent_id?: string;
   relevant_material_ids?: string[];
   next_step?: string;

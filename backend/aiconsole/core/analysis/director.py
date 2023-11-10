@@ -19,5 +19,5 @@ from aiconsole.core.analysis.variant_quality_single_shot import variant_quality_
 from aiconsole.core.chat.types import Chat
 
 
-async def director_analyse(chat: Chat) -> AnalysisResponse:
-    return await variant_quality_single_shot(chat)
+async def director_analyse(chat: Chat, analysis_request_id: str) -> AnalysisResponse:
+    return await variant_quality_single_shot(chat, analysis_request_id)

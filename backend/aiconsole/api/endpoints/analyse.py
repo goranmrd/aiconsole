@@ -23,17 +23,22 @@ from aiconsole.core.analysis.director import director_analyse
 from aiconsole.core.chat.types import Chat
 from aiconsole.utils.cancel_on_disconnect import cancelable_endpoint
 from aiconsole.api.websockets.outgoing_messages import ErrorWSMessage
+from pydantic import BaseModel
 
 router = APIRouter()
 _log = logging.getLogger(__name__)
 
-@router.post("/analyse")
+class AnalysisRequestData(BaseModel):
+    analysis_request_id: str
+    chat: Chat
+
+@router.post("/api/analyse")
 @cancelable_endpoint
-async def analyse(request: Request, chat: Chat):
+async def analyse(request: Request, data: AnalysisRequestData):
     try:
-        return await director_analyse(chat)
+        return await director_analyse(data.chat, data.analysis_request_id)
     except asyncio.CancelledError:
         _log.info("Analysis cancelled")
     except Exception as e:
-        await ErrorWSMessage(error=str(e)).send_to_chat(chat.id)
+        await ErrorWSMessage(error=str(e)).send_to_chat(data.chat.id)
         raise e

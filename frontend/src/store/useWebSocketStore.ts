@@ -123,12 +123,14 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
           }
           break;
         case 'AnalysisUpdatedWSMessage':
-          useAnalysisStore.setState({
-            agent_id: data.agent_id,
-            relevant_material_ids: data.relevant_material_ids,
-            next_step: data.next_step,
-            thinking_process: data.thinking_process,
-          });
+          if (data.analysis_request_id === useAnalysisStore.getState().currentAnalysisRequestId) {
+            useAnalysisStore.setState({
+              agent_id: data.agent_id,
+              relevant_material_ids: data.relevant_material_ids,
+              next_step: data.next_step,
+              thinking_process: data.thinking_process,
+            });
+          }
           break;
         case 'SettingsWSMessage':
           useSettings.getState().initSettings();

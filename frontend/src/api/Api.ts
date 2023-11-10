@@ -204,9 +204,9 @@ const previewMaterial: (
 
 // Analysis
 
-const analyse = (body: Chat, signal?: AbortSignal) =>
-  ky.post(`${getBaseURL()}/analyse`, {
-    json: { ...body },
+const analyse = (body: Chat, analysis_request_id: string, signal?: AbortSignal) =>
+  ky.post(`${getBaseURL()}/api/analyse`, {
+    json: { chat: body, analysis_request_id: analysis_request_id },
     signal,
     timeout: 60000,
     hooks,

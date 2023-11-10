@@ -28,7 +28,7 @@ export function Chat({ chatId }: { chatId: string }) {
   const chat = useAICStore((state) => state.chat);
   const loadingMessages = useAICStore((state) => state.loadingMessages);
   const setChatId = useAICStore((state) => state.setChatId);
-  const isAnalysisRunning = useAnalysisStore((state) => state.isAnalysisRunning);
+  const isAnalysisRunning = useAnalysisStore((state) => !!state.currentAnalysisRequestId);
   const isExecuteRunning = useAICStore((state) => state.isExecuteRunning);
   const stopWork = useAICStore((state) => state.stopWork);
   const submitCommand = useAICStore((state) => state.submitCommand);

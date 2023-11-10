@@ -22,7 +22,7 @@ import { UserInfo } from '@/components/chat/UserInfo';
 export function Analysis() {
   const analysis = useAnalysisStore();
 
-  if (analysis.isAnalysisRunning) {
+  if (analysis.currentAnalysisRequestId) {
     return (
       <div className={cn('flex flex-row py-10 text-stone-400/50')}>
         <div className="container flex mx-auto gap-5 ">
