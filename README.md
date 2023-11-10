@@ -3,19 +3,30 @@
 ![AIConsole_Banner_3](https://github.com/10clouds/aiconsole/assets/135703473/bb3d8bca-c45a-452f-bc98-286546159f70)
 
 <p align="center"><strong>Your AI tools that run on your own device </strong></p> 
-<p align="center"><strong>Build and train AI personal assistants that can run code locally to perform any tasks.</strong></p>
+<p align="center"><strong>Open Source Desktop Alternative to OpenAI GPTs</strong></p>
 
 AI Console is an AI-powered personal assistant designed to help you with a wide range of tasks. It combines the power of artificial intelligence and natural language processing to provide personalized assistance and streamline your workflows.
 
 ## Features
 
-Task Management: AI Console can help you manage your tasks and projects efficiently. It can create, update, and track your to-do lists, set reminders, and provide helpful prompts to keep you on track.
+### Run Code Locally
+Run it locally; the console can perform all the tasks that your machine is capable of executing.
 
-Programming Assistance: Whether you're a beginner or an experienced developer, AI Console can assist you in coding tasks. It can generate code snippets, fix common programming errors, and provide recommendations for improving your code.
+### Improves with Use
+Describe in plain text how to perform a given task once, and thereafter AIConsole will know how to execute it indefinitely.
 
-Content Creation: Need help with content creation? AI Console has got you covered. It can generate engaging blog post ideas, suggest catchy headlines, and even assist in crafting compelling introductions. With its imaginative voice and storytelling techniques, AI Console can elevate your content creation efforts.
+### Utilize Your Notes for AI Training
+Employ your notes to instruct the AI in completing and automating tasks.
 
-Data Retrieval: Say goodbye to tedious manual data retrieval tasks. AI Console can fetch data from various sources, such as APIs, databases, and web scraping. It can organize and analyze the retrieved data, and present it in a format that suits your needs.
+### Better than Vector Databases
+For each step of your tasks, leverage a precise, efficient, and automated multi-agent Retrieval-Augmented Generation (RAG) system that is on par with expert prompt engineering.
+
+### Completely Open Sourced
+This software does not transmit any data to any parties other than the LLM APIs – and you can confirm this for yourself.
+
+### Share Your Tools with the Community
+Develop and share your domain-specific AI tools, for instance, on platforms like GitHub or Discord.
+
 
 ## Downloading and Installing
 
