@@ -37,7 +37,7 @@ interface TopBarProps {
 export function TopBar({ variant = 'chat' }: TopBarProps) {
   const [isMenuActive, setMenuActive] = useState(false);
   const {
-    isProject,
+    isProjectDirectory,
     isNewProjectModalOpen,
     isOpenProjectModalOpen,
     openProject,
@@ -77,7 +77,7 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
               <ConfirmationModal
                 confirmButtonText="Yes"
                 cancelButtonText="No"
-                opened={isProject === true && isNewProjectModalOpen}
+                opened={isProjectDirectory === true && isNewProjectModalOpen}
                 onClose={resetIsProjectFlag}
                 onConfirm={openProjectConfirmation}
                 title={`This project already exists, do you want to open it?`}
@@ -85,7 +85,7 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
               <ConfirmationModal
                 confirmButtonText="Yes"
                 cancelButtonText="No"
-                opened={isProject === false && isOpenProjectModalOpen}
+                opened={isProjectDirectory === false && isOpenProjectModalOpen}
                 onClose={resetIsProjectFlag}
                 onConfirm={openProjectConfirmation}
                 title={`This project does not exists, do you want to create one?`}

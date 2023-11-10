@@ -15,13 +15,17 @@
 # limitations under the License.
 
 from aiconsole.core.gpt.consts import MODEL_DATA
-import litellm
+import openai
 
 # Verify the OpenAI key has access to the required models
-def check_key(key: str) -> bool:
-    models = MODEL_DATA.keys()
-    for model in models:
-        if not litellm.check_valid_key(model=model, api_key=key):
-            return False
+async def check_key(key: str) -> bool:
+    try: 
+        # set key
+        openai.api_key = key
+        models = openai.Model.list(key=key)["data"] # type: ignore
+        available_models = [model["id"] for model in models]
+        needed_models = MODEL_DATA.keys()
 
-    return True
+        return set(needed_models).issubset(set(available_models))
+    except Exception as e:
+        return False

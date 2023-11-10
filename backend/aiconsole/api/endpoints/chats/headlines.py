@@ -24,12 +24,12 @@ from aiconsole.core.chats.save_chat_history import save_chat_history
 _log = logging.getLogger(__name__)
 
 @router.get("/headlines")
-def get_history_headlines():
+async def get_history_headlines():
     headlines = []
 
     for chat_id in list_possible_historic_chat_ids():
         try:
-            chat = load_chat_history(chat_id)
+            chat = await load_chat_history(chat_id)
 
             if chat:
                 headlines.append({
@@ -50,7 +50,7 @@ async def update_chat_headline(chat_id, req: Request):
     data = await req.json()
     new_headline = data["headline"]
 
-    chat = load_chat_history(chat_id)
+    chat = await load_chat_history(chat_id)
     chat.title = new_headline
     chat.title_edited = True
     save_chat_history(chat)

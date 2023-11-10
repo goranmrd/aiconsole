@@ -26,7 +26,7 @@ router = APIRouter()
 
 
 @router.delete("/history/{chat_id}")
-def delete_history(chat_id: str):
+async def delete_history(chat_id: str):
     file_path = get_history_directory() / f"{chat_id}.json"
     if os.path.exists(file_path):
         os.remove(file_path)
@@ -41,8 +41,8 @@ def delete_history(chat_id: str):
         )
 
 @router.get("/history/{chat_id}")
-def get_history(chat_id: str):
-    chat = load_chat_history(chat_id)
+async def get_history(chat_id: str):
+    chat = await load_chat_history(chat_id)
 
     return JSONResponse(chat.model_dump())
 

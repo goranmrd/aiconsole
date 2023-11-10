@@ -25,11 +25,11 @@ from aiconsole.core.chat.types import Chat
 from aiconsole.core.project.paths import get_history_directory
 
 
-def load_chat_history(id: str, project_path: Path | None = None) -> Chat:
+async def load_chat_history(id: str, project_path: Path | None = None) -> Chat:
     history_directory = get_history_directory(project_path)
-    file_path = os.path.join(history_directory, f"{id}.json")
+    file_path = history_directory / f"{id}.json"
 
-    if os.path.exists(file_path):
+    if file_path.exists():
         with open(file_path, "r") as f:
             data = json.load(f)
 

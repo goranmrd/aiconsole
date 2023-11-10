@@ -31,11 +31,13 @@ def _get_user_recent_projects_file():
 def _read_recent_projects():
     recent_projects_file = _get_user_recent_projects_file()
     if recent_projects_file.exists():
-        recent_projects = [Path(path_str) for path_str in recent_projects_file.read_text().splitlines()]
+        recent_projects = [
+            Path(path_str) for path_str in recent_projects_file.read_text().splitlines()]
     else:
         recent_projects = []
 
     return recent_projects
+
 
 def _save_recent_projects(recent_projects: list[Path]):
     recent_projects_file = _get_user_recent_projects_file()
@@ -66,11 +68,18 @@ async def remove_from_recent_projects(project_path: Path):
 async def get_recent_project():
     recent_projects = _read_recent_projects()
 
-    return [
-        RecentProject(name=os.path.basename(path),
-                      path=path,
-                      recent_chats=[
-                          load_chat_history(id, path).title
-                          for id in list_possible_historic_chat_ids(path)[:4]
-                      ]) for path in recent_projects
-    ]
+    recent_projects_real = []
+
+    for path in recent_projects:
+        recent_projects_real.append(
+            RecentProject(
+                name=os.path.basename(path),
+                path=path,
+                recent_chats=[
+                    (await load_chat_history(id, path)).title
+                    for id in list_possible_historic_chat_ids(path)[:4]
+                ]
+            )
+        )
+
+    return recent_projects_real

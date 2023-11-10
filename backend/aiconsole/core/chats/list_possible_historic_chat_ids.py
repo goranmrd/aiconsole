@@ -22,7 +22,7 @@ from aiconsole.core.project.paths import get_history_directory
 
 def list_possible_historic_chat_ids(project_path: Path | None = None):
     history_directory = get_history_directory(project_path)
-    if os.path.exists(history_directory) and os.path.isdir(history_directory):
+    if history_directory.exists() and history_directory.is_dir():
         entries = os.scandir(history_directory)
 
         files = [entry for entry in entries if entry.is_file()

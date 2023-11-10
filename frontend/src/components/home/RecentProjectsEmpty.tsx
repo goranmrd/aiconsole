@@ -30,7 +30,7 @@ export function RecentProjectsEmpty({
   isApiKeyValid,
 }: RecentProjectsEmptyProps) {
   const {
-    isProject,
+    isProjectDirectory,
     isNewProjectModalOpen,
     isOpenProjectModalOpen,
     openProject,
@@ -55,7 +55,7 @@ export function RecentProjectsEmpty({
             <ConfirmationModal
               confirmButtonText="Yes"
               cancelButtonText="No"
-              opened={isProject === true && isNewProjectModalOpen}
+              opened={isProjectDirectory === true && isNewProjectModalOpen}
               onClose={resetIsProjectFlag}
               onConfirm={openProjectConfirmation}
               title={`This project already exists, do you want to open it?`}
@@ -63,7 +63,7 @@ export function RecentProjectsEmpty({
             <ConfirmationModal
               confirmButtonText="Yes"
               cancelButtonText="No"
-              opened={isProject === false && isOpenProjectModalOpen}
+              opened={isProjectDirectory === false && isOpenProjectModalOpen}
               onClose={resetIsProjectFlag}
               onConfirm={openProjectConfirmation}
               title={`This project does not exists, do you want to create one?`}

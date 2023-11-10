@@ -8,7 +8,7 @@ export const useProjectFileManager = () => {
   const resetIsProjectFlag = useAICStore((state) => state.resetIsProjectFlag);
   const checkPath = useAICStore((state) => state.checkPath);
   const tempPath = useAICStore((state) => state.tempPath);
-  const isProject = useAICStore((state) => state.isProject);
+  const isProjectDirectory = useAICStore((state) => state.isProjectDirectory);
 
   const openProjectConfirmation = useCallback(() => {
     chooseProject(tempPath);
@@ -16,11 +16,11 @@ export const useProjectFileManager = () => {
   }, [chooseProject, resetIsProjectFlag, tempPath]);
 
   useEffect(() => {
-    if (isProject === false && isNewProjectModalOpen) {
+    if (isProjectDirectory === false && isNewProjectModalOpen) {
       openProjectConfirmation();
       return;
     }
-    if (isProject === true && isOpenProjectModalOpen) {
+    if (isProjectDirectory === true && isOpenProjectModalOpen) {
       openProjectConfirmation();
       return;
     }
@@ -28,7 +28,7 @@ export const useProjectFileManager = () => {
     openProjectConfirmation,
     isNewProjectModalOpen,
     isOpenProjectModalOpen,
-    isProject,
+    isProjectDirectory,
   ]);
 
   const openProject = () => {
@@ -50,7 +50,7 @@ export const useProjectFileManager = () => {
   return {
     newProject,
     openProject,
-    isProject,
+    isProjectDirectory,
     isNewProjectModalOpen,
     isOpenProjectModalOpen,
     resetIsProjectFlag,

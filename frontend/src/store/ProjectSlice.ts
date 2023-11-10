@@ -18,13 +18,12 @@ import { StateCreator } from 'zustand';
 
 import { Api } from '@/api/Api';
 import { AICStore } from './AICStore';
-import { useSettings } from './useSettings';
 
 export type ProjectSlice = {
   projectPath?: string; //undefined means loading, '' means no project, otherwise path
   tempPath?: string;
   projectName?: string;
-  isProject?: boolean | undefined;
+  isProjectDirectory?: boolean | undefined;
   chooseProject: (path?: string) => Promise<void>;
   resetIsProjectFlag: () => void;
   checkPath: (path?: string) => Promise<void>;
@@ -38,7 +37,7 @@ export type ProjectSlice = {
 export const createProjectSlice: StateCreator<AICStore, [], [], ProjectSlice> = (set, get) => ({
   projectPath: undefined,
   tempPath: undefined,
-  isProject: undefined,
+  isProjectDirectory: undefined,
   projectName: undefined,
   setProject: async ({ path, name }: { path: string; name: string }) => {
     set(() => ({
@@ -50,9 +49,6 @@ export const createProjectSlice: StateCreator<AICStore, [], [], ProjectSlice> = 
     await Promise.all([
       get().initCommandHistory(),
       get().initChatHistory(),
-      get().initMaterials(),
-      get().initAgents(),
-      useSettings.getState().initSettings(),
     ]);
   },
   closeProject: async () => {
@@ -76,7 +72,7 @@ export const createProjectSlice: StateCreator<AICStore, [], [], ProjectSlice> = 
   },
   resetIsProjectFlag: () => {
     set({
-      isProject: undefined,
+      isProjectDirectory: undefined,
       tempPath: '',
     });
   },
@@ -105,12 +101,12 @@ export const createProjectSlice: StateCreator<AICStore, [], [], ProjectSlice> = 
       path = await window?.electron?.openDirectoryPicker();
     }
 
-    const { isProject, path: tkPath } = (await Api.checkPath(path).json()) as {
+    const { isProject, path: tkPath } = (await Api.isProjectDirectory(path).json()) as {
       isProject: boolean;
       path: string;
     };
     set({
-      isProject,
+      isProjectDirectory: isProject,
       tempPath: tkPath,
     });
     if (isProject === undefined && !tkPath) {

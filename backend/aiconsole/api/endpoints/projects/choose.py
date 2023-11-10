@@ -27,7 +27,7 @@ router = APIRouter()
 
 _root = None
 
-def _ask_directory():
+async def _ask_directory():
     from tkinter import Tk, filedialog
 
     global _root
@@ -46,17 +46,17 @@ def _ask_directory():
 class ChooseParams(BaseModel):
     directory: Optional[str] = None
 
-@router.post("/checkPath")
-async def checkPath(params: ChooseParams):
+@router.post("/is_project")
+async def is_project(params: ChooseParams):
     directory = Path(params.directory) if params.directory else None
 
     if not directory:
         # Show a system select directory dialog
-        directory = _ask_directory()
+        directory = await _ask_directory()
 
-    isProject = directory.joinpath("material").is_dir() or directory.joinpath("agent").is_dir()
+    is_project = directory.joinpath("materials").is_dir() or directory.joinpath("agents").is_dir()
 
-    return {"isProject": isProject, "path": str(directory)}
+    return {"is_project": is_project, "path": str(directory)}
         
 @router.post("/choose")
 async def choose_project(params: ChooseParams):
