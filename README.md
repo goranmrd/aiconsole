@@ -7,7 +7,7 @@
 
 AI Console is an AI-powered personal assistant designed to help you with a wide range of tasks. It combines the power of artificial intelligence and natural language processing to provide personalized assistance and streamline your workflows.
 
-## Features
+# Features
 
 ### Run Code Locally
 Run it locally; the console can perform all the tasks that your machine is capable of executing.
@@ -28,7 +28,7 @@ This software does not transmit any data to any parties other than the LLM APIs 
 Develop and share your domain-specific AI tools, for instance, on platforms like GitHub or Discord.
 
 
-## Downloading and Installing
+# Downloading and Installing
 
 Select the version suitable for your operating system:
 
@@ -37,38 +37,38 @@ Select the version suitable for your operating system:
 - [macOS (ARM)](https://github.com/10clouds/aiconsole/releases)
 - [Linux](https://github.com/10clouds/aiconsole/releases)
 
-## Embedding the AIConsole backend in your app
+# Embedding the AIConsole backend in your app
 
 If you want to develop something on top of the aiconsole backend, you may install the backend part using:
 
 `pip install aiconsole`
 
-## Running Development Non-Electron AIConsole
+# Running Development Non-Electron AIConsole
 
 In order to run the non electron development version of AIConsole:
 
 1. To run the standalone backend: `cd backend && poetry install && poetry run dev`
 2. To run the standalone frontend: `cd frontend && yarn && yarn dev`
 
-## Buiding the desktop app
+# Buiding the desktop app
 
 1. To run the development version of electron bundle: `cd electron && yarn dev`
 2. To bundle the desktop app: `cd electron && yarn && yarn make`
 3. To publish the desktop app: `cd electron && yarn && yarn publish`
 
-## Editing files manually
+# Editing files manually
 
 Material, Agent and settings files are monitored and automatically loaded, then used as context. You can keep there API manuals, login information, prompts and other contextual information.
 
 You can see examples of materials in the ./preset/materials directory
 
-## Contributing
+# Contributing
 
 We welcome contributions from the community to make AI Console even better. If you have any ideas, bug reports, or feature requests, please open an issue on the GitHub repository. Feel free to submit pull requests as well!
 
 You can also visit our [Discord channel](https://discord.gg/5hzqZqP4H5) for a further discussion.
 
-## Roadmap
+# Roadmap
 
 - [x] Initial PIP release
 - [x] Switch to GPT-4 Turbo
@@ -85,11 +85,11 @@ You can also visit our [Discord channel](https://discord.gg/5hzqZqP4H5) for a fu
 - [ ] Generative UI
 - [ ] Web Hosted SaaS like version
 
-## License
+# License
 
 AI Console is open-source software licensed under the [Apache License ver. 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt).
 
-## Links
+# Links
 
 - [Landing page](https://aiconsole.ai)
 - [Discord](https://discord.gg/5hzqZqP4H5)
