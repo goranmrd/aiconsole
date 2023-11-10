@@ -25,7 +25,7 @@ import { Api, getBaseURL } from '@/api/Api';
 import { useRecentProjectsStore } from '@/store/home/useRecentProjectsStore';
 import { MouseEvent, useEffect, useState } from 'react';
 import { cn } from '@/utils/styles';
-import { GlobalSettings } from '../modals/GlobalSettings';
+import { GlobalSettings } from '../settings/GlobalSettings';
 import ImageWithFallback from './ImageWithFallback';
 import { ConfirmationModal } from './ConfirmationModal';
 import { useProjectFileManager } from '@/hooks/useProjectFileManager';
