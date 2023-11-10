@@ -1,17 +1,23 @@
-const { app, BrowserWindow, Tray, ipcMain, Menu } = require("electron");
-const isPackaged = require("electron-is-packaged").isPackaged;
-const { spawn } = require("child_process");
-const path = require("path");
-const { dialog } = require("electron");
-const net = require("net");
+import {
+  app,
+  BrowserWindow,
+  ipcMain,
+  Menu,
+  dialog,
+  IpcMainEvent,
+  MenuItemConstructorOptions,
+} from "electron";
+import { spawn } from "child_process";
+import path from "path";
+import net from "net";
 
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string;
 declare const MAIN_WINDOW_VITE_NAME: string;
 
-type BrowserWindow = {};
+const isMac = process.platform === "darwin";
 
 type AIConsoleWindow = {
-  browserWindow: typeof BrowserWindow;
+  browserWindow: BrowserWindow;
   backendProcess?: any;
   port?: number;
 };
@@ -141,7 +147,7 @@ function findPathToPython() {
     pythonPath = path.join("python", "bin", "python3.10");
   }
 
-  if (isPackaged) {
+  if (app.isPackaged) {
     return path.join(process.resourcesPath, pythonPath);
   } else {
     return path.join(__dirname, "../..", pythonPath);
@@ -151,7 +157,7 @@ function findPathToPython() {
 const { updateElectronApp } = require("update-electron-app");
 updateElectronApp();
 
-const handleDirPicker = async (event) => {
+const handleDirPicker = async (event: IpcMainEvent) => {
   const window: AIConsoleWindow | undefined = windowManager.windows.find(
     (win) => event.sender === win.browserWindow.webContents
   );
@@ -161,11 +167,11 @@ const handleDirPicker = async (event) => {
   }
 
   try {
-    const { cancelled, filePaths } = await dialog.showOpenDialog(window.browserWindow, {
+    const { canceled, filePaths } = await dialog.showOpenDialog(window.browserWindow, {
       properties: ["openDirectory", "createDirectory"],
     });
 
-    if (!cancelled && filePaths?.length) {
+    if (!canceled && filePaths?.length) {
       return filePaths[0];
     }
   } catch (error) {
@@ -176,7 +182,7 @@ const handleDirPicker = async (event) => {
   }
 };
 
-ipcMain.on("request-backend-port", async (event, ...args) => {
+ipcMain.on("request-backend-port", async (event) => {
   for (const window of windowManager.windows) {
     if (event.sender === window.browserWindow.webContents) {
       window.port = await findEmptyPort();
@@ -193,7 +199,7 @@ ipcMain.on("request-backend-port", async (event, ...args) => {
         window.browserWindow.webContents.send("log", "Backend process exited");
       });
 
-      window.backendProcess.on("error", (error) => {
+      window.backendProcess.on("error", (error: Error) => {
         window.browserWindow.webContents.send(
           "error",
           `Error from backend process: ${error.message}`
@@ -217,7 +223,7 @@ ipcMain.on("request-backend-port", async (event, ...args) => {
         window.browserWindow.webContents.send("error", `${data}`);
       });
 
-      window.backendProcess.on("exit", (code) => {
+      window.backendProcess.on("exit", (code: string) => {
         window.browserWindow.webContents.send(
           "log",
           `FastAPI server exited with code ${code}`
@@ -256,7 +262,7 @@ app.whenReady().then(() => {
 
 // This should be placed in your main process code
 app.on("ready", () => {
-  if (process.platform === "darwin") {
+  if (isMac) {
     // Define a template for your menu
     const dockMenu = Menu.buildFromTemplate([
       {
@@ -282,8 +288,24 @@ app.on("ready", () => {
 
 app.on("ready", () => {
   const template = [
-    // First menu is added later - typically the app name on macOS and 'File' on Windows/Linux
-    // Second menu is typically 'Edit'
+    ...(isMac
+      ? [
+          {
+            label: app.name,
+            submenu: [
+              { role: "about" },
+              { type: "separator" },
+              { role: "services" },
+              { type: "separator" },
+              { role: "hide" },
+              { role: "hideOthers" },
+              { role: "unhide" },
+              { type: "separator" },
+              { role: "quit" },
+            ],
+          },
+        ]
+      : []),
     {
       label: "File",
       submenu: [
@@ -309,7 +331,6 @@ app.on("ready", () => {
         { role: "selectAll" },
       ],
     },
-    // You can continue adding other menus like 'View', 'Window', 'Help', etc.
     {
       label: "View",
       submenu: [
@@ -325,17 +346,21 @@ app.on("ready", () => {
       ],
     },
     {
-      role: "window",
+      label: "Window",
       submenu: [
         { role: "minimize" },
         { role: "zoom" },
-        { type: "separator" },
-        { role: "front" },
-        { type: "separator" },
-        { role: "window" },
+        ...(isMac
+          ? [
+              { type: "separator" },
+              { role: "front" },
+              { type: "separator" },
+              { role: "window" },
+            ]
+          : [{ role: "close" }]),
         {
           label: "Show Developer Tools",
-          click(_, browserWindow) {
+          click(_, browserWindow: BrowserWindow) {
             browserWindow.webContents.openDevTools();
           },
         },
@@ -353,35 +378,7 @@ app.on("ready", () => {
         },
       ],
     },
-  ];
-
-  // macOS specific adjustments
-  if (process.platform === "darwin") {
-    template.unshift({
-      label: app.name,
-      submenu: [
-        { role: "about" },
-        { type: "separator" },
-        { role: "services" },
-        { type: "separator" },
-        { role: "hide" },
-        { role: "hideothers" },
-        { role: "unhide" },
-        { type: "separator" },
-        { role: "quit" },
-      ],
-    });
-
-    // Window menu (macOS)
-    template[3].submenu = [
-      { role: "close" },
-      { role: "minimize" },
-      { role: "zoom" },
-      { type: "separator" },
-      { role: "front" },
-    ];
-  } else {
-  }
+  ] as MenuItemConstructorOptions[];
 
   const menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);

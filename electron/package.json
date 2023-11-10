@@ -22,7 +22,6 @@
   "productName": "AIConsole",
   "main": ".vite/build/main.js",
   "dependencies": {
-    "electron-is-packaged": "^1.0.2",
     "electron-squirrel-startup": "^1.0.0",
     "update-electron-app": "^3.0.0"
   },
