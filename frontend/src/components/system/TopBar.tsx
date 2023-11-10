@@ -103,21 +103,18 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
         ) : (
           <>
             <div className="flex font-bold text-sm gap-2 items-center pr-5">
-              <Link
-                className="hover:animate-pulse cursor-pointer flex gap-2 items-center mr-[20px]"
-                to={`/chats/${uuidv4()}`}
-              >
-                <img
-                  src="favicon.svg"
-                  className="h-[48px] w-[48px] cursor-pointer filter"
-                />
-              </Link>
+              
               <Button small variant="secondary" onClick={handleBackToProjects}>
                 <ArrowLeft />
                 Back to projects
               </Button>
-              <h3 className="font-black text-grey-300 ml-[70px] first-letter:uppercase">
-                {projectName}
+              <Link
+                className="hover:animate-pulse cursor-pointer flex gap-2 items-center mr-[20px]"
+                to={`/chats/${uuidv4()}`}
+              >
+              </Link>
+              <h3 className="font-black text-grey-300  uppercase text-primary ">
+               {projectName}
               </h3>
             </div>
             {/* TODO: remove "materials" and "agents" links when sidebar ready */}
