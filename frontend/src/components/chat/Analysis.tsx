@@ -22,7 +22,7 @@ import { UserInfo } from '@/components/chat/UserInfo';
 export function Analysis() {
   const analysis = useAnalysisStore();
 
-  if (analysis.isAnalysisRunning || analysis.thinking_process) {
+  if (analysis.isAnalysisRunning) {
     return (
       <div className={cn('flex flex-row py-10 text-stone-400/50')}>
         <div className="container flex mx-auto gap-5 ">
@@ -38,7 +38,7 @@ export function Analysis() {
           />
           <div className="flex-grow mr-20">
             Analysing ...
-            {` ${analysis.thinking_process || ''}`}{' '}
+            {/*<>{` ${analysis.thinking_process || ''}`}{' '}
             {analysis.next_step && (
               <>
                 <br /> Next step:{' '}
@@ -46,8 +46,8 @@ export function Analysis() {
                   {analysis.next_step}
                 </span>
               </>
-            )}{' '}
-            {analysis.isAnalysisRunning && <BlinkingCursor />}
+            )}{' '}</>*/}
+            <BlinkingCursor />
           </div>
         </div>
       </div>
