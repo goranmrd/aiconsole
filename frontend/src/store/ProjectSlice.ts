@@ -101,15 +101,12 @@ export const createProjectSlice: StateCreator<AICStore, [], [], ProjectSlice> = 
       path = await window?.electron?.openDirectoryPicker();
     }
 
-    const { isProject, path: tkPath } = (await Api.isProjectDirectory(path).json()) as {
-      isProject: boolean;
-      path: string;
-    };
+    const { is_project, path: tkPath } = await Api.isProjectDirectory(path)
     set({
-      isProjectDirectory: isProject,
+      isProjectDirectory: is_project,
       tempPath: tkPath,
     });
-    if (isProject === undefined && !tkPath) {
+    if (is_project === undefined && !tkPath) {
       (await Api.chooseProject(path).json()) as {
         name: string;
         path: string;

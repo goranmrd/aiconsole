@@ -129,12 +129,15 @@ const chooseProject = (path?: string) =>
     timeout: false,
   });
 
-const isProjectDirectory = (path?: string) =>
-  ky.post(`${getBaseURL()}/api/projects/is_project`, {
+const isProjectDirectory = async (path?: string) =>
+  (await ky.post(`${getBaseURL()}/api/projects/is_project`, {
     json: { directory: path },
     hooks,
     timeout: false,
-  });
+  }).json()) as {
+    is_project: boolean;
+    path: string;
+  }
 
 const getCurrentProject = () =>
   ky.get(`${getBaseURL()}/api/projects/current`, { hooks });

@@ -116,7 +116,6 @@ async function createWindow() {
     );
   }
 
-  mainWindow.maximize();
   mainWindow.show();
 
   // Add an event listener to handle the main window's close event.
