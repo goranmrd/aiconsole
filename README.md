@@ -103,4 +103,5 @@ AI Console is open-source software licensed under the [Apache License ver. 2.0](
 
 - [Landing page](https://aiconsole.ai)
 - [Discord](https://discord.gg/5hzqZqP4H5)
-- [Twitter](https://twitter.com/mcielecki)
+- [Twitter](https://twitter.com/ai_console) 
+- [Creator's Twitter](https://twitter.com/mcielecki)
