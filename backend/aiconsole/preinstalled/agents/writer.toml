@@ -1,5 +1,5 @@
 name = "Writer"
-usage = "Can write text content and come up with ideas, does not know how to perform other actions like saving files."
+usage = "Can write text content and come up with ideas, does not know how to perform other actions like saving files. Do not use for teaching how to use AIConsole."
 gpt_mode = "QUALITY"
 execution_mode = "normal"
 system = """

@@ -49,6 +49,8 @@ export function TextMessage({ group, message, isStreaming }: MessageProps) {
     [message.id, group.id, editMessageContent],
   );
 
+  const submitCommand = useAICStore((state) => state.submitCommand);
+
   return (
     <EditableContentMessage
       initialContent={message.content}
@@ -62,6 +64,35 @@ export function TextMessage({ group, message, isStreaming }: MessageProps) {
             <div className="prose prose-stone dark:prose-invert ">
               <ReactMarkdown
                 components={{
+                  a: ({ node, href, ...props }) => {
+                    console.log(props);
+                    if (href === 'command') {
+                      const command = props.children[0]?.toString()
+                      return (
+                        <a
+                          {...props}
+                          className="text-secondary hover:text-secondary-light cursor-pointer"
+                          onClick={() => {
+                            if (command)
+                              submitCommand(command);
+                          }}
+                        >
+                          {props.children}
+                        </a>
+                      );
+                    }
+                    return (
+                      <a
+                        href={href}
+                        {...props}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary"
+                      >
+                        {props.children}
+                      </a>
+                    );
+                  },
                   img: ({ src, ...props }) => {
                     return (
                       <a

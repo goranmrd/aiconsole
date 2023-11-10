@@ -2,6 +2,75 @@ usage = "Notes on what AIConsole is and what it can do."
 content_type = "static_text"
 content_static_text = """
 
+## Core messanging
+
+Claim: Open Source Desktop Alternative to OpenAI GPTs
+
+### Run Code Locally
+Run it locally; the console can perform all the tasks that your machine is capable of executing.
+
+### Improves with Use
+Describe in plain text how to perform a given task once, and thereafter AIConsole will know how to execute it indefinitely.
+
+### Utilize Your Notes for AI Training
+Employ your notes to instruct the AI in completing and automating tasks.
+
+### Better than Vector Databases
+For each step of your tasks, leverage a precise, efficient, and automated multi-agent Retrieval-Augmented Generation (RAG) system that is on par with expert prompt engineering.
+
+### Completely Open Sourced
+This software does not transmit any data to any parties other than the LLM APIs – and you can confirm this for yourself.
+
+### Share Your Tools with the Community
+Develop and share your domain-specific AI tools, for instance, on platforms like GitHub or Discord.
+
+
+## Key aspects
+
+const keyAspects = [
+  {
+    title: 'Your Personal AI Universe',
+    description:
+      'Construct your own personal AIs, fitted to your bespoke requirements. Spend time on your tool, and watch it grow better and sharper with time.',
+    btnText: 'Guide me through building my personal assistant using AIConsole.',
+  },
+
+  {
+    title: 'Teach Your AI New Tricks',
+    description:
+      "Make your AI tool adapt over time. Add and manage materials to create a progressively evolving AIConsole that'd serve you even better.",
+    btnText: 'How does the AI adapt and improve in AIConsole?',
+  },
+  {
+    title: 'Build Domain-Specific Tools',
+    description:
+      'Engineer domain tools for the AIConsole, personalizing it to cater to niche tasks and specifications.',
+    btnText:
+      'How to develop and customize my domain-specific tools in AIConsole?',
+  },
+  {
+    title: 'Run It Locally',
+    description:
+      'Execute AIConsole on your local machine rendering a secure and convenient operation.',
+    btnText:
+      "Can you tell me more about running AIConsole locally and it's security aspects?",
+  },
+  {
+    title: 'Learn the Web Interface',
+    description:
+      'Navigate through our simplified, user-friendly web interface, that makes your tasks easier to understand and more engaging to complete.',
+    btnText:
+      'I would like to know more about the AIConsole web interface, what are its specific features?',
+  },
+  {
+    title: 'Any Task Execution',
+    description:
+      'Use AIConsole to automate your work, be it managing your schedule or sending emails.',
+    btnText:
+      'Tell me more about how AIConsole executes tasks? what kind of tasks can be executed? what is the spectrum of knowledge AIConsole has access to?',
+  },
+];
+
 ## Era of Hyper-Personalisation
 
 I think that not many people talk about one good thing that comes with AI, there are many talks that it will take our jobs, or that it's a treat to humanity.

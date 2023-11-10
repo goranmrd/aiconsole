@@ -100,6 +100,11 @@ export const createCommandSlice: StateCreator<
     get().saveCurrentChatHistory();
   },
   submitCommand: async (command: string) => {
+    //if is not currently streaming
+    if (get().isExecuteRunning || useAnalysisStore.getState().isAnalysisRunning) {
+      return;
+    }
+    
     if (command.trim() !== '') {
       get().appendGroup({
         agent_id: 'user',
