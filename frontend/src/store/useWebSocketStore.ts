@@ -23,6 +23,7 @@ import { IncomingWSMessage } from '../types/incomingMessages';
 import { useAnalysisStore } from '@/store/useAnalysisStore';
 import showNotification from '@/utils/showNotification';
 import { useAPIStore } from './useAPIStore';
+import { useSettings } from './useSettings';
 
 export type WebSockeStore = {
   ws: ReconnectingWebSocket | null;
@@ -114,7 +115,7 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
           });
           break;
         case 'SettingsWSMessage':
-          useAICStore.getState().initSettings();
+          useSettings.getState().initSettings();
           useAICStore.getState().initMaterials();
           useAICStore.getState().initAgents();
           showNotification({

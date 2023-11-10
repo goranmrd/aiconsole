@@ -26,7 +26,7 @@ export type APIStore = {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const useAPIStore = create<APIStore>((set, get) => ({
   initAPIStore: async () => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       if (window?.electron?.requestBackendPort === undefined) {
         set({ port: 8000 });
         resolve();

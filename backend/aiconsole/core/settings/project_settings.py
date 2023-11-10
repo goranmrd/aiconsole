@@ -22,10 +22,8 @@ import litellm
 import tomlkit
 import tomlkit.container
 import tomlkit.exceptions
-from aiconsole.api.websockets.outgoing_messages import (NotificationWSMessage,
-                                                        SettingsWSMessage)
+from aiconsole.api.websockets.outgoing_messages import SettingsWSMessage
 from aiconsole.core.assets.asset import AssetStatus
-from aiconsole.core.gpt.check_key import check_key
 from aiconsole.core.project.paths import get_project_directory
 from aiconsole.core.project.project import is_project_initialized
 from aiconsole.utils.BatchingWatchDogHandler import BatchingWatchDogHandler
@@ -94,7 +92,6 @@ class Settings:
             BatchingWatchDogHandler(self.reload, self._global_settings_file_path.name),
             str(self._global_settings_file_path.parent),
                                recursive=True)
-        
 
         if self._project_settings_file_path:
             self._project_settings_file_path.parent.mkdir(parents=True, exist_ok=True)
@@ -178,19 +175,10 @@ class Settings:
             if file_path and file_path.exists():   
                 settings = recursive_merge(settings, _load_from_path(file_path))
 
-        # Check openai key and nullify if not valid
-        possible_openai_key = settings.get('settings', {}).get('openai_api_key', None)
-        if possible_openai_key and not check_key(possible_openai_key):
-            await NotificationWSMessage(
-                title="Invalid OpenAI API key",
-                message="OpenAI API key is invalid, please check your settings"
-            ).send_to_all()
-            possible_openai_key = None
-
         settings_data = SettingsData(
             code_autorun=settings.get('settings',
                                       {}).get('code_autorun', False),
-            openai_api_key=possible_openai_key,
+            openai_api_key=settings.get('settings', {}).get('openai_api_key', None),
             disabled_materials=[
                 material
                 for material, status in settings.get('materials', {}).items()

@@ -19,10 +19,11 @@ import { ProjectCard } from './ProjectCard';
 import { useAICStore } from '@/store/AICStore';
 import { RecentProjectsEmpty } from './RecentProjectsEmpty';
 import { useRecentProjectsStore } from '@/store/home/useRecentProjectsStore';
+import { useSettings } from '@/store/useSettings';
 
 export function Home() {
-  const openAiApiKey = useAICStore((state) => state.openAiApiKey);
-  const isApiKeyValid = useAICStore((state) => state.isApiKeyValid);
+  const openAiApiKey = useSettings((state) => state.openAiApiKey);
+  const isApiKeyValid = useSettings((state) => state.isApiKeyValid);
   const isProjectLoading = useAICStore((state) => state.isProjectLoading);
   const recentProjects = useRecentProjectsStore(
     (state) => state.recentProjects,

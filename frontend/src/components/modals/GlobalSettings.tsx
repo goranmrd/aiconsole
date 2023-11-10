@@ -1,23 +1,23 @@
 import { Settings, Check, Ban } from 'lucide-react';
 import { SettingsModal } from './SettingsModal';
-import { useAICStore } from '@/store/AICStore';
 import { useState } from 'react';
 import { Button } from '../system/Button';
 import { useApiKey } from '@/hooks/useApiKey';
+import { useSettings } from '@/store/useSettings';
 
 interface GlobalSettingsProps {
   onClose: () => void;
 }
 // TODO: implement other features from figma like api for azure, user profile and tutorial
 export const GlobalSettings = ({ onClose }: GlobalSettingsProps) => {
-  const openAiApiKey = useAICStore((state) => state.openAiApiKey);
+  const openAiApiKey = useSettings((state) => state.openAiApiKey);
 
-  const alwaysExecuteCode = useAICStore((state) => state.alwaysExecuteCode);
+  const alwaysExecuteCode = useSettings((state) => state.alwaysExecuteCode);
   const [inputText, setInputText] = useState(openAiApiKey ?? '');
   const [isAutoRun, setIsAutoRun] = useState(alwaysExecuteCode);
   const { loading: checkApiKeyLoading, setApiKey } = useApiKey();
 
-  const enableAutoCodeExecution = useAICStore(
+  const enableAutoCodeExecution = useSettings(
     (state) => state.setAutoCodeExecution,
   );
 

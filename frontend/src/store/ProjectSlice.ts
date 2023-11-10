@@ -18,57 +18,28 @@ import { StateCreator } from 'zustand';
 
 import { Api } from '@/api/Api';
 import { AICStore } from './AICStore';
+import { useSettings } from './useSettings';
 
 export type ProjectSlice = {
   projectPath?: string; //undefined means loading, '' means no project, otherwise path
   tempPath?: string;
   projectName?: string;
   isProject?: boolean | undefined;
-  alwaysExecuteCode: boolean;
-  openAiApiKey?: string | null;
-  isApiKeyValid?: boolean;
-  setApiKeyValid: (valid: boolean) => void;
   chooseProject: (path?: string) => Promise<void>;
   resetIsProjectFlag: () => void;
   checkPath: (path?: string) => Promise<void>;
-  initSettings: () => Promise<void>;
   isProjectLoading: () => boolean;
   isProjectOpen: () => boolean;
   setProject: ({ path, name }: { path: string; name: string }) => Promise<void>;
   closeProject: () => Promise<void>;
   markProjectAsLoading: () => void;
-  setAutoCodeExecution: (autoRun: boolean) => void;
-  setOpenAiApiKey: (key: string) => Promise<void>;
 };
 
-export const createProjectSlice: StateCreator<
-  AICStore,
-  [],
-  [],
-  ProjectSlice
-> = (set, get) => ({
+export const createProjectSlice: StateCreator<AICStore, [], [], ProjectSlice> = (set, get) => ({
   projectPath: undefined,
   tempPath: undefined,
   isProject: undefined,
-  isApiKeyValid: false,
   projectName: undefined,
-  alwaysExecuteCode: false,
-  openAiApiKey: undefined,
-  setAutoCodeExecution: async (autoRun: boolean) => {
-    await Api.saveSettings({ code_autorun: autoRun, to_global: true });
-    set({ alwaysExecuteCode: autoRun });
-  },
-  setApiKeyValid: async (valid: boolean) => {
-    set({ isApiKeyValid: valid });
-  },
-  setOpenAiApiKey: async (key: string) => {
-    await Api.saveSettings({
-      openai_api_key: key,
-      to_global: true,
-    });
-
-    set({ openAiApiKey: key });
-  },
   setProject: async ({ path, name }: { path: string; name: string }) => {
     set(() => ({
       projectPath: path,
@@ -81,7 +52,7 @@ export const createProjectSlice: StateCreator<
       get().initChatHistory(),
       get().initMaterials(),
       get().initAgents(),
-      get().initSettings(),
+      useSettings.getState().initSettings(),
     ]);
   },
   closeProject: async () => {
@@ -148,12 +119,5 @@ export const createProjectSlice: StateCreator<
         path: string;
       };
     }
-  },
-  initSettings: async () => {
-    const result = await Api.getSettings();
-    set({
-      alwaysExecuteCode: result.code_autorun,
-      openAiApiKey: result.openai_api_key,
-    });
   },
 });
