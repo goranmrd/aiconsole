@@ -24,7 +24,7 @@ class CustomGitHubPublisher extends GitHub {
 
 module.exports = {
   packagerConfig: {
-    executableName: 'aiconsole',
+    executableName: process.platform === 'darwin' ? 'AIConsole' : 'aiconsole',
     asar: true,
     icon: './assets/icon',
     extraResource: ['python'],
