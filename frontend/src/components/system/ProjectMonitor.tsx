@@ -33,6 +33,11 @@ export function RouteMonitor({ children }: { children: React.ReactNode }) {
   }, [projectPath, isProjectOpen, isProjectLoading, navigate]);
 
   useEffect(() => {
+    // We have to wait for isProjectOpen to actually be a boolean
+    if (isProjectOpen === undefined) {
+      return;
+    }
+
     // For some reason we are in project url and there is no project
     if (!isProjectOpen && location.pathname !== '/') {
       navigate('/');

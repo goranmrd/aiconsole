@@ -28,7 +28,7 @@ export type ProjectSlice = {
   resetIsProjectFlag: () => void;
   checkPath: (path?: string) => Promise<void>;
   isProjectLoading: () => boolean;
-  isProjectOpen: () => boolean;
+  isProjectOpen: () => boolean | undefined;
   setProject: ({ path, name }: { path: string; name: string }) => Promise<void>;
   closeProject: () => Promise<void>;
   markProjectAsLoading: () => void;
@@ -46,10 +46,7 @@ export const createProjectSlice: StateCreator<AICStore, [], [], ProjectSlice> = 
       alwaysExecuteCode: false,
     }));
 
-    await Promise.all([
-      get().initCommandHistory(),
-      get().initChatHistory(),
-    ]);
+    await Promise.all([get().initCommandHistory(), get().initChatHistory()]);
   },
   closeProject: async () => {
     set(() => ({
@@ -68,7 +65,7 @@ export const createProjectSlice: StateCreator<AICStore, [], [], ProjectSlice> = 
     return get().projectPath === undefined;
   },
   isProjectOpen: () => {
-    return !!get().projectPath;
+    return !!get().projectPath || undefined;
   },
   resetIsProjectFlag: () => {
     set({
@@ -96,12 +93,18 @@ export const createProjectSlice: StateCreator<AICStore, [], [], ProjectSlice> = 
   },
   checkPath: async (pathToCheck?: string) => {
     // If we are in electron environment, use electron dialog, otherwise rely on the backend to open the dialog
-    let path = pathToCheck;
-    if (!path && window?.electron?.openDirectoryPicker) {
-      path = await window?.electron?.openDirectoryPicker();
+    let pathFromElectron;
+
+    if (!pathToCheck && window?.electron?.openDirectoryPicker) {
+      pathFromElectron = await window?.electron?.openDirectoryPicker();
+
+      if (!pathFromElectron) {
+        return;
+      }
     }
 
-    const { is_project, path: tkPath } = await Api.isProjectDirectory(path)
+    const path = pathToCheck || pathFromElectron;
+    const { is_project, path: tkPath } = await Api.isProjectDirectory(path);
     set({
       isProjectDirectory: is_project,
       tempPath: tkPath,
