@@ -18,15 +18,13 @@ import os
 import sys
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional
-from aiconsole.core.assets.asset import AssetType
-
-from aiconsole.core.code_running.run_code import reset_code_interpreters
 
 from aiconsole.api.websockets.connection_manager import AICConnection
-from aiconsole.api.websockets.outgoing_messages import (BaseWSMessage,
-                                                        ProjectClosedWSMessage,
-                                                        ProjectLoadingWSMessage,
-                                                        ProjectOpenedWSMessage)
+from aiconsole.api.websockets.outgoing_messages import (
+    InitialProjectStatusWSMessage, ProjectClosedWSMessage,
+    ProjectLoadingWSMessage, ProjectOpenedWSMessage)
+from aiconsole.core.assets.asset import AssetType
+from aiconsole.core.code_running.run_code import reset_code_interpreters
 
 if TYPE_CHECKING:
     from aiconsole.core.assets import assets
@@ -35,17 +33,6 @@ if TYPE_CHECKING:
 _materials: Optional['assets.Assets'] = None
 _agents: Optional['assets.Assets'] = None
 _project_initialized = False
-
-
-def _create_project_message() -> BaseWSMessage:
-    from aiconsole.core.project.paths import get_project_directory, get_project_name
-    if not is_project_initialized():
-        return ProjectClosedWSMessage()
-    else:
-        return ProjectOpenedWSMessage(
-            path=str(get_project_directory()),
-            name=get_project_name()
-        )
 
 
 async def _clear_project():
@@ -59,8 +46,6 @@ async def _clear_project():
     if _agents:
         _agents.stop()
 
-    # TODO: Settings stop?
-
     reset_code_interpreters()
 
     _materials = None
@@ -69,7 +54,14 @@ async def _clear_project():
 
 
 async def send_project_init(connection: AICConnection):
-    await connection.send(_create_project_message())
+    from aiconsole.core.project.paths import (get_project_directory,
+                                              get_project_name)
+
+    await InitialProjectStatusWSMessage(
+        project_name=get_project_name() if is_project_initialized() else None,
+        project_path=str(get_project_directory()
+                         ) if is_project_initialized() else None
+    ).send_to_chat(connection.chat_id)
 
 
 def get_project_materials() -> 'assets.Assets':
@@ -89,16 +81,24 @@ def is_project_initialized() -> bool:
 
 
 async def close_project():
+    from aiconsole.core.settings.project_settings import reload_settings
+
     await _clear_project()
 
-    await _create_project_message().send_to_all()
+    await ProjectClosedWSMessage().send_to_all()
+
+    await reload_settings()
+
+    
 
 
 async def reinitialize_project():
-    from aiconsole.core.project.paths import get_project_directory
-    from aiconsole.core.recent_projects.recent_projects import add_to_recent_projects
-    from aiconsole.core.settings.project_settings import reload_settings
     from aiconsole.core.assets import assets
+    from aiconsole.core.project.paths import (get_project_directory,
+                                              get_project_name)
+    from aiconsole.core.recent_projects.recent_projects import \
+        add_to_recent_projects
+    from aiconsole.core.settings.project_settings import reload_settings
 
     await ProjectLoadingWSMessage().send_to_all()
 
@@ -117,11 +117,14 @@ async def reinitialize_project():
     _agents = assets.Assets(asset_type=AssetType.AGENT)
     _materials = assets.Assets(asset_type=AssetType.MATERIAL)
 
+    await ProjectOpenedWSMessage(
+        path=str(get_project_directory()),
+        name=get_project_name()
+    ).send_to_all()
+
     await _materials.reload()
     await _agents.reload()
     await reload_settings()
-
-    await _create_project_message().send_to_all()
 
 
 async def change_project_directory(path: Path):

@@ -22,54 +22,43 @@ import { Api } from '@/api/Api';
 
 export type MaterialSlice = {
   materials?: MaterialInfo[];
-  initMaterials: () => void;
-  fetchMaterials: () => Promise<void>;
+  initMaterials: () => Promise<void>;
   deleteMaterial: (id: string) => Promise<void>;
 };
 
-export const createMaterialSlice: StateCreator<
-  AICStore,
-  [],
-  [],
-  MaterialSlice
-> = (set, get) => ({
+export const createMaterialSlice: StateCreator<AICStore, [], [], MaterialSlice> = (set, get) => ({
   materials: undefined,
-  initMaterials: () => {
+  initMaterials: async () => {
     set({ materials: [] });
     if (get().isProjectOpen()) {
-      get().fetchMaterials();
+      const materials = await Api.getMaterials();
+
+      //sort alphabetically
+      materials.sort((a, b) => a.name.localeCompare(b.name));
+
+      //sort by defined_in
+      materials.sort((a, b) => {
+        const aDefinedIn = a.defined_in === 'project' ? 0 : 1;
+        const bDefinedIn = b.defined_in === 'project' ? 0 : 1;
+        return aDefinedIn - bDefinedIn;
+      });
+
+      //sort by status (forced first, disabled last, enabled in the middle)
+      materials.sort((a, b) => {
+        const aStatus = a.status === 'forced' ? 0 : a.status === 'enabled' ? 1 : 2;
+        const bStatus = b.status === 'forced' ? 0 : b.status === 'enabled' ? 1 : 2;
+        return aStatus - bStatus;
+      });
+
+      set({
+        materials,
+      });
     }
-  },
-  fetchMaterials: async () => {
-    const materials = await Api.getMaterials();
-
-    //sort alphabetically
-    materials.sort((a, b) => a.name.localeCompare(b.name));
-
-    //sort by defined_in
-    materials.sort((a, b) => {
-      const aDefinedIn = a.defined_in === 'project' ? 0 : 1;
-      const bDefinedIn = b.defined_in === 'project' ? 0 : 1;
-      return aDefinedIn - bDefinedIn;
-    })
-
-    //sort by status (forced first, disabled last, enabled in the middle)
-    materials.sort((a, b) => {
-      const aStatus = a.status === 'forced' ? 0 : a.status === 'enabled' ? 1 : 2;
-      const bStatus = b.status === 'forced' ? 0 : b.status === 'enabled' ? 1 : 2;
-      return aStatus - bStatus;
-    })
-
-    set({
-      materials,
-    });
   },
   deleteMaterial: async (id: string) => {
     await Api.deleteMaterial(id);
     set((state) => ({
-      materials: (state.materials || []).filter(
-        (material) => material.id !== id,
-      ),
+      materials: (state.materials || []).filter((material) => material.id !== id),
     }));
   },
 });

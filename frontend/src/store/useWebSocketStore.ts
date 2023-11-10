@@ -55,7 +55,7 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
       });
     };
 
-    ws.onmessage = (e: MessageEvent) => {
+    ws.onmessage = async (e: MessageEvent) => {
       const data: IncomingWSMessage = JSON.parse(e.data);
 
       switch (data.type) {
@@ -76,6 +76,22 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
         case 'DebugJSONWSMessage':
           console.log(data.message, data.object);
           break;
+        case 'InitialProjectStatusWSMessage':
+          if (data.project_path && data.project_name) {
+            useAICStore.getState().setProject({
+              name: data.project_name || '',
+              path: data.project_path,
+            });
+
+            await (Promise.all([
+              useAICStore.getState().initAgents(),
+              useAICStore.getState().initMaterials(),
+              useSettings.getState().initSettings(),
+            ]))
+          } else {
+            useAICStore.getState().closeProject();
+          }
+          break;
         case 'ProjectOpenedWSMessage':
           useAICStore.getState().setProject({
             name: data.name,
@@ -91,7 +107,7 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
         case 'AssetsUpdatedWSMessage':
           if (data.asset_type === 'agent') {
             //TODO: Fetch agents
-            useAICStore.getState().fetchMaterials();
+            useAICStore.getState().initAgents();
             showNotification({
               title: 'Agents updated',
               message: `${data.count} agents updated`,
@@ -99,7 +115,7 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
           }
 
           if (data.asset_type === 'material') {
-            useAICStore.getState().fetchMaterials();
+            useAICStore.getState().initMaterials();
             showNotification({
               title: 'Materials updated',
               message: `${data.count} materials updated`,

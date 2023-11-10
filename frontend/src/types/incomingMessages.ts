@@ -45,6 +45,12 @@ export type ProjectLoadingWSMessage = {
   type: 'ProjectLoadingWSMessage';
 };
 
+export type InitialProjectStatusWSMessage = {
+  type: 'InitialProjectStatusWSMessage';
+  project_name?: string;
+  project_path?: string;
+}
+
 export type AnalysisUpdatedWSMessage = {
   type: 'AnalysisUpdatedWSMessage';
   agent_id?: string;
@@ -67,6 +73,7 @@ export type IncomingWSMessage =
   | ErrorWSMessage
   | NotificationWSMessage
   | DebugJSONWSMessage
+  | InitialProjectStatusWSMessage
   | ProjectOpenedWSMessage
   | ProjectClosedWSMessage
   | ProjectLoadingWSMessage

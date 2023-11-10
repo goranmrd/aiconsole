@@ -64,8 +64,8 @@ export function TextMessage({ group, message, isStreaming }: MessageProps) {
             <div className="prose prose-stone dark:prose-invert ">
               <ReactMarkdown
                 components={{
+                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
                   a: ({ node, href, ...props }) => {
-                    console.log(props);
                     if (href === 'command') {
                       const command = props.children[0]?.toString()
                       return (

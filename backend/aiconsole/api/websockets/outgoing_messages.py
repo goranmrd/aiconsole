@@ -50,6 +50,10 @@ class ErrorWSMessage(BaseWSMessage):
     error: str
 
 
+class InitialProjectStatusWSMessage(BaseWSMessage):
+    project_name: Optional[str] = None
+    project_path: Optional[str] = None
+
 class ProjectOpenedWSMessage(BaseWSMessage):
     name: str
     path: str

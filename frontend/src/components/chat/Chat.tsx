@@ -31,6 +31,7 @@ export function Chat({ chatId }: { chatId: string }) {
   const isAnalysisRunning = useAnalysisStore((state) => state.isAnalysisRunning);
   const isExecuteRunning = useAICStore((state) => state.isExecuteRunning);
   const stopWork = useAICStore((state) => state.stopWork);
+  const submitCommand = useAICStore((state) => state.submitCommand);
 
   useEffect(() => {
     setChatId(chatId);
@@ -48,7 +49,6 @@ export function Chat({ chatId }: { chatId: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatId]); //Initentional trigger when chat_id changes
 
-  const submitCommand = useAICStore((state) => state.submitCommand);
 
   return !loadingMessages ? ( // This is needed because of https://github.com/compulim/react-scroll-to-bottom/issues/61#issuecomment-1608456508
     <ScrollToBottom className="h-full overflow-y-auto flex flex-col" initialScrollBehavior="auto" mode={'bottom'}>
