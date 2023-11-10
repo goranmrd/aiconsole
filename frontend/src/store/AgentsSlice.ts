@@ -32,6 +32,8 @@ export const createAgentsSlice: StateCreator<AICStore, [], [], AgentsSlice> = (
 ) => ({
   agents: [],
   initAgents: async () => {
+    set({ agents: [] });
+    if (!get().isProjectOpen()) return;
     const agents = await Api.getAgents();
     set(() => ({
       agents: agents,

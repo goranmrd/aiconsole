@@ -36,7 +36,9 @@ export const createMaterialSlice: StateCreator<
   materials: undefined,
   initMaterials: () => {
     set({ materials: [] });
-    get().fetchMaterials();
+    if (get().isProjectOpen()) {
+      get().fetchMaterials();
+    }
   },
   fetchMaterials: async () => {
     const materials = await Api.getMaterials();
