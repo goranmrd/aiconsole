@@ -46,6 +46,7 @@ interface ButtonProps {
   onClick?: MouseEventHandler<HTMLButtonElement>;
   onMouseEnter?: MouseEventHandler<HTMLButtonElement>;
   onMouseLeave?: MouseEventHandler<HTMLButtonElement>;
+  onContextMenu?: MouseEventHandler<HTMLButtonElement>;
 }
 
 export function Button({
@@ -62,6 +63,7 @@ export function Button({
   bold,
   classNames,
   dataAutofocus,
+  onContextMenu,
 }: ButtonProps) {
   const getVariant = () => {
     switch (variant) {
@@ -84,6 +86,7 @@ export function Button({
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
+      onContextMenu={onContextMenu}
       data-autofocus={dataAutofocus}
       className={cn(
         'rounded-[36px]  px-[30px] py-[20px] outline-none w-[fit-content]  font-semibold flex items-center justify-center gap-2 max-h-[60px] border border-secondary button hover:bg-gray-600 hover:text-secondary  transition-colors duration-200 focus:bg-gray-600 focus:text-secondary',

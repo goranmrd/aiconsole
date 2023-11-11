@@ -24,7 +24,7 @@ from aiconsole.core.gpt.consts import GPTMode
 
 async def variant_quality_single_shot(chat: Chat, analysis_request_id: str) -> AnalysisResponse:
     """
-    FIRST FAST, THEN QUALITY
+    FIRST SPEED, THEN QUALITY
     """
 
     result = await gpt_analysis_function_step(

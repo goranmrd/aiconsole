@@ -18,6 +18,24 @@ import { Link } from 'react-router-dom';
 
 import { useAICStore } from '@/store/AICStore';
 import { useAPIStore } from '@/store/useAPIStore';
+import { useAssetContextMenu } from '@/hooks/useAssetContextMenu';
+
+function UserInfoMaterialLink({ material_id }: { material_id: string }) {
+  const materials = useAICStore((state) => state.materials) || [];
+  const material = materials.find((m) => m.id === material_id);
+  const { showContextMenu } = useAssetContextMenu({ assetType: 'material', asset: material });
+
+  return (
+    <Link to={`/materials/${material_id}`} onContextMenu={showContextMenu()}>
+      <div
+        className="w-32 opacity-80 text-xs text-center overflow-ellipsis overflow-hidden whitespace-nowrap pb-1 px-4"
+        title={material_id}
+      >
+        {material_id}
+      </div>
+    </Link>
+  );
+}
 
 export function UserInfo({
   agent_id,
@@ -30,11 +48,26 @@ export function UserInfo({
 }) {
   const agent = useAICStore((state) => state.getAgent(agent_id));
   const getBaseURL = useAPIStore((state) => state.getBaseURL);
+  const { showContextMenu } = useAssetContextMenu({
+    assetType: 'agent',
+    asset: agent || {
+      id: agent_id,
+      name: agent_id,
+      usage: '',
+      usage_examples: [],
+      defined_in: 'aiconsole',
+      status: 'enabled',
+    },
+  });
 
   return (
     <div className="flex-none items-center flex flex-col">
       {agent && (
-        <Link to={`/agents/${agent?.id}`} className="flex-none items-center flex flex-col">
+        <Link
+          to={`/agents/${agent?.id}`}
+          className="flex-none items-center flex flex-col"
+          onContextMenu={showContextMenu()}
+        >
           <img
             title={`${agent?.name || agent?.id}${task ? ` tasked with:\n${task}` : ``}`}
             src={`${getBaseURL()}/profile/${agent.id}.jpg`}
@@ -51,14 +84,7 @@ export function UserInfo({
 
       {materials_ids.length > 0 && <div className="text-xs opacity-40 text-center">+</div>}
       {materials_ids.map((material_id) => (
-        <Link to={`/materials/${material_id}`} key={material_id}>
-          <div
-            className="w-32 opacity-80 text-xs text-center overflow-ellipsis overflow-hidden whitespace-nowrap pb-1 px-4"
-            title={material_id}
-          >
-            {material_id}
-          </div>
-        </Link>
+        <UserInfoMaterialLink key={material_id} material_id={material_id} />
       ))}
     </div>
   );

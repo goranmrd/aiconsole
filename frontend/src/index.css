@@ -23,6 +23,8 @@ limitations under the License.
 @tailwind components;
 @tailwind utilities;
 
+@layer mantine, mantine-contextmenu;
+
 body {
   --mantine-color-body: #191919;
 }

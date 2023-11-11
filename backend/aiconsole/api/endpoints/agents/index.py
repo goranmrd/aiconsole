@@ -30,18 +30,6 @@ async def agents_get():
     settings = get_aiconsole_settings()
     return JSONResponse(
         [
-            {
-                **(Agent(
-                    id="user",
-                    name="User",
-                    usage="",
-                    usage_examples=[],
-                    system="",
-                    defined_in=AssetLocation.AICONSOLE_CORE,
-                    gpt_mode=GPTMode.QUALITY,
-                ).model_dump()),
-                "status": AssetStatus.ENABLED,
-            },
             *({
                 **agent.model_dump(),
                 "status": settings.get_asset_status(agent.id),

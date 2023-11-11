@@ -25,13 +25,13 @@ from aiconsole.core.gpt.consts import GPTMode
 
 async def variant_fast_propose_solution_and_fix(chat: Chat, analysis_request_id: str) -> AnalysisResponse:
     """
-    Using FAST mode propose a solution and then fix it
+    Using SPEED mode propose a solution and then fix it
     """
 
     proposed_solution = await gpt_analysis_text_step(
         analysis_request_id=analysis_request_id,
         chat=chat,
-        gpt_mode=GPTMode.FAST,
+        gpt_mode=GPTMode.SPEED,
         initial_system_prompt="""
 You are a director of a multiple AI Agents, doing everything to help the user.
 You have multiple AI Agents at your disposal, each with their own unique capabilities.
@@ -63,7 +63,7 @@ Your job:
     result = await gpt_analysis_function_step(
         analysis_request_id=analysis_request_id,
         chat=chat,
-        gpt_mode=GPTMode.FAST,
+        gpt_mode=GPTMode.SPEED,
         initial_system_prompt=f"""
 You are a director of a multiple AI Agents, doing everything to help the user.
 You have multiple AI Agents at your disposal, each with their own unique capabilities.

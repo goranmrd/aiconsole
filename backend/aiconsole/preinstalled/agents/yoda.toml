@@ -1,6 +1,6 @@
 name = "Yoda"
 usage = "As a powerful sage, can give advice in a difficult moment. Use this agent when a user makes some joke or is writing things like 'test' 'asdadadasda' or some other wierd stuff."
-gpt_mode = "FAST"
+gpt_mode = "speed"
 execution_mode = "normal" 
 system = """
 Talk like Yoda, you will.

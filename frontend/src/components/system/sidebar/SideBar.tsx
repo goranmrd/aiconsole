@@ -16,10 +16,10 @@
 
 import { Tabs } from '@mantine/core';
 import { useEffect, useState } from 'react';
-import { ChatSidebarTab } from '../../chat/ChatSidebarTab';
-import { MaterialsSidebarTab } from '../../materials/MaterialsSidebarTab';
-import { AgentsSidebarTab } from '../../agent/AgentsSidebarTab';
+import { ChatsSidebarTab } from '../../chat/ChatsSidebarTab';
+import { AssetsSidebarTab } from './AssetsSidebarTab';
 import { TabsValues } from '@/types/types';
+import { useAICStore } from '@/store/AICStore';
 
 /*
   CONFLICTED MERGE
@@ -44,6 +44,8 @@ import { TabsValues } from '@/types/types';
 */
 
 const SideBar = ({initialTab}: {initialTab: string}) => {
+  const agents = useAICStore((state) => state.agents);
+  const materials = useAICStore((state) => state.materials);
 
   useEffect(() => {
     setActiveTab(initialTab);
@@ -55,7 +57,7 @@ const SideBar = ({initialTab}: {initialTab: string}) => {
 
   return (
     <div
-      className={`min-w-[336px] w-[336px] h-full bg-gray-900 pl-[30px] py-[20px] drop-shadow-md flex flex-col border-r border-t border-gray-600`}
+      className={`min-w-[336px] w-[336px] h-full max-h-full overflow-y-scroll bg-gray-900 pl-[30px] py-[20px] drop-shadow-md flex flex-col border-r border-t border-gray-600`}
     >
       <Tabs
         value={activeTab}
@@ -82,13 +84,13 @@ const SideBar = ({initialTab}: {initialTab: string}) => {
         </Tabs.List>
 
         <Tabs.Panel value="chats">
-        <ChatSidebarTab />
+        <ChatsSidebarTab />
         </Tabs.Panel>
         <Tabs.Panel value="materials">
-          <MaterialsSidebarTab />
+          <AssetsSidebarTab assetType='material' assets={materials || []} />
         </Tabs.Panel>
         <Tabs.Panel value="agents">
-          <AgentsSidebarTab />
+          <AssetsSidebarTab assetType='agent' assets={agents} />
         </Tabs.Panel>
       </Tabs>
     </div>

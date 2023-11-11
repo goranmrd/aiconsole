@@ -16,10 +16,15 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { ContextMenuProvider } from 'mantine-contextmenu';
+
 
 import './index.css';
 import '@mantine/core/styles.css';
+import '@mantine/core/styles.layer.css';
 import '@mantine/notifications/styles.css';
+import 'mantine-contextmenu/styles.layer.css';
+import './layout.css';
 
 import { initStore } from './store/AICStore.ts';
 import { MantineProvider } from '@mantine/core';
@@ -31,7 +36,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <MantineProvider>
       <Notifications position="top-right" />
-      <Router />
+      <ContextMenuProvider>
+        <Router />
+      </ContextMenuProvider>
     </MantineProvider>
   </React.StrictMode>,
 );

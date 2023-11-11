@@ -1,6 +1,6 @@
 name = "Automator"
 usage = "When you need to execute code in order to calculate something, access access real-time data, connect to API, perform an action etc. You can use this if one one subtask is creating content, but it requires doing something with it in a programatic way."
-gpt_mode = "QUALITY"
+gpt_mode = "quality"
 execution_mode = "interpreter"
 system = """
 You are a robotic Automator, capable of executing code to complete any task.

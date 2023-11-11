@@ -17,25 +17,25 @@
 import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 
-import { useAICStore } from '@/store/AICStore';
-import showNotification from '@/utils/showNotification';
-import { Button } from './Button';
-import { ArrowLeft, FolderOpen, FolderPlus } from 'lucide-react';
-import { Api, getBaseURL } from '@/api/Api';
-import { useRecentProjectsStore } from '@/store/home/useRecentProjectsStore';
-import { MouseEvent, useEffect, useState } from 'react';
-import { cn } from '@/utils/styles';
-import { GlobalSettings } from '../settings/GlobalSettings';
-import ImageWithFallback from './ImageWithFallback';
-import { ConfirmationModal } from './ConfirmationModal';
+import { getBaseURL } from '@/api/Api';
+import { useProjectContextMenu } from '@/hooks/useProjectContextMenu';
 import { useProjectFileManager } from '@/hooks/useProjectFileManager';
+import { useAICStore } from '@/store/AICStore';
+import { useRecentProjectsStore } from '@/store/home/useRecentProjectsStore';
+import { cn } from '@/utils/styles';
+import { useDisclosure } from '@mantine/hooks';
+import { FolderOpen, FolderPlus, PlusIcon } from 'lucide-react';
+import { useAddMenu } from '../../hooks/useAddMenu';
+import { useUserContextMenu } from '../../hooks/useUserContextMenu';
+import { GlobalSettingsModal } from '../settings/GlobalSettingsModal';
+import { Button } from './Button';
+import { ConfirmationModal } from './ConfirmationModal';
 
 interface TopBarProps {
   variant?: 'recentProjects' | 'chat';
 }
 
 export function TopBar({ variant = 'chat' }: TopBarProps) {
-  const [isMenuActive, setMenuActive] = useState(false);
   const {
     isProjectDirectory,
     isNewProjectModalOpen,
@@ -46,25 +46,11 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
     openProjectConfirmation,
   } = useProjectFileManager();
   const projectName = useAICStore((state) => state.projectName);
-  const isProjectOpen = useAICStore((state) => state.isProjectOpen);
   const recentProjects = useRecentProjectsStore((state) => state.recentProjects);
-
-  const hideMenu = () => setMenuActive(false);
-
-  useEffect(() => {
-    window.addEventListener('click', hideMenu);
-
-    return () => {
-      window.removeEventListener('click', hideMenu);
-    };
-  }, []);
-
-  const handleBackToProjects = () => Api.closeProject();
-
-  const toggle = (e: MouseEvent) => {
-    e.stopPropagation();
-    setMenuActive((prev) => !prev);
-  };
+  const [settingsOpened, { open: openSettings, close: closeSettings }] = useDisclosure(false);
+  const { showContextMenu: showProjectContextMenu } = useProjectContextMenu();
+  const { showContextMenu: showPlusMenu } = useAddMenu();
+  const { showContextMenu: showUserMenu } = useUserContextMenu(openSettings);
 
   return (
     <div className="flex w-full flex-col px-[30px] py-[26px] border-b drop-shadow-md bg-transparent border-white/10 relative z-40 h-[101px]">
@@ -100,55 +86,41 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
           )
         ) : (
           <>
-            <div className="flex font-bold text-sm gap-2 items-center pr-5">
-              <Button small variant="secondary" onClick={handleBackToProjects}>
-                <ArrowLeft />
-                Back to Projects
-              </Button>
+            <div className="flex text-sm gap-2 items-center pr-5">
               <Link
                 to={`/chats/${uuidv4()}`}
-                className="font-black text-grey-300  uppercase text-primary hover:animate-pulse cursor-pointer flex gap-2 items-center ml-[20px]"
+                className="h-11 text-grey-300 font-bold  text-lg uppercase text-primary hover:animate-pulse cursor-pointer flex gap-2 items-center ml-[20px]"
+                onContextMenu={showProjectContextMenu()}
               >
                 {projectName}
               </Link>
+
+              <Button
+                small
+                classNames="ml-10"
+                variant="secondary"
+                onClick={showPlusMenu()}
+                onContextMenu={showPlusMenu()}
+              >
+                <PlusIcon />
+                New
+              </Button>
             </div>
           </>
         )}
-        <div className="text-gray-300 ml-auto flex gap-[20px]" onClick={(e) => e.stopPropagation()}>
+        <div className="text-gray-300 ml-auto flex gap-[20px]">
           <div
             className={cn(
               'flex flex-col p-4 rounded-[10px] border border-transparent justify-end items-end  absolute top-[10px] right-[14px]',
-              {
-                'bg-gray-900 shadow  border-gray-700': isMenuActive,
-              },
             )}
           >
-            <ImageWithFallback
+            <img
               src={`${getBaseURL()}/profile/user.jpg` || ''}
-              fallback="avatar-fallback.png"
               className="h-11 w-11 rounded-full border cursor-pointer shadow-md border-primary mb-3"
-              onClick={toggle}
+              onClick={showUserMenu()}
+              onContextMenu={showUserMenu()}
             />
-            {isMenuActive && (
-              <>
-                <div className="border-t border-gray-700 w-full my-[14px]"></div>
-                {isProjectOpen && false && (
-                  <div
-                    className="text-[14px] p-[8px] rounded-[5px] hover:bg-gray-700 cursor-pointer gap-[10px] w-full mb-[5px]"
-                    onClick={() =>
-                      showNotification({
-                        title: 'Not implemented',
-                        message: 'Project settings is not implemented yet',
-                        variant: 'error',
-                      })
-                    }
-                  >
-                    Project <span className="text-primary">{projectName} </span> settings
-                  </div>
-                )}
-                <GlobalSettings onClose={hideMenu} />
-              </>
-            )}
+            <GlobalSettingsModal onClose={closeSettings} isOpened={settingsOpened} />
           </div>
         </div>
       </div>

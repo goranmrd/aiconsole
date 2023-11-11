@@ -17,12 +17,12 @@
 import ky, { Hooks } from 'ky';
 
 import {
-  Agent,
+  Asset,
+  AssetType,
   Chat,
   ErrorResponse,
   Material,
-  MaterialInfo,
-  MaterialStatus,
+  AssetStatus,
   RecentProject,
   RenderedMaterial,
   Settings,
@@ -48,10 +48,7 @@ export function getBaseURL(): string {
   return useAPIStore.getState().getBaseURL();
 }
 
-const execute = (
-  body: Chat & { relevant_materials_ids: string[]; agent_id: string },
-  signal?: AbortSignal,
-) =>
+const execute = (body: Chat & { relevant_materials_ids: string[]; agent_id: string }, signal?: AbortSignal) =>
   ky.post(`${getBaseURL()}/execute`, {
     json: { ...body },
     signal,
@@ -90,14 +87,12 @@ const saveCommandToHistory = (body: object) =>
 
 // Chats
 
-const getChatsHistory = () =>
-  ky.get(`${getBaseURL()}/chats/headlines`, { hooks });
+const getChatsHistory = () => ky.get(`${getBaseURL()}/chats/headlines`, { hooks });
 
 const getChat: (id: string) => Promise<Chat> = async (id: string) =>
   await ky.get(`${getBaseURL()}/chats/history/${id}`, { hooks }).json();
 
-const deleteChat = (id: string) =>
-  ky.delete(`${getBaseURL()}/chats/history/${id}`, { hooks });
+const deleteChat = (id: string) => ky.delete(`${getBaseURL()}/chats/history/${id}`, { hooks });
 const updateChatHeadline = (id: string, headline: string) =>
   ky.post(`${getBaseURL()}/chats/headlines/${id}`, {
     json: { headline },
@@ -111,15 +106,9 @@ const saveHistory = (chat: Chat) =>
     hooks,
   });
 
-// Agents
-
-const getAgents: () => Promise<Agent[]> = async () =>
-  await ky.get(`${getBaseURL()}/api/agents/`, { hooks }).json();
-
 // Projects
 
-const closeProject = () =>
-  ky.post(`${getBaseURL()}/api/projects/close`, { hooks });
+const closeProject = () => ky.post(`${getBaseURL()}/api/projects/close`, { hooks });
 
 // infinite timeout
 const chooseProject = (path?: string) =>
@@ -130,17 +119,18 @@ const chooseProject = (path?: string) =>
   });
 
 const isProjectDirectory = async (path?: string) =>
-  (await ky.post(`${getBaseURL()}/api/projects/is_project`, {
-    json: { directory: path },
-    hooks,
-    timeout: false,
-  }).json()) as {
+  (await ky
+    .post(`${getBaseURL()}/api/projects/is_project`, {
+      json: { directory: path },
+      hooks,
+      timeout: false,
+    })
+    .json()) as {
     is_project: boolean;
     path: string;
-  }
+  };
 
-const getCurrentProject = () =>
-  ky.get(`${getBaseURL()}/api/projects/current`, { hooks });
+const getCurrentProject = () => ky.get(`${getBaseURL()}/api/projects/current`, { hooks });
 
 async function getRecentProjects(): Promise<RecentProject[]> {
   return ky.get(`${getBaseURL()}/api/projects/recent`, { hooks }).json();
@@ -153,47 +143,7 @@ async function removeRecentProject(path: string) {
   });
 }
 
-// Materials
-
-const getMaterials = async () =>
-  ky.get(`${getBaseURL()}/api/materials/`, { hooks }).json() as Promise<
-    MaterialInfo[]
-  >;
-
-const setMaterialStatus = async (id: string, status: MaterialStatus) =>
-  ky
-    .post(`${getBaseURL()}/api/materials/${id}/status-change`, {
-      json: { status, to_global: false },
-      hooks,
-    })
-    .json() as Promise<void>;
-
-const getMaterial = async (id: string) =>
-  ky
-    .get(`${getBaseURL()}/api/materials/${id}`, { hooks })
-    .json() as Promise<Material>;
-
-const saveNewMaterial = async (material: Material) =>
-  ky.post(`${getBaseURL()}/api/materials/${material.id}`, {
-    json: { ...material },
-    timeout: 60000,
-    hooks,
-  });
-
-const updateMaterial = async (material: Material) =>
-  ky.patch(`${getBaseURL()}/api/materials/${material.id}`, {
-    json: { ...material },
-    timeout: 60000,
-    hooks,
-  });
-
-const deleteMaterial = async (id: string) => {
-  ky.delete(`${getBaseURL()}/api/materials/${id}`, { hooks });
-};
-
-const previewMaterial: (
-  material: Material,
-) => Promise<RenderedMaterial> = async (material: Material) =>
+const previewMaterial: (material: Material) => Promise<RenderedMaterial> = async (material: Material) =>
   ky
     .post(`${getBaseURL()}/api/materials/preview`, {
       json: { ...material },
@@ -230,14 +180,61 @@ async function getSettings(): Promise<Settings> {
   return ky.get(`${getBaseURL()}/api/settings`, { hooks }).json();
 }
 
+// Assets
+
+async function getAssets<T extends Asset>(assetType: AssetType): Promise<T[]> {
+  return ky.get(`${getBaseURL()}/api/${assetType}s/`, { hooks }).json();
+}
+
+async function setAssetStatus(assetType: AssetType, id: string, status: AssetStatus) {
+  return ky
+    .post(`${getBaseURL()}/api/${assetType}s/${id}/status-change`, {
+      json: { status, to_global: false },
+      hooks,
+    })
+    .json();
+}
+
+async function getAsset<T extends Asset>(assetType: AssetType, id: string) {
+  return ky.get(`${getBaseURL()}/api/${assetType}s/${id}`, { hooks }).json() as Promise<T>;
+}
+
+async function saveNewAsset(assetType: AssetType, asset: Asset) {
+  return ky.post(`${getBaseURL()}/api/${assetType}s/${asset.id}`, {
+    json: { ...asset },
+    timeout: 60000,
+    hooks,
+  });
+}
+
+async function updateAsset(assetType: AssetType, asset: Asset) {
+  return ky.patch(`${getBaseURL()}/api/${assetType}s/${asset.id}`, {
+    json: { ...asset },
+    timeout: 60000,
+    hooks,
+  });
+}
+
+async function renameAsset(assetType: AssetType, id: string, name: string) {
+  return ky.patch(`${getBaseURL()}/api/${assetType}s/${id}`, {
+    json: { name },
+    hooks,
+  });
+}
+
+async function deleteAsset(assetType: AssetType, id: string) {
+  return ky.delete(`${getBaseURL()}/api/${assetType}s/${id}`, { hooks });
+}
+
 export const Api = {
+  deleteAsset,
+  renameAsset,
   execute,
   runCode,
   analyse,
-  getAgents,
-  getMaterial,
-  setMaterialStatus,
-  getMaterials,
+  getAssets,
+  getAsset,
+  setAssetStatus,
   previewMaterial,
   closeProject,
   chooseProject,
@@ -245,9 +242,8 @@ export const Api = {
   getCurrentProject,
   getRecentProjects,
   removeRecentProject,
-  saveNewMaterial,
-  updateMaterial,
-  deleteMaterial,
+  saveNewAsset,
+  updateAsset,
   getCommandHistory,
   getChatsHistory,
   getChat,

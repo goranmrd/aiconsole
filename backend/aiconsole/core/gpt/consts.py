@@ -27,8 +27,9 @@ class GPTModel(str, Enum):
 
 
 class GPTMode(str, Enum):
-    FAST = "FAST"
-    QUALITY = "QUALITY"
+    COST = "cost"
+    SPEED = "speed"
+    QUALITY = "quality"
 
 
 class GPTEncoding(str, Enum):

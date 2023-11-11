@@ -46,6 +46,7 @@ async def agent_get(agent_id: str):
             id="",
             name="",
             usage="",
+            usage_examples=[],
             status=AssetStatus.ENABLED,
             defined_in=AssetLocation.PROJECT_DIR,
             gpt_mode=GPTMode.QUALITY,

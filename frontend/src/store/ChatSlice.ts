@@ -25,6 +25,7 @@ import { deepCopyChat } from './utils';
 export type ChatSlice = {
   chatId: string;
   chat: Chat;
+  copyChat: (id: string, newId: string) => Promise<void>;
   chatHeadlines: ChatHeadline[];
   setChatId: (id: string) => void;
   deleteChat: (id: string) => Promise<void>;
@@ -48,6 +49,13 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
   chatHeadlines: [],
   agent: undefined,
   materials: [],
+  copyChat: async (id: string, newId: string) => {
+    const chat = await Api.getChat(id);
+    chat.id = newId;
+    set({
+      chat: chat,
+    });
+  },
   initChatHistory: async () => {
     set({ chatHeadlines: [] });
     if (!get().isProjectOpen) return;

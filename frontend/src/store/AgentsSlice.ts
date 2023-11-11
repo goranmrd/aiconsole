@@ -16,7 +16,7 @@
 
 import { StateCreator } from 'zustand';
 
-import { Agent } from '../types/types';
+import { Agent, AssetType } from '../types/types';
 import { Api } from '@/api/Api';
 import { AICStore } from './AICStore';
 
@@ -24,6 +24,8 @@ export type AgentsSlice = {
   agents: Agent[];
   initAgents: () => Promise<void>;
   getAgent: (id: string) => Agent | undefined;
+  renameAsset: (assetType: AssetType, id: string, name: string) => Promise<void>;
+  deleteAsset: (assetType: AssetType, id: string) => Promise<void>;
 };
 
 export const createAgentsSlice: StateCreator<AICStore, [], [], AgentsSlice> = (
@@ -31,15 +33,45 @@ export const createAgentsSlice: StateCreator<AICStore, [], [], AgentsSlice> = (
   get,
 ) => ({
   agents: [],
+  renameAsset: async (assetType: AssetType, id: string, name: string) => {
+    await Api.renameAsset(assetType, id, name);
+  },
+  deleteAsset: async (assetType: AssetType, id: string) => {
+    await Api.deleteAsset(assetType, id);
+
+    if (assetType === 'agent') {
+      set((state) => ({
+        agents: (state.agents || []).filter((asset) => asset.id !== id),
+      }));
+    } else if (assetType === 'material') {
+      set((state) => ({
+        materials: (state.materials || []).filter((asset) => asset.id !== id),
+      }));
+    }
+  },
   initAgents: async () => {
     set({ agents: [] });
     if (!get().isProjectOpen) return;
-    const agents = await Api.getAgents();
+    const agents = await Api.getAssets<Agent>('agent');
     set(() => ({
       agents: agents,
     }));
   },
-  getAgent: (id: string) => {
+  getAgent: (id: string): Agent | undefined => {
+    if (id === 'user') {
+      return {
+        id: 'user',
+        name: 'User',
+        usage: '',
+        usage_examples: [],
+        system: '',
+        defined_in: 'aiconsole',
+        status: 'enabled',
+        gpt_mode: 'quality',
+        execution_mode: 'normal',
+      }
+    }
+
     return get().agents.find((agent) => agent.id === id);
   },
 });

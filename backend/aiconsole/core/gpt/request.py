@@ -94,7 +94,7 @@ class GPTRequest:
     
     @property
     def model_max_tokens(self):
-        if (self.gpt_mode == GPTMode.FAST):
+        if (self.gpt_mode == GPTMode.SPEED):
             return MODEL_DATA[GPTModel.GPT_35_TURBO_16k_0613].max_tokens
         
         return self.model_data.max_tokens
@@ -153,7 +153,7 @@ class GPTRequest:
 
     def get_model(self, mode: GPTMode) -> str:
         model = GPTModel.GPT_4_11106_PREVIEW
-        # if mode == GPTMode.FAST:
+        # if mode == GPTMode.SPEED:
         #     model = GPTModel.GPT_35_TURBO_16k_0613
         #     used_tokens = self.count_tokens_for_model(model) + self.max_tokens
         # 

@@ -17,13 +17,12 @@
 import { StateCreator } from 'zustand';
 
 import { AICStore } from './AICStore';
-import { MaterialInfo } from '../types/types';
 import { Api } from '@/api/Api';
+import { Material } from '@/types/types';
 
 export type MaterialSlice = {
-  materials?: MaterialInfo[];
+  materials?: Material[];
   initMaterials: () => Promise<void>;
-  deleteMaterial: (id: string) => Promise<void>;
 };
 
 export const createMaterialSlice: StateCreator<AICStore, [], [], MaterialSlice> = (set, get) => ({
@@ -31,7 +30,7 @@ export const createMaterialSlice: StateCreator<AICStore, [], [], MaterialSlice> 
   initMaterials: async () => {
     set({ materials: [] });
     if (get().isProjectOpen) {
-      const materials = await Api.getMaterials();
+      const materials = await Api.getAssets<Material>('material');
 
       //sort alphabetically
       materials.sort((a, b) => a.name.localeCompare(b.name));
@@ -54,11 +53,5 @@ export const createMaterialSlice: StateCreator<AICStore, [], [], MaterialSlice> 
         materials,
       });
     }
-  },
-  deleteMaterial: async (id: string) => {
-    await Api.deleteMaterial(id);
-    set((state) => ({
-      materials: (state.materials || []).filter((material) => material.id !== id),
-    }));
   },
 });

@@ -23,6 +23,7 @@ import { useAICStore } from '@/store/AICStore';
 import { useAnalysisStore } from '@/store/useAnalysisStore';
 import { Analysis } from './Analysis';
 import { Button } from '../system/Button';
+import { useSearchParams } from 'react-router-dom';
 
 export function ChatWindowScrollToBottomSave() {
   const scrollToBottom = useScrollToBottom();
@@ -36,7 +37,11 @@ export function ChatWindowScrollToBottomSave() {
 }
 
 export function Chat({ chatId }: { chatId: string }) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [searchParams, _] = useSearchParams();
+  const copyId= searchParams.get('copy');
   const chat = useAICStore((state) => state.chat);
+  const copyChat = useAICStore((state) => state.copyChat);
   const loadingMessages = useAICStore((state) => state.loadingMessages);
   const setChatId = useAICStore((state) => state.setChatId);
   const isAnalysisRunning = useAnalysisStore((state) => !!state.currentAnalysisRequestId);
@@ -45,7 +50,7 @@ export function Chat({ chatId }: { chatId: string }) {
   const submitCommand = useAICStore((state) => state.submitCommand);
 
   const isLastMessageFromUser = chat.message_groups.length > 0 && chat.message_groups[chat.message_groups.length - 1].agent_id === 'user';
-
+  
   useEffect(() => {
     setChatId(chatId);
 
@@ -62,6 +67,13 @@ export function Chat({ chatId }: { chatId: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatId]); //Initentional trigger when chat_id changes
 
+
+  useEffect(() => {
+    console.log('copyId', copyId, 'chatId', chatId, 'chat.message_groups.length', chat.message_groups.length);
+    if (copyId && chat.message_groups.length === 0) {
+      copyChat(copyId, chatId);
+    }
+  }, [copyId, chatId, chat.message_groups.length, copyChat]);
 
   return !loadingMessages ? ( // This is needed because of https://github.com/compulim/react-scroll-to-bottom/issues/61#issuecomment-1608456508
     <ScrollToBottom className="h-full overflow-y-auto flex flex-col" scrollViewClassName="main-chat-window" initialScrollBehavior="auto" mode={'bottom'}>

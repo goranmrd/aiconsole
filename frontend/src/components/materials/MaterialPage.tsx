@@ -14,27 +14,39 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { useNavigate, useParams } from 'react-router-dom';
+import { Eye } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Eye, Zap, Check, Ban } from 'lucide-react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { Api } from '@/api/Api';
+import { CodeInput } from '@/components/materials/CodeInput';
+import { ErrorObject, SimpleInput } from '@/components/materials/TextInput';
+import { useAICStore } from '@/store/AICStore';
 import {
   Material,
   MaterialContentType,
-  MaterialStatus,
-  RenderedMaterial,
-  materialContenTypeOptions,
-  materialStatusOptions,
+  RenderedMaterial
 } from '@/types/types';
-import { EnumInput } from '@/components/materials/EnumInput';
-import { ErrorObject, SimpleInput } from '@/components/materials/TextInput';
-import { CodeInput } from '@/components/materials/CodeInput';
-import { useAICStore } from '@/store/AICStore';
-import { cn } from '@/utils/styles';
 import showNotification from '@/utils/showNotification';
+import { cn } from '@/utils/styles';
 import { Tooltip } from '../system/Tooltip';
+import { getAssetIcon } from '@/utils/getAssetIcon';
+import { getAssetColor } from '@/utils/getAssetColor';
+import { useAssetContextMenu } from '@/hooks/useAssetContextMenu';
+
+
+export function getContentName(contentType?: MaterialContentType) {
+  switch (contentType) {
+    case 'static_text':
+      return 'Note';
+    case 'dynamic_text':
+      return 'Dynamic Note';
+    case 'api':
+      return 'Python API';
+    default:
+        return 'Material';
+  }
+}
 
 export function MaterialPage() {
   const navigate = useNavigate();
@@ -44,6 +56,8 @@ export function MaterialPage() {
   let { materialId } = useParams<{ materialId: string | undefined }>();
 
   const isNew = materialId === 'new';
+
+  
 
   if (isNew) {
     materialId = undefined;
@@ -57,9 +71,13 @@ export function MaterialPage() {
   const [errors, setErrors] = useState<ErrorObject>({});
 
   const isError = Object.values(errors).some((error) => error !== null);
-  const deleteMaterial = useAICStore((state) => state.deleteMaterial);
+  const deleteAsset = useAICStore((state) => state.deleteAsset);
   const readOnly = material?.defined_in === 'aiconsole';
   const previewValue = preview ? preview?.content.split('\\n').join('\n') : 'Generating preview...';
+
+  if (isNew && material) {
+    material.content_type = new URLSearchParams(location.search).get('type') as MaterialContentType | null || 'static_text';
+  }
 
   const isMaterialStatusChanged = () => {
     if (!material || !materialInitial) {
@@ -133,8 +151,6 @@ export function MaterialPage() {
       setMaterial((material: Material | undefined) => {
         if (!material) return material;
         const id = nameToId(material.name);
-
-        console.log('material', { ...material, id });
         return { ...material, id };
       });
     }
@@ -142,7 +158,7 @@ export function MaterialPage() {
 
   useEffect(() => {
     if (copyId) {
-      Api.getMaterial(copyId).then((materialToCopy) => {
+      Api.getAsset<Material>('material', copyId).then((materialToCopy) => {
         materialToCopy.name += ' Copy';
         materialToCopy.defined_in = 'project';
         materialToCopy.id = nameToId(materialToCopy.name);
@@ -150,13 +166,13 @@ export function MaterialPage() {
         setMaterial(materialToCopy);
       });
     } else if (materialId) {
-      Api.getMaterial(materialId).then((material) => {
+      Api.getAsset<Material>('material', materialId).then((material) => {
         setMaterialInitial(material);
         setMaterial(material);
       });
     } else {
       //HACK: This will get a default new material
-      Api.getMaterial('new').then((material) => {
+      Api.getAsset<Material>('material', 'new').then((material) => {
         setMaterialInitial(undefined);
         setMaterial(material);
       });
@@ -165,7 +181,7 @@ export function MaterialPage() {
 
   const updateStatusIfNecessary = async (material: Material) => {
     if (isMaterialStatusChanged()) {
-      await Api.setMaterialStatus(material.id, material.status);
+      await Api.setAssetStatus('material', material.id, material.status);
 
       showNotification({
         title: 'Status changed',
@@ -177,7 +193,7 @@ export function MaterialPage() {
 
   const handleSaveClick = (material: Material) => async () => {
     if (isNew) {
-      await Api.saveNewMaterial(material);
+      await Api.saveNewAsset('material', material);
       await updateStatusIfNecessary(material);
 
       showNotification({
@@ -186,8 +202,8 @@ export function MaterialPage() {
         variant: 'success',
       });
     } else if (materialInitial && materialInitial.id !== material.id) {
-      await Api.saveNewMaterial(material);
-      await deleteMaterial(materialInitial.id);
+      await Api.saveNewAsset('material', material);
+      await deleteAsset('material', materialInitial.id);
       await updateStatusIfNecessary(material);
 
       showNotification({
@@ -197,7 +213,7 @@ export function MaterialPage() {
       });
     } else {
       if (isMaterialChanged()) {
-        await Api.updateMaterial(material);
+        await Api.updateAsset('material', material);
 
         showNotification({
           title: 'Saved',
@@ -216,30 +232,34 @@ export function MaterialPage() {
     setMaterialInitial(material);
   };
 
+  const Icon = getAssetIcon(material || 'material');
+
+  const {showContextMenu} = useAssetContextMenu({ assetType: 'material', asset: material, fromAssetDetail: true });
+
   return (
     <div className="flex flex-col w-full h-full overflow-y-auto p-6 gap-4">
-      <div className="flex gap-5">
+      <div className="flex gap-5" onContextMenu={showContextMenu()}>
         <Tooltip
-          label={'Material id determines the file name and is auto generated from name. It must be unique.'}
+          label={`${getContentName(material?.content_type)} id determines the file name and is auto generated from name. It must be unique.`}
           position="top-end"
           offset={{ mainAxis: 7 }}
         >
-          <p>
-            <span className="font-bold">Material id: </span> {material?.id}
-          </p>
+          <div className="flex flex-row items-center gap-2 font-bold">
+            <Icon style={{color: getAssetColor(material || 'material')}} /> {material?.id}
+          </div>
         </Tooltip>
 
         {readOnly && (
           <div className="flex gap-2 items-center text-md font-bold ml-auto ">
             <Eye className="w-4 h-4" />
-            This is a system material. It can’t be edited.
+            This is a system material. It can't be edited.
           </div>
         )}
       </div>
       {material && (
         <>
           <SimpleInput
-            label="Material name"
+            label={`${getContentName(material?.content_type)} name`}
             placeholder=""
             value={material.name}
             disabled={readOnly}
@@ -249,7 +269,7 @@ export function MaterialPage() {
             setErrors={setErrors}
             onChange={(value) => setMaterial({ ...material, name: value })}
             withTooltip
-            tootltipText="Material name is used to identify material in the system. Make it self explanatory so AI will better understand what it is."
+            tootltipText={`${getContentName(material?.content_type)} name is used to identify material in the system. Make it self explanatory so AI will better understand what it is.`}
           />
           <SimpleInput
             label="Usage"
@@ -258,66 +278,10 @@ export function MaterialPage() {
             disabled={readOnly}
             onChange={(value) => setMaterial({ ...material, usage: value })}
             withTooltip
-            tootltipText="Usage is used to help identify when this material should be used. "
-          />
-          <EnumInput<MaterialStatus>
-            label="Status"
-            values={materialStatusOptions}
-            value={material.status}
-            render={(value) => {
-              return {
-                forced: (
-                  <>
-                    <Zap className="h-4 w-4" name="forced" /> Forced
-                  </>
-                ),
-                enabled: (
-                  <>
-                    <Check className="h-4 w-4" /> Enabled
-                  </>
-                ),
-                disabled: (
-                  <>
-                    <Ban className="h-4 w-4" /> Disabled
-                  </>
-                ),
-              }[value];
-            }}
-            onChange={async (value) => {
-              setMaterial({ ...material, status: value });
-            }}
-            tootltipText={(value) => {
-              return {
-                forced: 'This material will always be used for each task.',
-                enabled: 'This material can be used by AI.',
-                disabled:
-                  'This material will never be used, in general its better keep only quality materials available to AI.',
-              }[value];
-            }}
-          />
-          <EnumInput<MaterialContentType>
-            label="Content type"
-            values={materialContenTypeOptions}
-            value={material.content_type}
-            render={(value) => {
-              return {
-                static_text: 'Text',
-                dynamic_text: 'Dynamic text',
-                api: 'API',
-              }[value];
-            }}
-            disabled={readOnly}
-            onChange={(value) => setMaterial({ ...material, content_type: value })}
-            tootltipText={(value) => {
-              return {
-                static_text: 'Markdown formated text will be injected into AI context.',
-                dynamic_text: 'A python function will generate markdown text to be injected into AI context.',
-                api: 'Documentation will be extracted from code and injected into AI context as markdown text, code will be available to execute by AI without import statements.',
-              }[value];
-            }}
+            tootltipText={`Usage is used to help identify when this ${getContentName(material?.content_type)} should be used. `}
           />
           <div className="flex flex-row w-full gap-4 ">
-            <div className="w-1/2 h-[calc(100vh-500px)] min-h-[300px]">
+            <div className="w-1/2 h-[calc(100vh-425px)] min-h-[300px]">
               {material.content_type === 'static_text' && (
                 <CodeInput
                   label="Text"
@@ -349,7 +313,7 @@ export function MaterialPage() {
                 />
               )}
             </div>
-            <div className="w-1/2 h-[calc(100vh-500px)] min-h-[300px]">
+            <div className="w-1/2 h-[calc(100vh-425px)] min-h-[300px]">
               <CodeInput
                 label="Preview of markdown text to be injected into AI context"
                 value={preview?.error ? preview.error : previewValue}

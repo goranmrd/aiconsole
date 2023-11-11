@@ -1880,6 +1880,11 @@ lucide-react@^0.291.0:
   resolved "https://registry.yarnpkg.com/lucide-react/-/lucide-react-0.291.0.tgz#d6db8f5117a68c8bbc6ed51d800879fa6a471978"
   integrity sha512-79jHlT9Je2PXSvXIBGDkItCK7In2O9iKnnSJ/bJxvIBOFaX2Ex0xEcC4fRS/g0F2uQGFejjmn2qWhwdc5wicMQ==
 
+mantine-contextmenu@^7.1.12:
+  version "7.1.12"
+  resolved "https://registry.yarnpkg.com/mantine-contextmenu/-/mantine-contextmenu-7.1.12.tgz#da7f17372bd8c92b949ce53a1a73c5ee047f5a4c"
+  integrity sha512-6Q0ozFGVqCTP0Jum5tBkTvLqrinznerscUrNHh8R8XHSvgJPDmjMKC/FaFZTD/U/XsFBdgJmLdL4cR2ga0aRag==
+
 math-random@2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/math-random/-/math-random-2.0.1.tgz#5604b16c6a9a4aee63aff13937fb909b27e46b3a"

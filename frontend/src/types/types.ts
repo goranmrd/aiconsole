@@ -38,13 +38,13 @@ export type AICMessageGroup = {
   messages: AICMessage[];
 };
 
-export type MaterialDefinedIn = 'aiconsole' | 'project';
-export const materialDefinedInOptions: MaterialDefinedIn[] = [
+export type AssetDefinedIn = 'aiconsole' | 'project';
+export const assetDefinedInOptions: AssetDefinedIn[] = [
   'aiconsole',
   'project',
 ];
-export type MaterialStatus = 'disabled' | 'enabled' | 'forced';
-export const materialStatusOptions: MaterialStatus[] = [
+export type AssetStatus = 'disabled' | 'enabled' | 'forced';
+export const assetStatusOptions: AssetStatus[] = [
   'disabled',
   'enabled',
   'forced',
@@ -72,16 +72,18 @@ export type RenderedMaterial = {
 
 export type MaterialDefinitionSource = 'aiconsole' | 'project';
 
+export type AssetType = 'material' | 'agent';
+
+export type GPTMode = 'quality' | 'speed' | 'cost';
+
 export type Asset = {
   id: string;
   name: string;
   usage: string;
   usage_examples: string[];
   defined_in: MaterialDefinitionSource;
-  status: MaterialStatus;
+  status: AssetStatus;
 };
-
-export type MaterialInfo = Asset
 
 export type ChatHeadline = {
   id: string;
@@ -99,6 +101,8 @@ export type Chat = {
 
 export type Agent = Asset & {
   system: string;
+  gpt_mode: GPTMode;
+  execution_mode: string;
 };
 
 export type RecentProject = {

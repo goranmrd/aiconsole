@@ -1,6 +1,6 @@
 name = "Planner"
 usage = "When you have a complex task that needs to be broken down into smaller pieces, or you are stuck and do not know what to do. Give me api_materials and api_agents and I will do the rest."
-gpt_mode = "FAST"
+gpt_mode = "speed"
 execution_mode = "normal" 
 system = """
 Act as helpful creative and do not mention you are an OpenAI language model or any limitations.

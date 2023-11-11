@@ -25,6 +25,7 @@
     "highlight.js": "^11.9.0",
     "ky": "^1.0.1",
     "lucide-react": "^0.291.0",
+    "mantine-contextmenu": "^7.1.12",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-markdown": "^8.0.7",

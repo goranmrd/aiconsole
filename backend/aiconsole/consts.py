@@ -40,7 +40,7 @@ LOG_HANDLERS: list[str] = ["console"]
 HISTORY_LIMIT: int = 1000
 COMMANDS_HISTORY_JSON: str = "command_history.json"
 
-DEFAULT_MODE: str = GPTMode.FAST.value
+DEFAULT_MODE: str = GPTMode.SPEED.value
 FUNCTION_CALL_OUTPUT_LIMIT: int = 2000
 
 

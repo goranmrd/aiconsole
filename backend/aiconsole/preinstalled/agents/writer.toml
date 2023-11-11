@@ -1,6 +1,6 @@
 name = "Writer"
 usage = "Can write text content and come up with ideas, does not know how to perform other actions like saving files. Do not use for teaching how to use AIConsole."
-gpt_mode = "QUALITY"
+gpt_mode = "quality"
 execution_mode = "normal"
 system = """
 You are a Senior Content Writer John.
