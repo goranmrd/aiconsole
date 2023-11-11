@@ -17,6 +17,7 @@
 import { Api } from '@/api/Api';
 import showNotification from '@/utils/showNotification';
 import { create } from 'zustand';
+import { useAICStore } from './AICStore';
 
 export type SettingsStore = {
   openAiApiKey?: string | null;
@@ -53,9 +54,8 @@ export const useSettings = create<SettingsStore>((set, get) => ({
     set({
       alwaysExecuteCode: result.code_autorun,
       openAiApiKey: result.openai_api_key,
-      isApiKeyValid: !!result.openai_api_key,
+      isApiKeyValid: await get().validateApiKey(result.openai_api_key || '')
     });
-    set({ isApiKeyValid: await get().validateApiKey(result.openai_api_key || '') });
   },
   validateApiKey: async (key: string) => {
     if (!key) {
@@ -64,7 +64,7 @@ export const useSettings = create<SettingsStore>((set, get) => ({
     const { key_ok } = (await Api.checkKey(key).json()) as {
       key_ok: boolean;
     };
-    if (!key_ok) {
+    if (!key_ok && useAICStore.getState().isProjectOpen) {
       Api.closeProject();
       showNotification({
         title: 'Error',
