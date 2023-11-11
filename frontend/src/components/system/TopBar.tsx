@@ -103,7 +103,7 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
             <div className="flex font-bold text-sm gap-2 items-center pr-5">
               <Button small variant="secondary" onClick={handleBackToProjects}>
                 <ArrowLeft />
-                Back to projects
+                Back to Projects
               </Button>
               <Link
                 to={`/chats/${uuidv4()}`}
