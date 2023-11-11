@@ -49,17 +49,32 @@ const windowManager: {
   },
 };
 
+async function log(browserWindow: BrowserWindow, message: string) {
+  if (browserWindow.isDestroyed()) {
+    return;
+  }
+
+  browserWindow.webContents.send("log", message);
+}
+
+async function error(browserWindow: BrowserWindow, message: string) {
+  if (browserWindow.isDestroyed()) {
+    return;
+  }
+  
+  browserWindow.webContents.send("error", message);
+}
+
 async function waitForServerToStart(window: AIConsoleWindow) {
   const RETRY_INTERVAL = 100;
-  window.browserWindow.webContents.send(
-    "log",
+  log(window.browserWindow,
     `Waiting for backend to start on port ${window.port}`
   );
 
   const interval = setInterval(() => {
     fetch(`http://0.0.0.0:${window.port}/api/ping`)
       .then(async () => {
-        window.browserWindow.webContents.send("log", `Backend is up and running`);
+        log(window.browserWindow, `Backend is up and running`);
         clearInterval(interval);
         window.browserWindow.webContents.send("set-backend-port", window.port);
       })
@@ -175,8 +190,7 @@ const handleDirPicker = async (event: IpcMainEvent) => {
       return filePaths[0];
     }
   } catch (error) {
-    window.browserWindow.webContents.send(
-      "error",
+    error(window.browserWindow,
       `Error from backend process: ${error.message}`
     );
   }
@@ -196,12 +210,11 @@ ipcMain.on("request-backend-port", async (event) => {
 
       //close the app when backend process exits
       window.backendProcess.on("exit", () => {
-        window.browserWindow.webContents.send("log", "Backend process exited");
+        log(window.browserWindow, "Backend process exited");
       });
 
       window.backendProcess.on("error", (error: Error) => {
-        window.browserWindow.webContents.send(
-          "error",
+        error(window.browserWindow,
           `Error from backend process: ${error.message}`
         );
       });
@@ -211,7 +224,7 @@ ipcMain.on("request-backend-port", async (event) => {
         if (data[data.length - 1] == 10) {
           data = Uint8Array.prototype.slice.call(data, 0, -1);
         }
-        window.browserWindow.webContents.send("log", `${data}`);
+        log(window.browserWindow, `${data}`);
       });
 
       window.backendProcess.stderr.on("data", (data: Buffer) => {
@@ -220,12 +233,11 @@ ipcMain.on("request-backend-port", async (event) => {
           data = Uint8Array.prototype.slice.call(data, 0, -1);
         }
         // dialog.showErrorBox("Backend Error", data.toString());
-        window.browserWindow.webContents.send("error", `${data}`);
+        error(window.browserWindow, `${data}`);
       });
 
       window.backendProcess.on("exit", (code: string) => {
-        window.browserWindow.webContents.send(
-          "log",
+        log(window.browserWindow,
           `FastAPI server exited with code ${code}`
         );
       });
