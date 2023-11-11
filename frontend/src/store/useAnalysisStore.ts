@@ -18,15 +18,16 @@ import { create } from 'zustand';
 
 import { useAICStore } from './AICStore';
 import { Api } from '@/api/Api';
+import { v4 as uuidv4 } from 'uuid';
 
 export type AnalysisStore = {
   agent_id?: string;
   relevant_material_ids?: string[];
+  currentAnalysisRequestId?: string;
   next_step?: string;
   thinking_process?: string;
   reset: () => void;
   doAnalysis: () => Promise<void>;
-  isAnalysisRunning: boolean;
   analysisAbortController: AbortController;
   initAnalytics(): void;
 };
@@ -44,7 +45,7 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
       }
     });
   },
-  isAnalysisRunning: false,
+  currentAnalysisRequestId: undefined,
   analysisAbortController: new AbortController(), // Initialize fetchAbortController as undefined
   agent_id: undefined,
   relevant_material_ids: undefined,
@@ -54,6 +55,7 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
     get().analysisAbortController.abort();
 
     set({
+      currentAnalysisRequestId: undefined,
       agent_id: undefined,
       relevant_material_ids: undefined,
       next_step: undefined,
@@ -61,18 +63,19 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
     });
   },
   doAnalysis: async () => {
+    const abortController = new AbortController();
+    const analysisRequestId = uuidv4();
+    set(() => ({}));
+
     try {
       useAnalysisStore.getState().reset();
 
       set(() => ({
-        isAnalysisRunning: true,
-        analysisAbortController: new AbortController(),
+        currentAnalysisRequestId: analysisRequestId,
+        analysisAbortController: abortController,
       }));
 
-      const response = await Api.analyse(
-        useAICStore.getState().chat,
-        get().analysisAbortController.signal,
-      );
+      const response = await Api.analyse(useAICStore.getState().chat, analysisRequestId, abortController.signal);
 
       const data = await response.json<{
         agent_id: string;
@@ -80,18 +83,17 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
         next_step: string;
       }>();
 
+      if (get().currentAnalysisRequestId !== analysisRequestId) {
+        // another analysis was started
+        return;
+      }
+
       set(() => ({
         agent_id: data.agent_id,
         relevant_material_ids: data.materials_ids,
         next_step: data.next_step,
       }));
 
-      if (get().analysisAbortController.signal.aborted) {
-        // If existing fetch operation has been aborted, stop proceeding
-        return;
-      }
-
-      console.log('Analysis done', data);
       if (data.agent_id !== 'user' && data.next_step) {
         useAICStore.getState().appendGroup({
           agent_id: data.agent_id,
@@ -106,15 +108,20 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
       }
     } catch (err) {
       if ((err as Error).name === 'AbortError') {
-        console.log('Analysis aborted');
         return;
       } else {
         throw err;
       }
     } finally {
-      set(() => ({
-        isAnalysisRunning: false,
-      }));
+      if (get().currentAnalysisRequestId === analysisRequestId) {
+        set(() => ({
+          currentAnalysisRequestId: undefined,
+          agent_id: undefined,
+          relevant_material_ids: undefined,
+          next_step: undefined,
+          thinking_process: undefined,
+        }));
+      }
     }
   },
 }));

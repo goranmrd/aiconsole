@@ -19,11 +19,11 @@ import traceback
 from fastapi import APIRouter, Request
 from fastapi.responses import StreamingResponse
 import logging
-from aiconsole import projects
-from aiconsole.code_running.run_code import get_code_interpreter
-from aiconsole.code_running.types import CodeToRun
+from aiconsole.core.project import project
+from aiconsole.core.code_running.run_code import get_code_interpreter
+from aiconsole.core.code_running.types import CodeToRun
 from aiconsole.utils.cancel_on_disconnect import cancelable_endpoint
-from aiconsole.websockets.outgoing_messages import ErrorWSMessage
+from aiconsole.api.websockets.outgoing_messages import ErrorWSMessage
 
 router = APIRouter()
 
@@ -36,7 +36,7 @@ async def run_code(request: Request, code_to_run: CodeToRun, chat_id: str) -> St
         try:
             _log.debug("Running code: %s", code_to_run.code)
 
-            mats = [projects.get_project_materials().get_material(mid) for mid in code_to_run.materials_ids]
+            mats = [project.get_project_materials().get_asset(mid) for mid in code_to_run.materials_ids]
 
             # If the code starts with a !, that means a shell command
             if code_to_run.language == "python" and code_to_run.code.startswith("!"):

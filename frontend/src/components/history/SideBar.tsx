@@ -21,6 +21,27 @@ import { MaterialsSidebarTab } from './MaterialsSidebarTab';
 import { AgentsSidebarTab } from './AgentsSidebarTab';
 import { TabsValues } from '@/types/types';
 
+/*
+
+  const chatHeadlines = useAICStore((state) => state.chatHeadlines);
+  const chatId = useAICStore((state) => state.chatId);
+
+  const { today, yesterday, previous7Days, older } =
+    useGroupByDate(chatHeadlines);
+
+  function handleDelete(event: React.MouseEvent, id: string) {
+    event.stopPropagation();
+    event.preventDefault();
+
+    useAICStore.getState().deleteChat(id);
+    useAICStore.getState().setChatId(uuidv4());
+  }
+
+  const handleHeadlineChange = (chatId: string, newHeadline: string) => {
+    useAICStore.getState().updateChatHeadline(chatId, newHeadline);
+  };
+*/
+
 const SideBar = () => {
   const [activeTab, setActiveTab] = useState<TabsValues | string | null>(
     'chats',

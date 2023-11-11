@@ -14,11 +14,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { useState } from 'react';
+import { /*useRef,*/ useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { ChatHeadline } from '@/types/types';
 import SideBarItem from './SideBarItem';
+
+//import { cn } from '@/utils/styles';
+//import { Trash, Pencil, Check, X } from 'lucide-react';
+//import { ConfirmationModal } from '../system/ConfirmationModal';
 
 export type HeadlinesGroupProps = {
   title: string;
@@ -37,6 +41,25 @@ const HeadlinesGroup = ({
 }: HeadlinesGroupProps) => {
   const [isEditMode, setIsEditMode] = useState(false);
 
+  /*
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  
+  const handleInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    if (e.relatedTarget === closeButtonRef.current) {
+      disableEditMode();
+    } else {
+      onAccept(currentChatId);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      onAccept(currentChatId);
+    } else if (e.key === 'Escape') {
+      disableEditMode();
+    }
+  };
+  */
   const handleLinkClick = (chatId: string) => {
     if (chatId !== currentChatId && isEditMode) {
       setIsEditMode(false);
@@ -45,7 +68,26 @@ const HeadlinesGroup = ({
 
   const rename = (value: string, chatId: string) => {
     onHeadlineChange(chatId, value);
+
+    disableEditMode();
   };
+
+  const disableEditMode = () => {
+    setIsEditMode(false);
+    //setInputText('');
+  };
+
+  /*
+  const onChatEdit = (message: string) => {
+    setIsEditMode(true);
+    setInputText(message);
+  };
+
+  const onAccept = (chatId: string) => {
+    onHeadlineChange(chatId, inputText);
+    setIsEditMode(false);
+  };
+  */
 
   return (
     <>
@@ -70,6 +112,48 @@ const HeadlinesGroup = ({
               onDelete={(event) => onChatDelete(event, chat.id)}
               onRename={(value) => rename(value, chat.id)}
             />
+            {/*{isEditMode && selected ? (
+              <div className="flex gap-2 w-full">
+                <input
+                  className="font-normal outline-1 outline-white/20 ring-secondary/30 bg-black resize-none overflow-hidden rounded-lg outline focus:outline-none focus:ring-2"
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                  onBlur={handleInputBlur}
+                  onKeyDown={handleKeyDown}
+                />
+                <div className="flex-grow flex items-center gap-2">
+                  <button>
+                    <Check
+                      className="h-4 w-4"
+                      onClick={() => onAccept(chat.id)}
+                    />
+                  </button>
+                  <button
+                    onClick={() => setIsEditMode(false)}
+                    ref={closeButtonRef}
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="truncate flex-grow">{chat.message}</div>
+            )}
+            {selected && !isEditMode && (
+              <>
+                <Pencil
+                  className="h-4 w-4 flex-none"
+                  onClick={() => onChatEdit(chat.message)}
+                />
+                <ConfirmationModal
+                  confirmButtonText="Yes"
+                  cancelButtonText="No"
+                  onConfirm={(event) => onChatDelete(event, chat.id)}
+                  title={`Are you sure you want to remove ${chat.message} chat?`}
+                  openModalButton={<Trash className="h-4 w-4 flex-none" />}
+                />
+              </>
+            )}*/}
           </Link>
         );
       })}

@@ -1,6 +1,30 @@
+const fs = require('fs');
+const path = require('path');
+const { version } = require('./package.json');
+const GitHub = require('@electron-forge/publisher-github').default;
+
+class CustomGitHubPublisher extends GitHub {
+  async publish(options) {
+    // Modify the artifacts to include the renamed file
+    for (let result of options.makeResults) {
+      for (let i = 0; i < result.artifacts.length; i++) {
+        if (result.artifacts[i].endsWith("AIConsole.dmg")) {
+          result.artifacts[i] = path.join(
+            path.dirname(result.artifacts[i]),
+            `AIConsole-${version}-${result.arch}.dmg`
+          );
+        }
+      }
+    }
+
+    // Call the original publish method
+    return super.publish(options);
+  }
+}
+
 module.exports = {
   packagerConfig: {
-    executableName: 'AIConsole',
+    executableName: process.platform === 'darwin' ? 'AIConsole' : 'aiconsole',
     asar: true,
     icon: './assets/icon',
     extraResource: ['python'],
@@ -17,6 +41,7 @@ module.exports = {
     {
       name: '@electron-forge/maker-squirrel',
       config: {
+        name: 'AIConsole',
         // An URL to an ICO file to use as the application icon (displayed in Control Panel > Programs and Features).
         iconUrl: 'https://url/to/icon.ico',
         // The ICO file to use as the icon for the generated Setup.exe
@@ -25,43 +50,63 @@ module.exports = {
     },
     {
       name: '@electron-forge/maker-zip',
+      config: {
+        icon: './assets/icon.png',
+        name: 'AIConsole',
+        options: {},
+      },
     },
     {
       name: '@electron-forge/maker-deb',
       config: {
-        options: {
-          icon: './assets/icon.png',
-        },
+        icon: './assets/icon.png',
+        name: 'AIConsole',
+        options: {},
       },
     },
     {
       name: '@electron-forge/maker-rpm',
-      config: {},
+      config: {
+        icon: './assets/icon.png',
+        name: 'AIConsole',
+      },
     },
     {
       name: '@electron-forge/maker-dmg',
       config: {
         icon: './assets/icon.icns',
-      },
-    },
-    {
-      name: '@electron-forge/maker-wix',
-      config: {
-        icon: './assets/icon.ico',
+        name: 'AIConsole',
       },
     },
   ],
-  publishers: [
-    {
-      name: '@electron-forge/publisher-github',
-      config: {
-        repository: {
-          owner: '10clouds',
-          name: 'aiconsole'
-        },
-        prerelease: true
+  hooks: {
+    postMake: async (forgeConfig, results) => {
+      const { version } = require('./package.json');
+      const path = require('path');
+      const fs = require('fs');
+
+      for (let result of results) {
+        for (let artifact of result.artifacts) {
+          if (artifact.endsWith("AIConsole.dmg")) {
+            const dmgPath = artifact;
+            const dmgPathWithVersionAndArch = path.join(
+              path.dirname(artifact),
+              `AIConsole-${version}-${result.arch}.dmg`
+            );
+            await fs.promises.rename(dmgPath, dmgPathWithVersionAndArch);
+          }
+        }
       }
     }
+  },
+  publishers: [
+    new CustomGitHubPublisher({
+      repository: {
+        owner: '10clouds',
+        name: 'aiconsole'
+      },
+      prerelease: true
+    }),
   ],
   plugins: [
     {

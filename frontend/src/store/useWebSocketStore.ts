@@ -23,6 +23,7 @@ import { IncomingWSMessage } from '../types/incomingMessages';
 import { useAnalysisStore } from '@/store/useAnalysisStore';
 import showNotification from '@/utils/showNotification';
 import { useAPIStore } from './useAPIStore';
+import { useSettings } from './useSettings';
 
 export type WebSockeStore = {
   ws: ReconnectingWebSocket | null;
@@ -54,7 +55,7 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
       });
     };
 
-    ws.onmessage = (e: MessageEvent) => {
+    ws.onmessage = async (e: MessageEvent) => {
       const data: IncomingWSMessage = JSON.parse(e.data);
 
       switch (data.type) {
@@ -75,41 +76,71 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
         case 'DebugJSONWSMessage':
           console.log(data.message, data.object);
           break;
+        case 'InitialProjectStatusWSMessage':
+          if (data.project_path && data.project_name) {
+            useAICStore.getState().onProjectOpened({
+              name: data.project_name,
+              path: data.project_path,
+              initial: true,
+            });
+          } else {
+            useAICStore.getState().onProjectClosed();
+          }
+          break;
         case 'ProjectOpenedWSMessage':
-          useAICStore.getState().setProject({
+          useAICStore.getState().onProjectOpened({
             name: data.name,
             path: data.path,
+            initial: false,
           });
           break;
         case 'ProjectClosedWSMessage':
-          useAICStore.getState().closeProject();
+          useAICStore.getState().onProjectClosed();
           break;
         case 'ProjectLoadingWSMessage':
-          useAICStore.getState().markProjectAsLoading();
+          useAICStore.getState().onProjectLoading();
           break;
-        case 'MaterialsUpdatedWSMessage':
-          useAICStore.getState().fetchMaterials();
-          showNotification({
-            title: 'Materials updated',
-            message: `${data.count} materials updated`,
-          });
+        case 'AssetsUpdatedWSMessage':
+          if (data.asset_type === 'agent') {
+            useAICStore.getState().initAgents();
+            if (!data.initial) {
+              showNotification({
+                title: 'Agents updated',
+                message: `Loaded ${data.count} agents.`,
+              });
+            }
+          }
+
+          if (data.asset_type === 'material') {
+            useAICStore.getState().initMaterials();
+            if (!data.initial) {
+              showNotification({
+                title: 'Materials updated',
+                message: `Loaded ${data.count} materials.`,
+              });
+            }
+          }
           break;
         case 'AnalysisUpdatedWSMessage':
-          useAnalysisStore.setState({
-            agent_id: data.agent_id,
-            relevant_material_ids: data.relevant_material_ids,
-            next_step: data.next_step,
-            thinking_process: data.thinking_process,
-          });
+          if (data.analysis_request_id === useAnalysisStore.getState().currentAnalysisRequestId) {
+            useAnalysisStore.setState({
+              agent_id: data.agent_id,
+              relevant_material_ids: data.relevant_material_ids,
+              next_step: data.next_step,
+              thinking_process: data.thinking_process,
+            });
+          }
           break;
         case 'SettingsWSMessage':
-          useAICStore.getState().initSettings();
+          useSettings.getState().initSettings();
           useAICStore.getState().initMaterials();
           useAICStore.getState().initAgents();
-          showNotification({
-            title: 'Settings changed',
-            message: `New setting activated`,
-          });
+          if (!data.initial) {
+            showNotification({
+              title: 'Settings updated',
+              message: `Loaded new settings.`,
+            });
+          }
           break;
       }
     };

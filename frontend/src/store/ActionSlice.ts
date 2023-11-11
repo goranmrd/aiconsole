@@ -20,13 +20,13 @@ import { Api } from '@/api/Api';
 import { AICStore } from './AICStore';
 import { useAnalysisStore } from './useAnalysisStore';
 import { getGroup, getMessage } from './utils';
+import { useSettings } from './useSettings';
 
 export type ActionSlice = {
   doExecute: () => Promise<void>;
   doRun: (groupId?: string, messageId?: string) => Promise<void>;
   isExecuteRunning: boolean;
-  isWorking: () => boolean;
-  stopWork: () => void;
+  stopWork: () => Promise<void>;
   executeAbortSignal: AbortController;
 };
 
@@ -249,7 +249,7 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
       const isCode = 'language' in lastMessage;
 
       if (isCode) {
-        if (get().alwaysExecuteCode) {
+        if (useSettings.getState().alwaysExecuteCode) {
           await get().doRun();
         }
       } else {
@@ -257,10 +257,7 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
       }
     }
   },
-
-  isWorking: () =>
-    useAnalysisStore.getState().isAnalysisRunning || get().isExecuteRunning,
-  stopWork: () => {
+  stopWork: async () => {
     get().executeAbortSignal.abort();
     useAnalysisStore.getState().analysisAbortController.abort();
   },

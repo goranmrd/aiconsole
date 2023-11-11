@@ -15,16 +15,21 @@
 # limitations under the License.
     
 import asyncio
+import logging
+from typing import cast
+
+from aiconsole.api.websockets.outgoing_messages import ErrorWSMessage
+from aiconsole.core.assets.agents.agent import Agent, ExecutionModeContext
+from aiconsole.core.assets.materials.material import Material
+from aiconsole.core.chat.types import ChatWithAgentAndMaterials
+from aiconsole.core.execution_modes.interpreter import execution_mode_interpreter
+from aiconsole.core.execution_modes.normal import execution_mode_normal
+from aiconsole.core.assets.materials.content_evaluation_context import \
+    ContentEvaluationContext
+from aiconsole.core.project import project
+from aiconsole.utils.cancel_on_disconnect import cancelable_endpoint
 from fastapi import APIRouter, Request
 from fastapi.responses import StreamingResponse
-from aiconsole import projects
-import logging
-from aiconsole.agents.types import ExecutionModeContext
-from aiconsole.chat.types import ChatWithAgentAndMaterials
-from aiconsole.materials.content_evaluation_context import ContentEvaluationContext
-from aiconsole.utils.cancel_on_disconnect import cancelable_endpoint
-from aiconsole.websockets.outgoing_messages import ErrorWSMessage
-
 
 router = APIRouter()
 _log = logging.getLogger(__name__)
@@ -33,13 +38,13 @@ _log = logging.getLogger(__name__)
 @router.post("/execute")
 @cancelable_endpoint
 async def execute(request: Request, chat: ChatWithAgentAndMaterials) -> StreamingResponse:
-    agent = projects.get_project_agents().agents[chat.agent_id]
+    agent = cast(Agent, project.get_project_agents().get_asset(chat.agent_id))
 
     content_context = ContentEvaluationContext(
         chat=chat,
         agent=agent,
         gpt_mode=agent.gpt_mode,
-        relevant_materials=[projects.get_project_materials().get_material(id) for id in chat.relevant_materials_ids],
+        relevant_materials=[cast(Material, project.get_project_materials().get_asset(id)) for id in chat.relevant_materials_ids],
     )
 
     rendered_materials = [await material.render(content_context) for material in content_context.relevant_materials]
@@ -53,7 +58,13 @@ async def execute(request: Request, chat: ChatWithAgentAndMaterials) -> Streamin
 
     async def async_wrapper():
         try:
-            async for item in agent.execution_mode(context):
+            execution_modes = {
+                "interpreter": execution_mode_interpreter,
+                "normal": execution_mode_normal,
+            }
+            execution_mode = execution_modes[agent.execution_mode]
+
+            async for item in execution_mode(context):
                 _log.debug(item)
                 yield item
         except asyncio.CancelledError:

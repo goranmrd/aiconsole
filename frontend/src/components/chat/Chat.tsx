@@ -15,21 +15,36 @@
 // limitations under the License.
 
 import { useEffect } from 'react';
-import ScrollToBottom from 'react-scroll-to-bottom';
+import ScrollToBottom, { useScrollToBottom } from 'react-scroll-to-bottom';
 
 import { MessageGroup } from '@/components/chat/MessageGroup';
-import { Welcome } from '@/components/chat/Welcome';
+import { EmptyChat } from '@/components/chat/EmptyChat';
 import { useAICStore } from '@/store/AICStore';
 import { useAnalysisStore } from '@/store/useAnalysisStore';
 import { Analysis } from './Analysis';
+import { Button } from '../system/Button';
+
+export function ChatWindowScrollToBottomSave() {
+  const scrollToBottom = useScrollToBottom();
+  const setScrollChatToBottom = useAICStore((state) => state.setScrollChatToBottom);
+
+  useEffect(() => {
+    setScrollChatToBottom(scrollToBottom)
+  }, [scrollToBottom, setScrollChatToBottom])
+
+  return <></>
+}
 
 export function Chat({ chatId }: { chatId: string }) {
   const chat = useAICStore((state) => state.chat);
   const loadingMessages = useAICStore((state) => state.loadingMessages);
   const setChatId = useAICStore((state) => state.setChatId);
-  const isAnalysisRunning = useAnalysisStore((state) => state.isAnalysisRunning);
+  const isAnalysisRunning = useAnalysisStore((state) => !!state.currentAnalysisRequestId);
   const isExecuteRunning = useAICStore((state) => state.isExecuteRunning);
   const stopWork = useAICStore((state) => state.stopWork);
+  const submitCommand = useAICStore((state) => state.submitCommand);
+
+  const isLastMessageFromUser = chat.message_groups.length > 0 && chat.message_groups[chat.message_groups.length - 1].agent_id === 'user';
 
   useEffect(() => {
     setChatId(chatId);
@@ -47,14 +62,12 @@ export function Chat({ chatId }: { chatId: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatId]); //Initentional trigger when chat_id changes
 
-  return !loadingMessages && chat.message_groups?.length === 0 ? (
-    <div className="h-full overflow-y-auto flex flex-col"><Welcome /></div>
-  ) : chat.message_groups?.length > 0 ? ( // This is needed because of https://github.com/compulim/react-scroll-to-bottom/issues/61#issuecomment-1608456508
-    <ScrollToBottom
-      className="h-full overflow-y-auto flex flex-col"
-      initialScrollBehavior="auto"
-      mode={'bottom'}
-    >
+
+  return !loadingMessages ? ( // This is needed because of https://github.com/compulim/react-scroll-to-bottom/issues/61#issuecomment-1608456508
+    <ScrollToBottom className="h-full overflow-y-auto flex flex-col" scrollViewClassName="main-chat-window" initialScrollBehavior="auto" mode={'bottom'}>
+      <ChatWindowScrollToBottomSave />
+      {chat.message_groups.length === 0 && <EmptyChat />}
+
       {chat.message_groups.map((group, index) => (
         <MessageGroup
           group={group}
@@ -63,7 +76,20 @@ export function Chat({ chatId }: { chatId: string }) {
         />
       ))}
       <Analysis />
-      {!isAnalysisRunning && <div className="flex flex-row h-4"></div>}
+
+      <div className="flex items-center justify-center m-5">
+        {!isExecuteRunning && !isAnalysisRunning && !isLastMessageFromUser && <Button
+          variant="secondary"
+
+          onClick={() =>
+            submitCommand(
+              `I'm stuck at using AIConsole, can you suggest what can I do from this point in the conversation?`,
+            )
+          }
+        >
+          Guide me
+        </Button>}
+      </div>
     </ScrollToBottom>
   ) : (
     <div className="h-full overflow-y-auto flex flex-col"></div>

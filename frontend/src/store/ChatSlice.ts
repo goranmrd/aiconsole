@@ -49,6 +49,8 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
   agent: undefined,
   materials: [],
   initChatHistory: async () => {
+    set({ chatHeadlines: [] });
+    if (!get().isProjectOpen) return;
     try {
       const history: ChatHeadline[] = await (
         await Api.getChatsHistory()
@@ -83,7 +85,7 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
   
       let chat: Chat;
       
-      if (id === '') {
+      if (id === '' || !get().isProjectOpen) {
         chat = {
           id: '',
           title: '',

@@ -18,84 +18,118 @@ import { StateCreator } from 'zustand';
 
 import { Api } from '@/api/Api';
 import { AICStore } from './AICStore';
+import { useSettings } from './useSettings';
 
 export type ProjectSlice = {
   projectPath?: string; //undefined means loading, '' means no project, otherwise path
+  tempPath?: string;
   projectName?: string;
-  alwaysExecuteCode: boolean;
-  openAiApiKey?: string | null;
-  chooseProject:  (path?: string) => Promise<void>;
-  initSettings: () => Promise<void>;
-  isProjectLoading: () => boolean;
-  isProjectOpen: () => boolean;
-  setProject: ({ path, name }: { path: string; name: string }) => Promise<void>;
-  closeProject: () => Promise<void>;
-  markProjectAsLoading: () => void;
-  enableAutoCodeExecution: () => void;
-  setOpenAiApiKey: (key: string) => Promise<void>;
+  isProjectDirectory?: boolean | undefined;
+  chooseProject: (path?: string) => Promise<void>;
+  resetIsProjectFlag: () => void;
+  checkPath: (path?: string) => Promise<void>;
+  isProjectLoading: boolean;
+  isProjectOpen: boolean;
+  onProjectOpened: ({ path, name, initial}: { path: string; name: string, initial: boolean }) => Promise<void>;
+  onProjectClosed: () => Promise<void>;
+  onProjectLoading: () => void;
 };
 
-export const createProjectSlice: StateCreator<
-  AICStore,
-  [],
-  [],
-  ProjectSlice
-> = (set, get) => ({
+export const createProjectSlice: StateCreator<AICStore, [], [], ProjectSlice> = (set, get) => ({
   projectPath: undefined,
+  tempPath: undefined,
+  isProjectDirectory: undefined,
   projectName: undefined,
-  alwaysExecuteCode: false,
-  openAiApiKey: undefined,
-  enableAutoCodeExecution: async () => {
-    await Api.saveSettings({ code_autorun: true, to_global: true});
-    set({ alwaysExecuteCode: true });
-  },
-  setOpenAiApiKey: async (key: string) => {
-    await Api.saveSettings({ openai_api_key: key, to_global: true });
-    set({ openAiApiKey: key });
-  },
-  setProject: async ({ path, name }: { path: string; name: string }) => {
+  isProjectLoading: true,
+  isProjectOpen: false,
+  onProjectOpened: async ({ path, name, initial }: { path: string; name: string, initial:boolean }) => {
+    if (!path || !name) {
+      throw new Error('Project path or name is not defined');
+    }
+
     set(() => ({
       projectPath: path,
       projectName: name,
+      isProjectOpen: true,
+      isProjectLoading: false,
       alwaysExecuteCode: false,
     }));
 
-    await Promise.all([
-      get().initCommandHistory(),
-      get().initChatHistory(),
-      get().initMaterials(),
-      get().initAgents(),
-      get().initSettings(),
-    ]);
-    
+    await Promise.all([get().initCommandHistory(), get().initChatHistory()]);
+
+    if (initial) {
+      await (Promise.all([
+        get().initAgents(),
+        get().initMaterials(),
+        useSettings.getState().initSettings(),
+      ]))
+    }
   },
-  closeProject: async () => {
+  onProjectClosed: async () => {
     set(() => ({
       projectPath: '',
       projectName: '',
+      isProjectOpen: false,
+      isProjectLoading: false,
       alwaysExecuteCode: false,
     }));
   },
-  markProjectAsLoading: () => {
+  onProjectLoading: () => {
     set(() => ({
       projectPath: undefined,
       projectName: undefined,
+      isProjectOpen: false,
+      isProjectLoading: true,
+      alwaysExecuteCode: false,
     }));
   },
-  isProjectLoading: () => {
-    return get().projectPath === undefined;
-  },
-  isProjectOpen: () => {
-    return !!get().projectPath;
+  resetIsProjectFlag: () => {
+    set({
+      isProjectDirectory: undefined,
+      tempPath: '',
+    });
   },
   chooseProject: async (path?: string) => {
-    (await Api.chooseProject(path).json()) as { name: string; path: string };
+    // If we are in electron environment, use electron dialog, otherwise rely on the backend to open the dialog
+    if (!path && window?.electron?.openDirectoryPicker) {
+      const path = await window?.electron?.openDirectoryPicker();
+      if (path) {
+        (await Api.chooseProject(path).json()) as {
+          name: string;
+          path: string;
+        };
+      }
+
+      return;
+    }
+    (await Api.chooseProject(path).json()) as {
+      name: string;
+      path: string;
+    };
   },
-  initSettings: async () => {
-    const result = await Api.getSettings();
+  checkPath: async (pathToCheck?: string) => {
+    // If we are in electron environment, use electron dialog, otherwise rely on the backend to open the dialog
+    let pathFromElectron;
+
+    if (!pathToCheck && window?.electron?.openDirectoryPicker) {
+      pathFromElectron = await window?.electron?.openDirectoryPicker();
+
+      if (!pathFromElectron) {
+        return;
+      }
+    }
+
+    const path = pathToCheck || pathFromElectron;
+    const { is_project, path: tkPath } = await Api.isProjectDirectory(path);
     set({
-      alwaysExecuteCode: result.code_autorun,
-      openAiApiKey: result.openai_api_key
+      isProjectDirectory: is_project,
+      tempPath: tkPath,
     });
+    if (is_project === undefined && !tkPath) {
+      (await Api.chooseProject(path).json()) as {
+        name: string;
+        path: string;
+      };
+    }
   },
 });

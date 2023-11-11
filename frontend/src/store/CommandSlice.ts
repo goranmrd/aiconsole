@@ -26,23 +26,22 @@ export type CommandSlice = {
   commandIndex: number;
   historyUp: () => void;
   historyDown: () => void;
-  newCommand: () => void;
+  scrollChatToBottom: undefined | ((props: {behavior: "auto" | "smooth" | undefined}) => void);
+  setScrollChatToBottom: (scrollChatToBottom: (props: {behavior: "auto" | "smooth" | undefined}) => void) => void;
+  newCommand: () => Promise<void>;
   editCommand: (prompt: string) => void;
   getCommand: () => string;
   saveCommandAndMessagesToHistory: (
     command: string,
     isUserCommand: boolean,
   ) => Promise<void>;
-  submitCommand: (prompt: string) => void;
+  submitCommand: (prompt: string) => Promise<void>;
   initCommandHistory: () => Promise<void>;
 };
 
-export const createCommandSlice: StateCreator<
-  AICStore,
-  [],
-  [],
-  CommandSlice
-> = (set, get) => ({
+export const createCommandSlice: StateCreator<AICStore, [], [], CommandSlice> = (set, get) => ({
+  setScrollChatToBottom: (scrollChatToBottom) => set(() => ({ scrollChatToBottom })),
+  scrollChatToBottom: undefined,
   commandHistory: [''],
   commandIndex: 0,
   initCommandHistory: async () => {
@@ -64,7 +63,7 @@ export const createCommandSlice: StateCreator<
   historyUp: () => {
     set((state) => ({ commandIndex: Math.max(0, state.commandIndex - 1) }));
   },
-  newCommand: () =>
+  newCommand: async () =>
     set((state) => ({
       commandHistory: [...state.commandHistory, ''],
       commandIndex: state.commandHistory.length,
@@ -100,6 +99,11 @@ export const createCommandSlice: StateCreator<
     get().saveCurrentChatHistory();
   },
   submitCommand: async (command: string) => {
+    
+    if (get().isExecuteRunning || useAnalysisStore.getState().currentAnalysisRequestId) {
+      await get().stopWork();
+    }
+    
     if (command.trim() !== '') {
       get().appendGroup({
         agent_id: 'user',
@@ -116,6 +120,13 @@ export const createCommandSlice: StateCreator<
       );
 
       get().saveCommandAndMessagesToHistory(command, true);
+    }
+    const scrollChatToBottom = get().scrollChatToBottom;
+
+    if (scrollChatToBottom) {
+      scrollChatToBottom({
+        behavior: 'smooth'
+      });
     }
 
     await useAnalysisStore.getState().doAnalysis();

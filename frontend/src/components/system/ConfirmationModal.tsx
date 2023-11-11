@@ -17,24 +17,36 @@
 import { useDisclosure } from '@mantine/hooks';
 import { Modal } from '@mantine/core';
 import { Button } from './Button';
-import { MouseEventHandler, MouseEvent } from 'react';
+import { MouseEventHandler, MouseEvent, useEffect } from 'react';
 
 interface ConfirmationModalProps {
   onConfirm: MouseEventHandler<HTMLButtonElement>;
+  onClose?: () => void;
   confirmButtonText?: string;
   cancelButtonText?: string;
   title: string;
-  openModalButton: React.ReactElement;
+  openModalButton?: React.ReactElement;
+  opened?: boolean;
 }
 
 export function ConfirmationModal({
   onConfirm,
+  onClose,
   confirmButtonText = 'Submit',
   cancelButtonText = 'Cancel',
   title,
   openModalButton,
+  opened: isOpened,
 }: ConfirmationModalProps) {
-  const [opened, { open, close }] = useDisclosure(false);
+  const [opened, { open, close }] = useDisclosure(isOpened, { onClose });
+
+  useEffect(() => {
+    if (isOpened) {
+      open();
+    } else {
+      close();
+    }
+  }, [close, isOpened, open]);
 
   const handleConfirm = (event: MouseEvent<HTMLButtonElement>) => {
     onConfirm(event);
@@ -56,6 +68,11 @@ export function ConfirmationModal({
             backgroundColor: '#1a1a1a',
             textAlign: 'center',
           },
+          title: {
+            lineHeight: '24px',
+            textAlign: 'center',
+            width: '100%',
+          },
           content: {
             backgroundColor: '#1a1a1a',
             color: '#fff',
@@ -66,13 +83,13 @@ export function ConfirmationModal({
           <Button variant="secondary" bold small onClick={close}>
             {cancelButtonText}
           </Button>
-          <Button variant="primary" small onClick={handleConfirm}>
+          <Button variant="primary" small onClick={handleConfirm} dataAutofocus>
             {confirmButtonText}
           </Button>
         </div>
       </Modal>
 
-      <span onClick={open}>{openModalButton}</span>
+      {openModalButton && <span onClick={open}>{openModalButton}</span>}
     </>
   );
 }

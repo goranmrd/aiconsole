@@ -15,19 +15,19 @@
 # limitations under the License.
 
 import os
+from aiconsole.core.project.paths import get_history_directory
 from fastapi import APIRouter, status, Response
 from fastapi.responses import JSONResponse
-from aiconsole import projects
-from aiconsole.chat.types import Chat
-from aiconsole.chats.load_chat_history import load_chat_history
-from aiconsole.chats.save_chat_history import save_chat_history
+from aiconsole.core.chat.types import Chat
+from aiconsole.core.chats.load_chat_history import load_chat_history
+from aiconsole.core.chats.save_chat_history import save_chat_history
 
 router = APIRouter()
 
 
 @router.delete("/history/{chat_id}")
-def delete_history(chat_id: str):
-    file_path = os.path.join(projects.get_history_directory(), f"{chat_id}.json")
+async def delete_history(chat_id: str):
+    file_path = get_history_directory() / f"{chat_id}.json"
     if os.path.exists(file_path):
         os.remove(file_path)
         return Response(
@@ -41,8 +41,8 @@ def delete_history(chat_id: str):
         )
 
 @router.get("/history/{chat_id}")
-def get_history(chat_id: str):
-    chat = load_chat_history(chat_id)
+async def get_history(chat_id: str):
+    chat = await load_chat_history(chat_id)
 
     return JSONResponse(chat.model_dump())
 

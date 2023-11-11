@@ -41,7 +41,7 @@ def download_python():
 
     elif system_name == "Windows":
         print("Detected Windows architecture.")
-        variant = "x86_64-pc-windows-msvc-static"
+        variant = "x86_64-pc-windows-msvc-shared"
 
     else:
         print(f"Unknown operating system: {system_name}")

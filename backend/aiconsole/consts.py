@@ -16,9 +16,7 @@
     
 from pathlib import Path
 
-from pydantic import Field
-
-from aiconsole.gpt.consts import GPTMode
+from aiconsole.core.gpt.consts import GPTMode
 import litellm
 
 

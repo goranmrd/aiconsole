@@ -15,14 +15,14 @@
 # limitations under the License.
     
 from datetime import datetime
+from aiconsole.core.assets.asset import AssetLocation
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-from aiconsole.agents.types import Agent
-from aiconsole.chat.types import Chat
-from aiconsole.execution_modes.normal import execution_mode_normal
-from aiconsole.gpt.consts import GPTMode
-from aiconsole.materials.content_evaluation_context import ContentEvaluationContext
-from aiconsole.materials.material import Material
+from aiconsole.core.assets.agents.agent import Agent
+from aiconsole.core.chat.types import Chat
+from aiconsole.core.gpt.consts import GPTMode
+from aiconsole.core.assets.materials.content_evaluation_context import ContentEvaluationContext
+from aiconsole.core.assets.materials.material import Material
 
 router = APIRouter()
 
@@ -34,8 +34,9 @@ async def materials_preview(material: Material):
             id="user",
             name="User",
             usage="",
+            usage_examples=[],
             system="",
-            execution_mode=execution_mode_normal,
+            defined_in=AssetLocation.AICONSOLE_CORE,
             gpt_mode=GPTMode.QUALITY,
         ),
         gpt_mode=GPTMode.FAST,

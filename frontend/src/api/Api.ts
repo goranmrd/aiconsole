@@ -114,7 +114,7 @@ const saveHistory = (chat: Chat) =>
 // Agents
 
 const getAgents: () => Promise<Agent[]> = async () =>
-  await ky.get(`${getBaseURL()}/agents`, { hooks }).json();
+  await ky.get(`${getBaseURL()}/api/agents/`, { hooks }).json();
 
 // Projects
 
@@ -128,6 +128,16 @@ const chooseProject = (path?: string) =>
     hooks,
     timeout: false,
   });
+
+const isProjectDirectory = async (path?: string) =>
+  (await ky.post(`${getBaseURL()}/api/projects/is_project`, {
+    json: { directory: path },
+    hooks,
+    timeout: false,
+  }).json()) as {
+    is_project: boolean;
+    path: string;
+  }
 
 const getCurrentProject = () =>
   ky.get(`${getBaseURL()}/api/projects/current`, { hooks });
@@ -194,15 +204,23 @@ const previewMaterial: (
 
 // Analysis
 
-const analyse = (body: Chat, signal?: AbortSignal) =>
-  ky.post(`${getBaseURL()}/analyse`, {
-    json: { ...body },
+const analyse = (body: Chat, analysis_request_id: string, signal?: AbortSignal) =>
+  ky.post(`${getBaseURL()}/api/analyse`, {
+    json: { chat: body, analysis_request_id: analysis_request_id },
     signal,
     timeout: 60000,
     hooks,
   });
 
 // Settings
+
+const checkKey = (key: string) => {
+  return ky.post(`${getBaseURL()}/api/check_key`, {
+    json: { key },
+    hooks,
+    timeout: false,
+  });
+};
 
 async function saveSettings(params: { to_global: boolean } & Settings) {
   return ky.patch(`${getBaseURL()}/api/settings`, { json: params, hooks });
@@ -223,6 +241,7 @@ export const Api = {
   previewMaterial,
   closeProject,
   chooseProject,
+  isProjectDirectory,
   getCurrentProject,
   getRecentProjects,
   removeRecentProject,
@@ -238,4 +257,5 @@ export const Api = {
   updateChatHeadline,
   saveSettings,
   getSettings,
+  checkKey,
 };

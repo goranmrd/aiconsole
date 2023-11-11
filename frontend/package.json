@@ -1,7 +1,7 @@
 {
   "name": "aiconsole",
   "private": true,
-  "version": "0.2.1a2",
+  "version": "0.2.1-alpha11",
   "scripts": {
     "dev": "vite",
     "watch": "vite build --watch",
@@ -54,7 +54,6 @@
     "eslint": "^8.45.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.3",
-    "fs-xattr": "^0.4.0",
     "postcss": "^8.4.30",
     "prettier": "^3.0.3",
     "tailwindcss": "^3.3.3",

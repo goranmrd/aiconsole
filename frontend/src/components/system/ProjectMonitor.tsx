@@ -8,15 +8,19 @@ export function RouteMonitor({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const isProjectOpen = useAICStore((state) => state.isProjectOpen());
+  const isProjectOpen = useAICStore((state) => state.isProjectOpen);
 
   const projectPath = useAICStore((state) => state.projectPath);
   const pathRef = useRef<string | undefined>(undefined);
-  const isProjectLoading = useAICStore((state) => state.isProjectLoading());
+  const isProjectLoading = useAICStore((state) => state.isProjectLoading);
 
   useEffect(() => {
-    // identify current project
-    if (pathRef.current === undefined && projectPath !== undefined) {
+    if (isProjectLoading) {
+      return;
+    }
+
+    // identify initial project
+    if (pathRef.current === undefined) {
       pathRef.current = projectPath;
     }
 
@@ -24,7 +28,7 @@ export function RouteMonitor({ children }: { children: React.ReactNode }) {
     if (pathRef.current !== projectPath) {
       if (isProjectOpen) {
         navigate(`/chats/${uuidv4()}`);
-      } else if (!isProjectLoading) {
+      } else {
         navigate('/');
       }
 
@@ -33,6 +37,10 @@ export function RouteMonitor({ children }: { children: React.ReactNode }) {
   }, [projectPath, isProjectOpen, isProjectLoading, navigate]);
 
   useEffect(() => {
+    if (isProjectLoading) {
+      return;
+    }
+
     // For some reason we are in project url and there is no project
     if (!isProjectOpen && location.pathname !== '/') {
       navigate('/');
@@ -42,7 +50,8 @@ export function RouteMonitor({ children }: { children: React.ReactNode }) {
     if (isProjectOpen && location.pathname === '/') {
       navigate(`/chats/${uuidv4()}`);
     }
-  }, [isProjectOpen, location, navigate]);
+
+  }, [isProjectOpen, isProjectLoading, location.pathname, navigate]);
 
   if (isProjectLoading) {
     return <FullScreenSpinner />;

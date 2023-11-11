@@ -15,17 +15,19 @@
 # limitations under the License.
 
 import os
+from pathlib import Path
 from typing import Optional
+from aiconsole.core.project.paths import get_project_directory
+from aiconsole.core.project.project import change_project_directory, is_project_initialized
 
 from fastapi import APIRouter
 from pydantic import BaseModel
-from aiconsole import projects
 
 router = APIRouter()
 
 _root = None
 
-def _ask_directory():
+async def _ask_directory():
     from tkinter import Tk, filedialog
 
     global _root
@@ -35,22 +37,33 @@ def _ask_directory():
     else:
         _root.deiconify()
     _root.withdraw()
-    initial_dir = projects.get_project_directory() if projects.is_project_initialized() else os.getcwd()
+    initial_dir = get_project_directory() if is_project_initialized() else os.getcwd()
     directory = filedialog.askdirectory(initialdir=initial_dir)
 
-    return directory
+    return Path(directory)
 
 
 class ChooseParams(BaseModel):
     directory: Optional[str] = None
 
-@router.post("/choose")
-async def choose_project(params: ChooseParams):
-    directory = params.directory
-    
+@router.post("/is_project")
+async def is_project(params: ChooseParams):
+    directory = Path(params.directory) if params.directory else None
+
     if not directory:
         # Show a system select directory dialog
-        directory = _ask_directory()
+        directory = await _ask_directory()
+
+    is_project = directory.joinpath("materials").is_dir() or directory.joinpath("agents").is_dir()
+
+    return {"is_project": is_project, "path": str(directory)}
+        
+@router.post("/choose")
+async def choose_project(params: ChooseParams):
+    directory = Path(params.directory) if params.directory else None
 
     if directory:
-        await projects.change_project_directory(directory)
+        await change_project_directory(directory)
+        
+
+

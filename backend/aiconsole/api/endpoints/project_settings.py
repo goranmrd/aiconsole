@@ -17,7 +17,7 @@
 from fastapi import APIRouter
 from starlette.responses import JSONResponse
 
-from aiconsole.project_settings.project_settings import PartialSettingsAndToGlobal, get_aiconsole_settings
+from aiconsole.core.settings.project_settings import PartialSettingsAndToGlobal, get_aiconsole_settings
 
 router = APIRouter()
 

@@ -33,22 +33,17 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
 
   const setCommand = useAICStore((state) => state.editCommand);
   const newCommand = useAICStore((state) => state.newCommand);
-  const isExecuteRunning = useAICStore((state) => state.isExecuteRunning);
   const submitCommand = useAICStore((state) => state.submitCommand);
   const promptUp = useAICStore((state) => state.historyUp);
   const promptDown = useAICStore((state) => state.historyDown);
   const stopWork = useAICStore((state) => state.stopWork);
-  const isWorking = useAICStore((state) => state.isWorking);
+  const isAnalysisRunning = useAnalysisStore((state) => !!state.currentAnalysisRequestId);
+  const isExecuteRunning = useAICStore((state) => state.isExecuteRunning);
+  const isWorking = isAnalysisRunning || isExecuteRunning;
   const chat = useAICStore((state) => state.chat);
   const chatId = useAICStore((state) => state.chatId);
 
-  const isAnalysisRunning = useAnalysisStore(
-    (state) => state.isAnalysisRunning,
-  );
-
   const sendingMessagesBlocked =
-    isExecuteRunning ||
-    isAnalysisRunning ||
     (command === '' && chat.message_groups?.length == 0);
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -60,9 +55,8 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
   const handleKeyDown = async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      if (isWorking()) {
-        stopWork();
-      } else if (!sendingMessagesBlocked) {
+      
+      if (!sendingMessagesBlocked) {
         await handleSendMessage();
       }
     }
@@ -87,8 +81,8 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
   const handleSendMessage = async () => {
     const trimmed = command.trim();
 
-    submitCommand(trimmed);
-    newCommand();
+    await submitCommand(trimmed);
+    await newCommand();
 
     if (onSubmit) onSubmit();
   };
@@ -118,7 +112,7 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
           rows={1}
           style={{ boxSizing: 'border-box', transition: 'height 0.2s' }}
         />
-        {isWorking() && (
+        {isWorking && (
           <button
             className={cn(
               'focus:ring-secondary ml-4 rounded-full p-2 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 border border-secondary text-secondary',

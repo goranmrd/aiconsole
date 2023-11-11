@@ -45,30 +45,41 @@ export type ProjectLoadingWSMessage = {
   type: 'ProjectLoadingWSMessage';
 };
 
+export type InitialProjectStatusWSMessage = {
+  type: 'InitialProjectStatusWSMessage';
+  project_name?: string;
+  project_path?: string;
+}
+
 export type AnalysisUpdatedWSMessage = {
   type: 'AnalysisUpdatedWSMessage';
+  analysis_request_id: string;
   agent_id?: string;
   relevant_material_ids?: string[];
   next_step?: string;
   thinking_process?: string;
 };
 
-export type MaterialsUpdatedWSMessage = {
-  type: 'MaterialsUpdatedWSMessage';
+export type AssetsUpdatedWSMessage = {
+  type: 'AssetsUpdatedWSMessage';
+  initial: boolean;
+  asset_type: "agent" | "material";
   count: number;
 };
 
 export type SettingsWSMessage = {
   type: 'SettingsWSMessage';
+  initial: boolean;
 };
 
 export type IncomingWSMessage =
   | ErrorWSMessage
   | NotificationWSMessage
   | DebugJSONWSMessage
+  | InitialProjectStatusWSMessage
   | ProjectOpenedWSMessage
   | ProjectClosedWSMessage
   | ProjectLoadingWSMessage
   | AnalysisUpdatedWSMessage
-  | MaterialsUpdatedWSMessage
+  | AssetsUpdatedWSMessage
   | SettingsWSMessage

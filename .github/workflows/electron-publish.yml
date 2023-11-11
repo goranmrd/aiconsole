@@ -9,10 +9,10 @@ jobs:
       matrix:
         os:
           [
-            # { name: 'linux', image: 'ubuntu-latest' },
-            # { name: 'windows', image: 'windows-latest' },
-            # { name: 'macos-x86', image: 'macos-latest' },
+            { name: 'linux', image: 'ubuntu-latest' },
             { name: 'macos-arm64', image: 'macos-latest-xlarge' },
+            { name: 'macos-x86', image: 'macos-latest' },
+            { name: 'windows', image: 'windows-latest' },
           ]
 
     runs-on: ${{ matrix.os.image }}
@@ -35,6 +35,25 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 20
+
+      - name: Create the certificates
+        if: matrix.os.name == 'macos-arm64' || matrix.os.name == 'macos-x86'
+        env:
+          APPLE_DEVELOPER_ID_APPLICATION_CERT: ${{ secrets.APPLE_DEVELOPER_ID_APPLICATION_CERT }}
+          APPLE_DEVELOPER_ID_INSTALLER_CERT: ${{ secrets.APPLE_DEVELOPER_ID_INSTALLER_CERT }}
+          APPLE_KEYCHAIN: aiconsole.keychain
+          APPLE_KEYCHAIN_PASSWORD: ${{ secrets.APPLE_KEYCHAIN_PASSWORD }}
+          CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
+        run: |
+          echo $APPLE_DEVELOPER_ID_APPLICATION_CERT | base64 --decode > electron/DeveloperIdApplication.p12
+          echo $APPLE_DEVELOPER_ID_INSTALLER_CERT | base64 --decode > electron/DeveloperIdInstaller.p12
+          security create-keychain -p "" $APPLE_KEYCHAIN
+          security default-keychain -s $APPLE_KEYCHAIN
+          security unlock-keychain -p "" $APPLE_KEYCHAIN
+          security import electron/DeveloperIdApplication.p12 -k $APPLE_KEYCHAIN -P $CERTIFICATE_PASSWORD -T /usr/bin/codesign
+          # Causes problems on macos-arm64 security import electron/DeveloperIdInstaller.p12 -k $APPLE_KEYCHAIN -P $CERTIFICATE_PASSWORD -T /usr/bin/codesign 
+          security set-key-partition-list -S apple-tool:,apple: -s $APPLE_KEYCHAIN
+          security list-keychains -s $APPLE_KEYCHAIN
 
       - name: Publish app
         env:
