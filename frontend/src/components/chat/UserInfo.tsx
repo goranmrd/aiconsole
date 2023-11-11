@@ -34,18 +34,21 @@ export function UserInfo({
   return (
     <div className="flex-none items-center flex flex-col">
       {agent && (
-        <img
-          title={`${agent?.name || agent?.id}${task ? ` tasked with:\n${task}` : ``}`}
-          src={`${getBaseURL()}/profile/${agent.id}.jpg`}
-          className="w-14 h-14 rounded-full mb-3  border shadow-md border-slate-800"
-        />
+        <Link to={`/agents/${agent?.id}`} className="flex-none items-center flex flex-col">
+          <img
+            title={`${agent?.name || agent?.id}${task ? ` tasked with:\n${task}` : ``}`}
+            src={`${getBaseURL()}/profile/${agent.id}.jpg`}
+            className="w-14 h-14 rounded-full mb-3  border shadow-md border-slate-800"
+          />
+          <div
+            className="text-xs font-bold w-32 text-center overflow-ellipsis overflow-hidden whitespace-nowrap"
+            title={`${agent?.id} - ${agent?.usage}`}
+          >
+            {agent?.name || agent?.id}
+          </div>
+        </Link>
       )}
-      <div
-        className="text-xs font-bold w-32 text-center overflow-ellipsis overflow-hidden whitespace-nowrap"
-        title={`${agent?.id} - ${agent?.usage}`}
-      >
-        {agent?.name || agent?.id}
-      </div>
+
       {materials_ids.length > 0 && <div className="text-xs opacity-40 text-center">+</div>}
       {materials_ids.map((material_id) => (
         <Link to={`/materials/${material_id}`} key={material_id}>

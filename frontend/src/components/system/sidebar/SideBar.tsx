@@ -15,13 +15,14 @@
 // limitations under the License.
 
 import { Tabs } from '@mantine/core';
-import { useState } from 'react';
-import { ChatSidebarTab } from './ChatSidebarTab';
-import { MaterialsSidebarTab } from './MaterialsSidebarTab';
-import { AgentsSidebarTab } from './AgentsSidebarTab';
+import { useEffect, useState } from 'react';
+import { ChatSidebarTab } from '../../chat/ChatSidebarTab';
+import { MaterialsSidebarTab } from '../../materials/MaterialsSidebarTab';
+import { AgentsSidebarTab } from '../../agent/AgentsSidebarTab';
 import { TabsValues } from '@/types/types';
 
 /*
+  CONFLICTED MERGE
 
   const chatHeadlines = useAICStore((state) => state.chatHeadlines);
   const chatId = useAICStore((state) => state.chatId);
@@ -42,9 +43,14 @@ import { TabsValues } from '@/types/types';
   };
 */
 
-const SideBar = () => {
+const SideBar = ({initialTab}: {initialTab: string}) => {
+
+  useEffect(() => {
+    setActiveTab(initialTab);
+  }, [initialTab]);
+
   const [activeTab, setActiveTab] = useState<TabsValues | string | null>(
-    'chats',
+    initialTab,
   );
 
   return (
@@ -74,9 +80,16 @@ const SideBar = () => {
           <Tabs.Tab value="materials">Materials</Tabs.Tab>
           <Tabs.Tab value="agents">Agents</Tabs.Tab>
         </Tabs.List>
+
+        <Tabs.Panel value="chats">
         <ChatSidebarTab />
-        <MaterialsSidebarTab />
-        <AgentsSidebarTab />
+        </Tabs.Panel>
+        <Tabs.Panel value="materials">
+          <MaterialsSidebarTab />
+        </Tabs.Panel>
+        <Tabs.Panel value="agents">
+          <AgentsSidebarTab />
+        </Tabs.Panel>
       </Tabs>
     </div>
   );

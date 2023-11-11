@@ -57,12 +57,7 @@ export const materialContenTypeOptions: MaterialContentType[] = [
 ];
 export type TabsValues = 'chats' | 'materials' | 'agents';
 
-export type Material = {
-  id: string;
-  name: string;
-  usage: string;
-  defined_in: MaterialDefinedIn;
-  status: MaterialStatus;
+export type Material = Asset & {
   content_type: MaterialContentType;
   content_static_text: string;
   content_dynamic_text: string;
@@ -77,13 +72,16 @@ export type RenderedMaterial = {
 
 export type MaterialDefinitionSource = 'aiconsole' | 'project';
 
-export type MaterialInfo = {
+export type Asset = {
   id: string;
   name: string;
   usage: string;
+  usage_examples: string[];
   defined_in: MaterialDefinitionSource;
   status: MaterialStatus;
 };
+
+export type MaterialInfo = Asset
 
 export type ChatHeadline = {
   id: string;
@@ -99,10 +97,7 @@ export type Chat = {
   message_groups: AICMessageGroup[];
 };
 
-export type Agent = {
-  id: string;
-  name: string;
-  usage: string;
+export type Agent = Asset & {
   system: string;
 };
 

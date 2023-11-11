@@ -112,12 +112,6 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
                 {projectName}
               </Link>
             </div>
-            {/* TODO: remove "materials" and "agents" links when sidebar ready */}
-            <div className="flex gap-4">
-              <Link to="/materials" className="cursor-pointer text-sm  hover:text-gray-400 hover:animate-pulse">
-                MATERIALS
-              </Link>
-            </div>
           </>
         )}
         <div className="text-gray-300 ml-auto flex gap-[20px]" onClick={(e) => e.stopPropagation()}>

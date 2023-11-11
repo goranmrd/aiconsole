@@ -17,22 +17,12 @@
 import { MouseEvent, useRef, useState, KeyboardEvent, useMemo } from 'react';
 import { MaterialStatus, TabsValues } from '@/types/types';
 import { cn } from '@/utils/styles';
-import {
-  MessageSquare,
-  Ban,
-  MoreVertical,
-  Bot,
-  Grid2X2,
-  Play,
-  CircleDot,
-  Pencil,
-  Copy,
-  Trash,
-} from 'lucide-react';
+import { MessageSquare, Ban, Bot, Grid2X2, Play, CircleDot, Pencil, Copy, Trash } from 'lucide-react';
 import { FloatingAxesOffsets, Menu } from '@mantine/core';
 import { Api } from '@/api/Api';
 import { useAICStore } from '@/store/AICStore';
 import { showNotification } from '@mantine/notifications';
+import { NavLink } from 'react-router-dom';
 
 const CURSOR_POPOVER_GAP = 40;
 
@@ -76,11 +66,10 @@ interface SideBarItemProps {
   type: TabsValues;
   label: string;
   id: string;
-  active: boolean;
   onDelete?: (event: MouseEvent) => void;
   onRename?: (value: string) => void;
   onDuplicate?: (event: MouseEvent) => void;
-  onClick?: (event: MouseEvent) => void;
+  linkTo?: string;
   status?: MaterialStatus;
 }
 
@@ -88,12 +77,11 @@ const SideBarItem = ({
   type,
   label,
   status = 'disabled',
-  active,
   id,
   onDelete,
   onDuplicate,
   onRename,
-  onClick,
+  linkTo,
 }: SideBarItemProps) => {
   const [opened, setOpened] = useState(false);
   const [offset, setOffset] = useState<FloatingAxesOffsets>({});
@@ -105,10 +93,7 @@ const SideBarItem = ({
 
   const { icon: Icon, color } = getItemData(type);
 
-  const StatusIcon = useMemo(
-    () => getMaterialStatusIcon(currentStatus),
-    [currentStatus],
-  );
+  const StatusIcon = useMemo(() => getMaterialStatusIcon(currentStatus), [currentStatus]);
 
   const handleContextMenu = (e: MouseEvent) => {
     e.preventDefault();
@@ -171,7 +156,7 @@ const SideBarItem = ({
     }
 
     await Api.setMaterialStatus(id, status);
-    await useAICStore.getState().fetchMaterials();
+    await useAICStore.getState().initMaterials();
 
     showNotification({
       title: 'Status changed',
@@ -194,92 +179,72 @@ const SideBarItem = ({
         }}
       >
         <Menu.Target>
-          <div
-            className={cn(
-              'group flex p-[9px] items-center rounded-[8px] hover:bg-gray-700 cursor-pointer relative overflow-hidden gap-[12px]',
-              {
-                'bg-gray-700 text-white': active,
-              },
-            )}
-            onClick={onClick}
-            onContextMenu={handleContextMenu}
-          >
-            <Icon
-              className="min-w-[24px] min-h-[24px] w-[24px] h-[24px] "
-              style={{ color }}
-            />
-            {/* TODO: add validation for empty input value */}
-            {isEditMode ? (
-              <input
-                className="font-normal outline-none border h-[24px] border-gray-400 text-[14px] p-[5px] w-full text-white bg-gray-600 focus:border-primary resize-none overflow-hidden rounded-[4px]  focus:outline-none"
-                value={inputText}
-                ref={inputRef}
-                onBlur={handleRename}
-                onKeyDown={handleKeyDown}
-                onChange={(e) => setInputText(e.target.value)}
-              />
-            ) : (
-              <p className="text-[14px] leading-[18.2px] group-hover:text-white truncate">
-                {label}
-              </p>
-            )}
-            {!isEditMode ? (
-              <div className="ml-auto items-center flex gap-[12px]">
-                {type === 'materials' ? (
-                  <StatusIcon
-                    onClick={updateMaterialStatus}
-                    className={cn('w-[15px] h-[15px]  text-gray-300 ', {
-                      'text-gray-500': status === 'disabled',
-                    })}
-                  />
-                ) : null}
-                <div className="w-[20px] h-[20px] ">
-                  <MoreVertical className="w-full h-full text-gray-300 hidden group-hover:block" />
-                </div>
-              </div>
-            ) : null}
-
-            <div
-              className={cn(
-                'absolute bottom-[-15px] hidden left-[0px] opacity-[0.3] blur-[10px]  h-[34px] w-[34px] group-hover:block',
-                {
-                  block: active,
-                },
+          <div onContextMenu={handleContextMenu}>
+            <NavLink
+              className={({ isActive, isPending }) => {
+                return cn(
+                  'group flex items-center gap-[12px] overflow-hidden p-[9px] rounded-[8px] cursor-pointer relative  hover:bg-gray-700',
+                  {
+                    'bg-gray-700 text-white ': isActive || isPending,
+                  },
+                );
+              }}
+              to={linkTo || `/${type}/${id}`}
+            >
+              <Icon className="min-w-[24px] min-h-[24px] w-[24px] h-[24px] " style={{ color }} />
+              {/* TODO: add validation for empty input value */}
+              {isEditMode ? (
+                <input
+                  className="font-normal outline-none border h-[24px] border-gray-400 text-[14px] p-[5px] w-full text-white bg-gray-600 focus:border-primary resize-none overflow-hidden rounded-[4px]  focus:outline-none"
+                  value={inputText}
+                  ref={inputRef}
+                  onBlur={handleRename}
+                  onKeyDown={handleKeyDown}
+                  onChange={(e) => setInputText(e.target.value)}
+                />
+              ) : (
+                <p className="text-[14px] leading-[18.2px] group-hover:text-white truncate">{label}</p>
               )}
-              style={{ background: color, fill: color }}
-            />
+              {!isEditMode ? (
+                <div className="ml-auto items-center flex gap-[12px]">
+                  {type === 'materials' ? (
+                    <StatusIcon
+                      onClick={updateMaterialStatus}
+                      className={cn('w-[15px] h-[15px]  text-gray-300 ', {
+                        'text-gray-500': status === 'disabled',
+                      })}
+                    />
+                  ) : null}
+                </div>
+              ) : null}
+
+              <div
+                className={cn(
+                  'absolute bottom-[-15px] hidden left-[0px] opacity-[0.3] blur-[10px]  h-[34px] w-[34px] group-hover:block',
+                  {
+                    block: false,
+                  },
+                )}
+                style={{ background: color, fill: color }}
+              />
+            </NavLink>
           </div>
         </Menu.Target>
 
         <Menu.Dropdown>
           {onRename ? (
-            <Menu.Item
-              leftSection={
-                <Pencil className="text-gray-400 w-[16px] h-[16px]" />
-              }
-              onClick={showRenameInput}
-            >
+            <Menu.Item leftSection={<Pencil className="text-gray-400 w-[16px] h-[16px]" />} onClick={showRenameInput}>
               Rename
             </Menu.Item>
           ) : null}
           {onDuplicate ? (
-            <Menu.Item
-              leftSection={<Copy className="text-gray-400 w-[16px] h-[16px]" />}
-              onClick={onDuplicate}
-            >
+            <Menu.Item leftSection={<Copy className="text-gray-400 w-[16px] h-[16px]" />} onClick={onDuplicate}>
               Duplicate
             </Menu.Item>
           ) : null}
-          {(onDuplicate || onRename) && onDelete ? (
-            <Menu.Divider className="!my-[5px]" />
-          ) : null}
+          {(onDuplicate || onRename) && onDelete ? <Menu.Divider className="!my-[5px]" /> : null}
           {onDelete ? (
-            <Menu.Item
-              leftSection={
-                <Trash className="text-gray-400 w-[16px] h-[16px]" />
-              }
-              onClick={onDelete}
-            >
+            <Menu.Item leftSection={<Trash className="text-gray-400 w-[16px] h-[16px]" />} onClick={onDelete}>
               Delete
             </Menu.Item>
           ) : null}

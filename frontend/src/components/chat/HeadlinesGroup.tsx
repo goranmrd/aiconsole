@@ -15,10 +15,9 @@
 // limitations under the License.
 
 import { /*useRef,*/ useState } from 'react';
-import { Link } from 'react-router-dom';
 
 import { ChatHeadline } from '@/types/types';
-import SideBarItem from './SideBarItem';
+import SideBarItem from '../system/sidebar/SideBarItem';
 
 //import { cn } from '@/utils/styles';
 //import { Trash, Pencil, Check, X } from 'lucide-react';
@@ -95,24 +94,18 @@ const HeadlinesGroup = ({
         {title}
       </h3>
       {headlines.map((chat) => {
-        const selected = chat.id == currentChatId;
 
         return (
-          <Link
-            to={`/chats/${chat.id}`}
-            onClick={() => handleLinkClick(chat.id)}
-            title={chat.message}
-            key={chat.id}
-          >
             <SideBarItem
               type="chats"
-              active={selected}
               id={chat.id}
               label={chat.message}
               onDelete={(event) => onChatDelete(event, chat.id)}
+              linkTo={`/chats/${chat.id}`}
               onRename={(value) => rename(value, chat.id)}
+              key={chat.id}
             />
-            {/*{isEditMode && selected ? (
+            /*{isEditMode && selected ? (
               <div className="flex gap-2 w-full">
                 <input
                   className="font-normal outline-1 outline-white/20 ring-secondary/30 bg-black resize-none overflow-hidden rounded-lg outline focus:outline-none focus:ring-2"
@@ -153,8 +146,7 @@ const HeadlinesGroup = ({
                   openModalButton={<Trash className="h-4 w-4 flex-none" />}
                 />
               </>
-            )}*/}
-          </Link>
+            )}*/
         );
       })}
     </>

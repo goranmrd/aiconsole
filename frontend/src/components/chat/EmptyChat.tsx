@@ -30,7 +30,7 @@ export const EmptyChat = () => {
         <p className="p-2">Project</p>
         <span className=" text-primary uppercase">{projectName}</span>
       </h2>
-      <div className="text-lg font-bold mb-4 text-center  text-secondary uppercase">
+      <div className="text-lg font-bold mb-4 text-center  text-secondary uppercase hover:text-secondary-light">
         Agents
       </div>
       <div className="flex flex-row gap-2 mb-8">
@@ -38,18 +38,20 @@ export const EmptyChat = () => {
           .filter((a) => a.id !== 'user')
           .map((agent) => (
             <div key={agent.id} className="flex flex-col items-center justify-center">
+              <Link to={`/agents/${agent.id}`} className="inline-block hover:text-secondary">
               <img
                 src={`${getBaseURL()}/profile/${agent.id}.jpg`}
                 className="filter opacity-75 shadows-lg w-20 h-20 mx-auto rounded-full"
                 alt="Logo"
                 title={agent.name}
               />
+              </Link>
             </div>
           ))}
       </div>
-      <Link to="/materials" className="text-lg font-bold mb-4 text-center  text-secondary uppercase hover:text-secondary-light">
+      <div className="text-lg font-bold mb-4 text-center  text-secondary uppercase hover:text-secondary-light">
         Materials
-      </Link>
+      </div>
       <div className="text-center">
         {materials
           .filter((m) => m.status !== 'disabled')

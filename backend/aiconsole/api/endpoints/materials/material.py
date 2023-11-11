@@ -45,6 +45,7 @@ async def material_get(material_id: str):
             id="",
             name="",
             usage="",
+            usage_examples=[],
             status=AssetStatus.ENABLED,
             defined_in=AssetLocation.PROJECT_DIR,
         ).model_dump())
