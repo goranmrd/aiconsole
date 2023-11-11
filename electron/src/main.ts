@@ -61,7 +61,7 @@ async function error(browserWindow: BrowserWindow, message: string) {
   if (browserWindow.isDestroyed()) {
     return;
   }
-  
+
   browserWindow.webContents.send("error", message);
 }
 
@@ -213,9 +213,9 @@ ipcMain.on("request-backend-port", async (event) => {
         log(window.browserWindow, "Backend process exited");
       });
 
-      window.backendProcess.on("error", (error: Error) => {
+      window.backendProcess.on("error", (e: Error) => {
         error(window.browserWindow,
-          `Error from backend process: ${error.message}`
+          `Error from backend process: ${e.message}`
         );
       });
 
