@@ -30,7 +30,7 @@ export const createMaterialSlice: StateCreator<AICStore, [], [], MaterialSlice> 
   materials: undefined,
   initMaterials: async () => {
     set({ materials: [] });
-    if (get().isProjectOpen()) {
+    if (get().isProjectOpen) {
       const materials = await Api.getMaterials();
 
       //sort alphabetically

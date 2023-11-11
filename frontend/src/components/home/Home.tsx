@@ -31,7 +31,7 @@ export function Home() {
   return (
     <div className="min-h-[100vh] bg-recent-bg bg-cover bg-top">
       <div>
-        {openAiApiKey === undefined || isProjectLoading() ? (
+        {openAiApiKey === undefined || isProjectLoading ? (
           <>
             {/* the request is in progress - don't render anything to avoid flickering */}
           </>

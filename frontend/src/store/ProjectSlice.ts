@@ -18,6 +18,7 @@ import { StateCreator } from 'zustand';
 
 import { Api } from '@/api/Api';
 import { AICStore } from './AICStore';
+import { useSettings } from './useSettings';
 
 export type ProjectSlice = {
   projectPath?: string; //undefined means loading, '' means no project, otherwise path
@@ -27,11 +28,11 @@ export type ProjectSlice = {
   chooseProject: (path?: string) => Promise<void>;
   resetIsProjectFlag: () => void;
   checkPath: (path?: string) => Promise<void>;
-  isProjectLoading: () => boolean;
-  isProjectOpen: () => boolean | undefined;
-  setProject: ({ path, name }: { path: string; name: string }) => Promise<void>;
-  closeProject: () => Promise<void>;
-  markProjectAsLoading: () => void;
+  isProjectLoading: boolean;
+  isProjectOpen: boolean;
+  onProjectOpened: ({ path, name, initial}: { path: string; name: string, initial: boolean }) => Promise<void>;
+  onProjectClosed: () => Promise<void>;
+  onProjectLoading: () => void;
 };
 
 export const createProjectSlice: StateCreator<AICStore, [], [], ProjectSlice> = (set, get) => ({
@@ -39,33 +40,48 @@ export const createProjectSlice: StateCreator<AICStore, [], [], ProjectSlice> = 
   tempPath: undefined,
   isProjectDirectory: undefined,
   projectName: undefined,
-  setProject: async ({ path, name }: { path: string; name: string }) => {
+  isProjectLoading: true,
+  isProjectOpen: false,
+  onProjectOpened: async ({ path, name, initial }: { path: string; name: string, initial:boolean }) => {
+    if (!path || !name) {
+      throw new Error('Project path or name is not defined');
+    }
+
     set(() => ({
       projectPath: path,
       projectName: name,
+      isProjectOpen: true,
+      isProjectLoading: false,
       alwaysExecuteCode: false,
     }));
 
     await Promise.all([get().initCommandHistory(), get().initChatHistory()]);
+
+    if (initial) {
+      await (Promise.all([
+        get().initAgents(),
+        get().initMaterials(),
+        useSettings.getState().initSettings(),
+      ]))
+    }
   },
-  closeProject: async () => {
+  onProjectClosed: async () => {
     set(() => ({
       projectPath: '',
       projectName: '',
+      isProjectOpen: false,
+      isProjectLoading: false,
       alwaysExecuteCode: false,
     }));
   },
-  markProjectAsLoading: () => {
+  onProjectLoading: () => {
     set(() => ({
       projectPath: undefined,
       projectName: undefined,
+      isProjectOpen: false,
+      isProjectLoading: true,
+      alwaysExecuteCode: false,
     }));
-  },
-  isProjectLoading: () => {
-    return get().projectPath === undefined;
-  },
-  isProjectOpen: () => {
-    return !!get().projectPath || undefined;
   },
   resetIsProjectFlag: () => {
     set({

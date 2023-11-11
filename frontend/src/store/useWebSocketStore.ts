@@ -78,31 +78,27 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
           break;
         case 'InitialProjectStatusWSMessage':
           if (data.project_path && data.project_name) {
-            useAICStore.getState().setProject({
-              name: data.project_name || '',
+            useAICStore.getState().onProjectOpened({
+              name: data.project_name,
               path: data.project_path,
+              initial: true,
             });
-
-            await (Promise.all([
-              useAICStore.getState().initAgents(),
-              useAICStore.getState().initMaterials(),
-              useSettings.getState().initSettings(),
-            ]))
           } else {
-            useAICStore.getState().closeProject();
+            useAICStore.getState().onProjectClosed();
           }
           break;
         case 'ProjectOpenedWSMessage':
-          useAICStore.getState().setProject({
+          useAICStore.getState().onProjectOpened({
             name: data.name,
             path: data.path,
+            initial: false,
           });
           break;
         case 'ProjectClosedWSMessage':
-          useAICStore.getState().closeProject();
+          useAICStore.getState().onProjectClosed();
           break;
         case 'ProjectLoadingWSMessage':
-          useAICStore.getState().markProjectAsLoading();
+          useAICStore.getState().onProjectLoading();
           break;
         case 'AssetsUpdatedWSMessage':
           if (data.asset_type === 'agent') {

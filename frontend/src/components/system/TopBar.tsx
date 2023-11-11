@@ -46,7 +46,7 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
     openProjectConfirmation,
   } = useProjectFileManager();
   const projectName = useAICStore((state) => state.projectName);
-  const isProjectOpen = useAICStore((state) => state.isProjectOpen());
+  const isProjectOpen = useAICStore((state) => state.isProjectOpen);
   const recentProjects = useRecentProjectsStore((state) => state.recentProjects);
 
   const hideMenu = () => setMenuActive(false);
