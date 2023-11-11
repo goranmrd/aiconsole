@@ -103,18 +103,22 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
         case 'AssetsUpdatedWSMessage':
           if (data.asset_type === 'agent') {
             useAICStore.getState().initAgents();
-            showNotification({
-              title: 'Agents updated',
-              message: `Loaded ${data.count} agents.`,
-            });
+            if (!data.initial) {
+              showNotification({
+                title: 'Agents updated',
+                message: `Loaded ${data.count} agents.`,
+              });
+            }
           }
 
           if (data.asset_type === 'material') {
             useAICStore.getState().initMaterials();
-            showNotification({
-              title: 'Materials updated',
-              message: `Loaded ${data.count} materials.`,
-            });
+            if (!data.initial) {
+              showNotification({
+                title: 'Materials updated',
+                message: `Loaded ${data.count} materials.`,
+              });
+            }
           }
           break;
         case 'AnalysisUpdatedWSMessage':
@@ -131,10 +135,12 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
           useSettings.getState().initSettings();
           useAICStore.getState().initMaterials();
           useAICStore.getState().initAgents();
-          showNotification({
-            title: 'Settings updated',
-            message: `Loaded new settings.`,
-          });
+          if (!data.initial) {
+            showNotification({
+              title: 'Settings updated',
+              message: `Loaded new settings.`,
+            });
+          }
           break;
       }
     };

@@ -148,8 +148,8 @@ class Assets:
                 ).send_to_all()
                 continue
 
-        if not initial:
-            await AssetsUpdatedWSMessage(
-                asset_type=self.asset_type,
-                count=len(self._assets),
-            ).send_to_all()
+        await AssetsUpdatedWSMessage(
+            initial=initial,
+            asset_type=self.asset_type,
+            count=len(self._assets),
+        ).send_to_all()

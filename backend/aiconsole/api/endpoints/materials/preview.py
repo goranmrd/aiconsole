@@ -34,6 +34,7 @@ async def materials_preview(material: Material):
             id="user",
             name="User",
             usage="",
+            usage_examples=[],
             system="",
             defined_in=AssetLocation.AICONSOLE_CORE,
             gpt_mode=GPTMode.QUALITY,

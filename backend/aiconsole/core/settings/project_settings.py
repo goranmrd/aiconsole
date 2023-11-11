@@ -110,8 +110,7 @@ class Settings:
 
     async def reload(self, initial: bool = False):
         self._settings = await self.__load()#
-        if not initial:
-            await SettingsWSMessage().send_to_all()
+        await SettingsWSMessage(initial = initial).send_to_all()
 
     def get_asset_status(self, material_id: str) -> AssetStatus:
         s = self._settings

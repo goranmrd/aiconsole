@@ -76,6 +76,7 @@ async def save_asset_to_fs(asset: Asset, create: bool, old_asset_id: str | None 
         doc.append("name", tomlkit.string(asset.name))
         doc.append("version", tomlkit.string(asset.version))
         doc.append("usage", tomlkit.string(asset.usage))
+        doc.append("usage_examples", tomlkit.item(asset.usage_examples))
 
         if isinstance(asset, Material):
             doc.append("content_type", tomlkit.string(asset.content_type))

@@ -66,12 +66,13 @@ class ProjectLoadingWSMessage(BaseWSMessage):
     pass
 
 class AssetsUpdatedWSMessage(BaseWSMessage):
+    initial: bool
     asset_type: AssetType
     count: int
 
 
 class SettingsWSMessage(BaseWSMessage):
-    pass
+    initial: bool
 
 
 class AnalysisUpdatedWSMessage(BaseWSMessage):

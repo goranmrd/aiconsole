@@ -62,12 +62,14 @@ export type AnalysisUpdatedWSMessage = {
 
 export type AssetsUpdatedWSMessage = {
   type: 'AssetsUpdatedWSMessage';
+  initial: boolean;
   asset_type: "agent" | "material";
   count: number;
 };
 
 export type SettingsWSMessage = {
   type: 'SettingsWSMessage';
+  initial: boolean;
 };
 
 export type IncomingWSMessage =

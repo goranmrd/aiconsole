@@ -68,6 +68,7 @@ def pick_agent(arguments, chat: Chat) -> Agent:
             id="user",
             name="User",
             usage="When a human user needs to respond",
+            usage_examples=[],
             system="",
             defined_in=AssetLocation.AICONSOLE_CORE,
             gpt_mode=GPTMode.QUALITY,

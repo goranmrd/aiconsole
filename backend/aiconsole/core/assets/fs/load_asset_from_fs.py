@@ -54,15 +54,19 @@ async def load_asset_from_fs(asset_type: AssetType, asset_id: str) -> Asset:
 
     asset_id = os.path.splitext(os.path.basename(path))[0]
 
+    params = {
+        "id": asset_id,
+        "name": str(tomldoc.get("name", asset_id)).strip(),
+        "version": str(tomldoc.get("version", "0.0.1")).strip(),
+        "defined_in": location,
+        "usage": str(tomldoc["usage"]).strip(),
+        "usage_examples": tomldoc.get("usage_examples", []),
+    }
+    
     if asset_type == AssetType.MATERIAL:
         material = Material(
-            id=asset_id,
-            version=str(tomldoc.get("version", "0.0.1")).strip(),
-            name=str(tomldoc.get("name", asset_id)).strip(),
-            defined_in=location,
-            usage=str(tomldoc["usage"]).strip(),
-            content_type=MaterialContentType(
-                str(tomldoc["content_type"]).strip()))
+            **params,
+            content_type=MaterialContentType(str(tomldoc["content_type"]).strip()))
 
         if "content_static_text" in tomldoc:
             material.content_static_text = str(
@@ -80,17 +84,7 @@ async def load_asset_from_fs(asset_type: AssetType, asset_id: str) -> Asset:
     if asset_type == AssetType.AGENT:
         if asset_id == "user":
             raise KeyError("Agent 'user' is reserved.")
-        
-        params = {}
 
-        params["id"] = asset_id
-
-        if "version" in tomldoc:
-            params["version"] = str(tomldoc.get("version")).strip()
-        
-        params["name"] = str(tomldoc.get("name", asset_id)).strip()
-        params["defined_in"] = location
-        params["usage"] = str(tomldoc["usage"]).strip()
         params["system"] = str(tomldoc["system"]).strip()
 
         if "gpt_mode" in tomldoc:
