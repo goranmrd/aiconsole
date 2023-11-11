@@ -102,11 +102,10 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
           break;
         case 'AssetsUpdatedWSMessage':
           if (data.asset_type === 'agent') {
-            //TODO: Fetch agents
             useAICStore.getState().initAgents();
             showNotification({
               title: 'Agents updated',
-              message: `${data.count} agents updated`,
+              message: `Loaded ${data.count} agents.`,
             });
           }
 
@@ -114,7 +113,7 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
             useAICStore.getState().initMaterials();
             showNotification({
               title: 'Materials updated',
-              message: `${data.count} materials updated`,
+              message: `Loaded ${data.count} materials.`,
             });
           }
           break;
@@ -133,8 +132,8 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
           useAICStore.getState().initMaterials();
           useAICStore.getState().initAgents();
           showNotification({
-            title: 'Settings changed',
-            message: `New setting activated`,
+            title: 'Settings updated',
+            message: `Loaded new settings.`,
           });
           break;
       }

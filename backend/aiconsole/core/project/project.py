@@ -87,7 +87,7 @@ async def close_project():
 
     await ProjectClosedWSMessage().send_to_all()
 
-    await reload_settings()
+    await reload_settings(initial = True)
 
     
 
@@ -122,9 +122,9 @@ async def reinitialize_project():
         name=get_project_name()
     ).send_to_all()
 
-    await _materials.reload()
-    await _agents.reload()
-    await reload_settings()
+    await _materials.reload(initial = True)
+    await _agents.reload(initial = True)
+    await reload_settings(initial = True)
 
 
 async def change_project_directory(path: Path):

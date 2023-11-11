@@ -125,7 +125,7 @@ class Assets:
             raise KeyError(f"Asset {name} not found")
         return self._assets[name]
     
-    async def reload(self):
+    async def reload(self, initial: bool = False):
         _log.info(f"Reloading {self.asset_type}s ...")
 
         self._assets = {}
@@ -148,7 +148,8 @@ class Assets:
                 ).send_to_all()
                 continue
 
-        await AssetsUpdatedWSMessage(
-            asset_type=self.asset_type,
-            count=len(self._assets),
-        ).send_to_all()
+        if not initial:
+            await AssetsUpdatedWSMessage(
+                asset_type=self.asset_type,
+                count=len(self._assets),
+            ).send_to_all()

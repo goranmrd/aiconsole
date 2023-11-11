@@ -108,9 +108,10 @@ class Settings:
     def stop(self):
         self._observer.stop()
 
-    async def reload(self):
+    async def reload(self, initial: bool = False):
         self._settings = await self.__load()#
-        await SettingsWSMessage().send_to_all()
+        if not initial:
+            await SettingsWSMessage().send_to_all()
 
     def get_asset_status(self, material_id: str) -> AssetStatus:
         s = self._settings
@@ -282,8 +283,8 @@ def get_aiconsole_settings() -> Settings:
     return _settings
 
 
-async def reload_settings():
+async def reload_settings(initial: bool = False):
     global _settings
     _settings.stop()
     _settings = Settings(get_project_directory() if is_project_initialized() else None)
-    await _settings.reload()
+    await _settings.reload(initial)
