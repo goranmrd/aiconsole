@@ -15,66 +15,129 @@
 // limitations under the License.
 
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { Api } from '@/api/Api';
 import { CodeInput } from '@/components/assets/CodeInput';
-import { ErrorObject, SimpleInput } from '@/components/assets/TextInput';
+import { SimpleInput } from '@/components/assets/TextInput';
 import { useAICStore } from '@/store/AICStore';
 import { Agent, Asset, AssetType, Material, MaterialContentType, RenderedMaterial } from '@/types/types';
+import { getEditableObjectType } from '@/utils/getEditableObjectType';
 import showNotification from '@/utils/showNotification';
 import { cn } from '@/utils/styles';
-import { convertNameToId } from '../../utils/convertNameToId';
 import { getMaterialContentName } from './getMaterialContentName';
 
-export function AssetEditor({ assetType }: { assetType: AssetType }) {
-  const navigate = useNavigate();
-  const [asset, setAsset] = useState<Asset | undefined>(undefined);
-  const [assetInitial, setAssetInitial] = useState<Asset | undefined>(undefined);
-  const [preview, setPreview] = useState<RenderedMaterial | undefined>(undefined);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [errors, _] = useState<ErrorObject>({});
-
-  let { id } = useParams<{ id: string | undefined }>();
-
-  const isNew = id === 'new';
-
-  if (isNew) {
-    id = undefined;
-  }
-
+export function AssetEditor({
+  asset,
+  lastSavedAsset,
+  setAsset,
+  setLastSavedAsset,
+}: {
+  asset: Asset;
+  lastSavedAsset: Asset;
+  setAsset: (asset: Asset | undefined) => void;
+  setLastSavedAsset: (asset: Asset | undefined) => void;
+}) {
   const searchParams = useSearchParams()[0];
-  const copyId = searchParams.get('copy');
+  const [preview, setPreview] = useState<RenderedMaterial | undefined>(undefined);
 
-  const isError = Object.values(errors).some((error) => error !== null);
-  const deleteAsset = useAICStore((state) => state.deleteEditableObject);
   const previewValue = preview ? preview?.content.split('\\n').join('\n') : 'Generating preview...';
+  const assetType = getEditableObjectType(asset) as AssetType;
 
-  const isAssetStatusChanged = () => {
-    if (!asset || !assetInitial) {
-      return true;
-    }
-    return asset.status !== assetInitial.status;
-  };
-
-  const isAsseetChanged = () => {
-    if (!asset || !assetInitial) {
-      return true;
-    }
-
-    const changedFields = Object.keys(asset).filter((key) => {
-      return key !== 'status' && asset[key as keyof typeof asset] !== assetInitial[key as keyof typeof asset];
-    });
-
-    return changedFields.length > 0;
-  };
-
-  const enableSubmit = (isAsseetChanged() || isAssetStatusChanged()) && !isError;
-  const disableSubmit = !enableSubmit;
+  const deleteEditableObject = useAICStore((state) => state.deleteEditableObject);
+  const navigate = useNavigate();
 
   let typeName = 'Material';
   let typeSpecificPart = null;
   let showPreview = true;
+
+  const isAssetChanged = (() => {
+    if (!asset || !lastSavedAsset) {
+      return true;
+    }
+
+    const changedFields = Object.keys(asset).filter((key) => {
+      return (
+        key !== 'status' && asset[key as keyof typeof asset] !== lastSavedAsset[key as keyof typeof lastSavedAsset]
+      );
+    });
+
+    return changedFields.length > 0;
+  })();
+
+  const isAssetStatusChanged = (() => {
+    if (!asset || !lastSavedAsset) {
+      return true;
+    }
+    return asset.status !== lastSavedAsset.status;
+  })();
+
+  const updateStatusIfNecessary = async () => {
+    if (isAssetStatusChanged) {
+      await Api.setAssetStatus(assetType, asset.id, asset.status);
+
+      showNotification({
+        title: 'Status changed',
+        message: `Status changed to ${asset.status}`,
+        variant: 'success',
+      });
+    }
+  };
+
+  const enableSubmit = (isAssetChanged || isAssetStatusChanged) && asset?.id && asset?.name;
+  const disableSubmit = !enableSubmit;
+
+  const handleSaveClick = async () => {
+    let isReallyNew = lastSavedAsset === undefined;
+
+    if (asset === undefined) {
+      return;
+    }
+
+    if (asset.defined_in === 'aiconsole') {
+      asset.defined_in = 'project';
+      isReallyNew = true;
+    }
+
+    if (isReallyNew) {
+      await Api.saveNewEditableObject(assetType, asset);
+      await updateStatusIfNecessary();
+
+      showNotification({
+        title: 'Saved',
+        message: 'saved',
+        variant: 'success',
+      });
+    } else if (lastSavedAsset && lastSavedAsset.id !== asset.id) {
+      await Api.saveNewEditableObject(assetType, asset);
+      await deleteEditableObject(assetType, lastSavedAsset.id);
+      await updateStatusIfNecessary();
+
+      showNotification({
+        title: 'Renamed',
+        message: 'renamed',
+        variant: 'success',
+      });
+    } else {
+      if (isAssetChanged) {
+        await Api.updateEditableObject(assetType, asset);
+
+        showNotification({
+          title: 'Saved',
+          message: 'saved',
+          variant: 'success',
+        });
+      }
+
+      await updateStatusIfNecessary();
+    }
+
+    if (lastSavedAsset.id !== asset.id) {
+      navigate(`/${assetType}s/${asset.id}`);
+    }
+
+    setLastSavedAsset(asset);
+  };
 
   if (asset && assetType === 'material') {
     const material: Material = asset as Material;
@@ -92,7 +155,6 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
             codeLanguage="markdown"
           />
         )}
-
         {material.content_type === 'dynamic_text' && (
           <CodeInput
             label="Python function returning dynamic text"
@@ -113,8 +175,8 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
       </>
     );
 
-    if (isNew) {
-      material.content_type = (searchParams.get('type') as MaterialContentType | null) || 'static_text';
+    if (lastSavedAsset === undefined) {
+      material.content_type = (searchParams.get('type') as MaterialContentType | null) || material.content_type;
     }
 
     //After 3 seconds of inactivity after change query /preview to get rendered material
@@ -170,93 +232,6 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
     }, [null, null, null, null, null]);
   }
 
-  useEffect(() => {
-    // Auto generate id based on name
-    if (asset?.name) {
-      setAsset((asset: Asset | undefined) => {
-        if (!asset) return asset;
-        const id = convertNameToId(asset.name);
-        return { ...asset, id };
-      });
-    }
-  }, [asset?.name]);
-
-  useEffect(() => {
-    if (copyId) {
-      Api.fetchEditableObject<Asset>(assetType, copyId).then((assetToCopy) => {
-        assetToCopy.name += ' Copy';
-        assetToCopy.defined_in = 'project';
-        assetToCopy.id = convertNameToId(assetToCopy.name);
-        setAssetInitial(undefined);
-        setAsset(assetToCopy);
-      });
-    } else if (id) {
-      Api.fetchEditableObject<Asset>(assetType, id).then((asset) => {
-        setAssetInitial(asset);
-        setAsset(asset);
-      });
-    } else {
-      //HACK: This will get a default new asset
-      Api.fetchEditableObject<Asset>(assetType, 'new').then((asset) => {
-        setAssetInitial(undefined);
-        setAsset(asset);
-      });
-    }
-  }, [copyId, isNew, id, assetType]);
-
-  const updateStatusIfNecessary = async (asset: Asset) => {
-    if (isAssetStatusChanged()) {
-      await Api.setAssetStatus(assetType, asset.id, asset.status);
-
-      showNotification({
-        title: 'Status changed',
-        message: `Status changed to ${asset.status}`,
-        variant: 'success',
-      });
-    }
-  };
-
-  const handleSaveClick = (asset: Asset) => async () => {
-    if (isNew) {
-      await Api.saveNewEditableObject(assetType, asset);
-      await updateStatusIfNecessary(asset);
-
-      showNotification({
-        title: 'Saved',
-        message: 'saved',
-        variant: 'success',
-      });
-    } else if (assetInitial && assetInitial.id !== asset.id) {
-      await Api.saveNewEditableObject(assetType, asset);
-      await deleteAsset(assetType, assetInitial.id);
-      await updateStatusIfNecessary(asset);
-
-      showNotification({
-        title: 'Renamed',
-        message: 'renamed',
-        variant: 'success',
-      });
-    } else {
-      if (isAsseetChanged()) {
-        await Api.updateEditableObject(assetType, asset);
-
-        showNotification({
-          title: 'Saved',
-          message: 'saved',
-          variant: 'success',
-        });
-      }
-
-      await updateStatusIfNecessary(asset);
-    }
-
-    if (id !== asset.id) {
-      navigate(`/${assetType}s/${asset.id}`);
-    }
-
-    setAssetInitial(asset);
-  };
-
   return (
     <div className="flex flex-col w-full h-full overflow-auto p-6 gap-4">
       {asset && (
@@ -271,15 +246,17 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
           />
           <div className="flex-grow flex flex-row w-full gap-4 overflow-clip">
             <div className="flex-1">{typeSpecificPart}</div>
-            {showPreview && <div className="flex-1">
-              <CodeInput
-                label="Preview of text to be injected into AI context"
-                value={preview?.error ? preview.error : previewValue}
-                readOnly={true}
-                className="flex-grow"
-                codeLanguage="markdown"
-              />
-            </div>}
+            {showPreview && (
+              <div className="flex-1">
+                <CodeInput
+                  label="Preview of text to be injected into AI context"
+                  value={preview?.error ? preview.error : previewValue}
+                  readOnly={true}
+                  className="flex-grow"
+                  codeLanguage="markdown"
+                />
+              </div>
+            )}
           </div>
           <button
             disabled={disableSubmit}
@@ -289,7 +266,7 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
                 'opacity-[0.3] cursor-not-allowed hover:bg-initial': disableSubmit,
               },
             )}
-            onClick={handleSaveClick(asset)}
+            onClick={handleSaveClick}
           >
             Save
           </button>
