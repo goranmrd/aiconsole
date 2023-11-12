@@ -28,7 +28,6 @@ export type MaterialSlice = {
 export const createMaterialSlice: StateCreator<AICStore, [], [], MaterialSlice> = (set, get) => ({
   materials: undefined,
   initMaterials: async () => {
-    set({ materials: [] });
     if (get().isProjectOpen) {
       const materials = await Api.getAssets<Material>('material');
 
@@ -52,6 +51,8 @@ export const createMaterialSlice: StateCreator<AICStore, [], [], MaterialSlice> 
       set({
         materials,
       });
+    } else {
+      set({ materials: [] });
     }
   },
 });

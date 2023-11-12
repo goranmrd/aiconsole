@@ -1,18 +1,18 @@
-import { HashRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom';
-import { MaterialPage } from '@/components/materials/MaterialPage';
-import { Home } from '../home/Home';
-import { v4 as uuid } from 'uuid';
+import { MaterialPage } from '@/components/assets/MaterialPage';
 import { useAICStore } from '@/store/AICStore';
-import { FullScreenSpinner } from './FullScreenSpinner';
+import { HashRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom';
+import { v4 as uuid } from 'uuid';
+import { AgentPage } from '../assets/AgentPage';
+import { ChatPage } from '../chat/ChatPage';
+import { Home } from '../home/Home';
 import { TopBar } from './TopBar';
 import SideBar from './sidebar/SideBar';
-import { AgentPage } from '../agent/AgentPage';
-import { ChatPage } from '../chat/ChatPage';
 
 function MustHaveProject() {
   const isProjectOpen = useAICStore((state) => state.isProjectOpen);
+  const isProjectLoading = useAICStore((state) => state.isProjectLoading);
 
-  if (!isProjectOpen) {
+  if (!isProjectOpen && !isProjectLoading) {
     return <Navigate to="/" />;
   }
 
@@ -21,29 +21,19 @@ function MustHaveProject() {
 
 function NoProject() {
   const isProjectOpen = useAICStore((state) => state.isProjectOpen);
+  const isProjectLoading = useAICStore((state) => state.isProjectLoading);
 
-  if (isProjectOpen) {
+  if (isProjectOpen && !isProjectLoading) {
     return <Navigate to={`/chats/${uuid()}`} />;
   }
 
   return <Outlet />;
 }
 
-function LoadingProject() {
-  const isProjectLoading = useAICStore((state) => state.isProjectLoading);
-
-  if (!isProjectLoading) {
-    return <Navigate to="/" />;
-  }
-
-  return <FullScreenSpinner />;
-}
-
 export function Router() {
   return (
     <HashRouter>
       <Routes>
-        <Route path="/loading" element={<LoadingProject />} />
         <Route path="/" element={<NoProject />}>
           <Route index element={<Home />} />
         </Route>
@@ -69,7 +59,7 @@ export function Router() {
             }
           />
         </Route>
-        
+        <Route path="*" element={<div> HEELLO</div>} />
       </Routes>
     </HashRouter>
   );

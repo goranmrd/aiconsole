@@ -19,8 +19,8 @@ import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { Api } from '@/api/Api';
-import { CodeInput } from '@/components/materials/CodeInput';
-import { ErrorObject, SimpleInput } from '@/components/materials/TextInput';
+import { CodeInput } from '@/components/assets/CodeInput';
+import { ErrorObject, SimpleInput } from '@/components/assets/TextInput';
 import { useAICStore } from '@/store/AICStore';
 import {
   Material,
@@ -33,20 +33,8 @@ import { Tooltip } from '../system/Tooltip';
 import { getAssetIcon } from '@/utils/getAssetIcon';
 import { getAssetColor } from '@/utils/getAssetColor';
 import { useAssetContextMenu } from '@/hooks/useAssetContextMenu';
+import { getMaterialContentName } from './getMaterialContentName';
 
-
-export function getContentName(contentType?: MaterialContentType) {
-  switch (contentType) {
-    case 'static_text':
-      return 'Note';
-    case 'dynamic_text':
-      return 'Dynamic Note';
-    case 'api':
-      return 'Python API';
-    default:
-        return 'Material';
-  }
-}
 
 export function MaterialPage() {
   const navigate = useNavigate();
@@ -240,7 +228,7 @@ export function MaterialPage() {
     <div className="flex flex-col w-full h-full overflow-y-auto p-6 gap-4">
       <div className="flex gap-5" onContextMenu={showContextMenu()}>
         <Tooltip
-          label={`${getContentName(material?.content_type)} id determines the file name and is auto generated from name. It must be unique.`}
+          label={`${getMaterialContentName(material?.content_type)} id determines the file name and is auto generated from name. It must be unique.`}
           position="top-end"
           offset={{ mainAxis: 7 }}
         >
@@ -259,7 +247,7 @@ export function MaterialPage() {
       {material && (
         <>
           <SimpleInput
-            label={`${getContentName(material?.content_type)} name`}
+            label={`${getMaterialContentName(material?.content_type)} name`}
             placeholder=""
             value={material.name}
             disabled={readOnly}
@@ -269,7 +257,7 @@ export function MaterialPage() {
             setErrors={setErrors}
             onChange={(value) => setMaterial({ ...material, name: value })}
             withTooltip
-            tootltipText={`${getContentName(material?.content_type)} name is used to identify material in the system. Make it self explanatory so AI will better understand what it is.`}
+            tootltipText={`${getMaterialContentName(material?.content_type)} name is used to identify material in the system. Make it self explanatory so AI will better understand what it is.`}
           />
           <SimpleInput
             label="Usage"
@@ -278,7 +266,7 @@ export function MaterialPage() {
             disabled={readOnly}
             onChange={(value) => setMaterial({ ...material, usage: value })}
             withTooltip
-            tootltipText={`Usage is used to help identify when this ${getContentName(material?.content_type)} should be used. `}
+            tootltipText={`Usage is used to help identify when this ${getMaterialContentName(material?.content_type)} should be used. `}
           />
           <div className="flex flex-row w-full gap-4 ">
             <div className="w-1/2 h-[calc(100vh-425px)] min-h-[300px]">

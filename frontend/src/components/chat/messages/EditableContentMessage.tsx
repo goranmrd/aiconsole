@@ -16,7 +16,7 @@
 
 import { useCallback, useState } from 'react';
 import { MessageControls } from './MessageControls';
-import { CodeInput } from '../../materials/CodeInput';
+import { CodeInput } from '../../assets/CodeInput';
 import { cn } from '@/utils/styles';
 
 interface EditableContentMessageProps {

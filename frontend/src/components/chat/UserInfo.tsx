@@ -46,7 +46,7 @@ export function UserInfo({
   materials_ids: string[];
   task?: string;
 }) {
-  const agent = useAICStore((state) => state.getAgent(agent_id));
+  const agent = useAICStore((state) => state.getAsset('agent', agent_id));
   const getBaseURL = useAPIStore((state) => state.getBaseURL);
   const { showContextMenu } = useAssetContextMenu({
     assetType: 'agent',

@@ -25,7 +25,7 @@ export function useAddMenu() {
         },
       },
       {
-        key: 'material',
+        key: 'note',
         icon: <MaterialNoteIcon className="w-4 h-4" style={{ color: getAssetColor('material') }} />,
         title: 'New Note ...',
         onClick: () => {
@@ -33,7 +33,7 @@ export function useAddMenu() {
         },
       },
       {
-        key: 'material',
+        key: 'dynamic_note',
         icon: <MaterialDynamicNoteIcon className="w-4 h-4" style={{ color: getAssetColor('material') }} />,
         title: 'New Dynamic Note ...',
         onClick: () => {
@@ -41,7 +41,7 @@ export function useAddMenu() {
         },
       },
       {
-        key: 'material',
+        key: 'python_api',
         icon: <MaterialPythonAPIIcon className="w-4 h-4" style={{ color: getAssetColor('material') }} />,
         title: 'New Python API ...',
         onClick: () => {

@@ -1,7 +1,6 @@
-import { Api } from '@/api/Api';
 import { useAICStore } from '@/store/AICStore';
 import { Asset, AssetType } from '@/types/types';
-import { Ban, Check, Dot, Copy, Edit, File, Trash } from 'lucide-react';
+import { Ban, Check, Copy, Dot, Edit, File, Trash } from 'lucide-react';
 import { ContextMenuItemOptions } from 'mantine-contextmenu';
 import { useNavigate } from 'react-router-dom';
 import { CONTEXT_MENU_ITEM_CLASSES, useContextMenu } from './useContextMenu';
@@ -65,7 +64,7 @@ export function useAssetContextMenu({ assetType, asset, setIsEditing, fromAssetD
               title: 'Always',
               className: CONTEXT_MENU_ITEM_CLASSES,
               onClick: () => {
-                Api.setAssetStatus(assetType, asset.id, 'forced');
+                useAICStore.getState().setAssetStatus(assetType, asset.id, 'forced');
               },
             }] : []),
             ...(asset && asset?.status !== 'enabled' ? [{
@@ -74,7 +73,7 @@ export function useAssetContextMenu({ assetType, asset, setIsEditing, fromAssetD
               title: 'Auto',
               className: CONTEXT_MENU_ITEM_CLASSES,
               onClick: () => {
-                Api.setAssetStatus(assetType, asset.id, 'enabled');
+                useAICStore.getState().setAssetStatus(assetType, asset.id, 'enabled');
               },
             }] : []),
             ...(asset && asset?.status !== 'disabled' ? [{
@@ -83,7 +82,7 @@ export function useAssetContextMenu({ assetType, asset, setIsEditing, fromAssetD
               title: 'Never',
               className: CONTEXT_MENU_ITEM_CLASSES,
               onClick: () => {
-                Api.setAssetStatus(assetType, asset.id, 'disabled');
+                useAICStore.getState().setAssetStatus(assetType, asset.id, 'disabled');
               },
             }] : []),
           ],

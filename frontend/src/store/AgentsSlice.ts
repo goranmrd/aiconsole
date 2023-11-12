@@ -16,16 +16,17 @@
 
 import { StateCreator } from 'zustand';
 
-import { Agent, AssetType } from '../types/types';
+import { Agent, Asset, AssetStatus, AssetType } from '../types/types';
 import { Api } from '@/api/Api';
 import { AICStore } from './AICStore';
 
 export type AgentsSlice = {
   agents: Agent[];
   initAgents: () => Promise<void>;
-  getAgent: (id: string) => Agent | undefined;
-  renameAsset: (assetType: AssetType, id: string, name: string) => Promise<void>;
+  getAsset: (assetType: AssetType, id: string) => Asset | undefined;
+  renameAsset: (assetType: AssetType, originalId: string, newName: string) => Promise<void>;
   deleteAsset: (assetType: AssetType, id: string) => Promise<void>;
+  setAssetStatus: (assetType: AssetType, id: string, status: AssetStatus) => Promise<void>;
 };
 
 export const createAgentsSlice: StateCreator<AICStore, [], [], AgentsSlice> = (
@@ -33,8 +34,18 @@ export const createAgentsSlice: StateCreator<AICStore, [], [], AgentsSlice> = (
   get,
 ) => ({
   agents: [],
-  renameAsset: async (assetType: AssetType, id: string, name: string) => {
-    await Api.renameAsset(assetType, id, name);
+  renameAsset: async (assetType: AssetType, originalId: string, newName: string) => {
+    const asset = get().getAsset(assetType, originalId);
+    
+    if (!asset) {
+      throw new Error(`Asset ${originalId} not found`);
+    }
+
+    const newId = newName.toLowerCase().replace(/ /g, '_');
+    asset.id = newId;
+    asset.name = newName;
+    
+    await Api.updateAsset(assetType, asset, originalId);
   },
   deleteAsset: async (assetType: AssetType, id: string) => {
     await Api.deleteAsset(assetType, id);
@@ -50,28 +61,66 @@ export const createAgentsSlice: StateCreator<AICStore, [], [], AgentsSlice> = (
     }
   },
   initAgents: async () => {
-    set({ agents: [] });
+    if (get().isProjectOpen) {
+      const agents = await Api.getAssets<Agent>('agent');
+      set(() => ({
+        agents: agents,
+      }));
+    } else {
+      set({ agents: [] });
+    }
     if (!get().isProjectOpen) return;
-    const agents = await Api.getAssets<Agent>('agent');
-    set(() => ({
-      agents: agents,
-    }));
   },
-  getAgent: (id: string): Agent | undefined => {
-    if (id === 'user') {
-      return {
-        id: 'user',
-        name: 'User',
-        usage: '',
-        usage_examples: [],
-        system: '',
-        defined_in: 'aiconsole',
-        status: 'enabled',
-        gpt_mode: 'quality',
-        execution_mode: 'normal',
+  getAsset: (assetType: AssetType, id: string): Asset | undefined => {
+    if (assetType === 'agent') {
+      if (id === 'user') {
+        const agent:Agent = {
+          id: 'user',
+          name: 'User',
+          usage: '',
+          usage_examples: [],
+          system: '',
+          defined_in: 'aiconsole',
+          status: 'enabled',
+          gpt_mode: 'quality',
+          execution_mode: 'normal',
+        }
+
+        return agent;
       }
+  
+      return get().agents.find((agent) => agent.id === id);
     }
 
-    return get().agents.find((agent) => agent.id === id);
+    if (assetType === 'material') {
+      return get().materials?.find((material) => material.id === id);
+    }
+
+    throw new Error(`Unknown asset type ${assetType}`);
   },
+  setAssetStatus: async (assetType: AssetType, id: string, status: AssetStatus) => {
+    if (assetType === 'agent') {
+      set((state) => ({
+        agents: (state.agents || []).map((agent) => {
+          if (agent.id === id) {
+            agent.status = status;
+          }
+          return agent;
+        }),
+      }));
+    } else if (assetType === 'material') {
+      set((state) => ({
+        materials: (state.materials || []).map((material) => {
+          if (material.id === id) {
+            material.status = status;
+          }
+          return material;
+        }),
+      }));
+    } else {
+      throw new Error(`Unknown asset type ${assetType}`);
+    }
+
+    await Api.setAssetStatus(assetType, id, status);
+  }
 });

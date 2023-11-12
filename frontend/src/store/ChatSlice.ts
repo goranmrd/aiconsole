@@ -85,6 +85,7 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
       chatId: id,
       loadingMessages: true
     });
+
     try {
       useWebSocketStore.getState().sendMessage({
         type: 'SetChatIdWSMessage',

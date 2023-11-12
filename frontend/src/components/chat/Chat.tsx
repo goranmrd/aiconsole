@@ -48,6 +48,8 @@ export function Chat({ chatId }: { chatId: string }) {
   const isExecuteRunning = useAICStore((state) => state.isExecuteRunning);
   const stopWork = useAICStore((state) => state.stopWork);
   const submitCommand = useAICStore((state) => state.submitCommand);
+  const isProjectOpen = useAICStore((state) => state.isProjectOpen);
+  const isProjectLoading = useAICStore((state) => state.isProjectLoading);
 
   const isLastMessageFromUser = chat.message_groups.length > 0 && chat.message_groups[chat.message_groups.length - 1].agent_id === 'user';
   
@@ -65,17 +67,16 @@ export function Chat({ chatId }: { chatId: string }) {
       setChatId('');
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chatId]); //Initentional trigger when chat_id changes
+  }, [chatId, isProjectOpen]); //Initentional trigger when chat_id changes
 
 
   useEffect(() => {
-    console.log('copyId', copyId, 'chatId', chatId, 'chat.message_groups.length', chat.message_groups.length);
     if (copyId && chat.message_groups.length === 0) {
       copyChat(copyId, chatId);
     }
   }, [copyId, chatId, chat.message_groups.length, copyChat]);
 
-  return !loadingMessages ? ( // This is needed because of https://github.com/compulim/react-scroll-to-bottom/issues/61#issuecomment-1608456508
+  return !isProjectLoading && !loadingMessages ? ( // This is needed because of https://github.com/compulim/react-scroll-to-bottom/issues/61#issuecomment-1608456508
     <ScrollToBottom className="h-full overflow-y-auto flex flex-col" scrollViewClassName="main-chat-window" initialScrollBehavior="auto" mode={'bottom'}>
       <ChatWindowScrollToBottomSave />
       {chat.message_groups.length === 0 && <EmptyChat />}

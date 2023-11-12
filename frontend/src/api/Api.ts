@@ -165,7 +165,7 @@ const analyse = (body: Chat, analysis_request_id: string, signal?: AbortSignal) 
 // Settings
 
 const checkKey = (key: string) => {
-  return ky.post(`${getBaseURL()}/api/check_key`, {
+  return ky.get(`${getBaseURL()}/api/check_key`, {
     json: { key },
     hooks,
     timeout: false,
@@ -177,7 +177,7 @@ async function saveSettings(params: { to_global: boolean } & Settings) {
 }
 
 async function getSettings(): Promise<Settings> {
-  return ky.get(`${getBaseURL()}/api/settings`, { hooks }).json();
+  return ky.get(`${getBaseURL()}/api/settings`, { hooks, timeout: 60000 }).json();
 }
 
 // Assets
@@ -207,17 +207,14 @@ async function saveNewAsset(assetType: AssetType, asset: Asset) {
   });
 }
 
-async function updateAsset(assetType: AssetType, asset: Asset) {
-  return ky.patch(`${getBaseURL()}/api/${assetType}s/${asset.id}`, {
+async function updateAsset(assetType: AssetType, asset: Asset, originalId?: string) {
+  if (!originalId) {
+    originalId = asset.id;
+  }
+  
+  return ky.patch(`${getBaseURL()}/api/${assetType}s/${originalId}`, {
     json: { ...asset },
     timeout: 60000,
-    hooks,
-  });
-}
-
-async function renameAsset(assetType: AssetType, id: string, name: string) {
-  return ky.patch(`${getBaseURL()}/api/${assetType}s/${id}`, {
-    json: { name },
     hooks,
   });
 }
@@ -228,7 +225,6 @@ async function deleteAsset(assetType: AssetType, id: string) {
 
 export const Api = {
   deleteAsset,
-  renameAsset,
   execute,
   runCode,
   analyse,

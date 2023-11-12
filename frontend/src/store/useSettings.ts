@@ -54,7 +54,7 @@ export const useSettings = create<SettingsStore>((set, get) => ({
     set({
       alwaysExecuteCode: result.code_autorun,
       openAiApiKey: result.openai_api_key,
-      isApiKeyValid: await get().validateApiKey(result.openai_api_key || '')
+      isApiKeyValid: await get().validateApiKey(result.openai_api_key || ''),
     });
   },
   validateApiKey: async (key: string) => {
