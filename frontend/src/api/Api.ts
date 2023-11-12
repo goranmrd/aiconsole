@@ -165,10 +165,9 @@ const analyse = (body: Chat, analysis_request_id: string, signal?: AbortSignal) 
 // Settings
 
 const checkKey = (key: string) => {
-  return ky.get(`${getBaseURL()}/api/check_key`, {
+  return ky.post(`${getBaseURL()}/api/check_key`, {
     json: { key },
     hooks,
-    timeout: false,
   });
 };
 

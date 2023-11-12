@@ -25,7 +25,7 @@ router = APIRouter()
 class KeyVerificationRequest(BaseModel):
     key: str
 
-@router.get("/api/check_key")
+@router.post("/api/check_key")
 async def analyse(key_verification_request: KeyVerificationRequest):
     return JSONResponse({
         "key_ok": await check_key(key_verification_request.key)
