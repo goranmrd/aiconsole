@@ -19,6 +19,7 @@ import { StateCreator } from 'zustand';
 import { Agent, Asset, AssetStatus, AssetType } from '../types/types';
 import { Api } from '@/api/Api';
 import { AICStore } from './AICStore';
+import { convertNameToId } from '@/utils/convertNameToId';
 
 export type AgentsSlice = {
   agents: Agent[];
@@ -41,7 +42,7 @@ export const createAgentsSlice: StateCreator<AICStore, [], [], AgentsSlice> = (
       throw new Error(`Asset ${originalId} not found`);
     }
 
-    const newId = newName.toLowerCase().replace(/ /g, '_');
+    const newId = convertNameToId(newName);
     asset.id = newId;
     asset.name = newName;
     

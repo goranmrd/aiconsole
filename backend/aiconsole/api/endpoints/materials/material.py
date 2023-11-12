@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from aiconsole.core.assets.asset import AssetLocation, AssetStatus
+from aiconsole.core.assets.asset import AssetLocation, AssetStatus, AssetType
 from aiconsole.core.assets.materials.material import (Material,
                                                       MaterialWithStatus)
 from aiconsole.core.project import project
@@ -37,7 +37,7 @@ async def material_get(material_id: str):
         material = project.get_project_materials().get_asset(material_id)
         return JSONResponse({
             **material.model_dump(),
-            "status": settings.get_asset_status(material.id),
+            "status": settings.get_asset_status(AssetType.MATERIAL, material.id),
         })
     except KeyError:
         # A new material
@@ -88,8 +88,9 @@ async def material_status_change(
     """
     try:
         project.get_project_materials().get_asset(material_id)
-        get_aiconsole_settings().set_material_status(
-            material_id=material_id, status=body.status, to_global=body.to_global
+        get_aiconsole_settings().set_asset_status(
+            AssetType.MATERIAL,
+            id=material_id, status=body.status, to_global=body.to_global
         )
         return JSONResponse({"status": "ok"})
     except KeyError:

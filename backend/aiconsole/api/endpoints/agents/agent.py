@@ -15,7 +15,7 @@
 # limitations under the License.
 
 from aiconsole.core.assets.agents.agent import Agent, AgentWithStatus
-from aiconsole.core.assets.asset import AssetLocation, AssetStatus
+from aiconsole.core.assets.asset import AssetLocation, AssetStatus, AssetType
 from aiconsole.core.gpt.consts import GPTMode
 from aiconsole.core.project import project
 from aiconsole.core.settings.project_settings import get_aiconsole_settings
@@ -38,7 +38,7 @@ async def agent_get(agent_id: str):
         agent = project.get_project_agents().get_asset(agent_id)
         return JSONResponse({
             **agent.model_dump(),
-            "status": settings.get_asset_status(agent.id),
+            "status": settings.get_asset_status(AssetType.AGENT, agent.id),
         })
     except KeyError:
         # A new agent
@@ -91,8 +91,9 @@ async def agent_status_change(
     """
     try:
         project.get_project_agents().get_asset(agent_id)
-        get_aiconsole_settings().set_agent_status(
-            agent_id=agent_id, status=body.status, to_global=body.to_global
+        get_aiconsole_settings().set_asset_status(
+            AssetType.AGENT,
+            id=agent_id, status=body.status, to_global=body.to_global
         )
         return JSONResponse({"status": "ok"})
     except KeyError:

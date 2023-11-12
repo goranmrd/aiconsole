@@ -17,8 +17,14 @@
 from aiconsole.core.gpt.consts import MODEL_DATA
 import openai
 
+cached_good_keys = set()
+
 # Verify the OpenAI key has access to the required models
 async def check_key(key: str) -> bool:
+
+    if (key in cached_good_keys):
+        return True
+    
     try: 
         # set key
         openai.api_key = key
@@ -26,6 +32,11 @@ async def check_key(key: str) -> bool:
         available_models = [model["id"] for model in models]
         needed_models = MODEL_DATA.keys()
 
-        return set(needed_models).issubset(set(available_models))
+        good = set(needed_models).issubset(set(available_models))
+
+        if (good):
+            cached_good_keys.add(key)
+
+        return good
     except Exception as e:
         return False

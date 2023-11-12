@@ -23,7 +23,7 @@ import tomlkit
 import tomlkit.container
 import tomlkit.exceptions
 from aiconsole.api.websockets.outgoing_messages import SettingsWSMessage
-from aiconsole.core.assets.asset import AssetStatus
+from aiconsole.core.assets.asset import AssetStatus, AssetType
 from aiconsole.core.project.paths import get_project_directory
 from aiconsole.core.project.project import is_project_initialized
 from aiconsole.utils.BatchingWatchDogHandler import BatchingWatchDogHandler
@@ -35,6 +35,7 @@ from watchdog.observers import Observer
 
 _log = logging.getLogger(__name__)
 
+
 class PartialSettingsData(BaseModel):
     code_autorun: Optional[bool] = None
     openai_api_key: Optional[str] = None
@@ -43,7 +44,7 @@ class PartialSettingsData(BaseModel):
     enabled_materials: Optional[List[str]] = None
     enabled_agents: Optional[List[str]] = None
     forced_materials: Optional[List[str]] = None
-    forced_agents: Optional[List[str]] = None
+    forced_agent: Optional[str] = None
     to_global: bool = False
 
 
@@ -59,7 +60,7 @@ class SettingsData(BaseModel):
     enabled_materials: List[str] = []
     enabled_agents: List[str] = []
     forced_materials: List[str] = []
-    forced_agents: List[str] = []
+    forced_agent: str = ""
 
 
 def _load_from_path(file_path: Path) -> Dict[str, Any]:
@@ -68,37 +69,45 @@ def _load_from_path(file_path: Path) -> Dict[str, Any]:
 
     return dict(document)
 
+
 def _set_openai_api_key_environment(settings: SettingsData) -> None:
     openai_api_key = settings.openai_api_key
 
-    litellm.openai_key = openai_api_key or "invalid key" # This is so we make sure that it's overiden and does not env variables etc
+    # This is so we make sure that it's overiden and does not env variables etc
+    litellm.openai_key = openai_api_key or "invalid key"
+
 
 class Settings:
 
     def __init__(self, project_path: Optional[Path] = None):
         self._settings = SettingsData()
 
-        self._global_settings_file_path = Path(user_config_dir('aiconsole')) / "settings.toml"
+        self._global_settings_file_path = Path(
+            user_config_dir('aiconsole')) / "settings.toml"
 
         if project_path:
             self._project_settings_file_path = project_path / "settings.toml"
         else:
             self._project_settings_file_path = None
-       
+
         self._observer = Observer()
 
-        self._global_settings_file_path.parent.mkdir(parents=True, exist_ok=True)
+        self._global_settings_file_path.parent.mkdir(
+            parents=True, exist_ok=True)
         self._observer.schedule(
-            BatchingWatchDogHandler(self.reload, self._global_settings_file_path.name),
+            BatchingWatchDogHandler(
+                self.reload, self._global_settings_file_path.name),
             str(self._global_settings_file_path.parent),
-                               recursive=True)
+            recursive=True)
 
         if self._project_settings_file_path:
-            self._project_settings_file_path.parent.mkdir(parents=True, exist_ok=True)
+            self._project_settings_file_path.parent.mkdir(
+                parents=True, exist_ok=True)
             self._observer.schedule(
-                BatchingWatchDogHandler(self.reload, self._project_settings_file_path.name),
+                BatchingWatchDogHandler(
+                    self.reload, self._project_settings_file_path.name),
                 str(self._project_settings_file_path.parent),
-                               recursive=True)
+                recursive=True)
 
         self._observer.start()
 
@@ -109,49 +118,50 @@ class Settings:
         self._observer.stop()
 
     async def reload(self, initial: bool = False):
-        self._settings = await self.__load()#
-        await SettingsWSMessage(initial = initial).send_to_all()
+        self._settings = await self.__load()
+        await SettingsWSMessage(initial=initial).send_to_all()
 
-    def get_asset_status(self, material_id: str) -> AssetStatus:
+    def get_asset_status(self, asset_type: AssetType, id: str) -> AssetStatus:
         s = self._settings
-        if material_id in s.forced_materials:
-            return AssetStatus.FORCED
-        if material_id in s.disabled_materials:
-            return AssetStatus.DISABLED
-        return AssetStatus.ENABLED
 
-    def get_agent_status(self, agent_id: str) -> AssetStatus:
-        s = self._settings
-        if agent_id in s.forced_agents:
-            return AssetStatus.FORCED
-        if agent_id in s.disabled_agents:
-            return AssetStatus.DISABLED
-        return AssetStatus.ENABLED
+        if asset_type == AssetType.MATERIAL:
+            if id in s.forced_materials:
+                return AssetStatus.FORCED
+            if id in s.disabled_materials:
+                return AssetStatus.DISABLED
+            return AssetStatus.ENABLED
+        elif asset_type == AssetType.AGENT:
+            if id == s.forced_agent:
+                return AssetStatus.FORCED
+            if id in s.disabled_agents:
+                return AssetStatus.DISABLED
+            return AssetStatus.ENABLED
 
-    def set_material_status(self,
-                            material_id: str,
-                            status: AssetStatus,
-                            to_global: bool = False) -> None:
+        else:
+            raise ValueError(f"Unknown asset type {asset_type}")
 
-
-        partial_settings = {
-            AssetStatus.DISABLED: PartialSettingsData(disabled_materials=[material_id]),
-            AssetStatus.ENABLED: PartialSettingsData(enabled_materials=[material_id]),
-            AssetStatus.FORCED: PartialSettingsData(forced_materials=[material_id])
-        }
-
-        self.save(partial_settings[status],
-                  to_global=to_global)
-
-    def set_agent_status(self,
-                         agent_id: str,
+    def set_asset_status(self,
+                         asset_type: AssetType,
+                         id: str,
                          status: AssetStatus,
                          to_global: bool = False) -> None:
-        partial_settings = {
-            AssetStatus.DISABLED: PartialSettingsData(disabled_agents=[agent_id]),
-            AssetStatus.ENABLED: PartialSettingsData(enabled_agents=[agent_id]),
-            AssetStatus.FORCED: PartialSettingsData(forced_agents=[agent_id])
-        }
+
+        if asset_type == AssetType.MATERIAL:
+            partial_settings = {
+                AssetStatus.DISABLED: PartialSettingsData(disabled_materials=[id]),
+                AssetStatus.ENABLED: PartialSettingsData(enabled_materials=[id]),
+                AssetStatus.FORCED: PartialSettingsData(
+                    forced_materials=[id])
+            }
+        elif asset_type == AssetType.AGENT:
+            partial_settings = {
+                AssetStatus.DISABLED: PartialSettingsData(disabled_agents=[id]),
+                AssetStatus.ENABLED: PartialSettingsData(enabled_agents=[id]),
+                AssetStatus.FORCED: PartialSettingsData(forced_agent=id)
+            }
+
+        else:
+            raise ValueError(f"Unknown asset type {asset_type}")
 
         self.save(partial_settings[status],
                   to_global=to_global)
@@ -169,16 +179,24 @@ class Settings:
 
     async def __load(self) -> SettingsData:
         settings = {}
-        paths = [self._global_settings_file_path, self._project_settings_file_path]
+        paths = [self._global_settings_file_path,
+                 self._project_settings_file_path]
 
         for file_path in paths:
-            if file_path and file_path.exists():   
-                settings = recursive_merge(settings, _load_from_path(file_path))
+            if file_path and file_path.exists():
+                settings = recursive_merge(
+                    settings, _load_from_path(file_path))
+
+        forced_agents = [
+            agent for agent, status in settings.get('agents', {}).items()
+            if status == AssetStatus.FORCED
+        ]
 
         settings_data = SettingsData(
             code_autorun=settings.get('settings',
                                       {}).get('code_autorun', False),
-            openai_api_key=settings.get('settings', {}).get('openai_api_key', None),
+            openai_api_key=settings.get(
+                'settings', {}).get('openai_api_key', None),
             disabled_materials=[
                 material
                 for material, status in settings.get('materials', {}).items()
@@ -193,11 +211,8 @@ class Settings:
                 for material, status in settings.get('materials', {}).items()
                 if status == AssetStatus.FORCED
             ],
-            forced_agents=[
-                agent for agent, status in settings.get('agents', {}).items()
-                if status == AssetStatus.DISABLED
-            ])
-        
+            forced_agent=forced_agents[0] if forced_agents else "",)
+
         _set_openai_api_key_environment(settings_data)
 
         _log.info(f"Loaded settings")
@@ -223,15 +238,16 @@ class Settings:
     def save(self,
              settings_data: PartialSettingsData,
              to_global: bool = False) -> None:
-        
+
         if to_global:
             file_path = self._global_settings_file_path
         else:
             if not self._project_settings_file_path:
-                raise ValueError("Cannnot save to project settings file, because project is not initialized")
-            
+                raise ValueError(
+                    "Cannnot save to project settings file, because project is not initialized")
+
             file_path = self._project_settings_file_path
-        
+
         document = self.__get_tolmdocument_to_save(file_path)
         doc_settings: tomlkit.table.Table = document['settings']
         doc_materials: tomlkit.table.Table = document['materials']
@@ -259,9 +275,8 @@ class Settings:
             for agent in settings_data.disabled_agents:
                 doc_agents[agent] = AssetStatus.DISABLED.value
 
-        if settings_data.forced_agents is not None:
-            for agent in settings_data.forced_agents:
-                doc_agents[agent] = AssetStatus.FORCED.value
+        if settings_data.forced_agent is not None:
+            doc_agents[settings_data.forced_agent] = AssetStatus.FORCED.value
 
         if settings_data.enabled_agents is not None:
             for agent in settings_data.enabled_agents:
@@ -272,11 +287,12 @@ class Settings:
             file.write(document.as_string())
 
 
-
 async def init():
     global _settings
-    _settings = Settings(get_project_directory() if is_project_initialized() else None)
+    _settings = Settings(get_project_directory()
+                         if is_project_initialized() else None)
     await _settings.reload()
+
 
 def get_aiconsole_settings() -> Settings:
     return _settings
@@ -285,5 +301,6 @@ def get_aiconsole_settings() -> Settings:
 async def reload_settings(initial: bool = False):
     global _settings
     _settings.stop()
-    _settings = Settings(get_project_directory() if is_project_initialized() else None)
+    _settings = Settings(get_project_directory()
+                         if is_project_initialized() else None)
     await _settings.reload(initial)

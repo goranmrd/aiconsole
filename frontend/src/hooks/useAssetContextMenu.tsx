@@ -93,9 +93,9 @@ export function useAssetContextMenu({ assetType, asset, setIsEditing, fromAssetD
               },
             }] : []),
             ...(asset && asset?.status !== 'disabled' ? [{
-              key: 'Never',
+              key: 'Disabled',
               icon: <Ban className="w-4 h-4" />,
-              title: 'Never',
+              title: 'Disabled',
               className: CONTEXT_MENU_ITEM_CLASSES,
               onClick: () => {
                 useAICStore.getState().setAssetStatus(assetType, asset.id, 'disabled');

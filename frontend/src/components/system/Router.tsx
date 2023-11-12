@@ -14,11 +14,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { MaterialPage } from '@/components/assets/MaterialPage';
+import { AssetEditor } from '@/components/assets/AssetEditor';
 import { useAICStore } from '@/store/AICStore';
 import { HashRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
-import { AgentPage } from '../assets/AgentPage';
 import { ChatPage } from '../chat/ChatPage';
 import { Home } from '../home/Home';
 import { TopBar } from './TopBar';
@@ -66,9 +65,9 @@ export function Router() {
                     <Route path="/chats/*" element={<SideBar initialTab="chats" />} />
                   </Routes>
                   <Routes>
-                    <Route path="/agents/:agentId" element={<AgentPage />} />
-                    <Route path="/materials/:materialId" element={<MaterialPage />} />
-                    <Route path="/chats/:chatId" element={<ChatPage />} />
+                    <Route path="/agents/:id" element={<AssetEditor assetType='agent' />} />
+                    <Route path="/materials/:id" element={<AssetEditor assetType='material' />} />
+                    <Route path="/chats/:id" element={<ChatPage />} />
                   </Routes>
                 </div>
               </div>

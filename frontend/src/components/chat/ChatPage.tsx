@@ -22,13 +22,13 @@ import { CommandInput } from './CommandInput';
 export function ChatPage() {
   const params = useParams();
 
-  if (!params.chatId) {
+  if (!params.id) {
     return <Navigate to={`/chats/${uuid()}`} />;
   }
 
   return (
     <div className="flex w-full flex-col justify-between downlight">
-      <Chat chatId={params.chatId} />
+      <Chat chatId={params.id} />
       <CommandInput className="flex-none" />
     </div>
   );

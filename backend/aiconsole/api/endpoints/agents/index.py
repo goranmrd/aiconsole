@@ -15,7 +15,7 @@
 # limitations under the License.
     
 from aiconsole.core.assets.agents.agent import Agent
-from aiconsole.core.assets.asset import AssetLocation, AssetStatus
+from aiconsole.core.assets.asset import AssetLocation, AssetStatus, AssetType
 from aiconsole.core.gpt.consts import GPTMode
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
@@ -32,7 +32,7 @@ async def agents_get():
         [
             *({
                 **agent.model_dump(),
-                "status": settings.get_asset_status(agent.id),
+                "status": settings.get_asset_status(AssetType.AGENT, agent.id),
             } for agent in project.get_project_agents().all_assets())
         ]
     )

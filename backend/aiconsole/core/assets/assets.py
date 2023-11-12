@@ -69,7 +69,7 @@ class Assets:
         settings = get_aiconsole_settings()
         return [
             asset for asset in self._assets.values() if
-            settings.get_asset_status(asset.id) in [
+            settings.get_asset_status(self.asset_type, asset.id) in [
                 AssetStatus.ENABLED]
         ]
 
@@ -80,7 +80,7 @@ class Assets:
         settings = get_aiconsole_settings()
         return [
             asset for asset in self._assets.values() if
-            settings.get_asset_status(asset.id) in [
+            settings.get_asset_status(self.asset_type, asset.id) in [
                 AssetStatus.FORCED]
         ]
 
