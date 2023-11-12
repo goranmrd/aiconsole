@@ -14,16 +14,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
 import os
 
 import rtoml
-from aiconsole.api.websockets.outgoing_messages import NotificationWSMessage
 from aiconsole.core.assets.agents.agent import Agent
 from aiconsole.core.assets.asset import Asset, AssetLocation, AssetType
+from aiconsole.core.assets.materials.material import (Material,
+                                                      MaterialContentType)
 from aiconsole.core.gpt.consts import GPTMode
-from aiconsole.core.assets.materials.material import Material, MaterialContentType
 from aiconsole.core.project.paths import (get_core_assets_directory,
                                           get_project_assets_directory)
+
+_log = logging.getLogger(__name__)
+
 
 
 async def load_asset_from_fs(asset_type: AssetType, asset_id: str) -> Asset:
@@ -35,12 +39,8 @@ async def load_asset_from_fs(asset_type: AssetType, asset_id: str) -> Asset:
     core_resource_path = get_core_assets_directory(asset_type)
 
     if (project_dir_path / f"{asset_id}.toml").exists():
-        # if asset exists in core
         if (core_resource_path / f"{asset_id}.toml").exists():
-            await NotificationWSMessage(
-                title=f"Asset {asset_id} exists in core and project directory",
-                message="Project directory version will be used.",
-            ).send_to_all()
+            _log.info(f"Asset {asset_id} exists in core and project directory")
         location = AssetLocation.PROJECT_DIR
         path = project_dir_path / f"{asset_id}.toml"
     elif (core_resource_path / f"{asset_id}.toml").exists():

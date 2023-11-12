@@ -63,6 +63,9 @@ async def material_patch(material_id: str, material: Material):
 
 @router.post("/{material_id}")
 async def material_post(material_id: str, material: Material):
+    if material_id != material.id:
+        raise HTTPException(status_code=400, detail="Material ID mismatch")
+    
     try:
         await project.get_project_materials().save_asset(material, new=True, old_asset_id=material_id)
     except Exception as e:
