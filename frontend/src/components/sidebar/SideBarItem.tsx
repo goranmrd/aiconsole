@@ -75,7 +75,7 @@ const SideBarItem = ({
     if (inputText === '') {
       setInputText(editableObject.name);
     } else {
-      renameEditableObject(editableObjectType, editableObject.id, inputText);
+      renameEditableObject(editableObject, inputText, false);
     }
     hideInput();
   };
