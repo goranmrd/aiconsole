@@ -23,6 +23,7 @@
     "clsx": "^2.0.0",
     "date-fns": "^2.30.0",
     "highlight.js": "^11.9.0",
+    "immer": "^10.0.3",
     "ky": "^1.0.1",
     "lucide-react": "^0.291.0",
     "mantine-contextmenu": "^7.1.12",
