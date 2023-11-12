@@ -19,7 +19,7 @@ import { useAICStore } from '@/store/AICStore';
 import SideBarItem from './SideBarItem';
 
 export const ChatsSidebarTab = () => {
-  const chatHeadlines = useAICStore((state) => state.chatHeadlines);
+  const chatHeadlines = useAICStore((state) => state.chats);
   const { today, yesterday, previous7Days, older } = useGroupByDate(chatHeadlines);
 
   const sections = [

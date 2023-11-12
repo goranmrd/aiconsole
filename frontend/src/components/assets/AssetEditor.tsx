@@ -48,7 +48,6 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
 
   const isError = Object.values(errors).some((error) => error !== null);
   const deleteAsset = useAICStore((state) => state.deleteEditableObject);
-  const readOnly = asset?.defined_in === 'aiconsole';
   const previewValue = preview ? preview?.content.split('\\n').join('\n') : 'Generating preview...';
 
   const isAssetStatusChanged = () => {
@@ -90,7 +89,6 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
             value={material.content_static_text}
             onChange={(value) => setAsset({ ...material, content_static_text: value } as Material)}
             className="flex-grow"
-            disabled={readOnly}
             codeLanguage="markdown"
           />
         )}
@@ -101,7 +99,6 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
             value={material.content_dynamic_text}
             onChange={(value) => setAsset({ ...material, content_dynamic_text: value } as Material)}
             className="flex-grow"
-            disabled={readOnly}
             codeLanguage="python"
           />
         )}
@@ -110,7 +107,6 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
             label="API Module"
             value={material.content_api}
             onChange={(value) => setAsset({ ...material, content_api: value } as Material)}
-            disabled={readOnly}
             className="flex-grow"
           />
         )}
@@ -157,7 +153,6 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
         value={agent.system}
         onChange={(value) => setAsset({ ...agent, system: value } as Agent)}
         className="flex-grow"
-        disabled={readOnly}
         codeLanguage="markdown"
       />
     );
@@ -188,7 +183,7 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
 
   useEffect(() => {
     if (copyId) {
-      Api.getAsset(assetType, copyId).then((assetToCopy) => {
+      Api.fetchEditableObject<Asset>(assetType, copyId).then((assetToCopy) => {
         assetToCopy.name += ' Copy';
         assetToCopy.defined_in = 'project';
         assetToCopy.id = convertNameToId(assetToCopy.name);
@@ -196,13 +191,13 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
         setAsset(assetToCopy);
       });
     } else if (id) {
-      Api.getAsset(assetType, id).then((asset) => {
+      Api.fetchEditableObject<Asset>(assetType, id).then((asset) => {
         setAssetInitial(asset);
         setAsset(asset);
       });
     } else {
       //HACK: This will get a default new asset
-      Api.getAsset(assetType, 'new').then((asset) => {
+      Api.fetchEditableObject<Asset>(assetType, 'new').then((asset) => {
         setAssetInitial(undefined);
         setAsset(asset);
       });
@@ -223,7 +218,7 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
 
   const handleSaveClick = (asset: Asset) => async () => {
     if (isNew) {
-      await Api.saveNewAsset(assetType, asset);
+      await Api.saveNewEditableObject(assetType, asset);
       await updateStatusIfNecessary(asset);
 
       showNotification({
@@ -232,7 +227,7 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
         variant: 'success',
       });
     } else if (assetInitial && assetInitial.id !== asset.id) {
-      await Api.saveNewAsset(assetType, asset);
+      await Api.saveNewEditableObject(assetType, asset);
       await deleteAsset(assetType, assetInitial.id);
       await updateStatusIfNecessary(asset);
 
@@ -270,7 +265,6 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
             label="Usage"
             name="usage"
             value={asset.usage}
-            disabled={readOnly}
             onChange={(value) => setAsset({ ...asset, usage: value })}
             withTooltip
             tootltipText={`Usage is used to help identify when this ${typeName} should be used. `}
@@ -281,7 +275,6 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
               <CodeInput
                 label="Preview of text to be injected into AI context"
                 value={preview?.error ? preview.error : previewValue}
-                disabled={readOnly}
                 readOnly={true}
                 className="flex-grow"
                 codeLanguage="markdown"

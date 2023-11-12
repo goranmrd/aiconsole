@@ -26,11 +26,10 @@ export type ChatSlice = {
   chatId: string;
   chat: Chat;
   copyChat: (id: string, newId: string) => Promise<void>;
-  chatHeadlines: ChatHeadline[];
+  chats: ChatHeadline[];
   setChatId: (id: string) => void;
   initChatHistory: () => Promise<void>;
   saveCurrentChatHistory: () => Promise<void>;
-  updateChatHeadline: (id: string, headline: string) => Promise<void>;
 };
 
 export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
@@ -45,29 +44,27 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
     title_edited: false,
     message_groups: [],
   },
-  chatHeadlines: [],
+  chats: [],
   agent: undefined,
   materials: [],
   copyChat: async (id: string, newId: string) => {
-    const chat = await Api.getChat(id);
+    const chat = await Api.fetchEditableObject<Chat>('chat', id);
     chat.id = newId;
     set({
       chat: chat,
     });
   },
   initChatHistory: async () => {
-    set({ chatHeadlines: [] });
+    set({ chats: [] });
     if (!get().isProjectOpen) return;
     try {
-      const history: ChatHeadline[] = await (
-        await Api.getChatsHistory()
-      ).json();
+      const chats: ChatHeadline[] = await Api.fetchEditableObjects<ChatHeadline>('chat');
       set(() => ({
-        chatHeadlines: [...history],
+        chats: chats,
       }));
     } catch (e) {
       set(() => ({
-        chatHeadlines: [],
+        chats: [],
       }));
       console.log(e);
     }
@@ -95,7 +92,7 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
           message_groups: [],
         };
       } else {
-        chat = await Api.getChat(id);
+        chat = await Api.fetchEditableObject('chat', id);
       }
       set({
         chat: chat,
@@ -121,37 +118,16 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
 
     set({
       chat: chat,
-      chatHeadlines: [
+      chats: [
        {
           id: get().chatId,
           name: chat.name,
           last_modified: new Date().toISOString(),
         },
-        ...get().chatHeadlines.filter((chat) => chat.id !== get().chatId),
+        ...get().chats.filter((chat) => chat.id !== get().chatId),
       ],
     });
 
-    await Api.saveHistory(chat);
-  },
-  updateChatHeadline: async (id: string, headline: string) => {
-    const editedHeadline = get().chatHeadlines.find((chat) => chat.id === id);
-    const editedHeadlineIndex = get().chatHeadlines.findIndex(
-      (chat) => chat.id === id,
-    );
-
-    if (!editedHeadline) return;
-    editedHeadline.name = headline;
-    set(() => ({
-      chatHeadlines: [
-        ...get().chatHeadlines.slice(0, editedHeadlineIndex),
-        editedHeadline,
-        ...get().chatHeadlines.slice(editedHeadlineIndex + 1),
-      ],
-    }));
-
-    await Api.updateChatHeadline(id, headline);
-
-    //force reload of the chat
-    get().setChatId(id);
-  },
+    await Api.updateEditableObject('chat', chat);
+  }
 });

@@ -87,27 +87,6 @@ const saveCommandToHistory = (body: object) =>
     hooks,
   });
 
-// Chats
-
-const getChatsHistory = () => ky.get(`${getBaseURL()}/chats/headlines`, { hooks });
-
-const getChat: (id: string) => Promise<Chat> = async (id: string) =>
-  await ky.get(`${getBaseURL()}/chats/history/${id}`, { hooks }).json();
-
-const deleteChat = (id: string) => ky.delete(`${getBaseURL()}/chats/history/${id}`, { hooks });
-const updateChatHeadline = (id: string, headline: string) =>
-  ky.post(`${getBaseURL()}/chats/headlines/${id}`, {
-    json: { headline },
-    hooks,
-  });
-
-const saveHistory = (chat: Chat) =>
-  ky.post(`${getBaseURL()}/chats/history`, {
-    json: { ...chat },
-    timeout: 60000,
-    hooks,
-  });
-
 // Projects
 
 const closeProject = () => ky.post(`${getBaseURL()}/api/projects/close`, { hooks });
@@ -183,8 +162,8 @@ async function getSettings(): Promise<Settings> {
 
 // Assets
 
-async function getAssets<T extends Asset>(assetType: AssetType): Promise<T[]> {
-  return ky.get(`${getBaseURL()}/api/${assetType}s/`, { hooks }).json();
+async function fetchEditableObjects<T extends EditableObject>(editableObjectType: EditableObjectType): Promise<T[]> {
+  return ky.get(`${getBaseURL()}/api/${editableObjectType}s/`, { hooks }).json();
 }
 
 async function setAssetStatus(assetType: AssetType, id: string, status: AssetStatus) {
@@ -196,12 +175,12 @@ async function setAssetStatus(assetType: AssetType, id: string, status: AssetSta
     .json();
 }
 
-async function getAsset<T extends Asset>(assetType: AssetType, id: string) {
-  return ky.get(`${getBaseURL()}/api/${assetType}s/${id}`, { hooks }).json() as Promise<T>;
+async function fetchEditableObject<T extends EditableObject>(editableObjectType: EditableObjectType, id: string) {
+  return ky.get(`${getBaseURL()}/api/${editableObjectType}s/${id}`, { hooks }).json() as Promise<T>;
 }
 
-async function saveNewAsset(assetType: AssetType, asset: Asset) {
-  return ky.post(`${getBaseURL()}/api/${assetType}s/${asset.id}`, {
+async function saveNewEditableObject(editableObjectType: EditableObjectType, asset: Asset) {
+  return ky.post(`${getBaseURL()}/api/${editableObjectType}s/${asset.id}`, {
     json: { ...asset },
     timeout: 60000,
     hooks,
@@ -220,17 +199,17 @@ async function updateEditableObject(editableObjectType: EditableObjectType, edit
   });
 }
 
-async function deleteAsset(assetType: AssetType, id: string) {
-  return ky.delete(`${getBaseURL()}/api/${assetType}s/${id}`, { hooks });
+async function deleteEditableObject(editableObjectType: EditableObjectType, id: string) {
+  return ky.delete(`${getBaseURL()}/api/${editableObjectType}s/${id}`, { hooks });
 }
 
 export const Api = {
-  deleteAsset,
+  deleteEditableObject,
   execute,
   runCode,
   analyse,
-  getAssets,
-  getAsset,
+  fetchEditableObjects,
+  fetchEditableObject,
   setAssetStatus,
   previewMaterial,
   closeProject,
@@ -239,15 +218,10 @@ export const Api = {
   getCurrentProject,
   getRecentProjects,
   removeRecentProject,
-  saveNewAsset,
+  saveNewEditableObject,
   updateEditableObject,
   getCommandHistory,
-  getChatsHistory,
-  getChat,
   saveCommandToHistory,
-  saveHistory,
-  deleteChat,
-  updateChatHeadline,
   saveSettings,
   getSettings,
   checkKey,

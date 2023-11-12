@@ -16,6 +16,7 @@
     
 from aiconsole.core.assets.asset import AssetType
 from aiconsole.core.project.paths import get_project_assets_directory
+from send2trash import send2trash
 
 
 def delete_asset_from_fs(asset_type: AssetType, id):
@@ -26,7 +27,7 @@ def delete_asset_from_fs(asset_type: AssetType, id):
     # check if the file exists in project directory
     asset_file_path = get_project_assets_directory(asset_type) / f"{id}.toml"
     if asset_file_path.exists():
-        asset_file_path.unlink()
+        send2trash(asset_file_path)
         return
 
     raise KeyError(f"Agent with ID {id} not found")

@@ -25,7 +25,8 @@ import tomlkit
 
 async def save_asset_to_fs(asset: Asset, create: bool, old_asset_id: str | None = None):
     if asset.defined_in != AssetLocation.PROJECT_DIR:
-        raise Exception("Cannot save asset not defined in project.")
+        # Cannot save asset not defined in project, saving a copy instead
+        asset.defined_in = AssetLocation.PROJECT_DIR
 
     path = get_project_assets_directory(asset.type)
     file_path = path / f"{asset.id}.toml"

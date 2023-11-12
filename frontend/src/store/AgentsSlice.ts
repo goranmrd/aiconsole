@@ -16,11 +16,12 @@
 
 import { StateCreator } from 'zustand';
 
-import { Agent, Asset, AssetStatus, AssetType, Chat, EditableObject, EditableObjectType, Material } from '../types/types';
 import { Api } from '@/api/Api';
-import { AICStore } from './AICStore';
 import { convertNameToId } from '@/utils/convertNameToId';
-import { v4 as uuid } from 'uuid';
+import { Agent, Asset, AssetStatus, AssetType, Chat, EditableObject, EditableObjectType, Material } from '../types/types';
+import { AICStore } from './AICStore';
+
+//TODO: Rename this to EditableObjectsSlice or extract that functionality to a separate slice
 
 export type AgentsSlice = {
   agents: Agent[];
@@ -44,36 +45,51 @@ export const createAgentsSlice: StateCreator<AICStore, [], [], AgentsSlice> = (
       throw new Error(`Asset ${originalId} not found`);
     }
 
-    const newId = convertNameToId(newName);
-    editableObject.id = newId;
     editableObject.name = newName;
+    
+    // Chats have persistent ids, no need to update them
+    if (editableObjectType !== 'chat') {
+      const newId = convertNameToId(newName);
+      editableObject.id = newId;
+    }
+
+    // Update local state
+    if (editableObjectType === 'chat') {
+      set((state) => ({
+        chats: (state.chats || []).map((chat) => chat.id === originalId ? editableObject as Chat : chat),
+      }));
+    } else if (editableObjectType === 'agent') {
+      set((state) => ({
+        agents: (state.agents || []).map((agent) => agent.id === originalId ? editableObject as Agent : agent),
+      })); 
+    } else if (editableObjectType === 'material') {
+      set((state) => ({
+        materials: (state.materials || []).map((material) => material.id === originalId ? editableObject as Material : material),
+      }));
+    }
     
     await Api.updateEditableObject(editableObjectType, editableObject, originalId);
   },
   deleteEditableObject: async (editableObjectType: EditableObjectType, id: string) => {
+    await Api.deleteEditableObject(editableObjectType, id);
+
     if (editableObjectType === 'chat') {
-      await Api.deleteChat(id);
-
       set(() => ({
-        chatHeadlines: get().chatHeadlines.filter((chat) => chat.id !== id),
+        chats: get().chats.filter((chat) => chat.id !== id),
       }));
-    } else {
-      await Api.deleteAsset(editableObjectType, id);
-
-      if (editableObjectType === 'agent') {
+    } else if (editableObjectType === 'agent') {
         set((state) => ({
           agents: (state.agents || []).filter((asset) => asset.id !== id),
         }));
-      } else if (editableObjectType === 'material') {
-        set((state) => ({
-          materials: (state.materials || []).filter((asset) => asset.id !== id),
-        }));
-      }
+    } else if (editableObjectType === 'material') {
+      set((state) => ({
+        materials: (state.materials || []).filter((asset) => asset.id !== id),
+      }));
     }
   },
   initAgents: async () => {
     if (get().isProjectOpen) {
-      const agents = await Api.getAssets<Agent>('agent');
+      const agents = await Api.fetchEditableObjects<Agent>('agent');
       set(() => ({
         agents: agents,
       }));
@@ -176,7 +192,7 @@ export const createAgentsSlice: StateCreator<AICStore, [], [], AgentsSlice> = (
         id: id,
         name: '',
         title_edited: false,
-        last_modified: '',
+        last_modified: new Date().toISOString(),
         message_groups: [],
       }
 

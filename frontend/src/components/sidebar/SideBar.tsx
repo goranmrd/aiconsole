@@ -21,28 +21,6 @@ import { AssetsSidebarTab } from './AssetsSidebarTab';
 import { TabsValues } from '@/types/types';
 import { useAICStore } from '@/store/AICStore';
 
-/*
-  CONFLICTED MERGE
-
-  const chatHeadlines = useAICStore((state) => state.chatHeadlines);
-  const chatId = useAICStore((state) => state.chatId);
-
-  const { today, yesterday, previous7Days, older } =
-    useGroupByDate(chatHeadlines);
-
-  function handleDelete(event: React.MouseEvent, id: string) {
-    event.stopPropagation();
-    event.preventDefault();
-
-    useAICStore.getState().deleteChat(id);
-    useAICStore.getState().setChatId(uuidv4());
-  }
-
-  const handleHeadlineChange = (chatId: string, newHeadline: string) => {
-    useAICStore.getState().updateChatHeadline(chatId, newHeadline);
-  };
-*/
-
 const SideBar = ({initialTab}: {initialTab: string}) => {
   const agents = useAICStore((state) => state.agents);
   const materials = useAICStore((state) => state.materials);

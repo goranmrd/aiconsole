@@ -29,7 +29,7 @@ export const createMaterialSlice: StateCreator<AICStore, [], [], MaterialSlice> 
   materials: undefined,
   initMaterials: async () => {
     if (get().isProjectOpen) {
-      const materials = await Api.getAssets<Material>('material');
+      const materials = await Api.fetchEditableObjects<Material>('material');
 
       //sort alphabetically
       materials.sort((a, b) => a.name.localeCompare(b.name));

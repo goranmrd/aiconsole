@@ -16,15 +16,14 @@
 
 import logging
 from aiconsole.core.chat.types import ChatHeadline
-from fastapi import Request
-from aiconsole.api.endpoints.chats.history import router
+from aiconsole.api.endpoints.chats.chat import router
 from aiconsole.core.chats.list_possible_historic_chat_ids import list_possible_historic_chat_ids
 from aiconsole.core.chats.load_chat_history import load_chat_history
 from aiconsole.core.chats.save_chat_history import save_chat_history
 
 _log = logging.getLogger(__name__)
 
-@router.get("/headlines")
+@router.get("/")
 async def get_history_headlines():
     headlines = []
 
@@ -45,15 +44,3 @@ async def get_history_headlines():
 
     return headlines
 
-
-@router.post("/headlines/{chat_id}")
-async def update_chat_headline(chat_id, req: Request):
-    data = await req.json()
-    new_headline = data["headline"]
-
-    chat = await load_chat_history(chat_id)
-    chat.title = new_headline
-    chat.title_edited = True
-    save_chat_history(chat)
-
-    return new_headline
