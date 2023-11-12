@@ -98,7 +98,7 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
     <div
       className={cn(
         className,
-        'flex w-full flex-col p-4  bg-gray-800/90 border-t border-white/10',
+        'flex w-full flex-col p-4  bg-gray-800/90 border-t border-white/10 drop-shadow-2xl  z-50',
       )}
     >
       <div className="flex items-center">

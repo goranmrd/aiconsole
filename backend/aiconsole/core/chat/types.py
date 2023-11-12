@@ -16,6 +16,7 @@
 
 from datetime import datetime
 from typing import List, Union
+from aiconsole.core.assets.asset import EditableObject
 
 from aiconsole.core.code_running.code_interpreters.language_map import LanguageStr
 from aiconsole.core.gpt.types import GPTRole
@@ -45,18 +46,19 @@ class AICMessageGroup(BaseModel):
     messages: List[AICMessage]
 
 
-class Chat(BaseModel):
-    id: str
-    title: str
-    title_edited: bool = False
+class ChatHeadline(EditableObject):
     last_modified: datetime
-    message_groups: List[AICMessageGroup]
 
     def model_dump(self, **kwargs):
         return {
             **super().model_dump(**kwargs),
             "last_modified": self.last_modified.isoformat(),
         }
+
+
+class Chat(ChatHeadline):
+    title_edited: bool = False
+    message_groups: List[AICMessageGroup]
 
 
 class ChatWithAgentAndMaterials(Chat):
@@ -66,11 +68,6 @@ class ChatWithAgentAndMaterials(Chat):
 
 class Command(BaseModel):
     command: str
-
-
-class ChatHeadline(BaseModel):
-    id: str
-    title: str
 
 
 class ChatHeadlines(BaseModel):

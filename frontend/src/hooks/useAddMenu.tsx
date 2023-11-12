@@ -14,27 +14,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { useContextMenu } from '@/hooks/useContextMenu';
+import { getEditableObjectColor } from '@/utils/getEditableObjectColor';
+import { MATERIAL_CONTENT_TYPE_ICONS, getEditableObjectIcon } from '@/utils/getEditableObjectIcon';
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-import { useContextMenu } from '@/hooks/useContextMenu';
-import { Asset } from '@/types/types';
-import { getAssetColor } from '@/utils/getAssetColor';
-import { CHAT_COLOR, CHAT_ICON, getAssetIcon } from '@/utils/getAssetIcon';
 
 export function useAddMenu() {
   const { showContextMenu, hideContextMenu, isContextMenuVisible } = useContextMenu();
 
   const navigate = useNavigate();
-  const MaterialNoteIcon = getAssetIcon({ content_type: 'static_text' } as unknown as Asset); //Hack: Figure out a better interface
-  const MaterialDynamicNoteIcon = getAssetIcon({ content_type: 'dynamic_text' } as unknown as Asset); //Hack: Figure out a better interface
-  const MaterialPythonAPIIcon = getAssetIcon({ content_type: 'api' } as unknown as Asset); //Hack: Figure out a better interface
-  const AgentIcon = getAssetIcon('agent');
+  const ChatIcon = getEditableObjectIcon('chat');
+  const MaterialNoteIcon = MATERIAL_CONTENT_TYPE_ICONS['static_text'];
+  const MaterialDynamicNoteIcon = MATERIAL_CONTENT_TYPE_ICONS['dynamic_text'];
+  const MaterialPythonAPIIcon = MATERIAL_CONTENT_TYPE_ICONS['api'];
+  const AgentIcon = getEditableObjectIcon('agent');
 
   function showContextMenuReplacement() {
     return showContextMenu([
       {
         key: 'chat',
-        icon: <CHAT_ICON className="w-4 h-4" style={{ color: CHAT_COLOR }} />,
+        icon: <ChatIcon className="w-4 h-4" style={{ color: getEditableObjectColor('chat') }} />,
         title: 'New Chat ...',
         onClick: () => {
           navigate(`/chats/${uuidv4()}`);
@@ -42,7 +42,7 @@ export function useAddMenu() {
       },
       {
         key: 'note',
-        icon: <MaterialNoteIcon className="w-4 h-4" style={{ color: getAssetColor('material') }} />,
+        icon: <MaterialNoteIcon className="w-4 h-4" style={{ color: getEditableObjectColor('material') }} />,
         title: 'New Note ...',
         onClick: () => {
           navigate(`/materials/new?type=static_text`);
@@ -50,7 +50,7 @@ export function useAddMenu() {
       },
       {
         key: 'dynamic_note',
-        icon: <MaterialDynamicNoteIcon className="w-4 h-4" style={{ color: getAssetColor('material') }} />,
+        icon: <MaterialDynamicNoteIcon className="w-4 h-4" style={{ color: getEditableObjectColor('material') }} />,
         title: 'New Dynamic Note ...',
         onClick: () => {
           navigate(`/materials/new?type=dynamic_text`);
@@ -58,7 +58,7 @@ export function useAddMenu() {
       },
       {
         key: 'python_api',
-        icon: <MaterialPythonAPIIcon className="w-4 h-4" style={{ color: getAssetColor('material') }} />,
+        icon: <MaterialPythonAPIIcon className="w-4 h-4" style={{ color: getEditableObjectColor('material') }} />,
         title: 'New Python API ...',
         onClick: () => {
           navigate(`/materials/new?type=api`);
@@ -66,7 +66,7 @@ export function useAddMenu() {
       },
       {
         key: 'agent',
-        icon: <AgentIcon className="w-4 h-4" style={{ color: getAssetColor('agent') }} />,
+        icon: <AgentIcon className="w-4 h-4" style={{ color: getEditableObjectColor('agent') }} />,
         title: 'New Agent ...',
         onClick: () => {
           navigate(`/agents/new`);

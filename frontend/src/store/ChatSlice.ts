@@ -28,7 +28,6 @@ export type ChatSlice = {
   copyChat: (id: string, newId: string) => Promise<void>;
   chatHeadlines: ChatHeadline[];
   setChatId: (id: string) => void;
-  deleteChat: (id: string) => Promise<void>;
   initChatHistory: () => Promise<void>;
   saveCurrentChatHistory: () => Promise<void>;
   updateChatHeadline: (id: string, headline: string) => Promise<void>;
@@ -41,7 +40,7 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
   chatId: '',
   chat: {
     id: '',
-    title: '',
+    name: '',
     last_modified: new Date().toISOString(),
     title_edited: false,
     message_groups: [],
@@ -73,13 +72,6 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
       console.log(e);
     }
   },
-  deleteChat: async (id: string) => {
-    await Api.deleteChat(id);
-
-    set(() => ({
-      chatHeadlines: get().chatHeadlines.filter((chat) => chat.id !== id),
-    }));
-  },
   setChatId: async (id: string) => {
     set({
       chatId: id,
@@ -97,7 +89,7 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
       if (id === '' || !get().isProjectOpen) {
         chat = {
           id: '',
-          title: '',
+          name: '',
           last_modified: new Date().toISOString(),
           title_edited: false,
           message_groups: [],
@@ -119,7 +111,7 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
 
     // update title
     if (!chat.title_edited && chat.message_groups.length > 0 &&chat.message_groups[0].messages.length > 0) {
-      chat.title = chat.message_groups[0].messages[0].content;
+      chat.name = chat.message_groups[0].messages[0].content;
     }
 
     //remove empty groups
@@ -132,8 +124,8 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
       chatHeadlines: [
        {
           id: get().chatId,
-          message: chat.title,
-          timestamp: new Date().toISOString(),
+          name: chat.name,
+          last_modified: new Date().toISOString(),
         },
         ...get().chatHeadlines.filter((chat) => chat.id !== get().chatId),
       ],
@@ -148,7 +140,7 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
     );
 
     if (!editedHeadline) return;
-    editedHeadline.message = headline;
+    editedHeadline.name = headline;
     set(() => ({
       chatHeadlines: [
         ...get().chatHeadlines.slice(0, editedHeadlineIndex),

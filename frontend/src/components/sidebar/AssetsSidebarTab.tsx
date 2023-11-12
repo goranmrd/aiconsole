@@ -14,19 +14,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Asset } from '@/types/types';
+import { Asset, AssetType } from '@/types/types';
+import SideBarItem from './SideBarItem';
 
-
-export function getAssetType(asset: Asset) {
-  // A bit hacky but effective way to distinguish between agent and material assets
-  
-  if ('system' in asset) {
-    return 'agent';
-  }
-
-  if ('content_type' in asset) {
-    return 'material';
-  }
-
-  throw new Error(`Unknown asset type: ${asset}`);
-}
+export const AssetsSidebarTab = ({assetType, assets}: {assetType: AssetType, assets: Asset[]}) => {
+  return (
+      <div className="flex flex-col gap-[5px] pr-[15px]">
+        {assets.map((asset) => (
+          <SideBarItem
+            key={asset.id}
+            editableObjectType={assetType}
+            editableObject={asset}
+          />
+        ))}
+      </div>
+  );
+};

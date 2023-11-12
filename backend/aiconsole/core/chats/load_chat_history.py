@@ -53,9 +53,11 @@ async def load_chat_history(id: str, project_path: Path | None = None) -> Chat:
                         })
                     del data["messages"]
 
-            if not "title" in data or not data["title"]:
+            if not "name" in data or not data["name"]:
                 if "headline" in data and data["headline"]:
-                    data["title"] = data["headline"]
+                    data["name"] = data["headline"]
+                elif "title" in data and data["title"]:
+                    data["name"] = data["title"]
                 else:
                     def extract_default_headline():
                         for group in data["message_groups"]:
@@ -63,7 +65,7 @@ async def load_chat_history(id: str, project_path: Path | None = None) -> Chat:
                                 for msg in group["messages"]:
                                     return msg.get("content")
 
-                    data["title"] = extract_default_headline() or "New Chat"                
+                    data["name"] = extract_default_headline() or "New Chat"                
 
             if "id" in data:
                 del data["id"]
@@ -73,4 +75,4 @@ async def load_chat_history(id: str, project_path: Path | None = None) -> Chat:
 
             return Chat(id=id, last_modified=datetime.fromtimestamp(os.path.getmtime(file_path)), **data)
     else:
-        return Chat(id=id, title="", title_edited=False, last_modified=datetime.now(), message_groups=[])
+        return Chat(id=id, name="", title_edited=False, last_modified=datetime.now(), message_groups=[])

@@ -25,6 +25,7 @@ import { Button } from '../../system/Button';
 import { duotoneDark as vs2015 } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { CodeOutput } from './CodeOutput';
 import { EditableContentMessage } from './EditableContentMessage';
+import { useSettings } from '@/store/useSettings';
 
 interface MessageProps {
   group: AICMessageGroup;
@@ -38,11 +39,11 @@ export function CodeMessage({ group, message, isStreaming }: MessageProps) {
   );
   const editMessageContent = useAICStore((state) => state.editMessageContent);
 
-  const alwaysExecuteCode = useAICStore((state) => state.alwaysExecuteCode);
+  const alwaysExecuteCode = useSettings((state) => state.alwaysExecuteCode);
 
   const [folded, setFolded] = useState(alwaysExecuteCode);
   const doRun = useAICStore((state) => state.doRun);
-  const enableAutoCodeExecution = useAICStore(
+  const enableAutoCodeExecution = useSettings(
     (state) => state.setAutoCodeExecution,
   );
   const isViableForRunningCode = useAICStore(
@@ -75,7 +76,7 @@ export function CodeMessage({ group, message, isStreaming }: MessageProps) {
 
   return (
     <div className="flex justify-between items-center">
-      <div className="p-5 rounded-md flex flex-col gap-5 bg-primary/5 flex-grow mr-4">
+      <div className="p-5 rounded-md flex flex-col gap-5 bg-primary/5 flex-grow mr-4 overflow-auto">
         <div
           className="cursor-pointer"
           onClick={() => setFolded((folded) => !folded)}
@@ -99,8 +100,8 @@ export function CodeMessage({ group, message, isStreaming }: MessageProps) {
         {!folded && (
           <>
             <div className="flex flex-row w-full">
-              <span className="w-20">Code: </span>
-              <div className="flex-grow">
+              <span className="w-20 flex-none">Code: </span>
+              <div className="flex-grow overflow-auto">
                 <EditableContentMessage
                   initialContent={message.content}
                   isStreaming={isStreaming}
@@ -112,7 +113,7 @@ export function CodeMessage({ group, message, isStreaming }: MessageProps) {
                     style={vs2015}
                     children={message.content}
                     language={message.language}
-                    className="overflow-scroll max-w-3xl flex-grow rounded-md"
+                    className="overflow-scroll flex-grow rounded-md"
                   />
                 </EditableContentMessage>
                 {isViableForRunningCode(group.id, message.id) &&

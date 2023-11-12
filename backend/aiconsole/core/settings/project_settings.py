@@ -157,7 +157,7 @@ class Settings:
             partial_settings = {
                 AssetStatus.DISABLED: PartialSettingsData(disabled_agents=[id]),
                 AssetStatus.ENABLED: PartialSettingsData(enabled_agents=[id]),
-                AssetStatus.FORCED: PartialSettingsData(forced_agent=id)
+                AssetStatus.FORCED: PartialSettingsData(forced_agent=id, enabled_agents=[self._settings.forced_agent] if self._settings.forced_agent else None)
             }
 
         else:

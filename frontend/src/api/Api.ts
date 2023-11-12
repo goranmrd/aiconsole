@@ -26,6 +26,8 @@ import {
   RecentProject,
   RenderedMaterial,
   Settings,
+  EditableObjectType,
+  EditableObject,
 } from '@/types/types';
 import showNotification from '@/utils/showNotification';
 import { useAPIStore } from '@/store/useAPIStore';
@@ -206,13 +208,13 @@ async function saveNewAsset(assetType: AssetType, asset: Asset) {
   });
 }
 
-async function updateAsset(assetType: AssetType, asset: Asset, originalId?: string) {
+async function updateEditableObject(editableObjectType: EditableObjectType, editableObject: EditableObject, originalId?: string) {
   if (!originalId) {
-    originalId = asset.id;
+    originalId = editableObject.id;
   }
   
-  return ky.patch(`${getBaseURL()}/api/${assetType}s/${originalId}`, {
-    json: { ...asset },
+  return ky.patch(`${getBaseURL()}/api/${editableObjectType}s/${originalId}`, {
+    json: { ...editableObject },
     timeout: 60000,
     hooks,
   });
@@ -238,7 +240,7 @@ export const Api = {
   getRecentProjects,
   removeRecentProject,
   saveNewAsset,
-  updateAsset,
+  updateEditableObject,
   getCommandHistory,
   getChatsHistory,
   getChat,

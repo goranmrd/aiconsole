@@ -76,24 +76,29 @@ export type AssetType = 'material' | 'agent';
 
 export type GPTMode = 'quality' | 'speed' | 'cost';
 
-export type Asset = {
+
+export type EditableObjectType = 'material' | 'agent' | 'chat';
+
+export type EditableObjectTypePlural = 'materials' | 'agents' | 'chats';
+
+
+export type EditableObject = {
   id: string;
   name: string;
+}
+
+export type Asset = EditableObject & {
   usage: string;
   usage_examples: string[];
   defined_in: MaterialDefinitionSource;
   status: AssetStatus;
 };
 
-export type ChatHeadline = {
-  id: string;
-  message: string;
-  timestamp: string;
+export type ChatHeadline = EditableObject & {
+  last_modified: string;
 };
 
-export type Chat = {
-  id: string;
-  title: string;
+export type Chat = EditableObject & {
   title_edited: boolean;
   last_modified: string;
   message_groups: AICMessageGroup[];

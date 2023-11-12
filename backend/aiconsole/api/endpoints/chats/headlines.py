@@ -15,6 +15,7 @@
 # limitations under the License.
 
 import logging
+from aiconsole.core.chat.types import ChatHeadline
 from fastapi import Request
 from aiconsole.api.endpoints.chats.history import router
 from aiconsole.core.chats.list_possible_historic_chat_ids import list_possible_historic_chat_ids
@@ -32,11 +33,11 @@ async def get_history_headlines():
             chat = await load_chat_history(chat_id)
 
             if chat:
-                headlines.append({
-                    "message": chat.title,
-                    "id": chat_id,
-                    "timestamp": chat.last_modified.isoformat()
-                })
+                headlines.append(ChatHeadline(
+                    id=chat_id,
+                    name=chat.name,
+                    last_modified=chat.last_modified
+                ).model_dump())
 
         except Exception as e:
             _log.exception(e)

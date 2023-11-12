@@ -16,7 +16,7 @@
 
 import { Tabs } from '@mantine/core';
 import { useEffect, useState } from 'react';
-import { ChatsSidebarTab } from '../../chat/ChatsSidebarTab';
+import { ChatsSidebarTab } from './ChatsSidebarTab';
 import { AssetsSidebarTab } from './AssetsSidebarTab';
 import { TabsValues } from '@/types/types';
 import { useAICStore } from '@/store/AICStore';
@@ -57,7 +57,7 @@ const SideBar = ({initialTab}: {initialTab: string}) => {
 
   return (
     <div
-      className={`min-w-[336px] w-[336px] h-full max-h-full overflow-y-scroll bg-gray-900 pl-[30px] py-[20px] drop-shadow-md flex flex-col border-r border-t border-gray-600`}
+      className={`min-w-[336px] w-[336px] h-full max-h-full overflow-y-scroll bg-gray-900 pl-[30px] py-[20px] drop-shadow-md flex flex-col border-r border-gray-600`}
     >
       <Tabs
         value={activeTab}

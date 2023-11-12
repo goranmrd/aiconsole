@@ -14,19 +14,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Asset, AssetType } from '@/types/types';
-import { AssetsSideBarTabItem } from './AssetsSideBarTabItem';
+import { EditableObject, EditableObjectType } from '@/types/types';
+import { getEditableObjectType } from '@/utils/getEditableObjectType';
 
-export const AssetsSidebarTab = ({assetType, assets}: {assetType: AssetType, assets: Asset[]}) => {
-  return (
-      <div className="flex flex-col gap-[5px] pr-[15px]">
-        {assets.map((asset) => (
-          <AssetsSideBarTabItem
-            key={asset.id}
-            assetType={assetType}
-            asset={asset}
-          />
-        ))}
-      </div>
-  );
-};
+export function getEditableObjectColor(editableObject?: EditableObject | EditableObjectType) {
+  let assetType;
+
+  if (typeof editableObject === 'string') {
+    assetType = editableObject;
+  } else {
+    assetType = getEditableObjectType(editableObject);
+  }
+
+  switch (assetType) {
+    case 'material':
+      return '#CFA740';
+    case 'agent':
+      return '#62ADF2';
+    case 'chat':
+      return '#A67CFF';
+    default:
+      return '#FFFFFF';
+  }
+}

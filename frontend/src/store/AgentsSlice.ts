@@ -16,18 +16,20 @@
 
 import { StateCreator } from 'zustand';
 
-import { Agent, Asset, AssetStatus, AssetType } from '../types/types';
+import { Agent, Asset, AssetStatus, AssetType, Chat, EditableObject, EditableObjectType, Material } from '../types/types';
 import { Api } from '@/api/Api';
 import { AICStore } from './AICStore';
 import { convertNameToId } from '@/utils/convertNameToId';
+import { v4 as uuid } from 'uuid';
 
 export type AgentsSlice = {
   agents: Agent[];
   initAgents: () => Promise<void>;
   getAsset: (assetType: AssetType, id: string) => Asset | undefined;
-  renameAsset: (assetType: AssetType, originalId: string, newName: string) => Promise<void>;
-  deleteAsset: (assetType: AssetType, id: string) => Promise<void>;
+  renameEditableObject: (editableObjectType: EditableObjectType, originalId: string, newName: string) => Promise<void>;
+  deleteEditableObject: (editableObjectType: EditableObjectType, id: string) => Promise<void>;
   setAssetStatus: (assetType: AssetType, id: string, status: AssetStatus) => Promise<void>;
+  getEditableObject: (editableObjectType: EditableObjectType, id: string) => EditableObject | undefined;
 };
 
 export const createAgentsSlice: StateCreator<AICStore, [], [], AgentsSlice> = (
@@ -35,30 +37,38 @@ export const createAgentsSlice: StateCreator<AICStore, [], [], AgentsSlice> = (
   get,
 ) => ({
   agents: [],
-  renameAsset: async (assetType: AssetType, originalId: string, newName: string) => {
-    const asset = get().getAsset(assetType, originalId);
+  renameEditableObject: async (editableObjectType: EditableObjectType, originalId: string, newName: string) => {
+    const editableObject = get().getEditableObject(editableObjectType, originalId);
     
-    if (!asset) {
+    if (!editableObject) {
       throw new Error(`Asset ${originalId} not found`);
     }
 
     const newId = convertNameToId(newName);
-    asset.id = newId;
-    asset.name = newName;
+    editableObject.id = newId;
+    editableObject.name = newName;
     
-    await Api.updateAsset(assetType, asset, originalId);
+    await Api.updateEditableObject(editableObjectType, editableObject, originalId);
   },
-  deleteAsset: async (assetType: AssetType, id: string) => {
-    await Api.deleteAsset(assetType, id);
+  deleteEditableObject: async (editableObjectType: EditableObjectType, id: string) => {
+    if (editableObjectType === 'chat') {
+      await Api.deleteChat(id);
 
-    if (assetType === 'agent') {
-      set((state) => ({
-        agents: (state.agents || []).filter((asset) => asset.id !== id),
+      set(() => ({
+        chatHeadlines: get().chatHeadlines.filter((chat) => chat.id !== id),
       }));
-    } else if (assetType === 'material') {
-      set((state) => ({
-        materials: (state.materials || []).filter((asset) => asset.id !== id),
-      }));
+    } else {
+      await Api.deleteAsset(editableObjectType, id);
+
+      if (editableObjectType === 'agent') {
+        set((state) => ({
+          agents: (state.agents || []).filter((asset) => asset.id !== id),
+        }));
+      } else if (editableObjectType === 'material') {
+        set((state) => ({
+          materials: (state.materials || []).filter((asset) => asset.id !== id),
+        }));
+      }
     }
   },
   initAgents: async () => {
@@ -89,11 +99,45 @@ export const createAgentsSlice: StateCreator<AICStore, [], [], AgentsSlice> = (
 
         return agent;
       }
+
+      if (id === 'new') {
+        const agent:Agent = {
+          id: 'new_agent',
+          name: 'New agent',
+          usage: '',
+          usage_examples: [],
+          system: '',
+          defined_in: 'project',
+          status: 'enabled',
+          gpt_mode: 'quality',
+          execution_mode: 'normal',
+        }
+
+        return agent;
+      }
   
       return get().agents.find((agent) => agent.id === id);
     }
 
     if (assetType === 'material') {
+      if (id === 'new') {
+        const material:Material = {
+          id: 'new_material',
+          name: 'New material',
+          usage: '',
+          usage_examples: [],
+          defined_in: 'project',
+          status: 'enabled',
+          content_api: '',
+          content_type: 'static_text',
+          content_dynamic_text: '',
+          content_static_text: '',
+
+        }
+
+        return material;
+      }
+
       return get().materials?.find((material) => material.id === id);
     }
 
@@ -123,5 +167,30 @@ export const createAgentsSlice: StateCreator<AICStore, [], [], AgentsSlice> = (
     }
 
     await Api.setAssetStatus(assetType, id, status);
+  },
+  getEditableObject: (editableObjectType: EditableObjectType, id: string): EditableObject | undefined => {
+    if (editableObjectType === 'chat') {
+      if (get().chat.id === id) return get().chat;
+      
+      const newChat: Chat = {
+        id: id,
+        name: '',
+        title_edited: false,
+        last_modified: '',
+        message_groups: [],
+      }
+
+      return newChat;
+    }
+
+    if (editableObjectType === 'agent') {
+      return get().getAsset('agent', id); 
+    }
+
+    if (editableObjectType === 'material') {
+      return get().getAsset('material', id);
+    }
+
+    throw new Error(`Unknown editable object type ${editableObjectType}`);
   }
 });

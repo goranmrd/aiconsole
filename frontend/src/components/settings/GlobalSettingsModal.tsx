@@ -20,19 +20,27 @@ import { Modal } from '@mantine/core';
 import { Ban, Check, X } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '../system/Button';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-interface GlobalSettingsProps {
-  isOpened: boolean;
-  onClose: () => void;
-}
 // TODO: implement other features from figma like api for azure, user profile and tutorial
-export const GlobalSettingsModal = ({ isOpened, onClose }: GlobalSettingsProps) => {
+export const GlobalSettingsModal = () => {
   const openAiApiKey = useSettings((state) => state.openAiApiKey);
 
   const alwaysExecuteCode = useSettings((state) => state.alwaysExecuteCode);
   const [inputText, setInputText] = useState(openAiApiKey ?? '');
   const [isAutoRun, setIsAutoRun] = useState(alwaysExecuteCode);
   const { validating, setApiKey } = useApiKey();
+
+  const location = useLocation();
+  const isSettingsModalVisible = location.state?.isSettingsModalVisible;
+  const navigate = useNavigate();
+
+  const onClose = () => {
+    navigate(location.pathname, { 
+      state: { ...location.state, isSettingsModalVisible: false } 
+    })
+  };
+
 
   const setAutoCodeExecution = useSettings((state) => state.setAutoCodeExecution);
 
@@ -54,7 +62,7 @@ export const GlobalSettingsModal = ({ isOpened, onClose }: GlobalSettingsProps) 
 
   return (
     <Modal
-      opened={isOpened}
+      opened={isSettingsModalVisible}
       onClose={onClose}
       centered
       className="mantine-Modal-root"

@@ -14,12 +14,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { useOpenSettings } from '@/components/settings/useOpenSettings';
 import { useContextMenu } from '@/hooks/useContextMenu';
 import { Settings } from 'lucide-react';
 import { ContextMenuItemOptions } from 'mantine-contextmenu';
 
-export function useUserContextMenu(openSettings: () => void) {
+export function useUserContextMenu() {
   const { showContextMenu, hideContextMenu, isContextMenuVisible } = useContextMenu();
+  const openSettings = useOpenSettings();
 
   function showContextMenuReplacement(content: ContextMenuItemOptions[] = []) {
     return showContextMenu([

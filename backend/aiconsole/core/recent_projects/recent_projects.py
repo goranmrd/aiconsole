@@ -76,7 +76,7 @@ async def get_recent_project():
                 name=os.path.basename(path),
                 path=path,
                 recent_chats=[
-                    (await load_chat_history(id, path)).title
+                    (await load_chat_history(id, path)).name
                     for id in list_possible_historic_chat_ids(path)[:4]
                 ]
             )

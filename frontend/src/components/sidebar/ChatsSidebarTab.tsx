@@ -16,7 +16,7 @@
 
 import useGroupByDate from '@/hooks/useGroupByDate';
 import { useAICStore } from '@/store/AICStore';
-import { ChatsSideBarTabItem } from './ChatsSideBarTabItem';
+import SideBarItem from './SideBarItem';
 
 export const ChatsSidebarTab = () => {
   const chatHeadlines = useAICStore((state) => state.chatHeadlines);
@@ -37,7 +37,7 @@ export const ChatsSidebarTab = () => {
             <div key={section.title}>
               <h3 className="uppercase px-[9px] py-[5px] text-gray-400 text-[12px] leading-[18px]">{section.title}</h3>
               {section.headlines.map((chat) => (
-                <ChatsSideBarTabItem key={chat.id} chat={chat} />
+                <SideBarItem key={chat.id} editableObject={chat} editableObjectType='chat' />
               ))}
             </div>
           ),

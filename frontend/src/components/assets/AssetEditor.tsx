@@ -14,30 +14,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Eye } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import { Api } from '@/api/Api';
 import { CodeInput } from '@/components/assets/CodeInput';
 import { ErrorObject, SimpleInput } from '@/components/assets/TextInput';
-import { useAssetContextMenu } from '@/hooks/useAssetContextMenu';
 import { useAICStore } from '@/store/AICStore';
 import { Agent, Asset, AssetType, Material, MaterialContentType, RenderedMaterial } from '@/types/types';
-import { getAssetColor } from '@/utils/getAssetColor';
-import { getAssetIcon } from '@/utils/getAssetIcon';
 import showNotification from '@/utils/showNotification';
 import { cn } from '@/utils/styles';
-import { Tooltip } from '../system/Tooltip';
-import { getMaterialContentName } from './getMaterialContentName';
 import { convertNameToId } from '../../utils/convertNameToId';
+import { getMaterialContentName } from './getMaterialContentName';
 
 export function AssetEditor({ assetType }: { assetType: AssetType }) {
   const navigate = useNavigate();
   const [asset, setAsset] = useState<Asset | undefined>(undefined);
   const [assetInitial, setAssetInitial] = useState<Asset | undefined>(undefined);
   const [preview, setPreview] = useState<RenderedMaterial | undefined>(undefined);
-  const [errors, setErrors] = useState<ErrorObject>({});
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [errors, _] = useState<ErrorObject>({});
 
   let { id } = useParams<{ id: string | undefined }>();
 
@@ -51,7 +47,7 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
   const copyId = searchParams.get('copy');
 
   const isError = Object.values(errors).some((error) => error !== null);
-  const deleteAsset = useAICStore((state) => state.deleteAsset);
+  const deleteAsset = useAICStore((state) => state.deleteEditableObject);
   const readOnly = asset?.defined_in === 'aiconsole';
   const previewValue = preview ? preview?.content.split('\\n').join('\n') : 'Generating preview...';
 
@@ -247,7 +243,7 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
       });
     } else {
       if (isAsseetChanged()) {
-        await Api.updateAsset(assetType, asset);
+        await Api.updateEditableObject(assetType, asset);
 
         showNotification({
           title: 'Saved',
@@ -266,45 +262,10 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
     setAssetInitial(asset);
   };
 
-  const Icon = getAssetIcon(asset || assetType);
-
-  const { showContextMenu } = useAssetContextMenu({ assetType, asset: asset, fromAssetDetail: true });
-
   return (
-    <div className="flex flex-col w-full h-full overflow-y-auto p-6 gap-4">
-      <div className="flex gap-5" onContextMenu={showContextMenu()}>
-        <Tooltip
-          label={`${typeName} id determines the file name and is auto generated from name. It must be unique.`}
-          position="top-end"
-          offset={{ mainAxis: 7 }}
-        >
-          <div className="flex flex-row items-center gap-2 font-bold">
-            <Icon style={{ color: getAssetColor(asset || assetType) }} /> {asset?.id}
-          </div>
-        </Tooltip>
-
-        {readOnly && (
-          <div className="flex gap-2 items-center text-md font-bold ml-auto ">
-            <Eye className="w-4 h-4" />
-            This is a system {assetType}. It can't be edited.
-          </div>
-        )}
-      </div>
+    <div className="flex flex-col w-full h-full overflow-auto p-6 gap-4">
       {asset && (
         <>
-          <SimpleInput
-            label={`${typeName} name`}
-            placeholder=""
-            value={asset.name}
-            disabled={readOnly}
-            required
-            name="asset_name"
-            errors={errors}
-            setErrors={setErrors}
-            onChange={(value) => setAsset({ ...asset, name: value })}
-            withTooltip
-            tootltipText={`${typeName} name is used to identify the asset in the system. Make it self explanatory so AI will better understand what it is.`}
-          />
           <SimpleInput
             label="Usage"
             name="usage"
@@ -314,9 +275,9 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
             withTooltip
             tootltipText={`Usage is used to help identify when this ${typeName} should be used. `}
           />
-          <div className="flex flex-row w-full gap-4 ">
-            <div className="flex-1 h-[calc(100vh-425px)] min-h-[300px]">{typeSpecificPart}</div>
-            {showPreview && <div className="flex-1 h-[calc(100vh-425px)] min-h-[300px]">
+          <div className="flex-grow flex flex-row w-full gap-4 overflow-clip">
+            <div className="flex-1">{typeSpecificPart}</div>
+            {showPreview && <div className="flex-1">
               <CodeInput
                 label="Preview of text to be injected into AI context"
                 value={preview?.error ? preview.error : previewValue}
@@ -330,7 +291,7 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
           <button
             disabled={disableSubmit}
             className={cn(
-              'bg-primary hover:bg-gray-700/95 text-black hover:bg-primary-light px-4 py-1 rounded-full flow-right text-[16px] ',
+              ' flex-none bg-primary hover:bg-gray-700/95 text-black hover:bg-primary-light px-4 py-1 rounded-full flow-right text-[16px] ',
               {
                 'opacity-[0.3] cursor-not-allowed hover:bg-initial': disableSubmit,
               },

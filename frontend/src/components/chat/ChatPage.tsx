@@ -27,7 +27,7 @@ export function ChatPage() {
   }
 
   return (
-    <div className="flex w-full flex-col justify-between downlight">
+    <div className="flex w-ful h-full flex-col justify-between downlight">
       <Chat chatId={params.id} />
       <CommandInput className="flex-none" />
     </div>

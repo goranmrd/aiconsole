@@ -29,7 +29,7 @@ router = APIRouter()
 @router.post("/preview")
 async def materials_preview(material: Material):
     content_context = ContentEvaluationContext(
-        chat=Chat(id="chat", title="", last_modified=datetime.now(), title_edited=False, message_groups=[]),
+        chat=Chat(id="chat", name="", last_modified=datetime.now(), title_edited=False, message_groups=[]),
         agent=Agent(
             id="user",
             name="User",

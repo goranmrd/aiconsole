@@ -16,14 +16,16 @@
 
 import { Link } from 'react-router-dom';
 
+import { useEditableObjectContextMenu } from '@/hooks/useEditableObjectContextMenu';
 import { useAICStore } from '@/store/AICStore';
 import { useAPIStore } from '@/store/useAPIStore';
-import { useAssetContextMenu } from '@/hooks/useAssetContextMenu';
+import { useUserContextMenu } from '@/hooks/useUserContextMenu';
+import { useOpenSettings } from '../settings/useOpenSettings';
 
 function UserInfoMaterialLink({ material_id }: { material_id: string }) {
   const materials = useAICStore((state) => state.materials) || [];
   const material = materials.find((m) => m.id === material_id);
-  const { showContextMenu } = useAssetContextMenu({ assetType: 'material', asset: material });
+  const { showContextMenu } = useEditableObjectContextMenu({ editableObjectType: 'material', editableObject: material });
 
   return (
     <Link to={`/materials/${material_id}`} onContextMenu={showContextMenu()}>
@@ -48,25 +50,30 @@ export function UserInfo({
 }) {
   const agent = useAICStore((state) => state.getAsset('agent', agent_id));
   const getBaseURL = useAPIStore((state) => state.getBaseURL);
-  const { showContextMenu } = useAssetContextMenu({
-    assetType: 'agent',
-    asset: agent || {
+  const { showContextMenu } = useEditableObjectContextMenu({
+    editableObjectType: 'agent',
+    editableObject: agent || {
       id: agent_id,
-      name: agent_id,
-      usage: '',
-      usage_examples: [],
-      defined_in: 'aiconsole',
-      status: 'enabled',
+      name: agent_id
     },
-  });
+  })
+
+  const { showContextMenu: showUserContextMenu } = useUserContextMenu()
+  const openSettings = useOpenSettings();
 
   return (
     <div className="flex-none items-center flex flex-col">
       {agent && (
         <Link
-          to={`/agents/${agent?.id}`}
+          to={agent_id != 'user' ? `/agents/${agent_id}` : ''}
+          onClick={(e) => {
+            if (agent_id == 'user') {
+              e.preventDefault()
+              openSettings()
+            }
+          }}
           className="flex-none items-center flex flex-col"
-          onContextMenu={showContextMenu()}
+          onContextMenu={agent_id != 'user' ? showContextMenu() : showUserContextMenu()}
         >
           <img
             title={`${agent?.name || agent?.id}${task ? ` tasked with:\n${task}` : ``}`}

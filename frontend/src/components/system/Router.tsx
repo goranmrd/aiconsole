@@ -14,14 +14,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AssetEditor } from '@/components/assets/AssetEditor';
 import { useAICStore } from '@/store/AICStore';
 import { HashRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
-import { ChatPage } from '../chat/ChatPage';
 import { Home } from '../home/Home';
+import SideBar from '../sidebar/SideBar';
 import { TopBar } from './TopBar';
-import SideBar from './sidebar/SideBar';
+import { EditableObjectEditor } from './EditableObjectEditor';
+import { GlobalSettingsModal } from '../settings/GlobalSettingsModal';
 
 function MustHaveProject() {
   const isProjectOpen = useAICStore((state) => state.isProjectOpen);
@@ -57,6 +57,7 @@ export function Router() {
             path="*"
             element={
               <div className="App flex flex-col h-screen fixed top-0 left-0 bottom-0 right-0 bg-gray-800/95 text-stone-400">
+                <GlobalSettingsModal />
                 <TopBar />
                 <div className="flex flex-row h-full overflow-y-auto">
                   <Routes>
@@ -65,9 +66,7 @@ export function Router() {
                     <Route path="/chats/*" element={<SideBar initialTab="chats" />} />
                   </Routes>
                   <Routes>
-                    <Route path="/agents/:id" element={<AssetEditor assetType='agent' />} />
-                    <Route path="/materials/:id" element={<AssetEditor assetType='material' />} />
-                    <Route path="/chats/:id" element={<ChatPage />} />
+                    <Route path="/:type/:id" element={<EditableObjectEditor />} />
                   </Routes>
                 </div>
               </div>

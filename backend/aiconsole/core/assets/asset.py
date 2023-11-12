@@ -19,6 +19,11 @@ from typing import List
 from pydantic import BaseModel
 
 
+class EditableObject(BaseModel):
+    id: str
+    name: str
+
+
 class AssetLocation(str, Enum):
     AICONSOLE_CORE = "aiconsole"
     PROJECT_DIR = "project"
@@ -34,9 +39,7 @@ class AssetStatus(str, Enum):
     FORCED = "forced"
 
 
-class Asset(BaseModel):
-    id: str
-    name: str
+class Asset(EditableObject):
     version: str = "0.0.1"
     usage: str
     usage_examples: List[str]

@@ -43,7 +43,7 @@ const useGroupByDate = (data: ChatHeadline[]) => {
     };
 
     data.forEach((item) => {
-      const itemDate = new Date(item.timestamp);
+      const itemDate = new Date(item.last_modified);
       const isToDay = isToday(itemDate);
       const isYesterDay = isYesterday(itemDate);
       const isWithinAWeek = isWithinInterval(itemDate, {

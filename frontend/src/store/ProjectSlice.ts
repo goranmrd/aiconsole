@@ -52,7 +52,6 @@ export const createProjectSlice: StateCreator<AICStore, [], [], ProjectSlice> = 
       projectName: name,
       isProjectOpen: true,
       isProjectLoading: false,
-      alwaysExecuteCode: false,
     }));
 
     await Promise.all([get().initCommandHistory(), get().initChatHistory()]);
@@ -71,7 +70,6 @@ export const createProjectSlice: StateCreator<AICStore, [], [], ProjectSlice> = 
       projectName: '',
       isProjectOpen: false,
       isProjectLoading: false,
-      alwaysExecuteCode: false,
     }));
   },
   onProjectLoading: () => {
@@ -80,7 +78,6 @@ export const createProjectSlice: StateCreator<AICStore, [], [], ProjectSlice> = 
       projectName: undefined,
       isProjectOpen: false,
       isProjectLoading: true,
-      alwaysExecuteCode: false,
     }));
   },
   resetIsProjectFlag: () => {

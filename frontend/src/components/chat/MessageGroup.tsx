@@ -40,7 +40,7 @@ export function MessageGroup({
           materials_ids={group.materials_ids}
           task={group.task}
         />
-        <div className="flex-grow flex flex-col gap-5">
+        <div className="flex-grow flex flex-col gap-5  overflow-auto">
           {group.messages.map((message, index) => (
             'language' in message ? (
               <CodeMessage

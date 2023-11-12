@@ -23,11 +23,9 @@ import { useProjectFileManager } from '@/hooks/useProjectFileManager';
 import { useAICStore } from '@/store/AICStore';
 import { useRecentProjectsStore } from '@/store/home/useRecentProjectsStore';
 import { cn } from '@/utils/styles';
-import { useDisclosure } from '@mantine/hooks';
 import { FolderOpen, FolderPlus, PlusIcon } from 'lucide-react';
 import { useAddMenu } from '../../hooks/useAddMenu';
 import { useUserContextMenu } from '../../hooks/useUserContextMenu';
-import { GlobalSettingsModal } from '../settings/GlobalSettingsModal';
 import { Button } from './Button';
 import { ConfirmationModal } from './ConfirmationModal';
 
@@ -47,13 +45,12 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
   } = useProjectFileManager();
   const projectName = useAICStore((state) => state.projectName);
   const recentProjects = useRecentProjectsStore((state) => state.recentProjects);
-  const [settingsOpened, { open: openSettings, close: closeSettings }] = useDisclosure(false);
   const { showContextMenu: showProjectContextMenu } = useProjectContextMenu();
   const { showContextMenu: showPlusMenu } = useAddMenu();
-  const { showContextMenu: showUserMenu } = useUserContextMenu(openSettings);
+  const { showContextMenu: showUserMenu } = useUserContextMenu();
 
   return (
-    <div className="flex w-full flex-col px-[30px] py-[26px] border-b drop-shadow-md bg-transparent border-white/10 relative z-40 h-[101px]">
+    <div className="flex w-full flex-col px-[30px] py-[26px] border-b bg-transparent shadow-md border-gray-600 relative z-40 h-[101px]">
       <div className="flex gap-2 items-center">
         {variant === 'recentProjects' ? (
           recentProjects.length > 0 && (
@@ -120,7 +117,6 @@ export function TopBar({ variant = 'chat' }: TopBarProps) {
               onClick={showUserMenu()}
               onContextMenu={showUserMenu()}
             />
-            <GlobalSettingsModal onClose={closeSettings} isOpened={settingsOpened} />
           </div>
         </div>
       </div>
