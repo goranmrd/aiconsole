@@ -55,6 +55,14 @@ export function useEditableObjectContextMenu({
       return () => {};
     }
 
+    content.push({
+      key: 'Name',
+      title: editableObject.name,
+      className: 'font-bold opacity-50 max-w-[400px] truncate !cursor-default hover:!bg-gray-700',
+      disabled: true,
+      onClick: () => {},
+    });
+
     if (location.pathname !== `/${editableObjectType}s/${editableObject.id}`) {
       content.push({
         key: 'Open',
@@ -119,7 +127,7 @@ export function useEditableObjectContextMenu({
               disabled: <Ban className="w-4 h-4" />,
               forced: <Check className="w-4 h-4" />,
             }[asset?.status || 'enabled'],
-            title: 'Usage',
+            title: 'Use ...',
 
             items: [
               ...(editableObject && asset?.status !== 'forced'

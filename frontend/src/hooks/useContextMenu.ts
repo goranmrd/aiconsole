@@ -16,7 +16,7 @@
 
 import { useContextMenu as useMantineContextMenu, ContextMenuContent, ContextMenuOptions } from 'mantine-contextmenu';
 
-export const CONTEXT_MENU_ITEM_CLASSES = '!text-white/90 bg-gray-700 hover:!bg-gray-600 !py-[7px] !px-[15px] !rounded-none my-[3px] !text-[16px]'
+export const CONTEXT_MENU_ITEM_CLASSES = '!text-white/90 bg-gray-700 hover:bg-gray-600 !py-[7px] !px-[15px] !rounded-none my-[3px] !text-[16px]'
 
 export function useContextMenu() {
   const { showContextMenu, hideContextMenu, isContextMenuVisible } = useMantineContextMenu();
