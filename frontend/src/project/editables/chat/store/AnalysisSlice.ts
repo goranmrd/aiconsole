@@ -14,13 +14,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { create } from 'zustand';
+import { StateCreator } from 'zustand';
 
 import { v4 as uuidv4 } from 'uuid';
-import { useAICStore } from './AICStore';
-import { ChatAPI } from './ChatAPI';
+import { ChatAPI } from '../ChatAPI';
+import { ChatStore, useChatStore } from './useChatStore';
 
-export type AnalysisStore = {
+export type AnalysisSlice = {
   agent_id?: string;
   relevant_material_ids?: string[];
   currentAnalysisRequestId?: string;
@@ -33,15 +33,15 @@ export type AnalysisStore = {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
+export const createAnalysisSlice: StateCreator<ChatStore, [], [], AnalysisSlice> = (set, get) => ({
   initAnalytics: () => {
-    useAICStore.subscribe((state, prevState) => {
+    useChatStore.subscribe((state, prevState) => {
       if (
         prevState.chatId !== state.chatId ||
         prevState.chat.message_groups.length !== state.chat.message_groups.length ||
         (state.isExecuteRunning && !prevState.isExecuteRunning)
       ) {
-        useAnalysisStore.getState().reset();
+        get().reset();
       }
     });
   },
@@ -68,14 +68,14 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
     set(() => ({}));
 
     try {
-      useAnalysisStore.getState().reset();
+      get().reset();
 
       set(() => ({
         currentAnalysisRequestId: analysisRequestId,
         analysisAbortController: abortController,
       }));
 
-      const response = await ChatAPI.analyse(useAICStore.getState().chat, analysisRequestId, abortController.signal);
+      const response = await ChatAPI.analyse(useChatStore.getState().chat, analysisRequestId, abortController.signal);
 
       const data = await response.json<{
         agent_id: string;
@@ -95,7 +95,7 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
       }));
 
       if (data.agent_id !== 'user' && data.next_step) {
-        useAICStore.getState().appendGroup({
+        useChatStore.getState().appendGroup({
           agent_id: data.agent_id,
           task: data.next_step,
           materials_ids: data.materials_ids,
@@ -104,7 +104,7 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
         })
     
         console.log('Executing');
-        useAICStore.getState().doExecute();
+        useChatStore.getState().doExecute();
       }
     } catch (err) {
       if ((err as Error).name === 'AbortError') {
@@ -124,4 +124,4 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
       }
     }
   },
-}));
+});

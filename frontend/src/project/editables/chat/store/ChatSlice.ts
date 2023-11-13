@@ -16,23 +16,23 @@
 
 import { StateCreator } from 'zustand';
 
-import { Chat, ChatHeadline } from "./chatTypes";
-import { EditablesAPI } from '@/project/editables/common/EditablesAPI';
-import { AICStore } from './AICStore';
 import { useWebSocketStore } from '@/common/ws/useWebSocketStore';
-import { deepCopyChat } from './utils';
+import { EditablesAPI } from '@/project/editables/EditablesAPI';
+import { Chat } from "../chatTypes";
+import { ChatStore } from './useChatStore';
+import { deepCopyChat } from '../utils';
+import { useProjectsStore } from '@/projects/useProjectsStore';
+import { useEditablesStore } from '../../useEditablesStore';
 
 export type ChatSlice = {
   chatId: string;
   chat: Chat;
   copyChat: (id: string, newId: string) => Promise<void>;
-  chats: ChatHeadline[];
   setChatId: (id: string) => void;
-  initChatHistory: () => Promise<void>;
   saveCurrentChatHistory: () => Promise<void>;
 };
 
-export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
+export const createChatSlice: StateCreator<ChatStore, [], [], ChatSlice> = (
   set,
   get,
 ) => ({
@@ -44,7 +44,7 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
     title_edited: false,
     message_groups: [],
   },
-  chats: [],
+  
   agent: undefined,
   materials: [],
   copyChat: async (id: string, newId: string) => {
@@ -53,21 +53,6 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
     set({
       chat: chat,
     });
-  },
-  initChatHistory: async () => {
-    set({ chats: [] });
-    if (!get().isProjectOpen) return;
-    try {
-      const chats: ChatHeadline[] = await EditablesAPI.fetchEditableObjects<ChatHeadline>('chat');
-      set(() => ({
-        chats: chats,
-      }));
-    } catch (e) {
-      set(() => ({
-        chats: [],
-      }));
-      console.log(e);
-    }
   },
   setChatId: async (id: string) => {
     set({
@@ -83,7 +68,7 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
   
       let chat: Chat;
       
-      if (id === '' || !get().isProjectOpen) {
+      if (id === '' || !useProjectsStore.getState().isProjectOpen) {
         chat = {
           id: '',
           name: '',
@@ -118,14 +103,17 @@ export const createChatSlice: StateCreator<AICStore, [], [], ChatSlice> = (
 
     set({
       chat: chat,
+    });
+
+    useEditablesStore.setState({
       chats: [
-       {
-          id: get().chatId,
-          name: chat.name,
-          last_modified: new Date().toISOString(),
-        },
-        ...get().chats.filter((chat) => chat.id !== get().chatId),
-      ],
+        {
+           id: get().chatId,
+           name: chat.name,
+           last_modified: new Date().toISOString(),
+         },
+         ...useEditablesStore.getState().chats.filter((chat) => chat.id !== get().chatId),
+       ],
     });
 
     await EditablesAPI.updateEditableObject('chat', chat);

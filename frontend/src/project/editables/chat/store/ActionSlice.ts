@@ -16,11 +16,10 @@
 
 import { StateCreator } from 'zustand';
 
-import { useSettings } from '../../../settings/useSettings';
-import { AICStore } from './AICStore';
-import { ChatAPI } from './ChatAPI';
-import { useAnalysisStore } from './useAnalysisStore';
-import { getGroup, getMessage } from './utils';
+import { useSettingsStore } from '../../../../settings/useSettingsStore';
+import { ChatAPI } from '../ChatAPI';
+import { ChatStore } from './useChatStore';
+import { getGroup, getMessage } from '../utils';
 
 export type ActionSlice = {
   doExecute: () => Promise<void>;
@@ -30,7 +29,7 @@ export type ActionSlice = {
   executeAbortSignal: AbortController;
 };
 
-export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
+export const createActionSlice: StateCreator<ChatStore, [], [], ActionSlice> = (
   set,
   get,
 ) => ({
@@ -249,16 +248,16 @@ export const createActionSlice: StateCreator<AICStore, [], [], ActionSlice> = (
       const isCode = 'language' in lastMessage;
 
       if (isCode) {
-        if (useSettings.getState().alwaysExecuteCode) {
+        if (useSettingsStore.getState().alwaysExecuteCode) {
           await get().doRun();
         }
       } else {
-        useAnalysisStore.getState().doAnalysis();
+        get().doAnalysis();
       }
     }
   },
   stopWork: async () => {
     get().executeAbortSignal.abort();
-    useAnalysisStore.getState().analysisAbortController.abort();
+    get().analysisAbortController.abort();
   },
 });

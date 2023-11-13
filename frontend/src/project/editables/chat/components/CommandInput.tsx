@@ -18,8 +18,7 @@ import TextareaAutosize from 'react-textarea-autosize';
 import { useEffect, useRef } from 'react';
 import { SendHorizonal, Square } from 'lucide-react';
 import { cn } from '@/common/cn';
-import { useAICStore } from '@/project/editables/chat/AICStore';
-import { useAnalysisStore } from '@/project/editables/chat/useAnalysisStore';
+import { useChatStore } from '@/project/editables/chat/store/useChatStore';
 
 interface MessageInputProps {
   className?: string;
@@ -27,21 +26,21 @@ interface MessageInputProps {
 }
 
 export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
-  const command = useAICStore(
+  const command = useChatStore(
     (state) => state.commandHistory[state.commandIndex],
   );
 
-  const setCommand = useAICStore((state) => state.editCommand);
-  const newCommand = useAICStore((state) => state.newCommand);
-  const submitCommand = useAICStore((state) => state.submitCommand);
-  const promptUp = useAICStore((state) => state.historyUp);
-  const promptDown = useAICStore((state) => state.historyDown);
-  const stopWork = useAICStore((state) => state.stopWork);
-  const isAnalysisRunning = useAnalysisStore((state) => !!state.currentAnalysisRequestId);
-  const isExecuteRunning = useAICStore((state) => state.isExecuteRunning);
+  const setCommand = useChatStore((state) => state.editCommand);
+  const newCommand = useChatStore((state) => state.newCommand);
+  const submitCommand = useChatStore((state) => state.submitCommand);
+  const promptUp = useChatStore((state) => state.historyUp);
+  const promptDown = useChatStore((state) => state.historyDown);
+  const stopWork = useChatStore((state) => state.stopWork);
+  const isAnalysisRunning = useChatStore((state) => !!state.currentAnalysisRequestId);
+  const isExecuteRunning = useChatStore((state) => state.isExecuteRunning);
   const isWorking = isAnalysisRunning || isExecuteRunning;
-  const chat = useAICStore((state) => state.chat);
-  const chatId = useAICStore((state) => state.chatId);
+  const chat = useChatStore((state) => state.chat);
+  const chatId = useChatStore((state) => state.chatId);
 
   const sendingMessagesBlocked =
     (command === '' && chat.message_groups?.length == 0);

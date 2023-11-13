@@ -15,7 +15,7 @@
 // limitations under the License.
 
 import { EditableObject, EditableObjectType, Material, MaterialContentType } from '@/project/editables/assets/assetTypes';
-import { getEditableObjectType } from '@/project/editables/common/getEditableObjectType';
+import { getEditableObjectType } from '@/project/editables/getEditableObjectType';
 import { Bot, BugPlay, FileQuestion, FileType2, MessageSquare, StickyNote } from 'lucide-react';
 
 export const MATERIAL_CONTENT_TYPE_ICONS = {

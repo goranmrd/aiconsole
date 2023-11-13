@@ -15,7 +15,7 @@
 // limitations under the License.
 
 import { useApiKey } from '@/settings/useApiKey';
-import { useSettings } from '@/settings/useSettings';
+import { useSettingsStore } from '@/settings/useSettingsStore';
 import { Modal } from '@mantine/core';
 import { Ban, Check, X } from 'lucide-react';
 import { useState } from 'react';
@@ -24,9 +24,9 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 // TODO: implement other features from figma like api for azure, user profile and tutorial
 export const GlobalSettingsModal = () => {
-  const openAiApiKey = useSettings((state) => state.openAiApiKey);
+  const openAiApiKey = useSettingsStore((state) => state.openAiApiKey);
 
-  const alwaysExecuteCode = useSettings((state) => state.alwaysExecuteCode);
+  const alwaysExecuteCode = useSettingsStore((state) => state.alwaysExecuteCode);
   const [inputText, setInputText] = useState(openAiApiKey ?? '');
   const [isAutoRun, setIsAutoRun] = useState(alwaysExecuteCode);
   const { validating, setApiKey } = useApiKey();
@@ -42,7 +42,7 @@ export const GlobalSettingsModal = () => {
   };
 
 
-  const setAutoCodeExecution = useSettings((state) => state.setAutoCodeExecution);
+  const setAutoCodeExecution = useSettingsStore((state) => state.setAutoCodeExecution);
 
   const save = async () => {
     if (isAutoRun !== alwaysExecuteCode) {

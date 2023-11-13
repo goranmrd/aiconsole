@@ -16,10 +16,10 @@
 
 import { create } from 'zustand';
 
-import { useAICStore } from '../project/editables/chat/AICStore';
 
 import { RecentProject } from "@/projects/RecentProject";
 import { ProjectsAPI } from './ProjectsAPI';
+import { useProjectsStore } from './useProjectsStore';
 
 export type RecentProjectsStore = {
   initRecentProjects: () => Promise<void>;
@@ -30,7 +30,7 @@ export type RecentProjectsStore = {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const useRecentProjectsStore = create<RecentProjectsStore>((set, _) => ({
   initRecentProjects: async () => {
-    useAICStore.subscribe(async (state, prevState) => {
+    useProjectsStore.subscribe(async (state, prevState) => {
       // every time the project path changes, let's update the recent project list
       if (prevState.projectPath !== state.projectPath) {
         const recentProjects = await ProjectsAPI.getRecentProjects();

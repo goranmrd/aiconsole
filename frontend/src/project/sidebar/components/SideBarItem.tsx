@@ -14,15 +14,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { useEditableObjectContextMenu } from '@/project/editables/common/useEditableObjectContextMenu';
-import { useAICStore } from '@/project/editables/chat/AICStore';
+import { cn } from '@/common/cn';
 import { Asset, EditableObject, EditableObjectType } from '@/project/editables/assets/assetTypes';
-import { getEditableObjectColor } from '@/project/editables/common/getEditableObjectColor';
-import { getEditableObjectIcon } from '@/project/editables/common/getEditableObjectIcon';
+import { getEditableObjectColor } from '@/project/editables/getEditableObjectColor';
+import { getEditableObjectIcon } from '@/project/editables/getEditableObjectIcon';
+import { useEditableObjectContextMenu } from '@/project/editables/useEditableObjectContextMenu';
+import { useEditablesStore } from '@/project/editables/useEditablesStore';
 import { KeyboardEvent, MouseEvent, useEffect, useRef, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { getAssetStatusIcon } from '../../editables/assets/getAssetStatusIcon';
-import { cn } from '@/common/cn';
 
 const SideBarItem = ({
   editableObjectType,
@@ -31,7 +31,7 @@ const SideBarItem = ({
   editableObject: EditableObject;
   editableObjectType: EditableObjectType;
 }) => {
-  const renameEditableObject = useAICStore((state) => state.renameEditableObject);
+  const renameEditableObject = useEditablesStore((state) => state.renameEditableObject);
 
   const [isEditing, setIsEditing] = useState(false);
   const [isShowingContext, setIsShowingContext] = useState(false);

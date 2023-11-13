@@ -15,16 +15,16 @@
 // limitations under the License.
 
 import { AssetEditor } from '@/project/editables/assets/components/AssetEditor';
-import { useEditableObjectContextMenu } from '@/project/editables/common/useEditableObjectContextMenu';
+import { useEditableObjectContextMenu } from '@/project/editables/useEditableObjectContextMenu';
 import { Asset, EditableObject, EditableObjectTypePlural } from '@/project/editables/assets/assetTypes';
-import { Chat } from "../../chat/chatTypes";
-import { getEditableObjectColor } from '@/project/editables/common/getEditableObjectColor';
-import { getEditableObjectIcon } from '@/project/editables/common/getEditableObjectIcon';
-import { getEditableObjectType } from '@/project/editables/common/getEditableObjectType';
+import { Chat } from "../chat/chatTypes";
+import { getEditableObjectColor } from '@/project/editables/getEditableObjectColor';
+import { getEditableObjectIcon } from '@/project/editables/getEditableObjectIcon';
+import { getEditableObjectType } from '@/project/editables/getEditableObjectType';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { ChatPage } from '../../chat/components/ChatPage';
+import { ChatPage } from '../chat/components/ChatPage';
 import { useEffect, useState } from 'react';
-import InlineEditableObjectName from '../../../common/components/InlineEditableObjectName';
+import InlineEditableObjectName from '../../components/InlineEditableObjectName';
 import { convertNameToId } from '@/project/editables/assets/convertNameToId';
 import { v4 as uuid } from 'uuid';
 import { EditablesAPI } from '../EditablesAPI';

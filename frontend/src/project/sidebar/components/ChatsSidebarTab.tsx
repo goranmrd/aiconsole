@@ -14,12 +14,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { useEditablesStore } from '@/project/editables/useEditablesStore';
 import useGroupByDate from '@/project/sidebar/useGroupByDate';
-import { useAICStore } from '@/project/editables/chat/AICStore';
 import SideBarItem from './SideBarItem';
 
 export const ChatsSidebarTab = () => {
-  const chatHeadlines = useAICStore((state) => state.chats);
+  const chatHeadlines = useEditablesStore((state) => state.chats);
   const { today, yesterday, previous7Days, older } = useGroupByDate(chatHeadlines);
 
   const sections = [

@@ -15,8 +15,8 @@
 // limitations under the License.
 
 import { useContextMenu } from '@/common/contextMenu/useContextMenu';
-import { getEditableObjectColor } from '@/project/editables/common/getEditableObjectColor';
-import { MATERIAL_CONTENT_TYPE_ICONS, getEditableObjectIcon } from '@/project/editables/common/getEditableObjectIcon';
+import { getEditableObjectColor } from '@/project/editables/getEditableObjectColor';
+import { MATERIAL_CONTENT_TYPE_ICONS, getEditableObjectIcon } from '@/project/editables/getEditableObjectIcon';
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 

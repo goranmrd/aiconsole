@@ -17,8 +17,8 @@
 import showNotification from '@/common/showNotification';
 import { ProjectsAPI } from '@/projects/ProjectsAPI';
 import { create } from 'zustand';
-import { useAICStore } from '../project/editables/chat/AICStore';
 import { SettingsAPI } from './SettingsAPI';
+import { useProjectsStore } from '@/projects/useProjectsStore';
 
 export type SettingsStore = {
   openAiApiKey?: string | null;
@@ -31,7 +31,7 @@ export type SettingsStore = {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const useSettings = create<SettingsStore>((set, get) => ({
+export const useSettingsStore = create<SettingsStore>((set, get) => ({
   openAiApiKey: undefined,
   isApiKeyValid: false,
   alwaysExecuteCode: false,
@@ -65,7 +65,7 @@ export const useSettings = create<SettingsStore>((set, get) => ({
     const { key_ok } = (await SettingsAPI.checkKey(key).json()) as {
       key_ok: boolean;
     };
-    if (!key_ok && useAICStore.getState().isProjectOpen) {
+    if (!key_ok && useProjectsStore.getState().isProjectOpen) {
       ProjectsAPI.closeProject();
       showNotification({
         title: 'Error',

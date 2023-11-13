@@ -17,13 +17,14 @@
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { create } from 'zustand';
 import { ErrorEvent } from 'reconnecting-websocket/events';
-import { useAICStore } from '../../project/editables/chat/AICStore';
+import { useChatStore } from '../../project/editables/chat/store/useChatStore';
 import { OutgoingWSMessage } from './outgoingMessages';
 import { IncomingWSMessage } from './incomingMessages';
-import { useAnalysisStore } from '@/project/editables/chat/useAnalysisStore';
 import showNotification from '@/common/showNotification';
 import { useAPIStore } from '../useAPIStore';
-import { useSettings } from '../../settings/useSettings';
+import { useSettingsStore } from '../../settings/useSettingsStore';
+import { useProjectsStore } from '@/projects/useProjectsStore';
+import { useEditablesStore } from '@/project/editables/useEditablesStore';
 
 export type WebSockeStore = {
   ws: ReconnectingWebSocket | null;
@@ -51,7 +52,7 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
 
       get().sendMessage({
         type: 'SetChatIdWSMessage',
-        chat_id: useAICStore.getState().chatId,
+        chat_id: useChatStore.getState().chatId,
       });
     };
 
@@ -78,31 +79,31 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
           break;
         case 'InitialProjectStatusWSMessage':
           if (data.project_path && data.project_name) {
-            useAICStore.getState().onProjectOpened({
+            useProjectsStore.getState().onProjectOpened({
               name: data.project_name,
               path: data.project_path,
               initial: true,
             });
           } else {
-            useAICStore.getState().onProjectClosed();
+            useProjectsStore.getState().onProjectClosed();
           }
           break;
         case 'ProjectOpenedWSMessage':
-          useAICStore.getState().onProjectOpened({
+          useProjectsStore.getState().onProjectOpened({
             name: data.name,
             path: data.path,
             initial: false,
           });
           break;
         case 'ProjectClosedWSMessage':
-          useAICStore.getState().onProjectClosed();
+          useProjectsStore.getState().onProjectClosed();
           break;
         case 'ProjectLoadingWSMessage':
-          useAICStore.getState().onProjectLoading();
+          useProjectsStore.getState().onProjectLoading();
           break;
         case 'AssetsUpdatedWSMessage':
           if (data.asset_type === 'agent') {
-            useAICStore.getState().initAgents();
+            useEditablesStore.getState().initAgents();
             if (!data.initial) {
               showNotification({
                 title: 'Agents updated',
@@ -112,7 +113,7 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
           }
 
           if (data.asset_type === 'material') {
-            useAICStore.getState().initMaterials();
+            useEditablesStore.getState().initMaterials();
             if (!data.initial) {
               showNotification({
                 title: 'Materials updated',
@@ -122,8 +123,8 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
           }
           break;
         case 'AnalysisUpdatedWSMessage':
-          if (data.analysis_request_id === useAnalysisStore.getState().currentAnalysisRequestId) {
-            useAnalysisStore.setState({
+          if (data.analysis_request_id === useChatStore.getState().currentAnalysisRequestId) {
+            useChatStore.setState({
               agent_id: data.agent_id,
               relevant_material_ids: data.relevant_material_ids,
               next_step: data.next_step,
@@ -132,9 +133,9 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
           }
           break;
         case 'SettingsWSMessage':
-          useSettings.getState().initSettings();
-          useAICStore.getState().initMaterials();
-          useAICStore.getState().initAgents();
+          useSettingsStore.getState().initSettings();
+          useEditablesStore.getState().initMaterials();
+          useEditablesStore.getState().initAgents();
           if (!data.initial) {
             showNotification({
               title: 'Settings updated',

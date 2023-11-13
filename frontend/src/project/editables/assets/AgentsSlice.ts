@@ -18,9 +18,8 @@ import { StateCreator } from 'zustand';
 
 
 import { convertNameToId } from '@/project/editables/assets/convertNameToId';
-import { getEditableObjectType } from '@/project/editables/common/getEditableObjectType';
-import { AICStore } from '../chat/AICStore';
-import { EditablesAPI } from '../common/EditablesAPI';
+import { getEditableObjectType } from '@/project/editables/getEditableObjectType';
+import { EditablesAPI } from '../EditablesAPI';
 import {
   Agent,
   Asset,
@@ -31,6 +30,8 @@ import {
   EditableObjectTypePlural,
   Material,
 } from './assetTypes';
+import { EditablesStore } from '../useEditablesStore';
+import { useProjectsStore } from '@/projects/useProjectsStore';
 
 //TODO: Rename this to EditableObjectsSlice or extract that functionality to a separate slice
 
@@ -43,7 +44,7 @@ export type AgentsSlice = {
   setAssetStatus: (assetType: AssetType, id: string, status: AssetStatus) => Promise<void>;
 };
 
-export const createAgentsSlice: StateCreator<AICStore, [], [], AgentsSlice> = (set, get) => ({
+export const createAgentsSlice: StateCreator<EditablesStore, [], [], AgentsSlice> = (set, get) => ({
   agents: [],
   //returns new id
   renameEditableObject: async (editableObject: EditableObject, newName: string, isNew: boolean) => {
@@ -84,7 +85,7 @@ export const createAgentsSlice: StateCreator<AICStore, [], [], AgentsSlice> = (s
     }));
   },
   initAgents: async () => {
-    if (get().isProjectOpen) {
+    if (useProjectsStore.getState().isProjectOpen) {
       const agents = await EditablesAPI.fetchEditableObjects<Agent>('agent');
 
       set({
@@ -93,7 +94,7 @@ export const createAgentsSlice: StateCreator<AICStore, [], [], AgentsSlice> = (s
     } else {
       set({ agents: [] });
     }
-    if (!get().isProjectOpen) return;
+    if (!useProjectsStore.getState().isProjectOpen) return;
   },
   getAsset: (assetType: AssetType, id: string): Asset | undefined => {
     if (assetType === 'agent') {

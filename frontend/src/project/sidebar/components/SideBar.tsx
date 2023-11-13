@@ -14,16 +14,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { TabsValues } from '@/project/editables/assets/assetTypes';
+import { useEditablesStore } from '@/project/editables/useEditablesStore';
 import { Tabs } from '@mantine/core';
 import { useEffect, useState } from 'react';
-import { ChatsSidebarTab } from './ChatsSidebarTab';
 import { AssetsSidebarTab } from './AssetsSidebarTab';
-import { TabsValues } from '@/project/editables/assets/assetTypes';
-import { useAICStore } from '@/project/editables/chat/AICStore';
+import { ChatsSidebarTab } from './ChatsSidebarTab';
 
 const SideBar = ({initialTab}: {initialTab: string}) => {
-  const agents = useAICStore((state) => state.agents);
-  const materials = useAICStore((state) => state.materials);
+  const agents = useEditablesStore((state) => state.agents);
+  const materials = useEditablesStore((state) => state.materials);
 
   useEffect(() => {
     setActiveTab(initialTab);

@@ -24,7 +24,7 @@ import {
   RenderedMaterial,
 } from '@/project/editables/assets/assetTypes';
 import ky from 'ky';
-import { API_HOOKS, getBaseURL } from '../../../common/useAPIStore';
+import { API_HOOKS, getBaseURL } from '../../common/useAPIStore';
 
 const previewMaterial: (material: Material) => Promise<RenderedMaterial> = async (material: Material) =>
   ky

@@ -17,7 +17,7 @@
 import { useCallback, useState } from 'react';
 
 import { Spinner } from '@/project/editables/chat/components/Spinner';
-import { useAICStore } from '@/project/editables/chat/AICStore';
+import { useChatStore } from '@/project/editables/chat/store/useChatStore';
 import { ChevronDown, ChevronUp, Play, Infinity } from 'lucide-react';
 import { AICCodeMessage, AICMessageGroup } from "../../chatTypes";
 import SyntaxHighlighter from 'react-syntax-highlighter';
@@ -25,7 +25,7 @@ import { Button } from '../../../../../common/components/Button';
 import { duotoneDark as vs2015 } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { CodeOutput } from './CodeOutput';
 import { EditableContentMessage } from './EditableContentMessage';
-import { useSettings } from '@/settings/useSettings';
+import { useSettingsStore } from '@/settings/useSettingsStore';
 
 interface MessageProps {
   group: AICMessageGroup;
@@ -34,19 +34,19 @@ interface MessageProps {
 }
 
 export function CodeMessage({ group, message, isStreaming }: MessageProps) {
-  const removeMessageFromGroup = useAICStore(
+  const removeMessageFromGroup = useChatStore(
     (state) => state.removeMessageFromGroup,
   );
-  const editMessageContent = useAICStore((state) => state.editMessageContent);
+  const editMessageContent = useChatStore((state) => state.editMessageContent);
 
-  const alwaysExecuteCode = useSettings((state) => state.alwaysExecuteCode);
+  const alwaysExecuteCode = useSettingsStore((state) => state.alwaysExecuteCode);
 
   const [folded, setFolded] = useState(alwaysExecuteCode);
-  const doRun = useAICStore((state) => state.doRun);
-  const enableAutoCodeExecution = useSettings(
+  const doRun = useChatStore((state) => state.doRun);
+  const enableAutoCodeExecution = useSettingsStore(
     (state) => state.setAutoCodeExecution,
   );
-  const isViableForRunningCode = useAICStore(
+  const isViableForRunningCode = useChatStore(
     (state) => state.isViableForRunningCode,
   );
 

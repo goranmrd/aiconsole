@@ -14,14 +14,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AnalysisUpdatedWSMessage } from '@/project/editables/common/chatWebSocketTypes';
+import { AnalysisUpdatedWSMessage } from '@/project/editables/chatWebSocketTypes';
 import {
   InitialProjectStatusWSMessage,
   ProjectClosedWSMessage,
   ProjectLoadingWSMessage,
   ProjectOpenedWSMessage,
 } from '@/projects/projectsWebSocketTypes';
-import { AssetsUpdatedWSMessage } from '../../project/editables/common/editablesWebSocketTypes';
+import { AssetsUpdatedWSMessage } from '../../project/editables/editablesWebSocketTypes';
 import { SettingsWSMessage } from '../../settings/settingsWebSocketTypes';
 
 export type ErrorWSMessage = {

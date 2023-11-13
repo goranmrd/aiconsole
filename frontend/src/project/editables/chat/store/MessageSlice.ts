@@ -16,54 +16,29 @@
 
 import { StateCreator } from 'zustand';
 
-import {
-  AICCodeMessage,
-  AICContentMessage,
-  AICMessageGroup
-} from "./chatTypes";
-import { AICStore } from './AICStore';
-import { deepCopyChat, getGroup, getMessage, getOutput } from './utils';
+import { AICCodeMessage, AICContentMessage, AICMessageGroup } from '../chatTypes';
+import { ChatStore } from './useChatStore';
+import { deepCopyChat, getGroup, getMessage, getOutput } from '../utils';
 import { v4 as uuidv4 } from 'uuid';
 
 export type MessageSlice = {
   loadingMessages: boolean;
   isViableForRunningCode: (groupId: string, messageId: string) => boolean;
   removeMessageFromGroup: (groupId?: string, messageId?: string) => void;
-  removeOutputFromCode: (
-    groupId: string,
-    codeId: string,
-    outputId: string,
-  ) => void;
-  editMessageContent: (
-    groupId: string,
-    messageId: string,
-    newContent: string,
-  ) => void;
-  editOutputContent: (
-    groupId: string,
-    messageId: string,
-    outputId: string,
-    newOutput: string,
-  ) => void;
+  removeOutputFromCode: (groupId: string, codeId: string, outputId: string) => void;
+  editMessageContent: (groupId: string, messageId: string, newContent: string) => void;
+  editOutputContent: (groupId: string, messageId: string, outputId: string, newOutput: string) => void;
   markAsExecuting: (executing: boolean, groupId?: string, messageId?: string) => void;
   appendEmptyOutput: (groupId?: string, messageId?: string) => void;
   appendTextAtTheEnd: (text: string, groupId?: string, messageId?: string) => void;
   appendGroup: (group: Omit<AICMessageGroup, 'id'>) => void;
   appendMessage: (
-    message:
-      | Omit<AICContentMessage, 'id' | 'timestamp'>
-      | Omit<AICCodeMessage, 'id' | 'timestamp'>,
+    message: Omit<AICContentMessage, 'id' | 'timestamp'> | Omit<AICCodeMessage, 'id' | 'timestamp'>,
     groupId?: string,
   ) => void;
 };
 
-export const createMessageSlice: StateCreator<
-  AICStore,
-  [],
-  [],
-  MessageSlice
-> = (set, get) => ({
-
+export const createMessageSlice: StateCreator<ChatStore, [], [], MessageSlice> = (set, get) => ({
   isViableForRunningCode: (groupId: string, messageId: string) => {
     const message = get()
       .chat.message_groups.find((group) => group.id === groupId)
@@ -74,7 +49,7 @@ export const createMessageSlice: StateCreator<
       return false;
     }
   },
-  appendTextAtTheEnd: (text: string, groupId?: string, messageId?: string, ) => {
+  appendTextAtTheEnd: (text: string, groupId?: string, messageId?: string) => {
     //append text to last content
     set((state) => {
       const chat = deepCopyChat(state.chat);
@@ -95,7 +70,7 @@ export const createMessageSlice: StateCreator<
       };
     });
   },
-  markAsExecuting: (executing: boolean, groupId?: string, messageId?: string, ) => {
+  markAsExecuting: (executing: boolean, groupId?: string, messageId?: string) => {
     set((state) => {
       const chat = deepCopyChat(state.chat);
       const group = getGroup(chat, groupId).group;
@@ -131,16 +106,12 @@ export const createMessageSlice: StateCreator<
     });
     get().saveCurrentChatHistory();
   },
-  removeOutputFromCode: (
-    groupId: string,
-    messageId: string,
-    outputId: string,
-  ) => {
+  removeOutputFromCode: (groupId: string, messageId: string, outputId: string) => {
     set((state) => {
       const chat = deepCopyChat(state.chat);
       const groupLocation = getGroup(chat, groupId);
       const messageLocation = getMessage(groupLocation.group, messageId);
-      const outputLocation = getOutput(messageLocation.message,outputId);
+      const outputLocation = getOutput(messageLocation.message, outputId);
 
       if (!('outputs' in messageLocation.message)) {
         throw new Error(`Message with id ${messageId} is not a code message`);
@@ -155,11 +126,7 @@ export const createMessageSlice: StateCreator<
 
     get().saveCurrentChatHistory();
   },
-  editMessageContent: (
-    groupId: string,
-    messageId: string,
-    newContent: string,
-  ) => {
+  editMessageContent: (groupId: string, messageId: string, newContent: string) => {
     set((state) => {
       const chat = deepCopyChat(state.chat);
       const groupLocation = getGroup(chat, groupId);
@@ -181,17 +148,12 @@ export const createMessageSlice: StateCreator<
 
     get().saveCommandAndMessagesToHistory(newContent, group.role === 'user');
   },
-  editOutputContent: (
-    groupId: string,
-    messageId: string,
-    outputId: string,
-    newOutput: string,
-  ) => {
+  editOutputContent: (groupId: string, messageId: string, outputId: string, newOutput: string) => {
     set((state) => {
       const chat = deepCopyChat(state.chat);
       const groupLocation = getGroup(chat, groupId);
       const messageLocation = getMessage(groupLocation.group, messageId);
-      const outputLocation = getOutput(messageLocation.message,outputId);
+      const outputLocation = getOutput(messageLocation.message, outputId);
 
       if (!('outputs' in messageLocation.message)) {
         throw new Error(`Message with id ${messageId} is not a code message`);
@@ -212,7 +174,7 @@ export const createMessageSlice: StateCreator<
       const groupLocation = getGroup(chat, groupId);
       const messageLocation = getMessage(groupLocation.group, messageId);
       const message = messageLocation.message;
-      
+
       if (!('outputs' in message)) {
         throw new Error(`Message with id ${messageId} is not a code message`);
       }
@@ -245,13 +207,11 @@ export const createMessageSlice: StateCreator<
     });
   },
   appendMessage: (
-    message:
-      | Omit<AICContentMessage, 'id' | 'timestamp'>
-      | Omit<AICCodeMessage, 'id' | 'timestamp'>,
+    message: Omit<AICContentMessage, 'id' | 'timestamp'> | Omit<AICCodeMessage, 'id' | 'timestamp'>,
     groupId?: string,
   ) => {
     set((state) => {
-      const chat = deepCopyChat(state.chat)
+      const chat = deepCopyChat(state.chat);
 
       const group = getGroup(chat, groupId).group;
 
@@ -267,5 +227,5 @@ export const createMessageSlice: StateCreator<
     });
 
     get().saveCurrentChatHistory();
-  }
+  },
 });

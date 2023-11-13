@@ -14,17 +14,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { getBaseURL } from '@/common/useAPIStore';
-import { useEditableObjectContextMenu } from '@/project/editables/common/useEditableObjectContextMenu';
-import { useAICStore } from '@/project/editables/chat/AICStore';
-import { Agent, Asset, AssetType } from '@/project/editables/assets/assetTypes';
-import { getEditableObjectColor } from '@/project/editables/common/getEditableObjectColor';
-import { getEditableObjectIcon } from '@/project/editables/common/getEditableObjectIcon';
 import { cn } from '@/common/cn';
+import { getBaseURL } from '@/common/useAPIStore';
+import { Agent, Asset, AssetType } from '@/project/editables/assets/assetTypes';
+import { getEditableObjectColor } from '@/project/editables/getEditableObjectColor';
+import { getEditableObjectIcon } from '@/project/editables/getEditableObjectIcon';
+import { useEditableObjectContextMenu } from '@/project/editables/useEditableObjectContextMenu';
+import { useProjectContextMenu } from '@/projects/useProjectContextMenu';
+import { useProjectsStore } from '@/projects/useProjectsStore';
 import { Tooltip } from '@mantine/core';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useProjectContextMenu } from '@/projects/useProjectContextMenu';
+import { useEditablesStore } from '../../useEditablesStore';
 
 function EmptyChatAgentAvatar({ agent }: { agent: Agent }) {
   const { showContextMenu } = useEditableObjectContextMenu({ editableObjectType: 'agent', editableObject: agent });
@@ -65,9 +66,9 @@ function EmptyChatAssetLink({ assetType, asset }: { assetType: AssetType; asset:
 }
 
 export const EmptyChat = () => {
-  const projectName = useAICStore((state) => state.projectName);
-  const agents = useAICStore((state) => state.agents);
-  const materials = useAICStore((state) => state.materials || []);
+  const projectName = useProjectsStore((state) => state.projectName);
+  const agents = useEditablesStore((state) => state.agents);
+  const materials = useEditablesStore((state) => state.materials || []);
   const { showContextMenu: showProjectContextMenu } = useProjectContextMenu();
 
   return (

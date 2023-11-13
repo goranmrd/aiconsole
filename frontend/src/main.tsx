@@ -26,7 +26,7 @@ import '@mantine/notifications/styles.css';
 import 'mantine-contextmenu/styles.layer.css';
 import './layout.css';
 
-import { initStore } from './project/editables/chat/AICStore.ts';
+import { initStore } from './projects/initStore.ts';
 import { MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import { Router } from './common/components/Router.tsx';

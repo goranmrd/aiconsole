@@ -16,16 +16,16 @@
 
 import { TopBar } from '@/common/components/TopBar';
 import { HomeTopBarElements } from '@/projects/components/HomeTopBarElements';
-import { ProjectCard } from './ProjectCard';
-import { useAICStore } from '@/project/editables/chat/AICStore';
-import { RecentProjectsEmpty } from './RecentProjectsEmpty';
 import { useRecentProjectsStore } from '@/projects/useRecentProjectsStore';
-import { useSettings } from '@/settings/useSettings';
+import { useSettingsStore } from '@/settings/useSettingsStore';
+import { useProjectsStore } from '../useProjectsStore';
+import { ProjectCard } from './ProjectCard';
+import { RecentProjectsEmpty } from './RecentProjectsEmpty';
 
 export function Home() {
-  const openAiApiKey = useSettings((state) => state.openAiApiKey);
-  const isApiKeyValid = useSettings((state) => state.isApiKeyValid);
-  const isProjectLoading = useAICStore((state) => state.isProjectLoading);
+  const openAiApiKey = useSettingsStore((state) => state.openAiApiKey);
+  const isApiKeyValid = useSettingsStore((state) => state.isApiKeyValid);
+  const isProjectLoading = useProjectsStore((state) => state.isProjectLoading);
   const recentProjects = useRecentProjectsStore(
     (state) => state.recentProjects,
   );

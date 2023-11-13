@@ -19,7 +19,7 @@ import { create } from 'zustand';
 import { Hooks } from 'ky';
 
 import showNotification from '@/common/showNotification';
-import { ErrorResponse } from "@/project/editables/common/ErrorResponse";
+import { ErrorResponse } from "@/project/editables/ErrorResponse";
 
 export const API_HOOKS: Hooks = {
   beforeError: [

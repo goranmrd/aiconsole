@@ -16,14 +16,14 @@
 
 import { Link } from 'react-router-dom';
 
-import { useEditableObjectContextMenu } from '@/project/editables/common/useEditableObjectContextMenu';
-import { useAICStore } from '@/project/editables/chat/AICStore';
+import { useEditableObjectContextMenu } from '@/project/editables/useEditableObjectContextMenu';
 import { useOpenSettings } from '@/settings/useOpenSettings';
 import { useAPIStore } from '@/common/useAPIStore';
 import { useUserContextMenu } from '@/common/contextMenu/useUserContextMenu';
+import { useEditablesStore } from '../../useEditablesStore';
 
 function UserInfoMaterialLink({ material_id }: { material_id: string }) {
-  const materials = useAICStore((state) => state.materials) || [];
+  const materials = useEditablesStore((state) => state.materials) || [];
   const material = materials.find((m) => m.id === material_id);
   const { showContextMenu } = useEditableObjectContextMenu({ editableObjectType: 'material', editableObject: material });
 
@@ -48,7 +48,7 @@ export function UserInfo({
   materials_ids: string[];
   task?: string;
 }) {
-  const agent = useAICStore((state) => state.getAsset('agent', agent_id));
+  const agent = useEditablesStore((state) => state.getAsset('agent', agent_id));
   const getBaseURL = useAPIStore((state) => state.getBaseURL);
   const { showContextMenu } = useEditableObjectContextMenu({
     editableObjectType: 'agent',

@@ -14,17 +14,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { useAICStore } from '@/project/editables/chat/AICStore';
-import { useEffect, useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { useProjectsStore } from './useProjectsStore';
 
 export const useProjectFileManager = () => {
   const [isNewProjectModalOpen, setNewProjectModalOpen] = useState(false);
   const [isOpenProjectModalOpen, setOpenProjectModalOpen] = useState(false);
-  const chooseProject = useAICStore((state) => state.chooseProject);
-  const resetIsProjectFlag = useAICStore((state) => state.resetIsProjectFlag);
-  const checkPath = useAICStore((state) => state.checkPath);
-  const tempPath = useAICStore((state) => state.tempPath);
-  const isProjectDirectory = useAICStore((state) => state.isProjectDirectory);
+  const chooseProject = useProjectsStore((state) => state.chooseProject);
+  const resetIsProjectFlag = useProjectsStore((state) => state.resetIsProjectFlag);
+  const checkPath = useProjectsStore((state) => state.checkPath);
+  const tempPath = useProjectsStore((state) => state.tempPath);
+  const isProjectDirectory = useProjectsStore((state) => state.isProjectDirectory);
 
   const openProjectConfirmation = useCallback(() => {
     chooseProject(tempPath);

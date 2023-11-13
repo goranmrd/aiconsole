@@ -17,16 +17,22 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
-
+import { cn } from '@/common/cn';
+import showNotification from '@/common/showNotification';
+import {
+  Agent,
+  Asset,
+  AssetType,
+  Material,
+  MaterialContentType,
+  RenderedMaterial,
+} from '@/project/editables/assets/assetTypes';
 import { CodeInput } from '@/project/editables/assets/components/CodeInput';
 import { SimpleInput } from '@/project/editables/assets/components/TextInput';
-import { useAICStore } from '@/project/editables/chat/AICStore';
-import { Agent, Asset, AssetType, Material, MaterialContentType, RenderedMaterial } from '@/project/editables/assets/assetTypes';
-import { getEditableObjectType } from '@/project/editables/common/getEditableObjectType';
-import showNotification from '@/common/showNotification';
-import { cn } from '@/common/cn';
+import { getEditableObjectType } from '@/project/editables/getEditableObjectType';
+import { EditablesAPI } from '../../EditablesAPI';
+import { useEditablesStore } from '../../useEditablesStore';
 import { getMaterialContentName } from '../getMaterialContentName';
-import { EditablesAPI } from '../../common/EditablesAPI';
 
 export function AssetEditor({
   asset,
@@ -45,7 +51,7 @@ export function AssetEditor({
   const previewValue = preview ? preview?.content.split('\\n').join('\n') : 'Generating preview...';
   const assetType = getEditableObjectType(asset) as AssetType;
 
-  const deleteEditableObject = useAICStore((state) => state.deleteEditableObject);
+  const deleteEditableObject = useEditablesStore((state) => state.deleteEditableObject);
   const navigate = useNavigate();
 
   let typeName = 'Material';

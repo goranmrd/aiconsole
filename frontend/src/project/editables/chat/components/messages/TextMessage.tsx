@@ -20,7 +20,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { duotoneDark as vs2015 } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
 import { AICMessage, AICMessageGroup } from "../../chatTypes";
-import { useAICStore } from '@/project/editables/chat/AICStore';
+import { useChatStore } from '@/project/editables/chat/store/useChatStore';
 import { BlinkingCursor } from '@/project/editables/chat/components/BlinkingCursor';
 import { EditableContentMessage } from './EditableContentMessage';
 import { useAPIStore } from '@/common/useAPIStore';
@@ -32,10 +32,10 @@ interface MessageProps {
 }
 
 export function TextMessage({ group, message, isStreaming }: MessageProps) {
-  const removeMessageFromGroup = useAICStore(
+  const removeMessageFromGroup = useChatStore(
     (state) => state.removeMessageFromGroup,
   );
-  const editMessageContent = useAICStore((state) => state.editMessageContent);
+  const editMessageContent = useChatStore((state) => state.editMessageContent);
   const getBaseURL = useAPIStore((state) => state.getBaseURL);
 
   const handleRemoveClick = useCallback(() => {
@@ -49,7 +49,7 @@ export function TextMessage({ group, message, isStreaming }: MessageProps) {
     [message.id, group.id, editMessageContent],
   );
 
-  const submitCommand = useAICStore((state) => state.submitCommand);
+  const submitCommand = useChatStore((state) => state.submitCommand);
 
   return (
     <EditableContentMessage

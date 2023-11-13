@@ -17,17 +17,17 @@
 import { useEffect } from 'react';
 import ScrollToBottom, { useScrollToBottom } from 'react-scroll-to-bottom';
 
-import { MessageGroup } from '@/project/editables/chat/components/MessageGroup';
 import { EmptyChat } from '@/project/editables/chat/components/EmptyChat';
-import { useAICStore } from '@/project/editables/chat/AICStore';
-import { useAnalysisStore } from '@/project/editables/chat/useAnalysisStore';
-import { Analysis } from './Analysis';
-import { Button } from '../../../../common/components/Button';
+import { MessageGroup } from '@/project/editables/chat/components/MessageGroup';
+import { useChatStore } from '@/project/editables/chat/store/useChatStore';
 import { useSearchParams } from 'react-router-dom';
+import { Button } from '../../../../common/components/Button';
+import { Analysis } from './Analysis';
+import { useProjectsStore } from '@/projects/useProjectsStore';
 
 export function ChatWindowScrollToBottomSave() {
   const scrollToBottom = useScrollToBottom();
-  const setScrollChatToBottom = useAICStore((state) => state.setScrollChatToBottom);
+  const setScrollChatToBottom = useChatStore((state) => state.setScrollChatToBottom);
 
   useEffect(() => {
     setScrollChatToBottom(scrollToBottom)
@@ -40,16 +40,16 @@ export function Chat({ chatId }: { chatId: string }) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [searchParams, _] = useSearchParams();
   const copyId= searchParams.get('copy');
-  const chat = useAICStore((state) => state.chat);
-  const copyChat = useAICStore((state) => state.copyChat);
-  const loadingMessages = useAICStore((state) => state.loadingMessages);
-  const setChatId = useAICStore((state) => state.setChatId);
-  const isAnalysisRunning = useAnalysisStore((state) => !!state.currentAnalysisRequestId);
-  const isExecuteRunning = useAICStore((state) => state.isExecuteRunning);
-  const stopWork = useAICStore((state) => state.stopWork);
-  const submitCommand = useAICStore((state) => state.submitCommand);
-  const isProjectOpen = useAICStore((state) => state.isProjectOpen);
-  const isProjectLoading = useAICStore((state) => state.isProjectLoading);
+  const chat = useChatStore((state) => state.chat);
+  const copyChat = useChatStore((state) => state.copyChat);
+  const loadingMessages = useChatStore((state) => state.loadingMessages);
+  const setChatId = useChatStore((state) => state.setChatId);
+  const isAnalysisRunning = useChatStore((state) => !!state.currentAnalysisRequestId);
+  const isExecuteRunning = useChatStore((state) => state.isExecuteRunning);
+  const stopWork = useChatStore((state) => state.stopWork);
+  const submitCommand = useChatStore((state) => state.submitCommand);
+  const isProjectOpen = useProjectsStore((state) => state.isProjectOpen);
+  const isProjectLoading = useProjectsStore((state) => state.isProjectLoading);
 
   const isLastMessageFromUser = chat.message_groups.length > 0 && chat.message_groups[chat.message_groups.length - 1].agent_id === 'user';
   

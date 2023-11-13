@@ -14,13 +14,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { useAICStore } from '@/project/editables/chat/AICStore';
+import { useChatStore } from '@/project/editables/chat/store/useChatStore';
 import { Asset, EditableObject, EditableObjectType } from '@/project/editables/assets/assetTypes';
 import { Ban, Check, Copy, Dot, Edit, File, Trash } from 'lucide-react';
 import { ContextMenuContent } from 'mantine-contextmenu';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-import { CONTEXT_MENU_ITEM_CLASSES, useContextMenu } from '../../../common/contextMenu/useContextMenu';
+import { CONTEXT_MENU_ITEM_CLASSES, useContextMenu } from '../../common/contextMenu/useContextMenu';
+import { useEditablesStore } from './useEditablesStore';
 
 export function useEditableObjectContextMenu({
   editableObjectType,
@@ -34,7 +35,7 @@ export function useEditableObjectContextMenu({
   const { showContextMenu, hideContextMenu, isContextMenuVisible } = useContextMenu();
   const navigate = useNavigate();
   const location = useLocation();
-  const deleteEditableObject = useAICStore((state) => state.deleteEditableObject);
+  const deleteEditableObject = useEditablesStore((state) => state.deleteEditableObject);
 
   function handleDelete(id: string) {
     if (!window.confirm(`Are you sure you want to delete this ${editableObjectType}?`)) {
@@ -44,7 +45,7 @@ export function useEditableObjectContextMenu({
     deleteEditableObject(editableObjectType, id);
 
     if (editableObjectType === 'chat') {
-      useAICStore.getState().setChatId(uuidv4());
+      useChatStore.getState().setChatId(uuidv4());
     }
   }
 
@@ -138,7 +139,7 @@ export function useEditableObjectContextMenu({
                       title: 'Always',
                       className: CONTEXT_MENU_ITEM_CLASSES,
                       onClick: () => {
-                        useAICStore.getState().setAssetStatus(editableObjectType, editableObject.id, 'forced');
+                        useEditablesStore.getState().setAssetStatus(editableObjectType, editableObject.id, 'forced');
                       },
                     },
                   ]
@@ -151,7 +152,7 @@ export function useEditableObjectContextMenu({
                       title: 'Auto',
                       className: CONTEXT_MENU_ITEM_CLASSES,
                       onClick: () => {
-                        useAICStore.getState().setAssetStatus(editableObjectType, editableObject.id, 'enabled');
+                        useEditablesStore.getState().setAssetStatus(editableObjectType, editableObject.id, 'enabled');
                       },
                     },
                   ]
@@ -164,7 +165,7 @@ export function useEditableObjectContextMenu({
                       title: 'Disabled',
                       className: CONTEXT_MENU_ITEM_CLASSES,
                       onClick: () => {
-                        useAICStore.getState().setAssetStatus(editableObjectType, editableObject.id, 'disabled');
+                        useEditablesStore.getState().setAssetStatus(editableObjectType, editableObject.id, 'disabled');
                       },
                     },
                   ]

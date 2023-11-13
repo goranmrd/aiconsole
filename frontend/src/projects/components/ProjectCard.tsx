@@ -16,10 +16,10 @@
 
 import { cn } from '@/common/cn';
 import { Button } from '@/common/components/Button';
-import { useAICStore } from '@/project/editables/chat/AICStore';
 import { useRecentProjectsStore } from '@/projects/useRecentProjectsStore';
 import { MessageSquare, X } from 'lucide-react';
 import { MouseEvent, useState } from 'react';
+import { useProjectsStore } from '../useProjectsStore';
 
 interface ProjectCardProps {
   name: string;
@@ -28,7 +28,7 @@ interface ProjectCardProps {
 }
 
 export function ProjectCard({ name, path, chatHistory }: ProjectCardProps) {
-  const chooseProject = useAICStore((state) => state.chooseProject);
+  const chooseProject = useProjectsStore((state) => state.chooseProject);
   const removeRecentProject = useRecentProjectsStore((state) => state.removeRecentProject);
   const [isDeleteHovered, setDeleteHovered] = useState(false);
 

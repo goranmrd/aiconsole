@@ -16,9 +16,8 @@
 
 import { StateCreator } from 'zustand';
 
-import { AICStore } from './AICStore';
-import { ChatAPI } from './ChatAPI';
-import { useAnalysisStore } from './useAnalysisStore';
+import { ChatStore } from './useChatStore';
+import { ChatAPI } from '../ChatAPI';
 
 
 export type CommandSlice = {
@@ -39,7 +38,7 @@ export type CommandSlice = {
   initCommandHistory: () => Promise<void>;
 };
 
-export const createCommandSlice: StateCreator<AICStore, [], [], CommandSlice> = (set, get) => ({
+export const createCommandSlice: StateCreator<ChatStore, [], [], CommandSlice> = (set, get) => ({
   setScrollChatToBottom: (scrollChatToBottom) => set(() => ({ scrollChatToBottom })),
   scrollChatToBottom: undefined,
   commandHistory: [''],
@@ -100,7 +99,7 @@ export const createCommandSlice: StateCreator<AICStore, [], [], CommandSlice> = 
   },
   submitCommand: async (command: string) => {
     
-    if (get().isExecuteRunning || useAnalysisStore.getState().currentAnalysisRequestId) {
+    if (get().isExecuteRunning || get().currentAnalysisRequestId) {
       await get().stopWork();
     }
     
@@ -129,6 +128,6 @@ export const createCommandSlice: StateCreator<AICStore, [], [], CommandSlice> = 
       });
     }
 
-    await useAnalysisStore.getState().doAnalysis();
+    await get().doAnalysis();
   },
 });

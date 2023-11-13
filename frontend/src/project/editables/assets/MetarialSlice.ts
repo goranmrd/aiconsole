@@ -16,20 +16,21 @@
 
 import { StateCreator } from 'zustand';
 
-import { AICStore } from '../chat/AICStore';
-
 import { Material } from '@/project/editables/assets/assetTypes';
-import { EditablesAPI } from '../common/EditablesAPI';
+import { EditablesAPI } from '../EditablesAPI';
+import { EditablesStore } from '../useEditablesStore';
+import { useProjectsStore } from '@/projects/useProjectsStore';
 
 export type MaterialSlice = {
   materials?: Material[];
   initMaterials: () => Promise<void>;
 };
 
-export const createMaterialSlice: StateCreator<AICStore, [], [], MaterialSlice> = (set, get) => ({
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const createMaterialSlice: StateCreator<EditablesStore, [], [], MaterialSlice> = (set, _) => ({
   materials: undefined,
   initMaterials: async () => {
-    if (get().isProjectOpen) {
+    if (useProjectsStore.getState().isProjectOpen) {
       const materials = await EditablesAPI.fetchEditableObjects<Material>('material');
 
       //sort alphabetically

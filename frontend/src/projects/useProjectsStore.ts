@@ -14,10 +14,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { StateCreator } from 'zustand';
+import { create } from 'zustand';
 
-import { AICStore } from '../project/editables/chat/AICStore';
-import { useSettings } from '../settings/useSettings';
+import { useEditablesStore } from '@/project/editables/useEditablesStore';
+import { useChatStore } from '../project/editables/chat/store/useChatStore';
+import { useSettingsStore } from '../settings/useSettingsStore';
 import { ProjectsAPI } from './ProjectsAPI';
 
 export type ProjectSlice = {
@@ -30,19 +31,20 @@ export type ProjectSlice = {
   checkPath: (path?: string) => Promise<void>;
   isProjectLoading: boolean;
   isProjectOpen: boolean;
-  onProjectOpened: ({ path, name, initial}: { path: string; name: string, initial: boolean }) => Promise<void>;
+  onProjectOpened: ({ path, name, initial }: { path: string; name: string; initial: boolean }) => Promise<void>;
   onProjectClosed: () => Promise<void>;
   onProjectLoading: () => void;
 };
 
-export const createProjectSlice: StateCreator<AICStore, [], [], ProjectSlice> = (set, get) => ({
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const useProjectsStore = create<ProjectSlice>((set, _) => ({
   projectPath: undefined,
   tempPath: undefined,
   isProjectDirectory: undefined,
   projectName: undefined,
   isProjectLoading: true,
   isProjectOpen: false,
-  onProjectOpened: async ({ path, name, initial }: { path: string; name: string, initial:boolean }) => {
+  onProjectOpened: async ({ path, name, initial }: { path: string; name: string; initial: boolean }) => {
     if (!path || !name) {
       throw new Error('Project path or name is not defined');
     }
@@ -54,14 +56,14 @@ export const createProjectSlice: StateCreator<AICStore, [], [], ProjectSlice> = 
       isProjectLoading: false,
     }));
 
-    await Promise.all([get().initCommandHistory(), get().initChatHistory()]);
+    await Promise.all([useChatStore.getState().initCommandHistory(), useEditablesStore.getState().initChatHistory()]);
 
     if (initial) {
-      await (Promise.all([
-        get().initAgents(),
-        get().initMaterials(),
-        useSettings.getState().initSettings(),
-      ]))
+      await Promise.all([
+        useEditablesStore.getState().initAgents(),
+        useEditablesStore.getState().initMaterials(),
+        useSettingsStore.getState().initSettings(),
+      ]);
     }
   },
   onProjectClosed: async () => {
@@ -129,4 +131,4 @@ export const createProjectSlice: StateCreator<AICStore, [], [], ProjectSlice> = 
       };
     }
   },
-});
+}));

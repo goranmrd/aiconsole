@@ -14,14 +14,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { useSettings } from '@/settings/useSettings';
+import { useSettingsStore } from '@/settings/useSettingsStore';
 import { useState } from 'react';
 
 export const useApiKey = () => {
   const [validating, setValidating] = useState(false);
-  const saveOpenAiApiKey = useSettings((state) => state.saveOpenAiApiKey);
-  const isApiKeyValid = useSettings((state) => state.isApiKeyValid);
-  const validateApiKey = useSettings((state) => state.validateApiKey);
+  const saveOpenAiApiKey = useSettingsStore((state) => state.saveOpenAiApiKey);
+  const isApiKeyValid = useSettingsStore((state) => state.isApiKeyValid);
+  const validateApiKey = useSettingsStore((state) => state.validateApiKey);
   const setApiKey = async (key: string) => {
     if (validating) return false;
     if (key) {

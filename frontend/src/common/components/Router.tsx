@@ -14,19 +14,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { useAICStore } from '@/project/editables/chat/AICStore';
+import { TopBar } from '@/common/components/TopBar';
+import { ProjectTopBarElements } from '@/project/components/ProjectTopBarElements';
+import { useProjectsStore } from '@/projects/useProjectsStore';
 import { HashRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
-import { Home } from '../../projects/components/Home';
+import { EditableObjectEditor } from '../../project/editables/components/EditableObjectEditor';
 import SideBar from '../../project/sidebar/components/SideBar';
-import { EditableObjectEditor } from '../../project/editables/common/components/EditableObjectEditor';
+import { Home } from '../../projects/components/Home';
 import { GlobalSettingsModal } from '../../settings/components/GlobalSettingsModal';
-import { TopBar } from '@/common/components/TopBar';
-import { ProjectTopBarElements } from '@/project/common/components/ProjectTopBarElements';
 
 function MustHaveProject() {
-  const isProjectOpen = useAICStore((state) => state.isProjectOpen);
-  const isProjectLoading = useAICStore((state) => state.isProjectLoading);
+  const isProjectOpen = useProjectsStore((state) => state.isProjectOpen);
+  const isProjectLoading = useProjectsStore((state) => state.isProjectLoading);
 
   if (!isProjectOpen && !isProjectLoading) {
     return <Navigate to="/" />;
@@ -36,8 +36,8 @@ function MustHaveProject() {
 }
 
 function NoProject() {
-  const isProjectOpen = useAICStore((state) => state.isProjectOpen);
-  const isProjectLoading = useAICStore((state) => state.isProjectLoading);
+  const isProjectOpen = useProjectsStore((state) => state.isProjectOpen);
+  const isProjectLoading = useProjectsStore((state) => state.isProjectLoading);
 
   if (isProjectOpen && !isProjectLoading) {
     return <Navigate to={`/chats/${uuid()}`} />;

@@ -15,7 +15,7 @@
 // limitations under the License.
 
 import { useCallback } from 'react';
-import { useAICStore } from '@/project/editables/chat/AICStore';
+import { useChatStore } from '@/project/editables/chat/store/useChatStore';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { duotoneDark as vs2015 } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { AICCodeMessage, AICContentMessage, AICMessageGroup } from "../../chatTypes";
@@ -29,8 +29,8 @@ interface OutputProps {
 }
 
 export function CodeOutput({ group, message, output, isStreaming }: OutputProps) {
-  const removeOutputFromCode = useAICStore((state) => state.removeOutputFromCode);
-  const editOutputContent = useAICStore((state) => state.editOutputContent);
+  const removeOutputFromCode = useChatStore((state) => state.removeOutputFromCode);
+  const editOutputContent = useChatStore((state) => state.editOutputContent);
 
   const handleAcceptedContent = useCallback(
     (content: string) => {

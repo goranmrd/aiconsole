@@ -14,11 +14,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { useAICStore } from '@/project/editables/chat/AICStore';
-import { EditableObject, EditableObjectType } from '@/project/editables/assets/assetTypes';
 import { cn } from '@/common/cn';
+import { EditableObject, EditableObjectType } from '@/project/editables/assets/assetTypes';
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useEditablesStore } from '../editables/useEditablesStore';
 
 const InlineEditableObjectName = ({
   editableObject, // The editable object with 'id' and 'name'
@@ -40,7 +40,7 @@ const InlineEditableObjectName = ({
   const location = useLocation();
   const navigate = useNavigate();
 
-  const renameEditableObject = useAICStore((state) => state.renameEditableObject);
+  const renameEditableObject = useEditablesStore((state) => state.renameEditableObject);
 
   useEffect(() => {
     if (isEditing) {

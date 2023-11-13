@@ -14,16 +14,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { useAICStore } from '@/project/editables/chat/AICStore';
 import { useProjectContextMenu } from '@/projects/useProjectContextMenu';
+import { useProjectsStore } from '@/projects/useProjectsStore';
 import { PlusIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-import { Button } from '../../../common/components/Button';
+import { Button } from '../../common/components/Button';
 import { useAddMenu } from '../useAddMenu';
 
 export function ProjectTopBarElements() {
-  const projectName = useAICStore((state) => state.projectName);
+  const projectName = useProjectsStore((state) => state.projectName);
 
   const { showContextMenu: showProjectContextMenu } = useProjectContextMenu();
   const { showContextMenu: showPlusMenu } = useAddMenu();
