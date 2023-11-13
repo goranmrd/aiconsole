@@ -21,7 +21,7 @@ import { useEffect, useState } from 'react';
 import { AssetsSidebarTab } from './AssetsSidebarTab';
 import { ChatsSidebarTab } from './ChatsSidebarTab';
 
-const SideBar = ({initialTab}: {initialTab: string}) => {
+const SideBar = ({ initialTab }: { initialTab: string }) => {
   const agents = useEditablesStore((state) => state.agents);
   const materials = useEditablesStore((state) => state.materials);
 
@@ -35,7 +35,7 @@ const SideBar = ({initialTab}: {initialTab: string}) => {
 
   return (
     <div
-      className={`min-w-[336px] w-[336px] h-full max-h-full overflow-y-scroll bg-gray-900 pl-[30px] py-[20px] drop-shadow-md flex flex-col border-r border-gray-600`}
+      className={`min-w-[336px] w-[336px] h-full  bg-gray-900 pl-[30px] py-[20px] drop-shadow-md flex flex-col border-r  border-gray-600 `}
     >
       <Tabs
         value={activeTab}
@@ -62,13 +62,13 @@ const SideBar = ({initialTab}: {initialTab: string}) => {
         </Tabs.List>
 
         <Tabs.Panel value="chats">
-        <ChatsSidebarTab />
+          <ChatsSidebarTab />
         </Tabs.Panel>
         <Tabs.Panel value="materials">
-          <AssetsSidebarTab assetType='material' assets={materials || []} />
+          <AssetsSidebarTab assetType="material" assets={materials || []} />
         </Tabs.Panel>
         <Tabs.Panel value="agents">
-          <AssetsSidebarTab assetType='agent' assets={agents} />
+          <AssetsSidebarTab assetType="agent" assets={agents} />
         </Tabs.Panel>
       </Tabs>
     </div>

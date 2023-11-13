@@ -103,9 +103,7 @@ const SideBarItem = ({
 
     extraStuff = (
       <div className="ml-auto items-center flex gap-[12px]">
-        <StatusIcon
-          className={cn('w-[15px] h-[15px]  ')}
-        />
+        <StatusIcon className={cn('w-[15px] h-[15px]  ')} />
       </div>
     );
   }
@@ -116,20 +114,28 @@ const SideBarItem = ({
   }
 
   return (
-    <div ref={popoverRef} onContextMenu={handleContextMenu}>
-      <div className={cn(forced && "text-primary", disabled && "opacity-50")}>
+    <div
+      ref={popoverRef}
+      onContextMenu={handleContextMenu}
+      className="max-w-[275px]"
+    >
+      <div className={cn(forced && 'text-primary', disabled && 'opacity-50')}>
         <NavLink
           className={({ isActive, isPending }) => {
             return cn(
               'group flex items-center gap-[12px] overflow-hidden p-[9px] rounded-[8px] cursor-pointer relative  hover:bg-gray-700',
               {
-                'bg-gray-700 text-white ': isActive || isPending || isShowingContext,
+                'bg-gray-700 text-white ':
+                  isActive || isPending || isShowingContext,
               },
             );
           }}
           to={`/${editableObjectType}s/${editableObject.id}`}
         >
-          <Icon className="min-w-[24px] min-h-[24px] w-[24px] h-[24px]" style={{ color }} />
+          <Icon
+            className="min-w-[24px] min-h-[24px] w-[24px] h-[24px]"
+            style={{ color }}
+          />
           {/* TODO: add validation for empty input value */}
           {isEditing ? (
             <input
@@ -141,7 +147,9 @@ const SideBarItem = ({
               onChange={(e) => setInputText(e.target.value)}
             />
           ) : (
-            <p className="text-[14px] leading-[18.2px] group-hover:text-white truncate">{editableObject.name}</p>
+            <p className="text-[14px] leading-[18.2px] group-hover:text-white truncate">
+              {editableObject.name}
+            </p>
           )}
           {!isEditing ? extraStuff : null}
 

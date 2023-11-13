@@ -20,7 +20,8 @@ import SideBarItem from './SideBarItem';
 
 export const ChatsSidebarTab = () => {
   const chatHeadlines = useEditablesStore((state) => state.chats);
-  const { today, yesterday, previous7Days, older } = useGroupByDate(chatHeadlines);
+  const { today, yesterday, previous7Days, older } =
+    useGroupByDate(chatHeadlines);
 
   const sections = [
     { title: 'Today', headlines: today },
@@ -30,14 +31,20 @@ export const ChatsSidebarTab = () => {
   ];
 
   return (
-    <div className="flex flex-col gap-[5px] pr-[15px]">
+    <div className="flex flex-col gap-[5px] pr-[20px] overflow-y-auto h-full max-h-[calc(100vh-210px)] ">
       {sections.map(
         (section) =>
           section.headlines.length > 0 && (
             <div key={section.title}>
-              <h3 className="uppercase px-[9px] py-[5px] text-gray-400 text-[12px] leading-[18px]">{section.title}</h3>
+              <h3 className="uppercase px-[9px] py-[5px] text-gray-400 text-[12px] leading-[18px]">
+                {section.title}
+              </h3>
               {section.headlines.map((chat) => (
-                <SideBarItem key={chat.id} editableObject={chat} editableObjectType='chat' />
+                <SideBarItem
+                  key={chat.id}
+                  editableObject={chat}
+                  editableObjectType="chat"
+                />
               ))}
             </div>
           ),
