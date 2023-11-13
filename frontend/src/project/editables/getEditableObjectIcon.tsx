@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { EditableObject, EditableObjectType, Material, MaterialContentType } from '@/project/editables/assets/assetTypes';
+import { EditableObject, EditableObjectType, Material, MaterialContentType } from '@/project/editables/chat/assetTypes';
 import { getEditableObjectType } from '@/project/editables/getEditableObjectType';
 import { Bot, BugPlay, FileQuestion, FileType2, MessageSquare, StickyNote } from 'lucide-react';
 

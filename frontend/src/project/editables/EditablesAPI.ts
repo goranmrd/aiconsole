@@ -22,7 +22,7 @@ import {
   EditableObjectType,
   Material,
   RenderedMaterial,
-} from '@/project/editables/assets/assetTypes';
+} from '@/project/editables/chat/assetTypes';
 import ky from 'ky';
 import { API_HOOKS, getBaseURL } from '../../common/useAPIStore';
 

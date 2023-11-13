@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { useEditablesStore } from '@/project/editables/useEditablesStore';
+import { useEditablesStore } from '@/project/editables/store/useEditablesStore';
 import useGroupByDate from '@/project/sidebar/useGroupByDate';
 import SideBarItem from './SideBarItem';
 

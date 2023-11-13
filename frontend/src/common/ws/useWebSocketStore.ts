@@ -24,7 +24,7 @@ import showNotification from '@/common/showNotification';
 import { useAPIStore } from '../useAPIStore';
 import { useSettingsStore } from '../../settings/useSettingsStore';
 import { useProjectsStore } from '@/projects/useProjectsStore';
-import { useEditablesStore } from '@/project/editables/useEditablesStore';
+import { useEditablesStore } from '@/project/editables/store/useEditablesStore';
 
 export type WebSockeStore = {
   ws: ReconnectingWebSocket | null;

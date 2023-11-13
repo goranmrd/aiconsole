@@ -16,7 +16,7 @@
 
 import { cn } from '@/common/cn';
 import { getBaseURL } from '@/common/useAPIStore';
-import { Agent, Asset, AssetType } from '@/project/editables/assets/assetTypes';
+import { Agent, Asset, AssetType } from '@/project/editables/chat/assetTypes';
 import { getEditableObjectColor } from '@/project/editables/getEditableObjectColor';
 import { getEditableObjectIcon } from '@/project/editables/getEditableObjectIcon';
 import { useEditableObjectContextMenu } from '@/project/editables/useEditableObjectContextMenu';
@@ -25,7 +25,7 @@ import { useProjectsStore } from '@/projects/useProjectsStore';
 import { Tooltip } from '@mantine/core';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useEditablesStore } from '../../useEditablesStore';
+import { useEditablesStore } from '../../store/useEditablesStore';
 
 function EmptyChatAgentAvatar({ agent }: { agent: Agent }) {
   const { showContextMenu } = useEditableObjectContextMenu({ editableObjectType: 'agent', editableObject: agent });

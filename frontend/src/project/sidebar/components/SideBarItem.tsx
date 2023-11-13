@@ -15,11 +15,11 @@
 // limitations under the License.
 
 import { cn } from '@/common/cn';
-import { Asset, EditableObject, EditableObjectType } from '@/project/editables/assets/assetTypes';
+import { Asset, EditableObject, EditableObjectType } from '@/project/editables/chat/assetTypes';
 import { getEditableObjectColor } from '@/project/editables/getEditableObjectColor';
 import { getEditableObjectIcon } from '@/project/editables/getEditableObjectIcon';
 import { useEditableObjectContextMenu } from '@/project/editables/useEditableObjectContextMenu';
-import { useEditablesStore } from '@/project/editables/useEditablesStore';
+import { useEditablesStore } from '@/project/editables/store/useEditablesStore';
 import { KeyboardEvent, MouseEvent, useEffect, useRef, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { getAssetStatusIcon } from '../../editables/assets/getAssetStatusIcon';

@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Asset, AssetType } from '@/project/editables/assets/assetTypes';
+import { Asset, AssetType } from '@/project/editables/chat/assetTypes';
 import SideBarItem from './SideBarItem';
 
 export const AssetsSidebarTab = ({assetType, assets}: {assetType: AssetType, assets: Asset[]}) => {

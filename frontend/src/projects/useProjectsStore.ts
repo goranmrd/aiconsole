@@ -16,7 +16,7 @@
 
 import { create } from 'zustand';
 
-import { useEditablesStore } from '@/project/editables/useEditablesStore';
+import { useEditablesStore } from '@/project/editables/store/useEditablesStore';
 import { useChatStore } from '../project/editables/chat/store/useChatStore';
 import { useSettingsStore } from '../settings/useSettingsStore';
 import { ProjectsAPI } from './ProjectsAPI';

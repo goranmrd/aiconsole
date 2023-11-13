@@ -15,13 +15,13 @@
 // limitations under the License.
 
 import { useChatStore } from '@/project/editables/chat/store/useChatStore';
-import { Asset, EditableObject, EditableObjectType } from '@/project/editables/assets/assetTypes';
+import { Asset, EditableObject, EditableObjectType } from '@/project/editables/chat/assetTypes';
 import { Ban, Check, Copy, Dot, Edit, File, Trash } from 'lucide-react';
 import { ContextMenuContent } from 'mantine-contextmenu';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { CONTEXT_MENU_ITEM_CLASSES, useContextMenu } from '../../common/contextMenu/useContextMenu';
-import { useEditablesStore } from './useEditablesStore';
+import { useEditablesStore } from './store/useEditablesStore';
 
 export function useEditableObjectContextMenu({
   editableObjectType,

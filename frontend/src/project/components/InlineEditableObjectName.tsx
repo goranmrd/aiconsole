@@ -15,10 +15,10 @@
 // limitations under the License.
 
 import { cn } from '@/common/cn';
-import { EditableObject, EditableObjectType } from '@/project/editables/assets/assetTypes';
+import { EditableObject, EditableObjectType } from '@/project/editables/chat/assetTypes';
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useEditablesStore } from '../editables/useEditablesStore';
+import { useEditablesStore } from '../editables/store/useEditablesStore';
 
 const InlineEditableObjectName = ({
   editableObject, // The editable object with 'id' and 'name'

@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { EditableObject } from "../assets/assetTypes";
+import { EditableObject } from "./assetTypes";
 
 // The AIConsole Project
 //

@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { EditableObject, EditableObjectType, EditableObjectTypePlural } from '@/project/editables/assets/assetTypes';
+import { EditableObject, EditableObjectType, EditableObjectTypePlural } from '@/project/editables/chat/assetTypes';
 
 export function getEditableObjectType(editableObject?: EditableObject | EditableObjectTypePlural): EditableObjectType | undefined {
 

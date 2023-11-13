@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AssetStatus } from '@/project/editables/assets/assetTypes';
+import { AssetStatus } from '@/project/editables/chat/assetTypes';
 import { Ban, Check, Dot } from 'lucide-react';
 
 

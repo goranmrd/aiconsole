@@ -14,8 +14,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { TabsValues } from '@/project/editables/assets/assetTypes';
-import { useEditablesStore } from '@/project/editables/useEditablesStore';
+import { TabsValues } from '@/project/editables/chat/assetTypes';
+import { useEditablesStore } from '@/project/editables/store/useEditablesStore';
 import { Tabs } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { AssetsSidebarTab } from './AssetsSidebarTab';

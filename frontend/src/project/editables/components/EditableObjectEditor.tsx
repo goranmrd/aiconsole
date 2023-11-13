@@ -16,7 +16,7 @@
 
 import { AssetEditor } from '@/project/editables/assets/components/AssetEditor';
 import { useEditableObjectContextMenu } from '@/project/editables/useEditableObjectContextMenu';
-import { Asset, EditableObject, EditableObjectTypePlural } from '@/project/editables/assets/assetTypes';
+import { Asset, EditableObject, EditableObjectTypePlural } from '@/project/editables/chat/assetTypes';
 import { Chat } from "../chat/chatTypes";
 import { getEditableObjectColor } from '@/project/editables/getEditableObjectColor';
 import { getEditableObjectIcon } from '@/project/editables/getEditableObjectIcon';

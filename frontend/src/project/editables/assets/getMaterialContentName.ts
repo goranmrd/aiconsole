@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { MaterialContentType } from '@/project/editables/assets/assetTypes';
+import { MaterialContentType } from '@/project/editables/chat/assetTypes';
 
 export function getMaterialContentName(contentType?: MaterialContentType) {
   switch (contentType) {

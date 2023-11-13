@@ -29,8 +29,8 @@ import {
   EditableObjectType,
   EditableObjectTypePlural,
   Material,
-} from './assetTypes';
-import { EditablesStore } from '../useEditablesStore';
+} from '../chat/assetTypes';
+import { EditablesStore } from './useEditablesStore';
 import { useProjectsStore } from '@/projects/useProjectsStore';
 
 //TODO: Rename this to EditableObjectsSlice or extract that functionality to a separate slice

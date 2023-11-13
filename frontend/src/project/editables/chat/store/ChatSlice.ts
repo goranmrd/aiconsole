@@ -22,7 +22,7 @@ import { Chat } from "../chatTypes";
 import { ChatStore } from './useChatStore';
 import { deepCopyChat } from '../utils';
 import { useProjectsStore } from '@/projects/useProjectsStore';
-import { useEditablesStore } from '../../useEditablesStore';
+import { useEditablesStore } from '../../store/useEditablesStore';
 
 export type ChatSlice = {
   chatId: string;

@@ -20,7 +20,7 @@ import { useEditableObjectContextMenu } from '@/project/editables/useEditableObj
 import { useOpenSettings } from '@/settings/useOpenSettings';
 import { useAPIStore } from '@/common/useAPIStore';
 import { useUserContextMenu } from '@/common/contextMenu/useUserContextMenu';
-import { useEditablesStore } from '../../useEditablesStore';
+import { useEditablesStore } from '../../store/useEditablesStore';
 
 function UserInfoMaterialLink({ material_id }: { material_id: string }) {
   const materials = useEditablesStore((state) => state.materials) || [];

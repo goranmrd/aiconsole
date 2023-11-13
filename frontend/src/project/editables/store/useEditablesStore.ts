@@ -1,7 +1,7 @@
 import { create } from 'zustand';
-import { AgentsSlice, createAgentsSlice } from './assets/AgentsSlice';
-import { MaterialSlice, createMaterialSlice } from './assets/MetarialSlice';
-import { ChatsSlice, createChatsSlice } from './chat/ChatsSlice';
+import { AgentsSlice, createAgentsSlice } from './AgentsSlice';
+import { MaterialSlice, createMaterialSlice } from './MetarialSlice';
+import { ChatsSlice, createChatsSlice } from './ChatsSlice';
 
 export type EditablesStore = AgentsSlice & MaterialSlice & ChatsSlice;
 

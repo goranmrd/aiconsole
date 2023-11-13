@@ -1,7 +1,7 @@
 import { StateCreator } from 'zustand';
 import { EditablesAPI } from '../EditablesAPI';
-import { ChatHeadline } from './chatTypes';
-import { EditablesStore } from '../useEditablesStore';
+import { ChatHeadline } from '../chat/chatTypes';
+import { EditablesStore } from './useEditablesStore';
 import { useProjectsStore } from '@/projects/useProjectsStore';
 
 export type ChatsSlice = {

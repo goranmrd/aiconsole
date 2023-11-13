@@ -16,9 +16,9 @@
 
 import { StateCreator } from 'zustand';
 
-import { Material } from '@/project/editables/assets/assetTypes';
+import { Material } from '@/project/editables/chat/assetTypes';
 import { EditablesAPI } from '../EditablesAPI';
-import { EditablesStore } from '../useEditablesStore';
+import { EditablesStore } from './useEditablesStore';
 import { useProjectsStore } from '@/projects/useProjectsStore';
 
 export type MaterialSlice = {

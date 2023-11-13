@@ -26,12 +26,12 @@ import {
   Material,
   MaterialContentType,
   RenderedMaterial,
-} from '@/project/editables/assets/assetTypes';
+} from '@/project/editables/chat/assetTypes';
 import { CodeInput } from '@/project/editables/assets/components/CodeInput';
 import { SimpleInput } from '@/project/editables/assets/components/TextInput';
 import { getEditableObjectType } from '@/project/editables/getEditableObjectType';
 import { EditablesAPI } from '../../EditablesAPI';
-import { useEditablesStore } from '../../useEditablesStore';
+import { useEditablesStore } from '../../store/useEditablesStore';
 import { getMaterialContentName } from '../getMaterialContentName';
 
 export function AssetEditor({
