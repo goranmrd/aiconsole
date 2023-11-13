@@ -25,11 +25,11 @@ import { useEditablesStore } from '@/store/editables/useEditablesStore';
 
 export function useEditableObjectContextMenu({
   editableObjectType,
-  editableObject,
+  editable: editableObject,
   setIsEditing,
 }: {
   editableObjectType: EditableObjectType;
-  editableObject?: EditableObject;
+  editable?: EditableObject;
   setIsEditing?: (isEditing: boolean) => void;
 }) {
   const { showContextMenu, hideContextMenu, isContextMenuVisible } = useContextMenu();

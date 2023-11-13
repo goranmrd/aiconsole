@@ -37,7 +37,7 @@ export const createAnalysisSlice: StateCreator<ChatStore, [], [], AnalysisSlice>
   initAnalytics: () => {
     useChatStore.subscribe((state, prevState) => {
       if (
-        prevState.chatId !== state.chatId ||
+        prevState.chat.id !== state.chat.id ||
         prevState.chat.message_groups.length !== state.chat.message_groups.length ||
         (state.isExecuteRunning && !prevState.isExecuteRunning)
       ) {

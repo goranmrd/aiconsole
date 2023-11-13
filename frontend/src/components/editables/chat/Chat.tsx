@@ -20,7 +20,6 @@ import ScrollToBottom, { useScrollToBottom } from 'react-scroll-to-bottom';
 import { EmptyChat } from '@/components/editables/chat/EmptyChat';
 import { MessageGroup } from '@/components/editables/chat/MessageGroup';
 import { useChatStore } from '@/store/editables/chat/useChatStore';
-import { useSearchParams } from 'react-router-dom';
 import { Button } from '../../common/Button';
 import { Analysis } from './Analysis';
 import { useProjectStore } from '@/store/projects/useProjectStore';
@@ -36,14 +35,11 @@ export function ChatWindowScrollToBottomSave() {
   return <></>
 }
 
-export function Chat({ chatId }: { chatId: string }) {
+export function Chat() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [searchParams, _] = useSearchParams();
-  const copyId= searchParams.get('copy');
+
   const chat = useChatStore((state) => state.chat);
-  const copyChat = useChatStore((state) => state.copyChat);
   const loadingMessages = useChatStore((state) => state.loadingMessages);
-  const setChatId = useChatStore((state) => state.setChatId);
   const isAnalysisRunning = useChatStore((state) => !!state.currentAnalysisRequestId);
   const isExecuteRunning = useChatStore((state) => state.isExecuteRunning);
   const stopWork = useChatStore((state) => state.stopWork);
@@ -53,8 +49,9 @@ export function Chat({ chatId }: { chatId: string }) {
 
   const isLastMessageFromUser = chat.message_groups.length > 0 && chat.message_groups[chat.message_groups.length - 1].agent_id === 'user';
   
+  
+
   useEffect(() => {
-    setChatId(chatId);
 
     //if there is exactly one text area focus on it
     const textAreas = document.getElementsByTagName('textarea');
@@ -64,17 +61,9 @@ export function Chat({ chatId }: { chatId: string }) {
 
     return () => {
       stopWork();
-      setChatId('');
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chatId, isProjectOpen]); //Initentional trigger when chat_id changes
-
-
-  useEffect(() => {
-    if (copyId && chat.message_groups.length === 0) {
-      copyChat(copyId, chatId);
-    }
-  }, [copyId, chatId, chat.message_groups.length, copyChat]);
+  }, [chat, isProjectOpen]); //Initentional trigger when chat_id changes
 
   return !isProjectLoading && !loadingMessages ? ( // This is needed because of https://github.com/compulim/react-scroll-to-bottom/issues/61#issuecomment-1608456508
     <ScrollToBottom className="h-full overflow-y-auto flex flex-col" scrollViewClassName="main-chat-window" initialScrollBehavior="auto" mode={'bottom'}>

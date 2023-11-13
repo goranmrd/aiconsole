@@ -18,7 +18,7 @@ import { cn } from '@/utils/common/cn';
 import { Asset, EditableObject, EditableObjectType } from '@/types/editables/assetTypes';
 import { getEditableObjectColor } from '@/utils/editables/getEditableObjectColor';
 import { getEditableObjectIcon } from '@/utils/editables/getEditableObjectIcon';
-import { useEditableObjectContextMenu } from '@/utils/editables/useEditableObjectContextMenu';
+import { useEditableObjectContextMenu } from '@/utils/editables/useContextMenuForEditable';
 import { useEditablesStore } from '@/store/editables/useEditablesStore';
 import { KeyboardEvent, MouseEvent, useEffect, useRef, useState } from 'react';
 import { NavLink } from 'react-router-dom';
@@ -38,7 +38,7 @@ const SideBarItem = ({
 
   const { showContextMenu, isContextMenuVisible } = useEditableObjectContextMenu({
     editableObjectType: editableObjectType,
-    editableObject: editableObject,
+    editable: editableObject,
     setIsEditing,
   });
 

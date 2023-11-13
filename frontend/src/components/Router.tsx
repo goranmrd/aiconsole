@@ -20,6 +20,7 @@ import { useProjectStore } from '@/store/projects/useProjectStore';
 import { HashRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
 import { EditableObjectEditor } from './editables/EditableObjectEditor';
+import { ConvertParamsToStores } from './editables/ConvertParamsToStores';
 import SideBar from './editables/sidebar/SideBar';
 import { Home } from './projects/Home';
 import { GlobalSettingsModal } from './settings/GlobalSettingsModal';
@@ -67,7 +68,9 @@ export function Router() {
                     <Route path="/chats/*" element={<SideBar initialTab="chats" />} />
                   </Routes>
                   <Routes>
-                    <Route path="/:type/:id" element={<EditableObjectEditor />} />
+                    <Route path="/:type/:id" element={<ConvertParamsToStores />} >
+                      <Route path="/:type/:id" element={<EditableObjectEditor />} />
+                    </Route>
                   </Routes>
                 </div>
               </div>

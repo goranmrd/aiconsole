@@ -25,9 +25,7 @@ import { useEditablesStore } from '../useEditablesStore';
 import { ChatStore } from './useChatStore';
 
 export type ChatSlice = {
-  chatId: string;
   chat: Chat;
-  copyChat: (id: string, newId: string) => Promise<void>;
   setChatId: (id: string) => void;
   saveCurrentChatHistory: () => Promise<void>;
 };
@@ -36,7 +34,6 @@ export const createChatSlice: StateCreator<ChatStore, [], [], ChatSlice> = (
   set,
   get,
 ) => ({
-  chatId: '',
   chat: {
     id: '',
     name: '',
@@ -47,16 +44,8 @@ export const createChatSlice: StateCreator<ChatStore, [], [], ChatSlice> = (
   
   agent: undefined,
   materials: [],
-  copyChat: async (id: string, newId: string) => {
-    const chat = await EditablesAPI.fetchEditableObject<Chat>('chat', id);
-    chat.id = newId;
-    set({
-      chat: chat,
-    });
-  },
   setChatId: async (id: string) => {
     set({
-      chatId: id,
       loadingMessages: true
     });
 
@@ -108,11 +97,11 @@ export const createChatSlice: StateCreator<ChatStore, [], [], ChatSlice> = (
     useEditablesStore.setState({
       chats: [
         {
-           id: get().chatId,
+           id: chat.id,
            name: chat.name,
            last_modified: new Date().toISOString(),
          },
-         ...useEditablesStore.getState().chats.filter((chat) => chat.id !== get().chatId),
+         ...useEditablesStore.getState().chats.filter((c) => c.id !== chat.id),
        ],
     });
 

@@ -52,7 +52,7 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
 
       get().sendMessage({
         type: 'SetChatIdWSMessage',
-        chat_id: useChatStore.getState().chatId,
+        chat_id: useChatStore.getState().chat.id,
       });
     };
 

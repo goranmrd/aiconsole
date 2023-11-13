@@ -19,7 +19,7 @@ import { getBaseURL } from '@/store/useAPIStore';
 import { Agent, Asset, AssetType } from '@/types/editables/assetTypes';
 import { getEditableObjectColor } from '@/utils/editables/getEditableObjectColor';
 import { getEditableObjectIcon } from '@/utils/editables/getEditableObjectIcon';
-import { useEditableObjectContextMenu } from '@/utils/editables/useEditableObjectContextMenu';
+import { useEditableObjectContextMenu } from '@/utils/editables/useContextMenuForEditable';
 import { useProjectContextMenu } from '@/utils/projects/useProjectContextMenu';
 import { useProjectStore } from '@/store/projects/useProjectStore';
 import { Tooltip } from '@mantine/core';
@@ -28,7 +28,7 @@ import { Link } from 'react-router-dom';
 import { useEditablesStore } from '@/store/editables/useEditablesStore';
 
 function EmptyChatAgentAvatar({ agent }: { agent: Agent }) {
-  const { showContextMenu } = useEditableObjectContextMenu({ editableObjectType: 'agent', editableObject: agent });
+  const { showContextMenu } = useEditableObjectContextMenu({ editableObjectType: 'agent', editable: agent });
 
   return (
     <Tooltip label={`${agent.name}`} position="bottom" transitionProps={{ transition: 'slide-down', duration: 100 }} withArrow >
@@ -50,7 +50,7 @@ function EmptyChatAgentAvatar({ agent }: { agent: Agent }) {
 }
 
 function EmptyChatAssetLink({ assetType, asset }: { assetType: AssetType; asset: Asset }) {
-  const { showContextMenu } = useEditableObjectContextMenu({ editableObjectType: assetType, editableObject: asset });
+  const { showContextMenu } = useEditableObjectContextMenu({ editableObjectType: assetType, editable: asset });
 
   const Icon = getEditableObjectIcon(asset);
   const color = getEditableObjectColor(asset);

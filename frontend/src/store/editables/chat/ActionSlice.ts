@@ -59,7 +59,7 @@ export const createActionSlice: StateCreator<ChatStore, [], [], ActionSlice> = (
       get().markAsExecuting(true, groupId, messageId);
 
       const response = await ChatAPI.runCode({
-        chatId: get().chatId,
+        chatId: get().chat.id,
         language,
         code,
         materials_ids,

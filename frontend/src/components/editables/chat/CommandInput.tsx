@@ -40,7 +40,6 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
   const isExecuteRunning = useChatStore((state) => state.isExecuteRunning);
   const isWorking = isAnalysisRunning || isExecuteRunning;
   const chat = useChatStore((state) => state.chat);
-  const chatId = useChatStore((state) => state.chatId);
 
   const sendingMessagesBlocked =
     (command === '' && chat.message_groups?.length == 0);
@@ -91,7 +90,7 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
     if (textAreaRef.current) {
       textAreaRef.current.focus();
     }
-  }, [chatId]);
+  }, [chat.id]);
 
   return (
     <div

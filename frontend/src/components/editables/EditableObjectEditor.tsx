@@ -15,90 +15,47 @@
 // limitations under the License.
 
 import { AssetEditor } from '@/components/editables/assets/AssetEditor';
-import { useEditableObjectContextMenu } from '@/utils/editables/useEditableObjectContextMenu';
-import { Asset, EditableObject, EditableObjectTypePlural } from '@/types/editables/assetTypes';
-import { Chat } from "@/types/editables/chatTypes";
+import { useEditableObjectContextMenu as useContextMenuForEditable } from '@/utils/editables/useContextMenuForEditable';
+import { Asset, EditableObjectTypePlural } from '@/types/editables/assetTypes';
 import { getEditableObjectColor } from '@/utils/editables/getEditableObjectColor';
 import { getEditableObjectIcon } from '@/utils/editables/getEditableObjectIcon';
 import { getEditableObjectType } from '@/utils/editables/getEditableObjectType';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { ChatPage } from './chat/ChatPage';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import InlineEditableObjectName from './InlineEditableObjectName';
-import { convertNameToId } from '@/utils/editables/convertNameToId';
-import { v4 as uuid } from 'uuid';
-import { EditablesAPI } from '../../api/api/EditablesAPI';
+import { useChatStore } from '@/store/editables/chat/useChatStore';
+import { useAssetStore } from '@/store/editables/asset/useAssetStore';
 
 export function EditableObjectEditor() {
+  
   /*
     <Tooltip`${typeName} id determines the file name and is auto generated from name. It must be unique.`
   */
   
-  const params = useParams();
-  const id = params.id || '';
   const [isEditing, setIsEditing] = useState(false);
-  const [object, setObject] = useState<EditableObject | undefined>(undefined);
-  const [lastSavedObject, setLastSavedObject] = useState<EditableObject | undefined>(undefined);
-  const editableObjectType = getEditableObjectType(useParams().type as EditableObjectTypePlural) || 'chat';
-  const searchParams = useSearchParams()[0];
-  const copyId = searchParams.get('copy');
 
-  // Acquire the initial object
-  useEffect(() => {
-    if (copyId) {
-      setLastSavedObject(undefined);
-          
-      if (editableObjectType === 'chat') {
-        EditablesAPI.fetchEditableObject<Chat>('chat', id).then((chat) => {
-          chat.id = uuid();
-          chat.name = chat.name + " (copy)"
-          setObject(chat);
-        });
-      } else {
-        EditablesAPI.fetchEditableObject<Asset>(editableObjectType, copyId).then((assetToCopy) => {
-          assetToCopy.name += ' Copy';
-          assetToCopy.defined_in = 'project';
-          assetToCopy.id = convertNameToId(assetToCopy.name);
-          setObject(assetToCopy);
-        });
-      }
-    } else if (id) {
-      EditablesAPI.fetchEditableObject<EditableObject>(editableObjectType, id).then((asset) => {
-        setLastSavedObject(asset);
-        setObject(asset);
-      });
-    } else {
-      //HACK: This will get a default new asset
-      EditablesAPI.fetchEditableObject<EditableObject>(editableObjectType, 'new').then((asset) => {
-        setLastSavedObject(undefined);
-        setObject(asset);
-      });
-    }
-  }, [copyId, id, editableObjectType]);
+  const chatCandidate = useChatStore((state) => state.chat);
+  const assetCandidate = useAssetStore((state) => state.selectedAsset);
+  const editableType = getEditableObjectType(useParams().type as EditableObjectTypePlural) || 'chat';
+  const editable = editableType === 'chat' ? chatCandidate : assetCandidate;
 
-  useEffect(() => {
-    // Auto generate id based on name
-    if (object?.name && editableObjectType !== 'chat') {
-      setObject((object) => {
-        if (!object) return object;
-        const id = convertNameToId(object.name);
-        return { ...object, id };
-      });
-    }
-  }, [object?.name, editableObjectType]);
+  const lastSavedChat = undefined;
+  const lastSavedAsset = useAssetStore((state) => state.lastSavedSelectedAsset);
+  const lastSavedEditable = editableType === 'chat' ? lastSavedChat : lastSavedAsset; 
 
-  const { showContextMenu } = useEditableObjectContextMenu({ editableObjectType, editableObject: object, setIsEditing });
+  const { showContextMenu } = useContextMenuForEditable({ editableObjectType: editableType, editable, setIsEditing });
 
-  const Icon = getEditableObjectIcon(object);
-  const color = getEditableObjectColor(object);
+  const Icon = getEditableObjectIcon(editable);
+  const color = getEditableObjectColor(editable);
 
-  if (!object) {
+  if (!editable) {
     return <div className="flex flex-col w-full h-full items-center justify-center">Not found</div>;
   }
 
   let extraStuff = null;
-  if (editableObjectType !== 'chat') {
-    const asset: Asset = object as Asset;
+  if (editableType !== 'chat') {
+    const asset: Asset = editable as Asset;
     extraStuff = `(in ${asset.defined_in})`;
   }
 
@@ -111,19 +68,18 @@ export function EditableObjectEditor() {
       >
         <Icon style={{ color }} />{' '}
         <InlineEditableObjectName
-          editableObject={object}
-          editableObjectType={editableObjectType}
+          editableObject={editable}
+          editableObjectType={editableType}
           isEditing={isEditing}
           setIsEditing={setIsEditing}
           className="flex-grow"
-          isNew={id === 'new'}
+          isNew={lastSavedEditable === undefined}
         />
         <div className="self-end">{extraStuff}</div>
       </div>
       <div className="flex-grow overflow-auto">
-        {editableObjectType === 'chat' && <ChatPage />}
-        {editableObjectType === 'agent' && <AssetEditor asset={object as Asset} lastSavedAsset={lastSavedObject as Asset} setAsset={setObject} setLastSavedAsset={setLastSavedObject} />}
-        {editableObjectType === 'material' && <AssetEditor asset={object as Asset} lastSavedAsset={lastSavedObject as Asset} setAsset={setObject} setLastSavedAsset={setLastSavedObject} />}
+        {editableType === 'chat' && <ChatPage />}
+        {editableType !== 'chat' && <AssetEditor />}
       </div>
     </div>
   );

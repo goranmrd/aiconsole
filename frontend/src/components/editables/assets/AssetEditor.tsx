@@ -17,34 +17,33 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
-import { cn } from '@/utils/common/cn';
-import showNotification from '@/utils/common/showNotification';
+import { CodeInput } from '@/components/editables/assets/CodeInput';
+import { SimpleInput } from '@/components/editables/assets/TextInput';
+import { useEditablesStore } from '@/store/editables/useEditablesStore';
 import {
   Agent,
   Asset,
   AssetType,
   Material,
   MaterialContentType,
-  RenderedMaterial,
+  RenderedMaterial
 } from '@/types/editables/assetTypes';
-import { CodeInput } from '@/components/editables/assets/CodeInput';
-import { SimpleInput } from '@/components/editables/assets/TextInput';
+import { cn } from '@/utils/common/cn';
+import showNotification from '@/utils/common/showNotification';
 import { getEditableObjectType } from '@/utils/editables/getEditableObjectType';
-import { EditablesAPI } from '../../../api/api/EditablesAPI';
-import { useEditablesStore } from '@/store/editables/useEditablesStore';
 import { getMaterialContentName } from '@/utils/editables/getMaterialContentName';
+import { EditablesAPI } from '../../../api/api/EditablesAPI';
+import { useAssetStore } from '@/store/editables/asset/useAssetStore';
 
-export function AssetEditor({
-  asset,
-  lastSavedAsset,
-  setAsset,
-  setLastSavedAsset,
-}: {
-  asset: Asset;
-  lastSavedAsset: Asset;
-  setAsset: (asset: Asset | undefined) => void;
-  setLastSavedAsset: (asset: Asset | undefined) => void;
-}) {
+export function AssetEditor() {
+  const asset = useAssetStore((state) => state.selectedAsset);
+  const lastSavedAsset = useAssetStore((state) => state.lastSavedSelectedAsset);
+
+
+  function setAsset(asset: Asset) {
+    useAssetStore.setState({ selectedAsset: asset });
+  }
+
   const searchParams = useSearchParams()[0];
   const [preview, setPreview] = useState<RenderedMaterial | undefined>(undefined);
 
@@ -80,7 +79,7 @@ export function AssetEditor({
   })();
 
   const updateStatusIfNecessary = async () => {
-    if (isAssetStatusChanged) {
+    if (isAssetStatusChanged && asset) {
       await EditablesAPI.setAssetStatus(assetType, asset.id, asset.status);
 
       showNotification({
@@ -139,11 +138,11 @@ export function AssetEditor({
       await updateStatusIfNecessary();
     }
 
-    if (lastSavedAsset.id !== asset.id) {
+    if (lastSavedAsset?.id !== asset.id) {
       navigate(`/${assetType}s/${asset.id}`);
     }
 
-    setLastSavedAsset(asset);
+    useAssetStore.setState({ lastSavedSelectedAsset: asset });
   };
 
   if (asset && assetType === 'material') {

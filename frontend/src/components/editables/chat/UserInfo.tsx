@@ -16,7 +16,7 @@
 
 import { Link } from 'react-router-dom';
 
-import { useEditableObjectContextMenu } from '@/utils/editables/useEditableObjectContextMenu';
+import { useEditableObjectContextMenu } from '@/utils/editables/useContextMenuForEditable';
 import { useOpenSettings } from '@/utils/settings/useOpenSettings';
 import { useAPIStore } from '@/store/useAPIStore';
 import { useUserContextMenu } from '@/utils/common/useUserContextMenu';
@@ -25,7 +25,7 @@ import { useEditablesStore } from '@/store/editables/useEditablesStore';
 function UserInfoMaterialLink({ material_id }: { material_id: string }) {
   const materials = useEditablesStore((state) => state.materials) || [];
   const material = materials.find((m) => m.id === material_id);
-  const { showContextMenu } = useEditableObjectContextMenu({ editableObjectType: 'material', editableObject: material });
+  const { showContextMenu } = useEditableObjectContextMenu({ editableObjectType: 'material', editable: material });
 
   return (
     <Link to={`/materials/${material_id}`} onContextMenu={showContextMenu()}>
@@ -52,7 +52,7 @@ export function UserInfo({
   const getBaseURL = useAPIStore((state) => state.getBaseURL);
   const { showContextMenu } = useEditableObjectContextMenu({
     editableObjectType: 'agent',
-    editableObject: agent || {
+    editable: agent || {
       id: agent_id,
       name: agent_id
     },

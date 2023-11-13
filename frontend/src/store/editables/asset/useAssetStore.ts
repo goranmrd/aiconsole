@@ -14,14 +14,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Chat } from './Chat';
-import { CommandInput } from './CommandInput';
+import { create } from 'zustand';
 
-export function ChatPage() {
-  return (
-    <div className="flex w-ful h-full flex-col justify-between downlight">
-      <Chat />
-      <CommandInput className="flex-none" />
-    </div>
-  );
-}
+import { Asset } from '@/types/editables/assetTypes';
+
+export type ProjectSlice = {
+  selectedAsset?: Asset
+  lastSavedSelectedAsset?: Asset
+};
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const useAssetStore = create<ProjectSlice>((_set, _get) => ({
+  lastSavedSelectedAsset: undefined,
+  selectedAsset: undefined,
+}));
