@@ -63,7 +63,7 @@ export function Chat() {
       stopWork();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chat, isProjectOpen]); //Initentional trigger when chat_id changes
+  }, [chat.id, isProjectOpen]); //Initentional trigger when chat_id changes
 
   return !isProjectLoading && !loadingMessages ? ( // This is needed because of https://github.com/compulim/react-scroll-to-bottom/issues/61#issuecomment-1608456508
     <ScrollToBottom className="h-full overflow-y-auto flex flex-col" scrollViewClassName="main-chat-window" initialScrollBehavior="auto" mode={'bottom'}>

@@ -71,14 +71,14 @@ export function ConvertParamsToStores() {
 
     return () => {
       //clear all the stores
-      /*useChatStore.setState({ chat: {
+      useChatStore.setState({ chat: {
         id: '',
         name: '',
         last_modified: new Date().toISOString(),
         title_edited: false,
         message_groups: [],
       } });
-      useAssetStore.setState({ selectedAsset: undefined, lastSavedSelectedAsset: undefined });*/
+      useAssetStore.setState({ selectedAsset: undefined, lastSavedSelectedAsset: undefined });
     };
   }, [copyId, id, editableObjectType, setLastSavedObject, setObject]);
 

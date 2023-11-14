@@ -258,6 +258,6 @@ export const createActionSlice: StateCreator<ChatStore, [], [], ActionSlice> = (
   },
   stopWork: async () => {
     get().executeAbortSignal.abort();
-    get().analysisAbortController.abort();
+    get().resetAnalysis();
   },
 });

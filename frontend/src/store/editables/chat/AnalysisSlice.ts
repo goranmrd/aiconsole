@@ -26,7 +26,7 @@ export type AnalysisSlice = {
   currentAnalysisRequestId?: string;
   next_step?: string;
   thinking_process?: string;
-  reset: () => void;
+  resetAnalysis: () => void;
   doAnalysis: () => Promise<void>;
   analysisAbortController: AbortController;
   initAnalytics(): void;
@@ -41,7 +41,7 @@ export const createAnalysisSlice: StateCreator<ChatStore, [], [], AnalysisSlice>
         prevState.chat.message_groups.length !== state.chat.message_groups.length ||
         (state.isExecuteRunning && !prevState.isExecuteRunning)
       ) {
-        get().reset();
+        get().resetAnalysis();
       }
     });
   },
@@ -51,7 +51,8 @@ export const createAnalysisSlice: StateCreator<ChatStore, [], [], AnalysisSlice>
   relevant_material_ids: undefined,
   next_step: undefined,
   thinking_process: undefined,
-  reset: () => {
+  resetAnalysis: () => {
+    console.log('resetAnalysis')
     get().analysisAbortController.abort();
 
     set({
@@ -68,7 +69,7 @@ export const createAnalysisSlice: StateCreator<ChatStore, [], [], AnalysisSlice>
     set(() => ({}));
 
     try {
-      get().reset();
+      get().resetAnalysis();
 
       set(() => ({
         currentAnalysisRequestId: analysisRequestId,
