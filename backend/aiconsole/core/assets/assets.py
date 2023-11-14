@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import datetime
 import logging
 import os
 from pathlib import Path
@@ -41,6 +42,7 @@ class Assets:
     _assets: Dict[str, Asset]
 
     def __init__(self, asset_type: AssetType):
+        self._suppress_notification_until = None
         self.asset_type = asset_type
         self._assets = {}
 
@@ -109,13 +111,20 @@ class Assets:
     
     async def save_asset(self, asset: Asset, new: bool, old_asset_id: Optional[str] = None):
         self._assets[asset.id] = await save_asset_to_fs(asset, new, old_asset_id)
+        self._suppress_notification()
 
     def delete_asset(self, asset_id):
         delete_asset_from_fs(self.asset_type, asset_id)
         del self._assets[asset_id]
+        self._suppress_notification()
 
     def move(self, old_asset_id: str, new_asset_id: str) -> None:
         move_asset_in_fs(self.asset_type, old_asset_id, new_asset_id)
+        self._suppress_notification()
+
+
+    def _suppress_notification(self):
+        self._suppress_notification_until = datetime.datetime.now() + datetime.timedelta(seconds=10)
 
     def get_asset(self, name):
         """
@@ -149,7 +158,7 @@ class Assets:
                 continue
 
         await AssetsUpdatedWSMessage(
-            initial=initial,
+            initial=(initial or not (not self._suppress_notification_until or self._suppress_notification_until < datetime.datetime.now())),
             asset_type=self.asset_type,
             count=len(self._assets),
         ).send_to_all()

@@ -13,6 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import datetime
 import logging
 import os
 from pathlib import Path
@@ -22,7 +23,7 @@ import litellm
 import tomlkit
 import tomlkit.container
 import tomlkit.exceptions
-from aiconsole.api.websockets.outgoing_messages import SettingsWSMessage
+from aiconsole.api.websockets.outgoing_messages import DebugJSONWSMessage, SettingsWSMessage
 from aiconsole.core.assets.asset import AssetStatus, AssetType
 from aiconsole.core.project.paths import get_project_directory
 from aiconsole.core.project.project import is_project_initialized
@@ -80,6 +81,7 @@ def _set_openai_api_key_environment(settings: SettingsData) -> None:
 class Settings:
 
     def __init__(self, project_path: Optional[Path] = None):
+        self._suppress_notification_until = None
         self._settings = SettingsData()
 
         self._global_settings_file_path = Path(
@@ -119,7 +121,8 @@ class Settings:
 
     async def reload(self, initial: bool = False):
         self._settings = await self.__load()
-        await SettingsWSMessage(initial=initial).send_to_all()
+        await SettingsWSMessage(initial=initial or not (not self._suppress_notification_until or self._suppress_notification_until < datetime.datetime.now())).send_to_all()
+        self._suppress_notification_until = None
 
     def get_asset_status(self, asset_type: AssetType, id: str) -> AssetStatus:
         s = self._settings
@@ -157,7 +160,8 @@ class Settings:
             partial_settings = {
                 AssetStatus.DISABLED: PartialSettingsData(disabled_agents=[id]),
                 AssetStatus.ENABLED: PartialSettingsData(enabled_agents=[id]),
-                AssetStatus.FORCED: PartialSettingsData(forced_agent=id, enabled_agents=[self._settings.forced_agent] if self._settings.forced_agent else None)
+                AssetStatus.FORCED: PartialSettingsData(forced_agent=id, enabled_agents=[
+                                                        self._settings.forced_agent] if self._settings.forced_agent else None)
             }
 
         else:
@@ -281,6 +285,9 @@ class Settings:
         if settings_data.enabled_agents is not None:
             for agent in settings_data.enabled_agents:
                 doc_agents[agent] = AssetStatus.ENABLED.value
+
+        self._suppress_notification_until = datetime.datetime.now() + \
+            datetime.timedelta(seconds=30)
 
         file_path.parent.mkdir(parents=True, exist_ok=True)
         with file_path.open('w') as file:
