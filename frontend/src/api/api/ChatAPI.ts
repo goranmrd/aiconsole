@@ -22,9 +22,9 @@ import { API_HOOKS, getBaseURL } from "../../store/useAPIStore";
 import { Chat } from "@/types/editables/chatTypes";
 
 
-const execute = (body: Chat & { relevant_materials_ids: string[]; agent_id: string }, signal?: AbortSignal) =>
-  ky.post(`${getBaseURL()}/execute`, {
-    json: { ...body },
+const execute = (chatWithAnalysis: Chat & { relevant_materials_ids: string[]; agent_id: string }, signal?: AbortSignal) =>
+  ky.post(`${getBaseURL()}/api/chats/${chatWithAnalysis.id}/execute`, {
+    json: { ...chatWithAnalysis },
     signal,
     timeout: 60000,
     hooks: API_HOOKS,
@@ -62,9 +62,9 @@ const saveCommandToHistory = (body: object) =>
 
 
 
-const analyse = (body: Chat, analysis_request_id: string, signal?: AbortSignal) =>
-  ky.post(`${getBaseURL()}/api/analyse`, {
-    json: { chat: body, analysis_request_id: analysis_request_id },
+const analyse = (chat: Chat, analysis_request_id: string, signal?: AbortSignal) =>
+  ky.post(`${getBaseURL()}/api/chats/${chat.id}/analyse`, {
+    json: { chat: chat, analysis_request_id: analysis_request_id },
     signal,
     timeout: 60000,
     hooks: API_HOOKS,

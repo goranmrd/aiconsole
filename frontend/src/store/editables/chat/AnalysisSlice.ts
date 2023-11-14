@@ -52,7 +52,6 @@ export const createAnalysisSlice: StateCreator<ChatStore, [], [], AnalysisSlice>
   next_step: undefined,
   thinking_process: undefined,
   resetAnalysis: () => {
-    console.log('resetAnalysis')
     get().analysisAbortController.abort();
 
     set({

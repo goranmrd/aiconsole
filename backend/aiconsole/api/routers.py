@@ -18,7 +18,7 @@ from aiconsole.api.endpoints import run_code
 from aiconsole.api.endpoints import projects
 from fastapi import APIRouter
 
-from aiconsole.api.endpoints import analyse, chats, commands_history, execute, profile, image, agents, ping, ws, \
+from aiconsole.api.endpoints import chats, commands_history, profile, image, agents, ping, ws, \
     materials, project_settings,check_key
 
 
@@ -27,8 +27,6 @@ app_router = APIRouter()
 app_router.include_router(ping.router)
 app_router.include_router(image.router)
 app_router.include_router(check_key.router)
-app_router.include_router(analyse.router)
-app_router.include_router(execute.router)
 app_router.include_router(run_code.router)
 app_router.include_router(profile.router)
 app_router.include_router(chats.router, prefix="/api/chats")

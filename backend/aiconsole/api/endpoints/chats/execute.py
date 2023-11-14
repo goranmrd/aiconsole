@@ -30,14 +30,18 @@ from aiconsole.core.project import project
 from aiconsole.utils.cancel_on_disconnect import cancelable_endpoint
 from fastapi import APIRouter, Request
 from fastapi.responses import StreamingResponse
+from pydantic import ValidationError
 
 router = APIRouter()
 _log = logging.getLogger(__name__)
 
 
-@router.post("/execute")
+@router.post("/{chat_id}/execute")
 @cancelable_endpoint
-async def execute(request: Request, chat: ChatWithAgentAndMaterials) -> StreamingResponse:
+async def execute(request: Request, chat: ChatWithAgentAndMaterials, chat_id) -> StreamingResponse:
+    if chat_id != chat.id:
+        raise ValidationError("Chat ID does not match")
+
     agent = cast(Agent, project.get_project_agents().get_asset(chat.agent_id))
 
     content_context = ContentEvaluationContext(
