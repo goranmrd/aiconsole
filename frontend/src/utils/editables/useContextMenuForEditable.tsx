@@ -23,6 +23,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { useContextMenu } from '../common/useContextMenu';
 import { getAssetStatusIcon } from './getAssetStatusIcon';
+import { useAssetStore } from '@/store/editables/asset/useAssetStore';
 
 
 function createIconForStatus(assetStatus: AssetStatus) {
@@ -145,7 +146,7 @@ export function useEditableObjectContextMenu({
                   icon: createIconForStatus('forced'),
                   title: 'Always',
                   onClick: () => {
-                    useEditablesStore.getState().setAssetStatus(editableObjectType, editableObject.id, 'forced');
+                    useAssetStore.getState().setAssetStatus(editableObjectType, editableObject.id, 'forced');
                   },
                 },
               ]
@@ -157,7 +158,7 @@ export function useEditableObjectContextMenu({
                   icon: createIconForStatus('enabled'),
                   title: 'Auto',
                   onClick: () => {
-                    useEditablesStore.getState().setAssetStatus(editableObjectType, editableObject.id, 'enabled');
+                    useAssetStore.getState().setAssetStatus(editableObjectType, editableObject.id, 'enabled');
                   },
                 },
               ]
@@ -169,7 +170,7 @@ export function useEditableObjectContextMenu({
                   icon: createIconForStatus('disabled'),
                   title: 'Disabled',
                   onClick: () => {
-                    useEditablesStore.getState().setAssetStatus(editableObjectType, editableObject.id, 'disabled');
+                    useAssetStore.getState().setAssetStatus(editableObjectType, editableObject.id, 'disabled');
                   },
                 },
               ]

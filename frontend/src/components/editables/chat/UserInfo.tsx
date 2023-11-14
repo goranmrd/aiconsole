@@ -16,11 +16,12 @@
 
 import { Link } from 'react-router-dom';
 
+import { useAssetStore } from '@/store/editables/asset/useAssetStore';
 import { useEditablesStore } from '@/store/editables/useEditablesStore';
 import { useAPIStore } from '@/store/useAPIStore';
+import { cn } from '@/utils/common/cn';
 import { useUserContextMenu } from '@/utils/common/useUserContextMenu';
 import { useEditableObjectContextMenu } from '@/utils/editables/useContextMenuForEditable';
-import { cn } from '@/utils/common/cn';
 
 function UserInfoMaterialLink({ material_id }: { material_id: string }) {
   const materials = useEditablesStore((state) => state.materials) || [];
@@ -40,7 +41,7 @@ function UserInfoMaterialLink({ material_id }: { material_id: string }) {
 }
 
 export function AgentAvatar({ agent_id, task }: { agent_id: string, task?: string }) {
-  const agent = useEditablesStore((state) => state.getAsset('agent', agent_id));
+  const agent = useAssetStore((state) => state.getAsset('agent', agent_id));
   const getBaseURL = useAPIStore((state) => state.getBaseURL);
   const { showContextMenu } = useEditableObjectContextMenu({
     editableObjectType: 'agent',
@@ -75,7 +76,7 @@ export function UserInfo({
   materials_ids: string[];
   task?: string;
 }) {
-  const agent = useEditablesStore((state) => state.getAsset('agent', agent_id));
+  const agent = useAssetStore((state) => state.getAsset('agent', agent_id));
   const { showContextMenu } = useEditableObjectContextMenu({
     editableObjectType: 'agent',
     editable: agent || {

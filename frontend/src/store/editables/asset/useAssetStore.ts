@@ -14,17 +14,101 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { EditablesAPI } from '@/api/api/EditablesAPI';
+import { Agent, Asset, AssetStatus, AssetType, Material } from '@/types/editables/assetTypes';
+import { canThereBeOnlyOneForcedAsset } from '@/utils/editables/canThereBeOnlyOneForcedAsset';
 import { create } from 'zustand';
-
-import { Asset } from '@/types/editables/assetTypes';
+import { useEditablesStore } from '../useEditablesStore';
 
 export type ProjectSlice = {
   selectedAsset?: Asset
   lastSavedSelectedAsset?: Asset
+  getAsset: (assetType: AssetType, id: string) => Asset | undefined;
+  setAssetStatus: (assetType: AssetType, id: string, status: AssetStatus) => Promise<void>;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const useAssetStore = create<ProjectSlice>((_set, _get) => ({
   lastSavedSelectedAsset: undefined,
   selectedAsset: undefined,
+  getAsset: (assetType: AssetType, id: string): Asset | undefined => {
+    if (assetType === 'agent') {
+      if (id === 'user') {
+        const agent: Agent = {
+          id: 'user',
+          name: 'User',
+          usage: '',
+          usage_examples: [],
+          system: '',
+          defined_in: 'aiconsole',
+          status: 'enabled',
+          gpt_mode: 'quality',
+          execution_mode: 'normal',
+        };
+
+        return agent;
+      }
+
+      if (id === 'new') {
+        const agent: Agent = {
+          id: 'new_agent',
+          name: 'New agent',
+          usage: '',
+          usage_examples: [],
+          system: '',
+          defined_in: 'project',
+          status: 'enabled',
+          gpt_mode: 'quality',
+          execution_mode: 'normal',
+        };
+
+        return agent;
+      }
+
+      return useEditablesStore.getState().agents.find((agent) => agent.id === id);
+    }
+
+    if (assetType === 'material') {
+      if (id === 'new') {
+        const material: Material = {
+          id: 'new_material',
+          name: 'New material',
+          usage: '',
+          usage_examples: [],
+          defined_in: 'project',
+          status: 'enabled',
+          content_api: '',
+          content_type: 'static_text',
+          content_dynamic_text: '',
+          content_static_text: '',
+        };
+
+        return material;
+      }
+
+      return useEditablesStore.getState().materials?.find((material) => material.id === id);
+    }
+
+    throw new Error(`Unknown asset type ${assetType}`);
+  },
+  setAssetStatus: async (assetType: AssetType, id: string, status: AssetStatus) => {
+    const plural = (assetType + 's') as 'materials' | 'agents';
+
+    useEditablesStore.setState((state) => ({
+      [plural]: (state[plural] || []).map((asset) => {
+        if (asset.id === id) {
+          asset.status = status;
+        } else {
+          if (canThereBeOnlyOneForcedAsset(assetType)) {
+            if (asset.status === 'forced') {
+              asset.status = 'enabled';
+            }
+          }
+        }
+        return asset;
+      }),
+    }));
+
+    await EditablesAPI.setAssetStatus(assetType, id, status);
+  },
 }));
