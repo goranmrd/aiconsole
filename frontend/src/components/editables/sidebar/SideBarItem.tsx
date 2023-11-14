@@ -15,14 +15,24 @@
 // limitations under the License.
 
 import { cn } from '@/utils/common/cn';
-import { Asset, EditableObject, EditableObjectType } from '@/types/editables/assetTypes';
+import {
+  Agent,
+  Asset,
+  EditableObject,
+  EditableObjectType,
+  Material,
+} from '@/types/editables/assetTypes';
 import { getEditableObjectColor } from '@/utils/editables/getEditableObjectColor';
 import { getEditableObjectIcon } from '@/utils/editables/getEditableObjectIcon';
 import { useEditableObjectContextMenu } from '@/utils/editables/useContextMenuForEditable';
 import { useEditablesStore } from '@/store/editables/useEditablesStore';
 import { KeyboardEvent, MouseEvent, useEffect, useRef, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { getAssetStatusIcon } from '@/utils/editables/getAssetStatusIcon';
+import { EditablesAPI } from '@/api/api/EditablesAPI';
+import { Chat, ChatHeadline } from '@/types/editables/chatTypes';
+import { useAssetStore } from '@/store/editables/asset/useAssetStore';
+import { useChatStore } from '@/store/editables/chat/useChatStore';
 
 const SideBarItem = ({
   editableObjectType,
@@ -31,16 +41,30 @@ const SideBarItem = ({
   editableObject: EditableObject;
   editableObjectType: EditableObjectType;
 }) => {
-  const renameEditableObject = useEditablesStore((state) => state.renameEditableObject);
+  const location = useLocation();
+  const navigate = useNavigate();
 
+  const renameEditableObject = useEditablesStore(
+    (state) => state.renameEditableObject,
+  );
+  const updateSelectedChat = useChatStore((state) => state.updateSelectedChat);
+  const updateSelectedAsset = useAssetStore(
+    (state) => state.updateSelectedAsset,
+  );
+  const updateChatItem = useEditablesStore((state) => state.updateChatItem);
+  const updateMaterialsItem = useEditablesStore(
+    (state) => state.updateMaterialsItem,
+  );
+  const updateAgentsItem = useEditablesStore((state) => state.updateAgentsItem);
   const [isEditing, setIsEditing] = useState(false);
   const [isShowingContext, setIsShowingContext] = useState(false);
 
-  const { showContextMenu, isContextMenuVisible } = useEditableObjectContextMenu({
-    editableObjectType: editableObjectType,
-    editable: editableObject,
-    setIsEditing,
-  });
+  const { showContextMenu, isContextMenuVisible } =
+    useEditableObjectContextMenu({
+      editableObjectType: editableObjectType,
+      editable: editableObject,
+      setIsEditing,
+    });
 
   useEffect(() => {
     if (!isContextMenuVisible) {
@@ -71,11 +95,44 @@ const SideBarItem = ({
     setIsEditing(false);
   };
 
-  const handleRename = () => {
+  const handleRename = async () => {
     if (inputText === '') {
       setInputText(editableObject.name);
     } else {
-      renameEditableObject(editableObject, inputText, false);
+      let editableObjectWithType = {
+        ...editableObject,
+        name: inputText,
+        type: editableObjectType,
+      };
+      if (editableObjectType === 'chat') {
+        const chat = await EditablesAPI.fetchEditableObject<ChatHeadline>(
+          editableObjectType,
+          editableObject.id,
+        );
+        editableObjectWithType = chat;
+        updateChatItem(editableObjectWithType as Chat);
+      }
+
+      const newId = await renameEditableObject(
+        editableObjectWithType,
+        inputText,
+        false,
+      );
+      if (editableObjectType !== 'chat') {
+        if (
+          location.pathname === `/${editableObjectType}s/${editableObject.id}`
+        ) {
+          navigate(`/${editableObjectType}s/${newId}`);
+        }
+        updateSelectedAsset(editableObjectWithType.name, newId);
+        if (editableObjectType === 'material') {
+          updateMaterialsItem(editableObjectWithType as Material);
+        } else {
+          updateAgentsItem(editableObjectWithType as Agent);
+        }
+      } else {
+        updateSelectedChat(editableObjectWithType.name, newId);
+      }
     }
     hideInput();
   };

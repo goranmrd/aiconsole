@@ -28,29 +28,38 @@ import { useChatStore } from '@/store/editables/chat/useChatStore';
 import { useAssetStore } from '@/store/editables/asset/useAssetStore';
 
 export function EditableObjectEditor() {
-  
   /*
     <Tooltip`${typeName} id determines the file name and is auto generated from name. It must be unique.`
   */
-  
+
   const [isEditing, setIsEditing] = useState(false);
 
   const chatCandidate = useChatStore((state) => state.chat);
   const assetCandidate = useAssetStore((state) => state.selectedAsset);
-  const editableType = getEditableObjectType(useParams().type as EditableObjectTypePlural) || 'chat';
+  const editableType =
+    getEditableObjectType(useParams().type as EditableObjectTypePlural) ||
+    'chat';
   const editable = editableType === 'chat' ? chatCandidate : assetCandidate;
-
   const lastSavedChat = undefined;
   const lastSavedAsset = useAssetStore((state) => state.lastSavedSelectedAsset);
-  const lastSavedEditable = editableType === 'chat' ? lastSavedChat : lastSavedAsset; 
+  const lastSavedEditable =
+    editableType === 'chat' ? lastSavedChat : lastSavedAsset;
 
-  const { showContextMenu } = useContextMenuForEditable({ editableObjectType: editableType, editable, setIsEditing });
+  const { showContextMenu } = useContextMenuForEditable({
+    editableObjectType: editableType,
+    editable,
+    setIsEditing,
+  });
 
   const Icon = getEditableObjectIcon(editable);
   const color = getEditableObjectColor(editable);
 
   if (!editable) {
-    return <div className="flex flex-col w-full h-full items-center justify-center">Not found</div>;
+    return (
+      <div className="flex flex-col w-full h-full items-center justify-center">
+        Not found
+      </div>
+    );
   }
 
   let extraStuff = null;
@@ -64,9 +73,9 @@ export function EditableObjectEditor() {
       <div
         onContextMenu={showContextMenu()}
         onClick={() => setIsEditing(true)}
-        className="w-full flex-none flex flex-row gap-2 cursor-pointer p-4 border-b border-gray-600 bg-gray-700/20 shadow-md items-center w-full overflow-clip "
+        className="w-full flex-none flex flex-row gap-2 cursor-pointer p-4 border-b border-gray-600 bg-gray-700/20 shadow-md items-center overflow-clip "
       >
-        <Icon style={{ color }} className='flex-none' />{' '}
+        <Icon style={{ color }} className="flex-none" />{' '}
         <InlineEditableObjectName
           editableObject={editable}
           editableObjectType={editableType}

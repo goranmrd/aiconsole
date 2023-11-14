@@ -36,6 +36,7 @@ export type ProjectSlice = {
     id: string,
     status: AssetStatus,
   ) => Promise<void>;
+  updateSelectedAsset: (name: string, newId: string) => void;
 };
 
 export const useAssetStore = create<ProjectSlice>((set) => ({
@@ -50,6 +51,7 @@ export const useAssetStore = create<ProjectSlice>((set) => ({
           usage: '',
           usage_examples: [],
           system: '',
+          type: 'agent',
           defined_in: 'aiconsole',
           status: 'enabled',
           gpt_mode: 'quality',
@@ -66,6 +68,7 @@ export const useAssetStore = create<ProjectSlice>((set) => ({
           usage: '',
           usage_examples: [],
           system: '',
+          type: 'agent',
           defined_in: 'project',
           status: 'enabled',
           gpt_mode: 'quality',
@@ -90,6 +93,7 @@ export const useAssetStore = create<ProjectSlice>((set) => ({
           defined_in: 'project',
           status: 'enabled',
           content_api: '',
+          type: 'material',
           content_type: 'static_text',
           content_dynamic_text: '',
           content_static_text: '',
@@ -133,5 +137,16 @@ export const useAssetStore = create<ProjectSlice>((set) => ({
     }));
 
     await EditablesAPI.setAssetStatus(assetType, id, status);
+  },
+  updateSelectedAsset: (name: string, newId: string) => {
+    set(({ selectedAsset }) => {
+      const updatedAsset = selectedAsset
+        ? { ...selectedAsset, name, id: newId }
+        : undefined;
+
+      return {
+        selectedAsset: updatedAsset,
+      };
+    });
   },
 }));

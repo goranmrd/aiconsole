@@ -16,17 +16,22 @@
 
 import { StateCreator } from 'zustand';
 import { useProjectStore } from '@/store/projects/useProjectStore';
-import { Agent } from '@/types/editables/assetTypes';
+import { Agent, AgentHeadline } from '@/types/editables/assetTypes';
 import { EditablesAPI } from '../../api/api/EditablesAPI';
 import { EditablesStore } from './useEditablesStore';
 
 export type AgentsSlice = {
-  agents: Agent[];
+  agents: AgentHeadline[];
   initAgents: () => Promise<void>;
+  updateAgentsItem: (updatedAgent: Agent) => void;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const createAgentsSlice: StateCreator<EditablesStore, [], [], AgentsSlice> = (set, _get) => ({
+export const createAgentsSlice: StateCreator<
+  EditablesStore,
+  [],
+  [],
+  AgentsSlice
+> = (set) => ({
   agents: [],
   initAgents: async () => {
     if (useProjectStore.getState().isProjectOpen) {
@@ -39,5 +44,14 @@ export const createAgentsSlice: StateCreator<EditablesStore, [], [], AgentsSlice
       set({ agents: [] });
     }
     if (!useProjectStore.getState().isProjectOpen) return;
+  },
+  updateAgentsItem: (updatedAgent: Agent) => {
+    set(({ agents }) => {
+      const updatedAgents = agents?.map((agent) =>
+        agent.id === updatedAgent.id ? updatedAgent : agent,
+      );
+
+      return { agents: updatedAgents };
+    });
   },
 });

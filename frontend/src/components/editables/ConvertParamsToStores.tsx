@@ -1,5 +1,9 @@
-import { Asset, EditableObject, EditableObjectTypePlural } from '@/types/editables/assetTypes';
-import { Chat } from "@/types/editables/chatTypes";
+import {
+  Asset,
+  EditableObject,
+  EditableObjectTypePlural,
+} from '@/types/editables/assetTypes';
+import { Chat } from '@/types/editables/chatTypes';
 import { getEditableObjectType } from '@/utils/editables/getEditableObjectType';
 import { Outlet, useParams, useSearchParams } from 'react-router-dom';
 import { SetStateAction, useCallback, useEffect, useMemo } from 'react';
@@ -10,7 +14,7 @@ import { useChatStore } from '@/store/editables/chat/useChatStore';
 import { useAssetStore } from '@/store/editables/asset/useAssetStore';
 import { useWebSocketStore } from '@/api/ws/useWebSocketStore';
 
-function isFunction<T>(value: SetStateAction<T>): value is ((prevState: T) => T) {
+function isFunction<T>(value: SetStateAction<T>): value is (prevState: T) => T {
   return typeof value === 'function';
 }
 
@@ -18,7 +22,11 @@ export function ConvertParamsToStores() {
   // Monitors params and initialises useChatStore.chat and useAssetStore.selectedAsset zustand stores
   const params = useParams();
   const id = params.id || '';
-  const editableObjectType = useMemo(() => getEditableObjectType(params.type as EditableObjectTypePlural) || 'chat', [params]);
+  const editableObjectType = useMemo(
+    () =>
+      getEditableObjectType(params.type as EditableObjectTypePlural) || 'chat',
+    [params],
+  );
   const searchParams = useSearchParams()[0];
   const copyId = searchParams.get('copy');
 
@@ -57,11 +65,14 @@ export function ConvertParamsToStores() {
       if (editableObjectType === 'chat') {
         EditablesAPI.fetchEditableObject<Chat>('chat', id).then((chat) => {
           chat.id = uuid();
-          chat.name = chat.name + " (copy)";
+          chat.name = chat.name + ' (copy)';
           setObject(chat);
         });
       } else {
-        EditablesAPI.fetchEditableObject<Asset>(editableObjectType, copyId).then((assetToCopy) => {
+        EditablesAPI.fetchEditableObject<Asset>(
+          editableObjectType,
+          copyId,
+        ).then((assetToCopy) => {
           assetToCopy.name += ' Copy';
           assetToCopy.defined_in = 'project';
           assetToCopy.id = convertNameToId(assetToCopy.name);
@@ -70,7 +81,10 @@ export function ConvertParamsToStores() {
       }
     } else {
       //For id === 'new' This will get a default new asset
-      EditablesAPI.fetchEditableObject<EditableObject>(editableObjectType, id).then((asset) => {
+      EditablesAPI.fetchEditableObject<EditableObject>(
+        editableObjectType,
+        id,
+      ).then((asset) => {
         setLastSavedObject(id !== 'new' ? asset : undefined); // for new assets, lastSavedAsset is undefined
         setObject(asset);
       });
@@ -85,7 +99,8 @@ export function ConvertParamsToStores() {
 
   const chatCandidate = useChatStore((state) => state.chat);
   const assetCandidate = useAssetStore((state) => state.selectedAsset);
-  const editable = editableObjectType === 'chat' ? chatCandidate : assetCandidate;
+  const editable =
+    editableObjectType === 'chat' ? chatCandidate : assetCandidate;
 
   useEffect(() => {
     // Auto generate id when name changes for assets
