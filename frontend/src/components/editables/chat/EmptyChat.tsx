@@ -78,7 +78,7 @@ export const EmptyChat = () => {
         <p className="p-2">Project</p>
         <span className=" text-primary uppercase">{projectName}</span>
       </h2>
-      <div className="font-bold mb-4 text-center opacity-50 text-sm uppercase">Enabled Agents</div>
+      <div className="font-bold mb-4 text-center opacity-50 text-sm uppercase">Agents</div>
       <div className="flex flex-row gap-2 mb-8">
         {agents
           .filter((a) => a.id !== 'user' && a.status !== 'disabled')

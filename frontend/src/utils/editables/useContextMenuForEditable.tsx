@@ -21,7 +21,7 @@ import { Copy, Edit, File, Trash } from 'lucide-react';
 import { ContextMenuContent } from 'mantine-contextmenu';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-import { CONTEXT_MENU_ITEM_CLASSES, useContextMenu } from '../common/useContextMenu';
+import { useContextMenu } from '../common/useContextMenu';
 import { getAssetStatusIcon } from './getAssetStatusIcon';
 
 
@@ -29,6 +29,8 @@ function createIconForStatus(assetStatus: AssetStatus) {
   const Icon = getAssetStatusIcon(assetStatus)
   return <Icon className="w-4 h-4" />
 }
+
+export const DISABLED = 'font-bold opacity-50 max-w-[400px] truncate !cursor-default hover:!bg-gray-700'
 
 export function useEditableObjectContextMenu({
   editableObjectType,
@@ -112,6 +114,7 @@ export function useEditableObjectContextMenu({
       );
     } else {
       const asset = editableObject as Asset;
+      hasDelete = asset?.defined_in === 'project';
 
       content.push(
         ...[
@@ -130,59 +133,55 @@ export function useEditableObjectContextMenu({
           { key: 'divider' },
           {
             key: 'usage',
-            icon: createIconForStatus(asset?.status || 'enabled'),
-            title: 'Use ...',
-
-            items: [
-              ...(editableObject && asset?.status !== 'forced'
-                ? [
-                    {
-                      key: 'Always',
-                      icon: createIconForStatus('forced'),
-                      title: 'Always',
-                      className: CONTEXT_MENU_ITEM_CLASSES,
-                      onClick: () => {
-                        useEditablesStore.getState().setAssetStatus(editableObjectType, editableObject.id, 'forced');
-                      },
-                    },
-                  ]
-                : []),
-              ...(editableObject && asset?.status !== 'enabled'
-                ? [
-                    {
-                      key: 'Auto',
-                      icon: createIconForStatus('enabled'),
-                      title: 'Auto',
-                      className: CONTEXT_MENU_ITEM_CLASSES,
-                      onClick: () => {
-                        useEditablesStore.getState().setAssetStatus(editableObjectType, editableObject.id, 'enabled');
-                      },
-                    },
-                  ]
-                : []),
-              ...(editableObject && asset?.status !== 'disabled'
-                ? [
-                    {
-                      key: 'Disabled',
-                      icon: createIconForStatus('disabled'),
-                      title: 'Disabled',
-                      className: CONTEXT_MENU_ITEM_CLASSES,
-                      onClick: () => {
-                        useEditablesStore.getState().setAssetStatus(editableObjectType, editableObject.id, 'disabled');
-                      },
-                    },
-                  ]
-                : []),
-            ],
+            title: 'Change Use to ...',
+            className: DISABLED,
+            disabled: true,
+            onClick: () => {},
           },
-          { key: 'divider2' },
+          ...(editableObject && asset?.status !== 'forced'
+            ? [
+                {
+                  key: 'Always',
+                  icon: createIconForStatus('forced'),
+                  title: 'Always',
+                  onClick: () => {
+                    useEditablesStore.getState().setAssetStatus(editableObjectType, editableObject.id, 'forced');
+                  },
+                },
+              ]
+            : []),
+          ...(editableObject && asset?.status !== 'enabled'
+            ? [
+                {
+                  key: 'Auto',
+                  icon: createIconForStatus('enabled'),
+                  title: 'Auto',
+                  onClick: () => {
+                    useEditablesStore.getState().setAssetStatus(editableObjectType, editableObject.id, 'enabled');
+                  },
+                },
+              ]
+            : []),
+          ...(editableObject && asset?.status !== 'disabled'
+            ? [
+                {
+                  key: 'Disabled',
+                  icon: createIconForStatus('disabled'),
+                  title: 'Disabled',
+                  onClick: () => {
+                    useEditablesStore.getState().setAssetStatus(editableObjectType, editableObject.id, 'disabled');
+                  },
+                },
+              ]
+            : []),
         ],
       );
 
-      hasDelete = asset?.defined_in === 'project';
+      
     }
 
     if (hasDelete) {
+      content.push({ key: 'divider-delete' });
       content.push({
         key: 'Delete',
         icon: <Trash className="w-4 h-4" />,
