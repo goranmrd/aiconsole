@@ -1,3 +1,4 @@
+name="Domain Availability"
 usage = "How to check domain availability?"
 content_type = "api"
 content_api = """
@@ -9,8 +10,7 @@ def is_domain_available(domain) -> bool:
 
     example use:
     ```python
-    import domain_availability
-    domain_availability.is_domain_available('example.com')
+    is_domain_available('example.com')
     ```
     ""\"
     try:

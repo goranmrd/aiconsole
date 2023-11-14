@@ -53,6 +53,10 @@ Note that in your home app directory you have additional settings.toml which sto
 
 Material, Agent and settings files are monitored and automatically loaded, then used as context.
 
+# Accessing AIConsole internals from the Python APIs
+
+The only module you can safelly access is aiconsole.dev, it's built with running it from the interpreter subprocess and has a stable interface.
+
 # Roadmap
 
 - [x] Initial PIP release

@@ -3,30 +3,29 @@ usage = "Use it to change settings in aiconsole"
 content_type = "api"
 content_api = """
 '''
-Use this material to change AIConsole setting.
+Use this material to change AIConsole settings.
 
-Awailable settings are:
-1. code_autorun - boolean. Default if False.
+Available settings are:
+1. code_autorun - boolean.
 
-
-Tell user what settining are awailable if user will want to set something else.
+Tell user what setting are available if user will want to set something.
 
 '''
-from aiconsole.projects import get_aiconsole_settings
-from typing import Any, Dict
+from aiconsole.dev import settings
+from typing import Any
 
 
-def set_code_autorun(value: bool) -> None:
+def set_code_autorun(autorun: bool) -> None:
     '''
     Use it do set code_autorun in AIConsole settings. Do not use anything else to set code_autorun
     '''
-    get_aiconsole_settings().set_code_autorun(value)
+    settings.set_code_autorun(autorun)
     
     
-def get_settings() -> Dict[str, Any]:
+def get_settings() -> dict[str, Any]:
     '''
-    Use it to know what AIConsole setting do you have.
-    You'll get a dict "key: value" where key is a name of setting, and value i value of setting.
+    Use it to know what AIConsole settings you have access to.
+    You'll get a dict "key: value" where key is a name of setting, and value which is the value of the setting.
     '''
-    return get_aiconsole_settings().model_dump()
+    return settings.get_settings()
 """
