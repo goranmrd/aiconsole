@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { useChatStore } from '@/store/editables/chat/useChatStore';
+import { useAssetStore } from '@/store/editables/asset/useAssetStore';
 import { useEditablesStore } from '@/store/editables/useEditablesStore';
 import { Asset, AssetStatus, EditableObject, EditableObjectType } from '@/types/editables/assetTypes';
 import { Copy, Edit, File, Trash } from 'lucide-react';
@@ -23,7 +23,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { useContextMenu } from '../common/useContextMenu';
 import { getAssetStatusIcon } from './getAssetStatusIcon';
-import { useAssetStore } from '@/store/editables/asset/useAssetStore';
 
 
 function createIconForStatus(assetStatus: AssetStatus) {
@@ -55,7 +54,7 @@ export function useEditableObjectContextMenu({
     deleteEditableObject(editableObjectType, id);
 
     if (editableObjectType === 'chat') {
-      useChatStore.getState().setChatId(uuidv4());
+      navigate('/');
     }
   }
 

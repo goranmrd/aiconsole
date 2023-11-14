@@ -8,6 +8,7 @@ import { v4 as uuid } from 'uuid';
 import { EditablesAPI } from '../../api/api/EditablesAPI';
 import { useChatStore } from '@/store/editables/chat/useChatStore';
 import { useAssetStore } from '@/store/editables/asset/useAssetStore';
+import { useWebSocketStore } from '@/api/ws/useWebSocketStore';
 
 function isFunction<T>(value: SetStateAction<T>): value is ((prevState: T) => T) {
   return typeof value === 'function';
@@ -24,7 +25,14 @@ export function ConvertParamsToStores() {
   const setObject = useCallback((objectOrFn: EditableObject | undefined | ((prevState: EditableObject | undefined) => EditableObject | undefined)) => {
     if (editableObjectType === 'chat') {
       useChatStore.setState((prevState) => {
-        return { chat: isFunction(objectOrFn!) ? (objectOrFn(prevState.chat) as Chat) : objectOrFn as Chat };
+        const chat = isFunction(objectOrFn!) ? (objectOrFn(prevState.chat) as Chat) : objectOrFn as Chat
+
+        useWebSocketStore.getState().sendMessage({
+          type: 'SetChatIdWSMessage',
+          chat_id: chat.id,
+        });
+
+        return { chat };
       });
     } else {
       useAssetStore.setState((prevState) => {

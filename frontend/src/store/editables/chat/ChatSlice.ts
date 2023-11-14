@@ -17,8 +17,6 @@
 import { StateCreator } from 'zustand';
 
 import { EditablesAPI } from '@/api/api/EditablesAPI';
-import { useWebSocketStore } from '@/api/ws/useWebSocketStore';
-import { useProjectStore } from '@/store/projects/useProjectStore';
 import { Chat } from '@/types/editables/chatTypes';
 import { deepCopyChat } from '@/utils/editables/chatUtils';
 import { useEditablesStore } from '../useEditablesStore';
@@ -26,7 +24,6 @@ import { ChatStore } from './useChatStore';
 
 export type ChatSlice = {
   chat?: Chat;
-  setChatId: (id: string) => void;
   saveCurrentChatHistory: () => Promise<void>;
 };
 
@@ -38,39 +35,6 @@ export const createChatSlice: StateCreator<ChatStore, [], [], ChatSlice> = (
   
   agent: undefined,
   materials: [],
-  setChatId: async (id: string) => {
-    set({
-      loadingMessages: true
-    });
-
-    try {
-      useWebSocketStore.getState().sendMessage({
-        type: 'SetChatIdWSMessage',
-        chat_id: id,
-      });
-  
-      let chat: Chat;
-      
-      if (id === '' || !useProjectStore.getState().isProjectOpen) {
-        chat = {
-          id: '',
-          name: '',
-          last_modified: new Date().toISOString(),
-          title_edited: false,
-          message_groups: [],
-        };
-      } else {
-        chat = await EditablesAPI.fetchEditableObject('chat', id);
-      }
-      set({
-        chat: chat,
-      });
-    } finally {
-      set({
-        loadingMessages: false,
-      });
-    }
-  },
   saveCurrentChatHistory: async () => {
     const c = get().chat;
     if (!c) { throw new Error('Chat is not initialized'); }

@@ -26,6 +26,7 @@ import { convertNameToId } from '@/utils/editables/convertNameToId';
 import { getEditableObjectType } from '@/utils/editables/getEditableObjectType';
 import { EditablesAPI } from '../../api/api/EditablesAPI';
 import { EditablesStore } from './useEditablesStore';
+import { Chat } from '@/types/editables/chatTypes';
 
 export type EdiblesSlice = {
   renameEditableObject: (editableObject: EditableObject, newName: string, isNew: boolean) => Promise<string>;
@@ -48,6 +49,9 @@ export const createEdiblesSlice: StateCreator<EditablesStore, [], [], EdiblesSli
     if (editableObjectType !== 'chat') {
       const newId = convertNameToId(newName);
       editableObject.id = newId;
+    } else {
+      const chat = editableObject as Chat;
+      chat.title_edited = true;
     }
 
     set((state) => ({
