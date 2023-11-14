@@ -25,6 +25,7 @@ from pydantic import BaseModel
 
 router = APIRouter()
 
+
 class StatusChangePostBody(BaseModel):
     status: AssetStatus
     to_global: bool
@@ -32,15 +33,7 @@ class StatusChangePostBody(BaseModel):
 
 @router.get("/{material_id}")
 async def material_get(material_id: str):
-    try:
-        settings = get_aiconsole_settings()
-        material = project.get_project_materials().get_asset(material_id)
-        return JSONResponse({
-            **material.model_dump(),
-            "status": settings.get_asset_status(AssetType.MATERIAL, material.id),
-        })
-    except KeyError:
-        # A new material
+    if material_id == "new":
         return JSONResponse(MaterialWithStatus(
             id="",
             name="",
@@ -49,6 +42,16 @@ async def material_get(material_id: str):
             status=AssetStatus.ENABLED,
             defined_in=AssetLocation.PROJECT_DIR,
         ).model_dump())
+    else:
+        try:
+            settings = get_aiconsole_settings()
+            material = project.get_project_materials().get_asset(material_id)
+            return JSONResponse({
+                **material.model_dump(),
+                "status": settings.get_asset_status(AssetType.MATERIAL, material.id),
+            })
+        except KeyError:
+            raise HTTPException(status_code=404, detail="Material not found")
 
 
 @router.patch("/{material_id}")
@@ -65,7 +68,7 @@ async def material_patch(material_id: str, material: Material):
 async def material_post(material_id: str, material: Material):
     if material_id != material.id:
         raise HTTPException(status_code=400, detail="Material ID mismatch")
-    
+
     try:
         await project.get_project_materials().save_asset(material, new=True, old_asset_id=material_id)
     except Exception as e:

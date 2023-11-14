@@ -33,15 +33,7 @@ class StatusChangePostBody(BaseModel):
 
 @router.get("/{agent_id}")
 async def agent_get(agent_id: str):
-    try:
-        settings = get_aiconsole_settings()
-        agent = project.get_project_agents().get_asset(agent_id)
-        return JSONResponse({
-            **agent.model_dump(),
-            "status": settings.get_asset_status(AssetType.AGENT, agent.id),
-        })
-    except KeyError:
-        # A new agent
+    if agent_id == "new":
         return JSONResponse(AgentWithStatus(
             id="",
             name="",
@@ -52,6 +44,17 @@ async def agent_get(agent_id: str):
             gpt_mode=GPTMode.QUALITY,
             system=""
         ).model_dump())
+    else:
+        try:
+            settings = get_aiconsole_settings()
+            agent = project.get_project_agents().get_asset(agent_id)
+            return JSONResponse({
+                **agent.model_dump(),
+                "status": settings.get_asset_status(AssetType.AGENT, agent.id),
+            })
+        except KeyError:
+            raise HTTPException(status_code=404, detail="Agent not found")
+        
 
 
 @router.patch("/{agent_id}")
