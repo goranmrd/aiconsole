@@ -50,7 +50,7 @@ export function HomeTopBarElements({ className }: { className?: string }) {
           opened={isProjectDirectory === false && isOpenProjectModalOpen}
           onClose={resetIsProjectFlag}
           onConfirm={openProjectConfirmation}
-          title={`There is no project in this directory, do you want to create one there?`}
+          title={`There is no project in this directory, do you want to create one there instead?`}
         />
 
         <Button small onClick={newProject}>
