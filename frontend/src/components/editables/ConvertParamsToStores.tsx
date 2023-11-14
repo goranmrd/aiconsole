@@ -71,13 +71,7 @@ export function ConvertParamsToStores() {
 
     return () => {
       //clear all the stores
-      useChatStore.setState({ chat: {
-        id: '',
-        name: '',
-        last_modified: new Date().toISOString(),
-        title_edited: false,
-        message_groups: [],
-      } });
+      useChatStore.setState({ chat: undefined });
       useAssetStore.setState({ selectedAsset: undefined, lastSavedSelectedAsset: undefined });
     };
   }, [copyId, id, editableObjectType, setLastSavedObject, setObject]);
@@ -97,5 +91,9 @@ export function ConvertParamsToStores() {
     }
   }, [editable?.name, editableObjectType, setObject]);
 
-  return <Outlet />;
+  if (editable === undefined) {
+    return <div/>;
+  } else {
+    return <Outlet />;
+  }
 }

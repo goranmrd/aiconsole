@@ -25,9 +25,13 @@ export type AICOutputLocaion = { outputIndex: number; output: AICContentMessage;
  * @param groupId if undefined returns last group
  */
 export function getGroup(
-  chat: Chat,
+  chat?: Chat,
   groupId?: string,
 ): AICGroupLocation {
+  if (!chat) {
+    throw new Error('Chat is not initialized');
+  }
+
   const groupIndex = groupId
     ? chat.message_groups.findIndex((group) => group.id === groupId)
     : chat.message_groups.length - 1;

@@ -47,6 +47,10 @@ export function Chat() {
   const isProjectOpen = useProjectStore((state) => state.isProjectOpen);
   const isProjectLoading = useProjectStore((state) => state.isProjectLoading);
 
+  if (!chat) {
+    return null;
+  }
+
   const isLastMessageFromUser = chat.message_groups.length > 0 && chat.message_groups[chat.message_groups.length - 1].agent_id === 'user';
   
   

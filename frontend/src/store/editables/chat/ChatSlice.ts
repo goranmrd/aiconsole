@@ -25,7 +25,7 @@ import { useEditablesStore } from '../useEditablesStore';
 import { ChatStore } from './useChatStore';
 
 export type ChatSlice = {
-  chat: Chat;
+  chat?: Chat;
   setChatId: (id: string) => void;
   saveCurrentChatHistory: () => Promise<void>;
 };
@@ -34,13 +34,7 @@ export const createChatSlice: StateCreator<ChatStore, [], [], ChatSlice> = (
   set,
   get,
 ) => ({
-  chat: {
-    id: '',
-    name: '',
-    last_modified: new Date().toISOString(),
-    title_edited: false,
-    message_groups: [],
-  },
+  chat: undefined,
   
   agent: undefined,
   materials: [],
@@ -78,7 +72,10 @@ export const createChatSlice: StateCreator<ChatStore, [], [], ChatSlice> = (
     }
   },
   saveCurrentChatHistory: async () => {
-    const chat = deepCopyChat(get().chat);
+    const c = get().chat;
+    if (!c) { throw new Error('Chat is not initialized'); }
+
+    const chat = deepCopyChat(c);
 
     // update title
     if (!chat.title_edited && chat.message_groups.length > 0 &&chat.message_groups[0].messages.length > 0) {

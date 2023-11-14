@@ -41,6 +41,10 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
   const isWorking = isAnalysisRunning || isExecuteRunning;
   const chat = useChatStore((state) => state.chat);
 
+  if (!chat) {
+    return null;
+  }
+
   const sendingMessagesBlocked =
     (command === '' && chat.message_groups?.length == 0);
 

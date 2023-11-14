@@ -37,8 +37,8 @@ export const createAnalysisSlice: StateCreator<ChatStore, [], [], AnalysisSlice>
   initAnalytics: () => {
     useChatStore.subscribe((state, prevState) => {
       if (
-        prevState.chat.id !== state.chat.id ||
-        prevState.chat.message_groups.length !== state.chat.message_groups.length ||
+        prevState.chat?.id !== state.chat?.id ||
+        prevState.chat?.message_groups.length !== state.chat?.message_groups.length ||
         (state.isExecuteRunning && !prevState.isExecuteRunning)
       ) {
         get().resetAnalysis();
@@ -75,7 +75,10 @@ export const createAnalysisSlice: StateCreator<ChatStore, [], [], AnalysisSlice>
         analysisAbortController: abortController,
       }));
 
-      const response = await ChatAPI.analyse(useChatStore.getState().chat, analysisRequestId, abortController.signal);
+      const chat = get().chat;
+      if (!chat) { throw new Error('Chat is not initialized'); }
+
+      const response = await ChatAPI.analyse(chat, analysisRequestId, abortController.signal);
 
       const data = await response.json<{
         agent_id: string;

@@ -50,9 +50,11 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
     ws.onopen = () => {
       set({ ws });
 
+      const chatId = useChatStore.getState().chat?.id || '';
+
       get().sendMessage({
         type: 'SetChatIdWSMessage',
-        chat_id: useChatStore.getState().chat.id,
+        chat_id: chatId,
       });
     };
 

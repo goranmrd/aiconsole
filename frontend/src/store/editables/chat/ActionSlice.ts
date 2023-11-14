@@ -59,7 +59,7 @@ export const createActionSlice: StateCreator<ChatStore, [], [], ActionSlice> = (
       get().markAsExecuting(true, groupId, messageId);
 
       const response = await ChatAPI.runCode({
-        chatId: get().chat.id,
+        chatId: get().chat?.id || '',
         language,
         code,
         materials_ids,
@@ -125,11 +125,17 @@ export const createActionSlice: StateCreator<ChatStore, [], [], ActionSlice> = (
     }));
 
     try {
-      const lastGroup = getGroup(get().chat).group;
+      const chat = get().chat;
+
+      if (!chat) {
+        throw new Error('Chat is not initialized');
+      }
+
+      const lastGroup = getGroup(chat).group;
 
       const response = await ChatAPI.execute(
         {
-          ...get().chat,
+          ...chat,
           relevant_materials_ids: lastGroup.materials_ids,
           agent_id: lastGroup.agent_id,
         },
