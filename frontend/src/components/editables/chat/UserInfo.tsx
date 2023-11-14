@@ -18,10 +18,9 @@ import { Link } from 'react-router-dom';
 
 import { useAssetStore } from '@/store/editables/asset/useAssetStore';
 import { useEditablesStore } from '@/store/editables/useEditablesStore';
-import { useAPIStore } from '@/store/useAPIStore';
-import { cn } from '@/utils/common/cn';
 import { useUserContextMenu } from '@/utils/common/useUserContextMenu';
 import { useEditableObjectContextMenu } from '@/utils/editables/useContextMenuForEditable';
+import { AgentAvatar } from './AgentAvatar';
 
 function UserInfoMaterialLink({ material_id }: { material_id: string }) {
   const materials = useEditablesStore((state) => state.materials) || [];
@@ -36,33 +35,6 @@ function UserInfoMaterialLink({ material_id }: { material_id: string }) {
       >
         {material_id}
       </div>
-    </Link>
-  );
-}
-
-export function AgentAvatar({ agent_id, task }: { agent_id: string, task?: string }) {
-  const agent = useAssetStore((state) => state.getAsset('agent', agent_id));
-  const getBaseURL = useAPIStore((state) => state.getBaseURL);
-  const { showContextMenu } = useEditableObjectContextMenu({
-    editableObjectType: 'agent',
-    editable: agent || {
-      id: agent_id,
-      name: agent_id
-    },
-  })
-
-  return (
-    <Link
-      to={agent_id != 'user' ? `/agents/${agent_id}` : ''}
-      onClick={agent_id != 'user' ? showContextMenu() : undefined}
-      className="flex-none items-center flex flex-col"
-      onContextMenu={agent_id != 'user' ? showContextMenu() : undefined}
-    >
-      <img
-        title={`${agent?.name || agent?.id}${task ? ` tasked with:\n${task}` : ``}`}
-        src={`${getBaseURL()}/profile/${agent_id}.jpg`}
-        className={cn("w-14 h-14 rounded-full mb-3  border shadow-md border-slate-800", agent?.status === 'forced' && " border-2 border-primary")}
-      />
     </Link>
   );
 }
@@ -96,8 +68,7 @@ export function UserInfo({
           className="flex-none items-center flex flex-col"
           onContextMenu={agent_id != 'user' ? showContextMenu() : showUserContextMenu()}
         >
-          <AgentAvatar agent_id={agent_id} task={task}
-             />
+          <AgentAvatar agent_id={agent_id} title={`${agent?.name || agent?.id}${task ? ` tasked with:\n${task}` : ``}`} type='small'/>
           <div
             className="text-xs font-bold w-32 text-center overflow-ellipsis overflow-hidden whitespace-nowrap"
             title={`${agent?.id} - ${agent?.usage}`}

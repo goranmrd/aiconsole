@@ -14,37 +14,38 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { cn } from '@/utils/common/cn';
-import { getBaseURL } from '@/store/useAPIStore';
+import { useEditablesStore } from '@/store/editables/useEditablesStore';
+import { useProjectStore } from '@/store/projects/useProjectStore';
 import { Agent, Asset, AssetType } from '@/types/editables/assetTypes';
 import { getEditableObjectColor } from '@/utils/editables/getEditableObjectColor';
 import { getEditableObjectIcon } from '@/utils/editables/getEditableObjectIcon';
 import { useEditableObjectContextMenu } from '@/utils/editables/useContextMenuForEditable';
 import { useProjectContextMenu } from '@/utils/projects/useProjectContextMenu';
-import { useProjectStore } from '@/store/projects/useProjectStore';
 import { Tooltip } from '@mantine/core';
 import React from 'react';
-import { useEditablesStore } from '@/store/editables/useEditablesStore';
+import { AgentAvatar } from './AgentAvatar';
 
 function EmptyChatAgentAvatar({ agent }: { agent: Agent }) {
   const { showContextMenu } = useEditableObjectContextMenu({ editableObjectType: 'agent', editable: agent });
 
   return (
-    <Tooltip label={agent.name} position="bottom" transitionProps={{ transition: 'slide-down', duration: 100 }} withArrow >
-      <div key={agent.id} className="flex flex-col items-center justify-center">
+    <div className="inline-block m-2">
+      <Tooltip
+        label={agent.name}
+        position="bottom"
+        transitionProps={{ transition: 'slide-down', duration: 100 }}
+        withArrow
+      >
         <div
+          key={agent.id}
           onClick={showContextMenu()}
           className="inline-block hover:text-secondary cursor-pointer"
           onContextMenu={showContextMenu()}
         >
-          <img
-            src={`${getBaseURL()}/profile/${agent.id}.jpg`}
-            className={cn("filter opacity-75 shadows-lg w-20 h-20 mx-auto rounded-full", agent.status === 'forced' && " border-2 border-primary")}
-            alt={agent.name}
-          />
+          <AgentAvatar agent_id={agent.id} type="large" />
         </div>
-      </div>
-    </Tooltip>
+      </Tooltip>
+    </div>
   );
 }
 
@@ -74,30 +75,37 @@ export const EmptyChat = () => {
 
   return (
     <section className="flex flex-col items-center justify-center container mx-auto px-6 py-8">
-      <h2 className="text-4xl mb-8 text-center font-extrabold mt-20 cursor-pointer" onContextMenu={showProjectContextMenu()} onClick={showProjectContextMenu()}>
+      <h2
+        className="text-4xl mb-8 text-center font-extrabold mt-20 cursor-pointer"
+        onContextMenu={showProjectContextMenu()}
+        onClick={showProjectContextMenu()}
+      >
         <p className="p-2">Project</p>
         <span className=" text-primary uppercase">{projectName}</span>
       </h2>
       <div className="font-bold mb-4 text-center opacity-50 text-sm uppercase">Agents</div>
-      <div className="flex flex-row gap-2 mb-8">
-        {agents
-          .filter((a) => a.id !== 'user' && a.status !== 'disabled')
-          .map((agent) => (
-            <EmptyChatAgentAvatar key={agent.id} agent={agent} />
-          ))}
+      <div className="flex flex-row gap-2 mb-8 text-center">
+        <div>
+          {agents
+            .filter((a) => a.id !== 'user' && a.status !== 'disabled')
+            .map((agent) => (
+              <EmptyChatAgentAvatar key={agent.id} agent={agent} />
+            ))}
+        </div>
       </div>
-      { forcedMaterials.length > 0 && <>
-        <div className="font-bold mb-4 text-center opacity-50 text-sm uppercase">Always in Use</div>
-        <div className="text-center">
-          {forcedMaterials
-            .map((material, index, arr) => (
+      {forcedMaterials.length > 0 && (
+        <>
+          <div className="font-bold mb-4 text-center opacity-50 text-sm uppercase">Always in Use</div>
+          <div className="text-center">
+            {forcedMaterials.map((material, index, arr) => (
               <React.Fragment key={material.id}>
                 <EmptyChatAssetLink assetType="material" asset={material} />
                 {index < arr.length - 1 && <span className="opacity-50">, </span>}
               </React.Fragment>
             ))}
-        </div>
-      </> }
+          </div>
+        </>
+      )}
     </section>
   );
 };
