@@ -25,9 +25,8 @@ import random
 from typing import List
 
 
-def create_plan_class():
+def create_plan_class(available_agents):
     enabled_materials = project.get_project_materials().enabled_assets()
-    available_agents = project.get_project_agents().all_assets()
 
     class Plan(OpenAISchema):
 

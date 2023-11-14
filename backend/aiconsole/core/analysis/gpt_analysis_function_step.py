@@ -36,21 +36,7 @@ from pydantic import BaseModel
 _log = logging.getLogger(__name__)
 
 
-def pick_agent(arguments, chat: Chat) -> Agent:
-    """
-    The function pick_agent picks an agent based on the given arguments and availability of the agents.
-
-    Parameters:
-    arguments (dict): Input arguments containing the data field.
-    available_agents (List[Agent]): List of available agents.
-    result (str): Result from previous operations.
-
-    Returns:
-    picked_agent (Agent): The chosen agent object.
-    """
-
-    available_agents = cast(list[Agent], project.get_project_agents().all_assets())
-
+def pick_agent(arguments, chat: Chat, available_agents: list[Agent]) -> Agent:
     # Try support first
     default_agent = next(
         (agent for agent in available_agents if agent.id == "assistant"), None
@@ -124,7 +110,12 @@ async def gpt_analysis_function_step(
 ) -> AnalysisStepWithFunctionReturnValue:
     gpt_executor = GPTExecutor()
 
-    plan_class = create_plan_class()
+    # Pick from forced or enabled agents if no agent is forced
+    forced_agents = project.get_project_agents().forced_assets()
+    available_agents = forced_agents if forced_agents else project.get_project_agents().enabled_assets()
+    available_agents = cast(list[Agent], available_agents)
+
+    plan_class = create_plan_class(available_agents)
 
     request = GPTRequest(
         system_message=initial_system_prompt,
@@ -179,7 +170,7 @@ async def gpt_analysis_function_step(
 
     arguments = plan_class(**arguments)
 
-    picked_agent = pick_agent(arguments, chat)
+    picked_agent = pick_agent(arguments, chat, available_agents)
 
     relevant_materials = _get_relevant_materials(
         arguments.relevant_material_ids)
