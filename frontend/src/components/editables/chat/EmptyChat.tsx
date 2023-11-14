@@ -24,7 +24,6 @@ import { useProjectContextMenu } from '@/utils/projects/useProjectContextMenu';
 import { useProjectStore } from '@/store/projects/useProjectStore';
 import { Tooltip } from '@mantine/core';
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { useEditablesStore } from '@/store/editables/useEditablesStore';
 
 function EmptyChatAgentAvatar({ agent }: { agent: Agent }) {
@@ -33,9 +32,9 @@ function EmptyChatAgentAvatar({ agent }: { agent: Agent }) {
   return (
     <Tooltip label={`${agent.name}`} position="bottom" transitionProps={{ transition: 'slide-down', duration: 100 }} withArrow >
       <div key={agent.id} className="flex flex-col items-center justify-center">
-        <Link
-          to={`/agents/${agent.id}`}
-          className="inline-block hover:text-secondary"
+        <div
+          onClick={showContextMenu()}
+          className="inline-block hover:text-secondary cursor-pointer"
           onContextMenu={showContextMenu()}
         >
           <img
@@ -43,7 +42,7 @@ function EmptyChatAgentAvatar({ agent }: { agent: Agent }) {
             className={cn("filter opacity-75 shadows-lg w-20 h-20 mx-auto rounded-full", agent.status === 'forced' && " border-2 border-primary")}
             alt="Logo"
           />
-        </Link>
+        </div>
       </div>
     </Tooltip>
   );
@@ -56,12 +55,12 @@ function EmptyChatAssetLink({ assetType, asset }: { assetType: AssetType; asset:
   const color = getEditableObjectColor(asset);
 
   return (
-    <Link to={`/${assetType}s/${asset.id}`} className="inline-block" onContextMenu={showContextMenu()}>
-      <div className={cn("hover:text-secondary flex flex-row items-center gap-1 opacity-80 hover:opacity-100", asset.status === 'forced' && "text-primary")}>
+    <div className="inline-block cursor-pointer" onClick={showContextMenu()} onContextMenu={showContextMenu()}>
+      <div className="hover:text-secondary flex flex-row items-center gap-1 opacity-80 hover:opacity-100">
         <Icon style={{ color }} className="w-4 h-4 inline-block mr-1" />
         {asset.name}
       </div>
-    </Link>
+    </div>
   );
 }
 
@@ -70,6 +69,8 @@ export const EmptyChat = () => {
   const agents = useEditablesStore((state) => state.agents);
   const materials = useEditablesStore((state) => state.materials || []);
   const { showContextMenu: showProjectContextMenu } = useProjectContextMenu();
+
+  const forcedMaterials = materials.filter((m) => m.status === 'forced');
 
   return (
     <section className="flex flex-col items-center justify-center container mx-auto px-6 py-8">
@@ -85,17 +86,18 @@ export const EmptyChat = () => {
             <EmptyChatAgentAvatar key={agent.id} agent={agent} />
           ))}
       </div>
-      <div className="font-bold mb-4 text-center opacity-50 text-sm uppercase">Enabled Materials</div>
-      <div className="text-center">
-        {materials
-          .filter((m) => m.status !== 'disabled')
-          .map((material, index, arr) => (
-            <React.Fragment key={material.id}>
-              <EmptyChatAssetLink assetType="material" asset={material} />
-              {index < arr.length - 1 && <span className="opacity-50">, </span>}
-            </React.Fragment>
-          ))}
-      </div>
+      { forcedMaterials.length > 0 && <>
+        <div className="font-bold mb-4 text-center opacity-50 text-sm uppercase">Always in Use</div>
+        <div className="text-center">
+          {forcedMaterials
+            .map((material, index, arr) => (
+              <React.Fragment key={material.id}>
+                <EmptyChatAssetLink assetType="material" asset={material} />
+                {index < arr.length - 1 && <span className="opacity-50">, </span>}
+              </React.Fragment>
+            ))}
+        </div>
+      </> }
     </section>
   );
 };

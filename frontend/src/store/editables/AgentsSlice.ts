@@ -32,6 +32,7 @@ import {
 } from '@/types/editables/assetTypes';
 import { EditablesStore } from './useEditablesStore';
 import { useProjectStore } from '@/store/projects/useProjectStore';
+import { canThereBeOnlyOneForcedAsset } from '@/utils/editables/canThereBeOnlyOneForcedAsset';
 
 //TODO: Rename this to EditableObjectsSlice or extract that functionality to a separate slice
 
@@ -158,10 +159,17 @@ export const createAgentsSlice: StateCreator<EditablesStore, [], [], AgentsSlice
   },
   setAssetStatus: async (assetType: AssetType, id: string, status: AssetStatus) => {
     const plural = (assetType + 's') as 'materials' | 'agents';
+
     set((state) => ({
       [plural]: (state[plural] || []).map((asset) => {
         if (asset.id === id) {
           asset.status = status;
+        } else {
+          if (canThereBeOnlyOneForcedAsset(assetType)) {
+            if (asset.status === 'forced') {
+              asset.status = 'enabled';
+            }
+          }
         }
         return asset;
       }),

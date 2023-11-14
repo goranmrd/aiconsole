@@ -15,13 +15,20 @@
 // limitations under the License.
 
 import { useChatStore } from '@/store/editables/chat/useChatStore';
-import { Asset, EditableObject, EditableObjectType } from '@/types/editables/assetTypes';
-import { Ban, Check, Copy, Dot, Edit, File, Trash } from 'lucide-react';
+import { useEditablesStore } from '@/store/editables/useEditablesStore';
+import { Asset, AssetStatus, EditableObject, EditableObjectType } from '@/types/editables/assetTypes';
+import { Copy, Edit, File, Trash } from 'lucide-react';
 import { ContextMenuContent } from 'mantine-contextmenu';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { CONTEXT_MENU_ITEM_CLASSES, useContextMenu } from '../common/useContextMenu';
-import { useEditablesStore } from '@/store/editables/useEditablesStore';
+import { getAssetStatusIcon } from './getAssetStatusIcon';
+
+
+function createIconForStatus(assetStatus: AssetStatus) {
+  const Icon = getAssetStatusIcon(assetStatus)
+  return <Icon className="w-4 h-4" />
+}
 
 export function useEditableObjectContextMenu({
   editableObjectType,
@@ -123,11 +130,7 @@ export function useEditableObjectContextMenu({
           { key: 'divider' },
           {
             key: 'usage',
-            icon: {
-              enabled: <Dot className="w-4 h-4" />,
-              disabled: <Ban className="w-4 h-4" />,
-              forced: <Check className="w-4 h-4" />,
-            }[asset?.status || 'enabled'],
+            icon: createIconForStatus(asset?.status || 'enabled'),
             title: 'Use ...',
 
             items: [
@@ -135,7 +138,7 @@ export function useEditableObjectContextMenu({
                 ? [
                     {
                       key: 'Always',
-                      icon: <Check className="w-4 h-4" />,
+                      icon: createIconForStatus('forced'),
                       title: 'Always',
                       className: CONTEXT_MENU_ITEM_CLASSES,
                       onClick: () => {
@@ -148,7 +151,7 @@ export function useEditableObjectContextMenu({
                 ? [
                     {
                       key: 'Auto',
-                      icon: <Dot className="w-4 h-4" />,
+                      icon: createIconForStatus('enabled'),
                       title: 'Auto',
                       className: CONTEXT_MENU_ITEM_CLASSES,
                       onClick: () => {
@@ -161,7 +164,7 @@ export function useEditableObjectContextMenu({
                 ? [
                     {
                       key: 'Disabled',
-                      icon: <Ban className="w-4 h-4" />,
+                      icon: createIconForStatus('disabled'),
                       title: 'Disabled',
                       className: CONTEXT_MENU_ITEM_CLASSES,
                       onClick: () => {

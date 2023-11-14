@@ -15,15 +15,15 @@
 // limitations under the License.
 
 import { AssetStatus } from '@/types/editables/assetTypes';
-import { Ban, Check, Dot } from 'lucide-react';
-
+import { Ban, Check } from 'lucide-react';
+import { EmptyIcon } from '../../components/EmptyIcon';
 
 export function getAssetStatusIcon(status?: AssetStatus) {
   switch (status) {
     case 'forced':
       return Check;
     case 'enabled':
-      return Dot;
+      return EmptyIcon;
     default:
     case 'disabled':
       return Ban;
