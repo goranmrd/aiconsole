@@ -42,7 +42,6 @@ export function ConvertParamsToStores() {
   }, [editableObjectType]);
 
   const setLastSavedObject = useCallback((objectOrFn: EditableObject | undefined | ((prevState: EditableObject | undefined) => EditableObject | undefined)) => {
-    console.log('setLastSavedObject', objectOrFn)
     if (editableObjectType !== 'chat') {
       useAssetStore.setState((prevState) => {
         return { lastSavedSelectedAsset: isFunction(objectOrFn!) ? (objectOrFn(prevState.lastSavedSelectedAsset) as Asset) : objectOrFn as Asset };
