@@ -113,6 +113,11 @@ body {
   background-color: #ffffff99;
 }
 
+/* A small hack to prevent scrollbar disappearing on hover in some scenarios */
+:not(:hover)::-webkit-scrollbar-thumb:hover {
+  background-color: #ffffffdd;
+}
+
 .tab-hover:hover {
   border-color: #A6A6A6;
   transition: .3s all ease;
