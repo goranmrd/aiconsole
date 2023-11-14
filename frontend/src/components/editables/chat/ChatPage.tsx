@@ -19,7 +19,7 @@ import { CommandInput } from './CommandInput';
 
 export function ChatPage() {
   return (
-    <div className="flex w-ful h-full flex-col justify-between downlight">
+    <div className="flex w-full h-full flex-col justify-between downlight">
       <Chat />
       <CommandInput className="flex-none" />
     </div>
