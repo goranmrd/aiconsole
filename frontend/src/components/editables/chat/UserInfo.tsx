@@ -16,11 +16,11 @@
 
 import { Link } from 'react-router-dom';
 
-import { useEditableObjectContextMenu } from '@/utils/editables/useContextMenuForEditable';
-import { useOpenSettings } from '@/utils/settings/useOpenSettings';
+import { useEditablesStore } from '@/store/editables/useEditablesStore';
 import { useAPIStore } from '@/store/useAPIStore';
 import { useUserContextMenu } from '@/utils/common/useUserContextMenu';
-import { useEditablesStore } from '@/store/editables/useEditablesStore';
+import { useEditableObjectContextMenu } from '@/utils/editables/useContextMenuForEditable';
+import { cn } from '@/utils/common/cn';
 
 function UserInfoMaterialLink({ material_id }: { material_id: string }) {
   const materials = useEditablesStore((state) => state.materials) || [];
@@ -39,15 +39,7 @@ function UserInfoMaterialLink({ material_id }: { material_id: string }) {
   );
 }
 
-export function UserInfo({
-  agent_id,
-  materials_ids,
-  task,
-}: {
-  agent_id: string;
-  materials_ids: string[];
-  task?: string;
-}) {
+export function AgentAvatar({ agent_id, task }: { agent_id: string, task?: string }) {
   const agent = useEditablesStore((state) => state.getAsset('agent', agent_id));
   const getBaseURL = useAPIStore((state) => state.getBaseURL);
   const { showContextMenu } = useEditableObjectContextMenu({
@@ -58,28 +50,53 @@ export function UserInfo({
     },
   })
 
+  return (
+    <Link
+      to={agent_id != 'user' ? `/agents/${agent_id}` : ''}
+      onClick={agent_id != 'user' ? showContextMenu() : undefined}
+      className="flex-none items-center flex flex-col"
+      onContextMenu={agent_id != 'user' ? showContextMenu() : undefined}
+    >
+      <img
+        title={`${agent?.name || agent?.id}${task ? ` tasked with:\n${task}` : ``}`}
+        src={`${getBaseURL()}/profile/${agent_id}.jpg`}
+        className={cn("w-14 h-14 rounded-full mb-3  border shadow-md border-slate-800", agent?.status === 'forced' && " border-2 border-primary")}
+      />
+    </Link>
+  );
+}
+
+export function UserInfo({
+  agent_id,
+  materials_ids,
+  task,
+}: {
+  agent_id: string;
+  materials_ids: string[];
+  task?: string;
+}) {
+  const agent = useEditablesStore((state) => state.getAsset('agent', agent_id));
+  const { showContextMenu } = useEditableObjectContextMenu({
+    editableObjectType: 'agent',
+    editable: agent || {
+      id: agent_id,
+      name: agent_id
+    },
+  })
+
   const { showContextMenu: showUserContextMenu } = useUserContextMenu()
-  const openSettings = useOpenSettings();
 
   return (
     <div className="flex-none items-center flex flex-col">
       {agent && (
         <Link
           to={agent_id != 'user' ? `/agents/${agent_id}` : ''}
-          onClick={(e) => {
-            if (agent_id == 'user') {
-              e.preventDefault()
-              openSettings()
-            }
-          }}
+          onClick={agent_id != 'user' ? showContextMenu() : showUserContextMenu()}
           className="flex-none items-center flex flex-col"
           onContextMenu={agent_id != 'user' ? showContextMenu() : showUserContextMenu()}
         >
-          <img
-            title={`${agent?.name || agent?.id}${task ? ` tasked with:\n${task}` : ``}`}
-            src={`${getBaseURL()}/profile/${agent.id}.jpg`}
-            className="w-14 h-14 rounded-full mb-3  border shadow-md border-slate-800"
-          />
+          <AgentAvatar agent_id={agent_id} task={task}
+             />
           <div
             className="text-xs font-bold w-32 text-center overflow-ellipsis overflow-hidden whitespace-nowrap"
             title={`${agent?.id} - ${agent?.usage}`}

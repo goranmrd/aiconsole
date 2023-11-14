@@ -30,7 +30,7 @@ function EmptyChatAgentAvatar({ agent }: { agent: Agent }) {
   const { showContextMenu } = useEditableObjectContextMenu({ editableObjectType: 'agent', editable: agent });
 
   return (
-    <Tooltip label={`${agent.name}`} position="bottom" transitionProps={{ transition: 'slide-down', duration: 100 }} withArrow >
+    <Tooltip label={agent.name} position="bottom" transitionProps={{ transition: 'slide-down', duration: 100 }} withArrow >
       <div key={agent.id} className="flex flex-col items-center justify-center">
         <div
           onClick={showContextMenu()}
@@ -40,7 +40,7 @@ function EmptyChatAgentAvatar({ agent }: { agent: Agent }) {
           <img
             src={`${getBaseURL()}/profile/${agent.id}.jpg`}
             className={cn("filter opacity-75 shadows-lg w-20 h-20 mx-auto rounded-full", agent.status === 'forced' && " border-2 border-primary")}
-            alt="Logo"
+            alt={agent.name}
           />
         </div>
       </div>
