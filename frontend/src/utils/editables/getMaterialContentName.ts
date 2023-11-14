@@ -16,7 +16,16 @@
 
 import { MaterialContentType } from '@/types/editables/assetTypes';
 
-export function getMaterialContentName(contentType?: MaterialContentType) {
+export type MaterialContentNames =
+  | 'Note'
+  | 'Dynamic Note'
+  | 'Material'
+  | 'Python API'
+  | 'Agent';
+
+export function getMaterialContentName(
+  contentType?: MaterialContentType,
+): MaterialContentNames {
   switch (contentType) {
     case 'static_text':
       return 'Note';

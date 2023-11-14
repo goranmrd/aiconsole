@@ -15,20 +15,30 @@
 // limitations under the License.
 
 import { EditablesAPI } from '@/api/api/EditablesAPI';
-import { Agent, Asset, AssetStatus, AssetType, Material } from '@/types/editables/assetTypes';
+import {
+  Agent,
+  Asset,
+  AssetStatus,
+  AssetType,
+  Material,
+} from '@/types/editables/assetTypes';
 import { canThereBeOnlyOneForcedAsset } from '@/utils/editables/canThereBeOnlyOneForcedAsset';
 import { create } from 'zustand';
 import { useEditablesStore } from '../useEditablesStore';
 
 export type ProjectSlice = {
-  selectedAsset?: Asset
-  lastSavedSelectedAsset?: Asset
+  selectedAsset?: Asset;
+  lastSavedSelectedAsset?: Asset;
   getAsset: (assetType: AssetType, id: string) => Asset | undefined;
-  setAssetStatus: (assetType: AssetType, id: string, status: AssetStatus) => Promise<void>;
+  setSelectedAsset: (asset: Asset) => void;
+  setAssetStatus: (
+    assetType: AssetType,
+    id: string,
+    status: AssetStatus,
+  ) => Promise<void>;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const useAssetStore = create<ProjectSlice>((_set, _get) => ({
+export const useAssetStore = create<ProjectSlice>((set) => ({
   lastSavedSelectedAsset: undefined,
   selectedAsset: undefined,
   getAsset: (assetType: AssetType, id: string): Asset | undefined => {
@@ -65,7 +75,9 @@ export const useAssetStore = create<ProjectSlice>((_set, _get) => ({
         return agent;
       }
 
-      return useEditablesStore.getState().agents.find((agent) => agent.id === id);
+      return useEditablesStore
+        .getState()
+        .agents.find((agent) => agent.id === id);
     }
 
     if (assetType === 'material') {
@@ -86,12 +98,23 @@ export const useAssetStore = create<ProjectSlice>((_set, _get) => ({
         return material;
       }
 
-      return useEditablesStore.getState().materials?.find((material) => material.id === id);
+      return useEditablesStore
+        .getState()
+        .materials?.find((material) => material.id === id);
     }
 
     throw new Error(`Unknown asset type ${assetType}`);
   },
-  setAssetStatus: async (assetType: AssetType, id: string, status: AssetStatus) => {
+  setSelectedAsset: (asset: Asset) => {
+    set({
+      selectedAsset: asset,
+    });
+  },
+  setAssetStatus: async (
+    assetType: AssetType,
+    id: string,
+    status: AssetStatus,
+  ) => {
     const plural = (assetType + 's') as 'materials' | 'agents';
 
     useEditablesStore.setState((state) => ({

@@ -22,40 +22,106 @@ import { SimpleInput } from '@/components/editables/assets/TextInput';
 import { useEditablesStore } from '@/store/editables/useEditablesStore';
 import {
   Agent,
-  Asset,
   AssetType,
   Material,
   MaterialContentType,
-  RenderedMaterial
+  RenderedMaterial,
 } from '@/types/editables/assetTypes';
 import { cn } from '@/utils/common/cn';
 import showNotification from '@/utils/common/showNotification';
 import { getEditableObjectType } from '@/utils/editables/getEditableObjectType';
-import { getMaterialContentName } from '@/utils/editables/getMaterialContentName';
+import {
+  MaterialContentNames,
+  getMaterialContentName,
+} from '@/utils/editables/getMaterialContentName';
 import { EditablesAPI } from '../../../api/api/EditablesAPI';
 import { useAssetStore } from '@/store/editables/asset/useAssetStore';
+
+const MaterialContent = ({ material }: { material: Material }) => {
+  const setSelectedAsset = useAssetStore((state) => state.setSelectedAsset);
+
+  return (
+    <>
+      {material.content_type === 'static_text' && (
+        <CodeInput
+          label="Text"
+          value={material.content_static_text}
+          onChange={(value) =>
+            setSelectedAsset({
+              ...material,
+              content_static_text: value,
+            } as Material)
+          }
+          className="flex-grow"
+          codeLanguage="markdown"
+        />
+      )}
+      {material.content_type === 'dynamic_text' && (
+        <CodeInput
+          label="Python function returning dynamic text"
+          value={material.content_dynamic_text}
+          onChange={(value) =>
+            setSelectedAsset({
+              ...material,
+              content_dynamic_text: value,
+            } as Material)
+          }
+          className="flex-grow"
+          codeLanguage="python"
+        />
+      )}
+      {material.content_type === 'api' && (
+        <CodeInput
+          label="API Module"
+          value={material.content_api}
+          onChange={(value) =>
+            setSelectedAsset({ ...material, content_api: value } as Material)
+          }
+          className="flex-grow"
+        />
+      )}
+    </>
+  );
+};
+
+const AgentContent = ({ agent }: { agent: Agent }) => {
+  const setSelectedAsset = useAssetStore((state) => state.setSelectedAsset);
+
+  return (
+    <CodeInput
+      label="System information"
+      value={agent.system}
+      onChange={(value) =>
+        setSelectedAsset({ ...agent, system: value } as Agent)
+      }
+      className="flex-grow"
+      codeLanguage="markdown"
+    />
+  );
+};
 
 export function AssetEditor() {
   const asset = useAssetStore((state) => state.selectedAsset);
   const lastSavedAsset = useAssetStore((state) => state.lastSavedSelectedAsset);
-
-
-  function setAsset(asset: Asset) {
-    useAssetStore.setState({ selectedAsset: asset });
-  }
+  const setSelectedAsset = useAssetStore((state) => state.setSelectedAsset);
 
   const searchParams = useSearchParams()[0];
-  const [preview, setPreview] = useState<RenderedMaterial | undefined>(undefined);
+  const [preview, setPreview] = useState<RenderedMaterial | undefined>(
+    undefined,
+  );
 
-  const previewValue = preview ? preview?.content.split('\\n').join('\n') : 'Generating preview...';
+  const [typeName, setTypeName] = useState<MaterialContentNames>('Material');
+  const [showPreview, setShowPreview] = useState(false);
+
+  const previewValue = preview
+    ? preview?.content.split('\\n').join('\n')
+    : 'Generating preview...';
   const assetType = getEditableObjectType(asset) as AssetType;
 
-  const deleteEditableObject = useEditablesStore((state) => state.deleteEditableObject);
+  const deleteEditableObject = useEditablesStore(
+    (state) => state.deleteEditableObject,
+  );
   const navigate = useNavigate();
-
-  let typeName = 'Material';
-  let typeSpecificPart = null;
-  let showPreview = true;
 
   const isAssetChanged = (() => {
     if (!asset || !lastSavedAsset) {
@@ -64,7 +130,9 @@ export function AssetEditor() {
 
     const changedFields = Object.keys(asset).filter((key) => {
       return (
-        key !== 'status' && asset[key as keyof typeof asset] !== lastSavedAsset[key as keyof typeof lastSavedAsset]
+        key !== 'status' &&
+        asset[key as keyof typeof asset] !==
+          lastSavedAsset[key as keyof typeof lastSavedAsset]
       );
     });
 
@@ -90,7 +158,8 @@ export function AssetEditor() {
     }
   };
 
-  const enableSubmit = (isAssetChanged || isAssetStatusChanged) && asset?.id && asset?.name;
+  const enableSubmit =
+    (isAssetChanged || isAssetStatusChanged) && asset?.id && asset?.name;
   const disableSubmit = !enableSubmit;
 
   const handleSaveClick = async () => {
@@ -145,98 +214,36 @@ export function AssetEditor() {
     useAssetStore.setState({ lastSavedSelectedAsset: asset });
   };
 
-  if (asset && assetType === 'material') {
-    const material: Material = asset as Material;
-
-    typeName = getMaterialContentName(material?.content_type);
-
-    typeSpecificPart = (
-      <>
-        {material.content_type === 'static_text' && (
-          <CodeInput
-            label="Text"
-            value={material.content_static_text}
-            onChange={(value) => setAsset({ ...material, content_static_text: value } as Material)}
-            className="flex-grow"
-            codeLanguage="markdown"
-          />
-        )}
-        {material.content_type === 'dynamic_text' && (
-          <CodeInput
-            label="Python function returning dynamic text"
-            value={material.content_dynamic_text}
-            onChange={(value) => setAsset({ ...material, content_dynamic_text: value } as Material)}
-            className="flex-grow"
-            codeLanguage="python"
-          />
-        )}
-        {material.content_type === 'api' && (
-          <CodeInput
-            label="API Module"
-            value={material.content_api}
-            onChange={(value) => setAsset({ ...material, content_api: value } as Material)}
-            className="flex-grow"
-          />
-        )}
-      </>
-    );
-
-    if (lastSavedAsset === undefined) {
-      material.content_type = (searchParams.get('type') as MaterialContentType | null) || material.content_type;
+  useEffect(() => {
+    setPreview(undefined);
+    if (!asset) {
+      return;
     }
+    let timeout: NodeJS.Timeout;
+    if (assetType === 'material') {
+      const material: Material = asset as Material;
+      setShowPreview(true);
+      setTypeName(getMaterialContentName(material?.content_type));
 
-    //After 3 seconds of inactivity after change query /preview to get rendered material
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useEffect(() => {
-      setPreview(undefined);
-      if (!asset) {
-        return;
+      if (lastSavedAsset === undefined) {
+        material.content_type =
+          (searchParams.get('type') as MaterialContentType | null) ||
+          material.content_type;
       }
 
-      const timeout = setTimeout(() => {
+      timeout = setTimeout(() => {
         EditablesAPI.previewMaterial(material).then((preview) => {
           setPreview(preview);
         });
       }, 3000);
-
-      return () => {
-        clearTimeout(timeout);
-      };
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [
-      material?.content_api,
-      material?.content_dynamic_text,
-      material?.content_static_text,
-      material?.content_type,
-      material?.name,
-    ]);
-  } else if (asset && assetType === 'agent') {
-    const agent: Agent = asset as Agent;
-    typeName = 'Agent';
-    showPreview = false;
-
-    typeSpecificPart = (
-      <CodeInput
-        label="System information"
-        value={agent.system}
-        onChange={(value) => setAsset({ ...agent, system: value } as Agent)}
-        className="flex-grow"
-        codeLanguage="markdown"
-      />
-    );
-
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useEffect(() => {
-      setPreview(undefined);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [null, null, null, null, null]);
-  } else {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useEffect(() => {
-      setPreview(undefined);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [null, null, null, null, null]);
-  }
+    } else {
+      setTypeName('Agent');
+      setShowPreview(false);
+    }
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [asset, assetType, lastSavedAsset, searchParams]);
 
   return (
     <div className="flex flex-col w-full h-full overflow-auto p-6 gap-4">
@@ -246,12 +253,18 @@ export function AssetEditor() {
             label="Usage"
             name="usage"
             value={asset.usage}
-            onChange={(value) => setAsset({ ...asset, usage: value })}
+            onChange={(value) => setSelectedAsset({ ...asset, usage: value })}
             withTooltip
             tootltipText={`Usage is used to help identify when this ${typeName} should be used. `}
           />
           <div className="flex-grow flex flex-row w-full gap-4 overflow-clip">
-            <div className="flex-1">{typeSpecificPart}</div>
+            <div className="flex-1">
+              {assetType === 'agent' ? (
+                <AgentContent agent={asset as Agent} />
+              ) : (
+                <MaterialContent material={asset as Material} />
+              )}
+            </div>
             {showPreview && (
               <div className="flex-1">
                 <CodeInput
@@ -269,7 +282,8 @@ export function AssetEditor() {
             className={cn(
               ' flex-none bg-primary hover:bg-gray-700/95 text-black hover:bg-primary-light px-4 py-1 rounded-full flow-right text-[16px] ',
               {
-                'opacity-[0.3] cursor-not-allowed hover:bg-initial': disableSubmit,
+                'opacity-[0.3] cursor-not-allowed hover:bg-initial':
+                  disableSubmit,
               },
             )}
             onClick={handleSaveClick}
