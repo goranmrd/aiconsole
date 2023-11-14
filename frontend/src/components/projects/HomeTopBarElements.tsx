@@ -19,31 +19,39 @@ import { useRecentProjectsStore } from '@/store/projects/useRecentProjectsStore'
 import { FolderOpen, FolderPlus } from 'lucide-react';
 import { Button } from '../common/Button';
 import { ConfirmationModal } from '../common/ConfirmationModal';
+import { cn } from '@/utils/common/cn';
 
-
-export function HomeTopBarElements() {
+export function HomeTopBarElements({ className }: { className?: string }) {
   const {
-    isProjectDirectory, isNewProjectModalOpen, isOpenProjectModalOpen, openProject, newProject, resetIsProjectFlag, openProjectConfirmation,
+    isProjectDirectory,
+    isNewProjectModalOpen,
+    isOpenProjectModalOpen,
+    openProject,
+    newProject,
+    resetIsProjectFlag,
+    openProjectConfirmation,
   } = useProjectFileManager();
   const recentProjects = useRecentProjectsStore((state) => state.recentProjects);
 
   return (
     recentProjects.length > 0 && (
-      <div className="flex gap-[20px]">
+      <div className={cn('flex gap-[20px]', className)}>
         <ConfirmationModal
           confirmButtonText="Yes"
           cancelButtonText="No"
           opened={isProjectDirectory === true && isNewProjectModalOpen}
           onClose={resetIsProjectFlag}
           onConfirm={openProjectConfirmation}
-          title={`This project already exists, do you want to open it?`} />
+          title={`This folder already contains an AIConsole project, do you want to open it instead?`}
+        />
         <ConfirmationModal
           confirmButtonText="Yes"
           cancelButtonText="No"
           opened={isProjectDirectory === false && isOpenProjectModalOpen}
           onClose={resetIsProjectFlag}
           onConfirm={openProjectConfirmation}
-          title={`This project does not exists, do you want to create one?`} />
+          title={`There is no project in this directory, do you want to create one there?`}
+        />
 
         <Button small onClick={newProject}>
           <FolderPlus /> New Project ...
