@@ -88,7 +88,7 @@ export const GlobalSettingsModal = () => {
         </Button>
       </div>
       <div className="h-[calc(100vh-100px)] max-w-[720px] mx-auto">
-        <h3 className="uppercase p-[30px] text-gray-400 text-[14px] leading-[21px] text-center mb-[40px]">Settingss</h3>
+        <h3 className="uppercase p-[30px] text-gray-400 text-[14px] leading-[21px] text-center mb-[40px]">Settings</h3>
         <div className="flex flex-col gap-[40px]">
           {/* <h3 className="text-gray-400 text-[14px] leading-5">User settings</h3>
         <div>
