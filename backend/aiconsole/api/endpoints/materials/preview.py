@@ -32,7 +32,7 @@ async def materials_preview(material: Material):
         chat=Chat(id="chat", name="", last_modified=datetime.now(), title_edited=False, message_groups=[]),
         agent=Agent(
             id="user",
-            name="User",
+            name="You",
             usage="",
             usage_examples=[],
             system="",

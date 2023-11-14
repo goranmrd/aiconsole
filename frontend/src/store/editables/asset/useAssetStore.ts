@@ -36,7 +36,7 @@ export const useAssetStore = create<ProjectSlice>((_set, _get) => ({
       if (id === 'user') {
         const agent: Agent = {
           id: 'user',
-          name: 'User',
+          name: 'You',
           usage: '',
           usage_examples: [],
           system: '',
