@@ -64,15 +64,15 @@ export function EditableObjectEditor() {
       <div
         onContextMenu={showContextMenu()}
         onClick={() => setIsEditing(true)}
-        className="w-fullflex-none flex flex-row gap-2 cursor-pointer p-4 border-b border-gray-600 bg-gray-700/20 shadow-md items-center"
+        className="w-full flex-none flex flex-row gap-2 cursor-pointer p-4 border-b border-gray-600 bg-gray-700/20 shadow-md items-center w-full overflow-clip "
       >
-        <Icon style={{ color }} />{' '}
+        <Icon style={{ color }} className='flex-none' />{' '}
         <InlineEditableObjectName
           editableObject={editable}
           editableObjectType={editableType}
           isEditing={isEditing}
           setIsEditing={setIsEditing}
-          className="flex-grow"
+          className="flex-grow truncate"
           isNew={lastSavedEditable === undefined}
         />
         <div className="self-end">{extraStuff}</div>
