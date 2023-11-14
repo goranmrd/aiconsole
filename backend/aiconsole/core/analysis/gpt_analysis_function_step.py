@@ -53,7 +53,7 @@ def pick_agent(arguments, chat: Chat) -> Agent:
 
     # Try support first
     default_agent = next(
-        (agent for agent in available_agents if agent.id == "support"), None
+        (agent for agent in available_agents if agent.id == "assistant"), None
     )
 
     # Pick any if not available
