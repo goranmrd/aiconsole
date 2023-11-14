@@ -73,7 +73,7 @@ export function EditableObjectEditor() {
           isEditing={isEditing}
           setIsEditing={setIsEditing}
           className="flex-grow truncate"
-          isNew={lastSavedEditable === undefined}
+          isNew={lastSavedEditable === undefined && editableType !== 'chat'}
         />
         <div className="self-end">{extraStuff}</div>
       </div>

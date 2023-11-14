@@ -14,11 +14,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { cn } from '@/utils/common/cn';
+import { useEditablesStore } from '@/store/editables/useEditablesStore';
 import { EditableObject, EditableObjectType } from '@/types/editables/assetTypes';
+import { cn } from '@/utils/common/cn';
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useEditablesStore } from '@/store/editables/useEditablesStore';
 
 const InlineEditableObjectName = ({
   editableObject, // The editable object with 'id' and 'name'
@@ -57,6 +57,11 @@ const InlineEditableObjectName = ({
       //if we are in details of this object, we need to update the location
       if (location.pathname === `/${editableObjectType}s/${oldId}`) {
         navigate(`/${editableObjectType}s/${newId}`);
+      }
+
+      //If it's chat we need to reload chat history because there is no autoreload on change for chats
+      if (editableObjectType === 'chat') {
+        useEditablesStore.getState().initChatHistory();
       }
     }
     setIsEditing(false); // Exit editing mode regardless of whether a change was made
