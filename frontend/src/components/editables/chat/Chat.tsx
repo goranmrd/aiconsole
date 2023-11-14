@@ -47,11 +47,7 @@ export function Chat() {
   const isProjectOpen = useProjectStore((state) => state.isProjectOpen);
   const isProjectLoading = useProjectStore((state) => state.isProjectLoading);
 
-  if (!chat) {
-    return null;
-  }
-
-  const isLastMessageFromUser = chat.message_groups.length > 0 && chat.message_groups[chat.message_groups.length - 1].agent_id === 'user';
+  const isLastMessageFromUser = chat?.message_groups.length && chat.message_groups[chat.message_groups.length - 1].agent_id === 'user';
   
   
 
@@ -67,7 +63,13 @@ export function Chat() {
       stopWork();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chat.id, isProjectOpen]); //Initentional trigger when chat_id changes
+  }, [chat?.id, isProjectOpen]); //Initentional trigger when chat_id changes
+
+
+  if (!chat) {
+    return null;
+  }
+
 
   return !isProjectLoading && !loadingMessages ? ( // This is needed because of https://github.com/compulim/react-scroll-to-bottom/issues/61#issuecomment-1608456508
     <ScrollToBottom className="h-full overflow-y-auto flex flex-col" scrollViewClassName="main-chat-window" initialScrollBehavior="auto" mode={'bottom'}>
