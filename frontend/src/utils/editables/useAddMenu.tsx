@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { useDiscardAssetChangesStore } from '@/store/editables/asset/useDiscardAssetChangesStore';
 import { useContextMenu } from '@/utils/common/useContextMenu';
 import { getEditableObjectColor } from '@/utils/editables/getEditableObjectColor';
 import { MATERIAL_CONTENT_TYPE_ICONS, getEditableObjectIcon } from '@/utils/editables/getEditableObjectIcon';
@@ -22,7 +23,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 export function useAddMenu() {
   const { showContextMenu, hideContextMenu, isContextMenuVisible } = useContextMenu();
-
+  const { isChanged, setConfirmCallback } = useDiscardAssetChangesStore();
   const navigate = useNavigate();
   const ChatIcon = getEditableObjectIcon('chat');
   const MaterialNoteIcon = MATERIAL_CONTENT_TYPE_ICONS['static_text'];
@@ -30,47 +31,45 @@ export function useAddMenu() {
   const MaterialPythonAPIIcon = MATERIAL_CONTENT_TYPE_ICONS['api'];
   const AgentIcon = getEditableObjectIcon('agent');
 
+  const handleClick = (path: string) => () => {
+    if (isChanged) {
+      setConfirmCallback(() => navigate(path));
+    } else {
+      navigate(path);
+    }
+  };
+
   function showContextMenuReplacement() {
     return showContextMenu([
       {
         key: 'chat',
         icon: <ChatIcon className="w-4 h-4" style={{ color: getEditableObjectColor('chat') }} />,
         title: 'New Chat ...',
-        onClick: () => {
-          navigate(`/chats/${uuidv4()}`);
-        },
+        onClick: handleClick(`/chats/${uuidv4()}`),
       },
       {
         key: 'note',
         icon: <MaterialNoteIcon className="w-4 h-4" style={{ color: getEditableObjectColor('material') }} />,
         title: 'New Note ...',
-        onClick: () => {
-          navigate(`/materials/new?type=static_text`);
-        },
+        onClick: handleClick(`/materials/new?type=static_text`),
       },
       {
         key: 'dynamic_note',
         icon: <MaterialDynamicNoteIcon className="w-4 h-4" style={{ color: getEditableObjectColor('material') }} />,
         title: 'New Dynamic Note ...',
-        onClick: () => {
-          navigate(`/materials/new?type=dynamic_text`);
-        },
+        onClick: handleClick(`/materials/new?type=dynamic_text`),
       },
       {
         key: 'python_api',
         icon: <MaterialPythonAPIIcon className="w-4 h-4" style={{ color: getEditableObjectColor('material') }} />,
         title: 'New Python API ...',
-        onClick: () => {
-          navigate(`/materials/new?type=api`);
-        },
+        onClick: handleClick(`/materials/new?type=api`),
       },
       {
         key: 'agent',
         icon: <AgentIcon className="w-4 h-4" style={{ color: getEditableObjectColor('agent') }} />,
         title: 'New Agent ...',
-        onClick: () => {
-          navigate(`/agents/new`);
-        },
+        onClick: handleClick(`/agents/new`),
       },
       /*static_text: 'Markdown formated text will be injected into AI context.',
       dynamic_text: 'A python function will generate markdown text to be injected into AI context.',
