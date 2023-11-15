@@ -15,15 +15,15 @@
 // limitations under the License.
 
 import { useAssetStore } from '@/store/editables/asset/useAssetStore';
-import { useEditablesStore } from '@/store/editables/useEditablesStore';
 import { Asset, AssetStatus, EditableObject, EditableObjectType } from '@/types/editables/assetTypes';
-import { Copy, Edit, File, Trash } from 'lucide-react';
+import { Copy, Edit, File, Trash, Undo2 } from 'lucide-react';
 import { ContextMenuContent } from 'mantine-contextmenu';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { useContextMenu } from '../common/useContextMenu';
 import { getAssetStatusIcon } from './getAssetStatusIcon';
 import { useDiscardAssetChangesStore } from '@/store/editables/asset/useDiscardAssetChangesStore';
+import { useDeleteEditableObjectWithUserInteraction } from './useDeleteEditableObjectWithUserInteraction';
 
 function createIconForStatus(assetStatus: AssetStatus) {
   const Icon = getAssetStatusIcon(assetStatus);
@@ -46,19 +46,7 @@ export function useEditableObjectContextMenu({
 
   const navigate = useNavigate();
   const location = useLocation();
-  const deleteEditableObject = useEditablesStore((state) => state.deleteEditableObject);
-
-  function handleDelete(id: string) {
-    if (!window.confirm(`Are you sure you want to delete this ${editableObjectType}?`)) {
-      return;
-    }
-
-    deleteEditableObject(editableObjectType, id);
-
-    if (editableObjectType === 'chat') {
-      navigate('/');
-    }
-  }
+  const handleDelete = useDeleteEditableObjectWithUserInteraction(editableObjectType);
 
   function showContextMenuReplacement() {
     const content: ContextMenuContent = [];
@@ -108,6 +96,7 @@ export function useEditableObjectContextMenu({
     });
 
     let hasDelete = true;
+    let isDeleteRevert = false;
 
     if (editableObjectType == 'chat') {
       content.push(
@@ -129,6 +118,7 @@ export function useEditableObjectContextMenu({
     } else {
       const asset = editableObject as Asset;
       hasDelete = asset?.defined_in === 'project';
+      isDeleteRevert = asset?.override;
 
       content.push(
         ...[
@@ -196,8 +186,8 @@ export function useEditableObjectContextMenu({
       content.push({ key: 'divider-delete' });
       content.push({
         key: 'Delete',
-        icon: <Trash className="w-4 h-4" />,
-        title: 'Delete',
+        icon: isDeleteRevert ? <Undo2 className="w-4 h-4" /> : <Trash className="w-4 h-4" />,
+        title: isDeleteRevert ? 'Revert' : 'Delete',
         onClick: () => handleDelete(editableObject.id),
       });
     }
