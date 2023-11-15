@@ -32,7 +32,7 @@ export function RecentProjectsEmpty({ openAiApiKey, isApiKeyValid }: RecentProje
         </h1>
         Ł
         {openAiApiKey && isApiKeyValid ? (
-          <ProjectButtons className="relative flex justify-center gap-[20px] mt-[36px] z-10" />
+          <ProjectButtons className="flex justify-center gap-[20px] mt-[36px]" />
         ) : (
           <div className="mb-[-40px]">
             <OpenAiApiKeyForm />
