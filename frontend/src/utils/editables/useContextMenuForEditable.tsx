@@ -24,13 +24,12 @@ import { v4 as uuidv4 } from 'uuid';
 import { useContextMenu } from '../common/useContextMenu';
 import { getAssetStatusIcon } from './getAssetStatusIcon';
 
-
 function createIconForStatus(assetStatus: AssetStatus) {
-  const Icon = getAssetStatusIcon(assetStatus)
-  return <Icon className="w-4 h-4" />
+  const Icon = getAssetStatusIcon(assetStatus);
+  return <Icon className="w-4 h-4" />;
 }
 
-export const DISABLED = 'font-bold opacity-50 max-w-[400px] truncate !cursor-default hover:!bg-gray-700'
+export const DISABLED = 'font-bold opacity-50 max-w-[400px] truncate !cursor-default hover:!bg-gray-700';
 
 export function useEditableObjectContextMenu({
   editableObjectType,
@@ -89,7 +88,9 @@ export function useEditableObjectContextMenu({
       icon: <Copy className="w-4 h-4" />,
       title: 'Edit as New',
       onClick: () => {
-        navigate(`/${editableObjectType}s/${editableObjectType === 'chat' ? uuidv4() : 'new'}?copy=${editableObject.id}`);
+        navigate(
+          `/${editableObjectType}s/${editableObjectType === 'chat' ? uuidv4() : 'new'}?copy=${editableObject.id}`,
+        );
       },
     });
 
@@ -153,9 +154,9 @@ export function useEditableObjectContextMenu({
           ...(editableObject && asset?.status !== 'enabled'
             ? [
                 {
-                  key: 'Auto',
+                  key: 'Reset',
                   icon: createIconForStatus('enabled'),
-                  title: 'Auto',
+                  title: 'Reset',
                   onClick: () => {
                     useAssetStore.getState().setAssetStatus(editableObjectType, editableObject.id, 'enabled');
                   },
@@ -176,8 +177,6 @@ export function useEditableObjectContextMenu({
             : []),
         ],
       );
-
-      
     }
 
     if (hasDelete) {
