@@ -39,6 +39,7 @@ async def materials_preview(material: Material):
             system="",
             defined_in=AssetLocation.AICONSOLE_CORE,
             gpt_mode=GPTMode.QUALITY,
+            override=False,
         ),
         gpt_mode=GPTMode.SPEED,
         relevant_materials=[],

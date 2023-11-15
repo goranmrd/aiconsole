@@ -14,7 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from aiconsole.core.project.paths import get_history_directory
+from aiconsole.core.assets.asset import AssetType
+from aiconsole.core.project.paths import get_core_assets_directory, get_history_directory
 from fastapi import APIRouter, status, Response
 from fastapi.responses import JSONResponse
 from aiconsole.core.chat.types import Chat
@@ -39,6 +40,7 @@ async def delete_history(chat_id: str):
             status_code=status.HTTP_404_NOT_FOUND,
             content="Chat history not found",
         )
+
 
 @router.get("/{chat_id}")
 async def get_history(chat_id: str):

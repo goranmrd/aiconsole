@@ -14,44 +14,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from aiconsole.api.endpoints.agents.agent import agent_status_change
+from aiconsole.api.utils.asset_get import asset_get
+from aiconsole.api.utils.status_change_post_body import StatusChangePostBody
 from aiconsole.core.assets.asset import AssetLocation, AssetStatus, AssetType
-from aiconsole.core.assets.materials.material import (Material,
-                                                      MaterialWithStatus)
+from aiconsole.core.assets.materials.material import Material, MaterialWithStatus
 from aiconsole.core.project import project
-from aiconsole.core.settings.project_settings import get_aiconsole_settings
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
 
 router = APIRouter()
 
 
-class StatusChangePostBody(BaseModel):
-    status: AssetStatus
-    to_global: bool
-
-
 @router.get("/{material_id}")
-async def material_get(material_id: str):
-    if material_id == "new":
-        return JSONResponse(MaterialWithStatus(
+async def material_get(request: Request, material_id: str):
+    return await asset_get(
+        request,
+        AssetType.MATERIAL,
+        material_id,
+        lambda location: MaterialWithStatus(
             id="",
             name="",
             usage="",
             usage_examples=[],
             status=AssetStatus.ENABLED,
             defined_in=AssetLocation.PROJECT_DIR,
-        ).model_dump())
-    else:
-        try:
-            settings = get_aiconsole_settings()
-            material = project.get_project_materials().get_asset(material_id)
-            return JSONResponse({
-                **material.model_dump(),
-                "status": settings.get_asset_status(AssetType.MATERIAL, material.id),
-            })
-        except KeyError:
-            raise HTTPException(status_code=404, detail="Material not found")
+            override=False,
+        ),
+    )
 
 
 @router.patch("/{material_id}")
@@ -78,37 +68,14 @@ async def material_post(material_id: str, material: Material):
 
 
 @router.post("/{material_id}/status-change")
-async def material_status_change(
-    material_id: str,
-    body: StatusChangePostBody
-):
-    """
-    Change the status of a material.
-
-    Args:
-        material_id (str): The ID of the material.
-        body (StatusChangePostBody): POST body, only with "status"
-
-    Returns:
-        JSONResponse: JSON response indicating the result.
-    """
-    try:
-        project.get_project_materials().get_asset(material_id)
-        get_aiconsole_settings().set_asset_status(
-            AssetType.MATERIAL,
-            id=material_id, status=body.status, to_global=body.to_global
-        )
-        return JSONResponse({"status": "ok"})
-    except KeyError:
-        raise HTTPException(status_code=404, detail="Material not found")
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+async def material_status_change(material_id: str, body: StatusChangePostBody):
+    return agent_status_change(AssetType.MATERIAL, material_id, body)
 
 
 @router.delete("/{material_id}")
 async def delete_material(material_id: str):
     try:
-        project.get_project_materials().delete_asset(material_id)
+        await project.get_project_materials().delete_asset(material_id)
         return JSONResponse({"status": "ok"})
     except KeyError:
         raise HTTPException(status_code=404, detail="Material not found")

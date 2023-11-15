@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from aiconsole.core.assets.asset import AssetStatus
 from aiconsole.core.project import project
 
 
@@ -26,7 +27,7 @@ from typing import List
 
 
 def create_plan_class(available_agents):
-    enabled_materials = project.get_project_materials().enabled_assets()
+    enabled_materials = project.get_project_materials().assets_with_status(AssetStatus.ENABLED)
 
     class Plan(OpenAISchema):
 

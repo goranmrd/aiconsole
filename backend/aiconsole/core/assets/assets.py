@@ -28,13 +28,14 @@ import watchdog.observers
 from aiconsole.core.project.paths import get_project_assets_directory
 from aiconsole.core.settings.project_settings import get_aiconsole_settings
 from aiconsole.utils.BatchingWatchDogHandler import BatchingWatchDogHandler
-from aiconsole.api.websockets.outgoing_messages import (AssetsUpdatedWSMessage)
+from aiconsole.api.websockets.outgoing_messages import AssetsUpdatedWSMessage
 
 _log = logging.getLogger(__name__)
 
 
 class Assets:
-    _assets: Dict[str, Asset]
+    # _assets have lists, where the first element is the one overriding the others (currently there can be only one overriden element)
+    _assets: Dict[str, list[Asset]]
 
     def __init__(self, asset_type: AssetType):
         self._suppress_notification_until = None
@@ -43,11 +44,10 @@ class Assets:
 
         self.observer = watchdog.observers.Observer()
 
-        get_project_assets_directory(asset_type).mkdir(
-            parents=True, exist_ok=True)
-        self.observer.schedule(BatchingWatchDogHandler(self.reload),
-                               get_project_assets_directory(asset_type),
-                               recursive=True)
+        get_project_assets_directory(asset_type).mkdir(parents=True, exist_ok=True)
+        self.observer.schedule(
+            BatchingWatchDogHandler(self.reload), get_project_assets_directory(asset_type), recursive=True
+        )
         self.observer.start()
 
     def stop(self):
@@ -57,59 +57,37 @@ class Assets:
         """
         Return all loaded assets.
         """
-        return list(self._assets.values())
+        return list(assets[0] for assets in self._assets.values())
 
-    def enabled_assets(self) -> List[Asset]:
+    def assets_with_status(self, status: AssetStatus) -> List[Asset]:
         """
-        Return all enabled loaded materials.
+        Return all loaded assets with a specific status.
         """
         settings = get_aiconsole_settings()
         return [
-            asset for asset in self._assets.values() if
-            settings.get_asset_status(self.asset_type, asset.id) in [
-                AssetStatus.ENABLED]
+            assets[0]
+            for assets in self._assets.values()
+            if settings.get_asset_status(self.asset_type, assets[0].id) in [status]
         ]
-
-    def forced_assets(self) -> List[Asset]:
-        """
-        Return all forced loaded materials.
-        """
-        settings = get_aiconsole_settings()
-        return [
-            asset for asset in self._assets.values() if
-            settings.get_asset_status(self.asset_type, asset.id) in [
-                AssetStatus.FORCED]
-        ]
-
-    @property
-    def assets_project_dir(self) -> Dict[str, Asset]:
-        """
-        Return all forced loaded materials.
-        """
-        return {
-            material.id: material
-            for material in self._assets.values()
-            if material.defined_in == AssetLocation.PROJECT_DIR
-        }
-
-    @property
-    def assets_aiconsole_core(self) -> Dict[str, Asset]:
-        """
-        Return all forced loaded materials.
-        """
-        return {
-            material.id: material
-            for material in self._assets.values()
-            if material.defined_in == AssetLocation.AICONSOLE_CORE
-        }
 
     async def save_asset(self, asset: Asset, new: bool, old_asset_id: Optional[str] = None):
-        self._assets[asset.id] = await save_asset_to_fs(asset, new, old_asset_id)
+        new_asset = await save_asset_to_fs(asset, new, old_asset_id)
+
+        if asset.id in self._assets:
+            self._assets[asset.id][0] = new_asset
+        else:
+            self._assets[asset.id] = [new_asset]
+
         self._suppress_notification()
 
-    def delete_asset(self, asset_id):
+    async def delete_asset(self, asset_id):
         delete_asset_from_fs(self.asset_type, asset_id)
-        del self._assets[asset_id]
+
+        self._assets[asset_id].pop(0)
+
+        if len(self._assets[asset_id]) == 0:
+            del self._assets[asset_id]
+
         self._suppress_notification()
 
     def move(self, old_asset_id: str, new_asset_id: str) -> None:
@@ -117,16 +95,20 @@ class Assets:
         self._suppress_notification()
 
     def _suppress_notification(self):
-        self._suppress_notification_until = datetime.datetime.now() + \
-            datetime.timedelta(seconds=10)
+        self._suppress_notification_until = datetime.datetime.now() + datetime.timedelta(seconds=10)
 
-    def get_asset(self, name):
+    def get_asset(self, name, location: AssetLocation | None = None):
         """
         Get a specific asset.
         """
-        if name not in self._assets:
-            raise KeyError(f"Asset {name} not found")
-        return self._assets[name]
+        if name not in self._assets or len(self._assets[name]) == 0:
+            return None
+
+        for asset in self._assets[name]:
+            if location == None or asset.defined_in == location:
+                return asset
+
+        return None
 
     async def reload(self, initial: bool = False):
         _log.info(f"Reloading {self.asset_type}s ...")
@@ -134,8 +116,13 @@ class Assets:
         self._assets = await load_all_assets(self.asset_type)
 
         await AssetsUpdatedWSMessage(
-            initial=(initial or not (
-                not self._suppress_notification_until or self._suppress_notification_until < datetime.datetime.now())),
+            initial=(
+                initial
+                or not (
+                    not self._suppress_notification_until
+                    or self._suppress_notification_until < datetime.datetime.now()
+                )
+            ),
             asset_type=self.asset_type,
             count=len(self._assets),
         ).send_to_all()
