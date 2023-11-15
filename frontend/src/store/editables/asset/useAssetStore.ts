@@ -46,12 +46,15 @@ export const useAssetStore = create<ProjectSlice>((set) => ({
           gpt_mode: 'quality',
           execution_mode: 'normal',
           default_status: 'enabled',
+          override: false,
         };
 
         return agent;
       }
 
       if (id === 'new') {
+        //TODO: There should be only one place where this is defined, right now it's both in backend and frontend
+
         const agent: Agent = {
           id: 'new_agent',
           name: 'New agent',
@@ -63,6 +66,7 @@ export const useAssetStore = create<ProjectSlice>((set) => ({
           gpt_mode: 'quality',
           execution_mode: 'normal',
           default_status: 'enabled',
+          override: false,
         };
 
         return agent;
@@ -85,6 +89,7 @@ export const useAssetStore = create<ProjectSlice>((set) => ({
           content_dynamic_text: '',
           content_static_text: '',
           default_status: 'enabled',
+          override: false,
         };
 
         return material;
