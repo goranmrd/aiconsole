@@ -36,11 +36,10 @@ export const GlobalSettingsModal = () => {
   const navigate = useNavigate();
 
   const onClose = () => {
-    navigate(location.pathname, { 
-      state: { ...location.state, isSettingsModalVisible: false } 
-    })
+    navigate(location.pathname, {
+      state: { ...location.state, isSettingsModalVisible: false },
+    });
   };
-
 
   const setAutoCodeExecution = useSettingsStore((state) => state.setAutoCodeExecution);
 
@@ -87,7 +86,7 @@ export const GlobalSettingsModal = () => {
           Close
         </Button>
       </div>
-      <div className="h-[calc(100vh-100px)] max-w-[720px] mx-auto">
+      <div className="h-[calc(100vh-125px)] max-w-[720px] mx-auto">
         <h3 className="uppercase p-[30px] text-gray-400 text-[14px] leading-[21px] text-center mb-[40px]">Settings</h3>
         <div className="flex flex-col gap-[40px]">
           {/* <h3 className="text-gray-400 text-[14px] leading-5">User settings</h3>

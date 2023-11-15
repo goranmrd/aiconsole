@@ -24,22 +24,26 @@ interface RecentProjectsEmptyProps {
 
 export function RecentProjectsEmpty({ openAiApiKey, isApiKeyValid }: RecentProjectsEmptyProps) {
   return (
-    <div className="flex justify-center items-center flex-col min-h-[100vh] p-[60px] pt-[140px]  relative">
-      <div className="absolute top-50% translate-y-[-150%]">
+    <div className="flex justify-center items-center flex-col min-h-[100vh] px-[60px] relative">
+      <div className="my-[180px]">
         <img src="favicon.svg" className="shadows-lg w-[60px] h-[60px] mx-auto " alt="Logo" />
         <h1 className="text-[56px] text-center font-black text-white ">
           Welcome to <span className=" text-primary">AIConsole!</span>
         </h1>
         Ł
         {openAiApiKey && isApiKeyValid ? (
-          <ProjectButtons className="flex justify-center gap-[20px] mt-[36px]" />
+          <ProjectButtons className="relative flex justify-center gap-[20px] mt-[36px] z-10" />
         ) : (
           <div className="mb-[-40px]">
             <OpenAiApiKeyForm />
           </div>
         )}
       </div>
-      <img src="recent-projects-empty-image.png" className="mx-auto mt-[100px] " alt="aiconsole chat image" />
+      <img
+        src="recent-projects-empty-image.png"
+        className="relative z-0 mx-auto mt-[-200px] sm:mt-[-250px] lg:mt-[-300px] 2xl:mt-[-400px]"
+        alt="aiconsole chat image"
+      />
     </div>
   );
 }
