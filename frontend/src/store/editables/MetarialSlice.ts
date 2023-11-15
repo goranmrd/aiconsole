@@ -16,28 +16,22 @@
 
 import { StateCreator } from 'zustand';
 
-import { Material, MaterialHeadline } from '@/types/editables/assetTypes';
+import { Material } from '@/types/editables/assetTypes';
 import { EditablesAPI } from '../../api/api/EditablesAPI';
 import { EditablesStore } from './useEditablesStore';
 import { useProjectStore } from '@/store/projects/useProjectStore';
 
 export type MaterialSlice = {
-  materials?: MaterialHeadline[];
+  materials?: Material[];
   initMaterials: () => Promise<void>;
   updateMaterialsItem: (updatedMaterial: Material) => void;
 };
 
-export const createMaterialSlice: StateCreator<
-  EditablesStore,
-  [],
-  [],
-  MaterialSlice
-> = (set) => ({
+export const createMaterialSlice: StateCreator<EditablesStore, [], [], MaterialSlice> = (set) => ({
   materials: undefined,
   initMaterials: async () => {
     if (useProjectStore.getState().isProjectOpen) {
-      const materials =
-        await EditablesAPI.fetchEditableObjects<Material>('material');
+      const materials = await EditablesAPI.fetchEditableObjects<Material>('material');
 
       //sort alphabetically
       materials.sort((a, b) => a.name.localeCompare(b.name));
@@ -51,10 +45,8 @@ export const createMaterialSlice: StateCreator<
 
       //sort by status (forced first, disabled last, enabled in the middle)
       materials.sort((a, b) => {
-        const aStatus =
-          a.status === 'forced' ? 0 : a.status === 'enabled' ? 1 : 2;
-        const bStatus =
-          b.status === 'forced' ? 0 : b.status === 'enabled' ? 1 : 2;
+        const aStatus = a.status === 'forced' ? 0 : a.status === 'enabled' ? 1 : 2;
+        const bStatus = b.status === 'forced' ? 0 : b.status === 'enabled' ? 1 : 2;
         return aStatus - bStatus;
       });
       set({
