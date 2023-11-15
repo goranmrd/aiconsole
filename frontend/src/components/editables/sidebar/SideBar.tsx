@@ -29,9 +29,7 @@ const SideBar = ({ initialTab }: { initialTab: string }) => {
     setActiveTab(initialTab);
   }, [initialTab]);
 
-  const [activeTab, setActiveTab] = useState<TabsValues | string | null>(
-    initialTab,
-  );
+  const [activeTab, setActiveTab] = useState<TabsValues | string | null>(initialTab);
 
   return (
     <div

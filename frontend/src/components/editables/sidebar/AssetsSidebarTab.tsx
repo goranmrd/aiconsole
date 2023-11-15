@@ -17,22 +17,42 @@
 import { Asset, AssetType } from '@/types/editables/assetTypes';
 import SideBarItem from './SideBarItem';
 
-export const AssetsSidebarTab = ({
-  assetType,
-  assets,
-}: {
-  assetType: AssetType;
+interface GroupedMaterial {
+  status: string;
   assets: Asset[];
-}) => {
+}
+
+export const AssetsSidebarTab = ({ assetType, assets }: { assetType: AssetType; assets: Asset[] }) => {
+  function groupAssetsByStatus(): GroupedMaterial[] {
+    if (!assets) return [];
+
+    const groupedMaterials: Record<string, Asset[]> = assets.reduce((grouped: Record<string, Asset[]>, asset) => {
+      const { status } = asset;
+      grouped[status] = grouped[status] || [];
+      grouped[status].push(asset);
+      return grouped;
+    }, {});
+
+    return Object.entries(groupedMaterials).map(([status, assets]) => ({ status, assets }));
+  }
+
+  const groupedAssets = groupAssetsByStatus();
+
   return (
     <div className="flex flex-col gap-[5px] pr-[20px] overflow-y-auto h-full max-h-[calc(100vh-210px)]">
-      {assets.map((asset) => (
-        <SideBarItem
-          key={asset.id}
-          editableObjectType={assetType}
-          editableObject={asset}
-        />
-      ))}
+      {groupedAssets.map(
+        (assetGroup) =>
+          assetGroup.status.length > 0 && (
+            <div key={assetGroup.status}>
+              <h3 className="uppercase px-[9px] py-[5px] text-gray-400 text-[12px] leading-[18px]">
+                {assetGroup.status}
+              </h3>
+              {assetGroup.assets.map((asset) => (
+                <SideBarItem key={asset.id} editableObject={asset} editableObjectType={assetType} />
+              ))}
+            </div>
+          ),
+      )}
     </div>
   );
 };
