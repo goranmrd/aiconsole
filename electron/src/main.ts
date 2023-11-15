@@ -177,12 +177,18 @@ async function createWindow() {
 }
 
 function findPathToPython() {
+  /**
+   * This function is used to find the path to the Python executable.
+   * For now, we are going to use the same python for backend app and also as an executable for the console.
+   * It's not the perfect solution since we can break something:
+   * E.g., if we try to ask how to uninstall fastapi, which is the core of the backend app.
+   */
   let pythonPath;
 
   if (process.platform === "win32") {
     pythonPath = path.join("python", "python.exe");
   } else {
-    pythonPath = path.join("python", "bin", "python3.10");
+    pythonPath = path.join("python", "bin", "python3");
   }
 
   if (app.isPackaged) {
@@ -190,6 +196,12 @@ function findPathToPython() {
   } else {
     return path.join(__dirname, "../..", pythonPath);
   }
+}
+
+function patchEnvPath() {
+  const newPythonPath = findPathToPython();
+  // mock env path to use the new python path
+  process.env.PATH = `${path.dirname(newPythonPath)}:${process.env.PATH}`;
 }
 
 const { updateElectronApp } = require("update-electron-app");
@@ -224,8 +236,8 @@ ipcMain.on("request-backend-port", async (event) => {
   for (const window of windowManager.windows) {
     if (event.sender === window.browserWindow.webContents) {
       window.port = await findEmptyPort();
-
-      window.backendProcess = spawn(findPathToPython(), [
+      patchEnvPath()
+      window.backendProcess = spawn('python3', [
         "-m",
         "aiconsole.electron",
         `--port=${window.port}`,
