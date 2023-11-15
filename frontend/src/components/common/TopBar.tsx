@@ -26,23 +26,15 @@ export function TopBar({ children }: React.PropsWithChildren<TopBarProps>) {
   const { showContextMenu: showUserMenu } = useUserContextMenu();
 
   return (
-    <div className="flex w-full flex-col px-[30px] py-[26px] border-b bg-transparent shadow-md border-gray-600 relative z-40 h-[101px]">
-      <div className="flex gap-2 items-center">
+    <div className="flex w-full px-[30px] py-[7px] border-b bg-transparent shadow-md border-gray-600 relative z-40 h-[101px]">
+      <div className="flex gap-2 w-full items-center">
         {children}
-        <div className="text-gray-300 ml-auto flex gap-[20px]">
-          <div
-            className={cn(
-              'flex flex-col p-4 rounded-[10px] border border-transparent justify-end items-end  absolute top-[10px] right-[14px]',
-            )}
-          >
-            <img
-              src={`${getBaseURL()}/profile/user.jpg` || ''}
-              className="h-11 w-11 rounded-full border cursor-pointer shadow-md border-primary mb-3"
-              onClick={showUserMenu()}
-              onContextMenu={showUserMenu()}
-            />
-          </div>
-        </div>
+        <img
+          src={`${getBaseURL()}/profile/user.jpg` || ''}
+          className="h-11 w-11 ml-auto rounded-full border cursor-pointer shadow-md border-primary"
+          onClick={showUserMenu()}
+          onContextMenu={showUserMenu()}
+        />
       </div>
     </div>
   );
