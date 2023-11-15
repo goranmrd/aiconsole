@@ -38,7 +38,7 @@ config.dictConfig(log_config)
 
 
 def app():
-    origin = os.getenv('CORS_ORIGIN', None)
+    origin = os.getenv("CORS_ORIGIN", None)
 
     if origin is None:
         raise Exception("CORS_ORIGIN environment variable not set")

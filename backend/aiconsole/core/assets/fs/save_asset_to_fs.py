@@ -64,11 +64,11 @@ async def save_asset_to_fs(asset: Asset, create: bool, old_asset_id: str | None 
                 del model_dump[key]
 
         def make_sure_starts_and_ends_with_newline(s: str):
-            if not s.startswith('\n'):
-                s = '\n' + s
+            if not s.startswith("\n"):
+                s = "\n" + s
 
-            if not s.endswith('\n'):
-                s = s + '\n'
+            if not s.endswith("\n"):
+                s = s + "\n"
 
             return s
 
@@ -83,28 +83,31 @@ async def save_asset_to_fs(asset: Asset, create: bool, old_asset_id: str | None 
             doc.append("content_type", tomlkit.string(asset.content_type))
 
             {
-                MaterialContentType.STATIC_TEXT:
-                lambda: doc.append(
+                MaterialContentType.STATIC_TEXT: lambda: doc.append(
                     "content_static_text",
-                    tomlkit.string(make_sure_starts_and_ends_with_newline(
-                        asset.content_static_text),
-                        multiline=True)),
-                MaterialContentType.DYNAMIC_TEXT:
-                lambda: doc.append(
+                    tomlkit.string(
+                        make_sure_starts_and_ends_with_newline(asset.content_static_text),
+                        multiline=True,
+                    ),
+                ),
+                MaterialContentType.DYNAMIC_TEXT: lambda: doc.append(
                     "content_dynamic_text",
-                    tomlkit.string(make_sure_starts_and_ends_with_newline(
-                        asset.content_dynamic_text),
-                        multiline=True)),
-                MaterialContentType.API:
-                lambda: doc.append(
+                    tomlkit.string(
+                        make_sure_starts_and_ends_with_newline(asset.content_dynamic_text),
+                        multiline=True,
+                    ),
+                ),
+                MaterialContentType.API: lambda: doc.append(
                     "content_api",
-                    tomlkit.string(make_sure_starts_and_ends_with_newline(
-                        asset.content_api),
-                        multiline=True)),
+                    tomlkit.string(
+                        make_sure_starts_and_ends_with_newline(asset.content_api),
+                        multiline=True,
+                    ),
+                ),
             }[asset.content_type]()
 
         if isinstance(asset, Agent):
-            if asset.id == 'user':
+            if asset.id == "user":
                 raise Exception("Cannot save agent with id 'user'.")
 
             doc.append("system", tomlkit.string(asset.system))
