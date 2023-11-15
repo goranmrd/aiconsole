@@ -1,4 +1,8 @@
+name = "Environment"
+version = "0.0.2"
 usage = "Use this always when code is about to be executed. Execution environment information, like operating system, shell, current working directory and Python packages will be collected."
+usage_examples = []
+default_status = "enabled"
 content_type = "dynamic_text"
 content_dynamic_text = """
 from datetime import datetime
@@ -33,13 +37,5 @@ default_shell: {os.environ.get('SHELL')}
 
 ## Python Packages
 {collect_python_packages()}
-
-## Hardware Statistics:
-cpu: TODO
-memory:: TODO
-
-## Network Information:
-ip: TODO
-connection_status: TODO
 ""\"
 """
