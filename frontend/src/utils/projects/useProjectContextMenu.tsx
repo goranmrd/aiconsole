@@ -17,11 +17,19 @@
 import { useContextMenu } from '@/utils/common/useContextMenu';
 import { XIcon } from 'lucide-react';
 import { ProjectsAPI } from '@/api/api/ProjectsAPI';
+import { useDiscardAssetChangesStore } from '@/store/editables/asset/useDiscardAssetChangesStore';
 
 export function useProjectContextMenu() {
   const { showContextMenu, hideContextMenu, isContextMenuVisible } = useContextMenu();
+  const { isChanged, setConfirmCallback } = useDiscardAssetChangesStore();
 
-  const handleBackToProjects = () => ProjectsAPI.closeProject();
+  const handleBackToProjects = () => {
+    if (isChanged) {
+      setConfirmCallback(() => ProjectsAPI.closeProject());
+    } else {
+      ProjectsAPI.closeProject();
+    }
+  };
 
   function showContextMenuReplacement() {
     return showContextMenu([

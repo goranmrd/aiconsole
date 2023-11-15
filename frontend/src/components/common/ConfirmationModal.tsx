@@ -20,7 +20,7 @@ import { Button } from './Button';
 import { MouseEventHandler, MouseEvent, useEffect } from 'react';
 
 interface ConfirmationModalProps {
-  onConfirm: MouseEventHandler<HTMLButtonElement>;
+  onConfirm: MouseEventHandler<HTMLButtonElement> | null;
   onClose?: () => void;
   confirmButtonText?: string;
   cancelButtonText?: string;
@@ -49,7 +49,9 @@ export function ConfirmationModal({
   }, [close, isOpened, open]);
 
   const handleConfirm = (event: MouseEvent<HTMLButtonElement>) => {
-    onConfirm(event);
+    if (onConfirm) {
+      onConfirm(event);
+    }
     close();
   };
 

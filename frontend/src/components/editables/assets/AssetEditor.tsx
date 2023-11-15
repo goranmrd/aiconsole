@@ -20,22 +20,15 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CodeInput } from '@/components/editables/assets/CodeInput';
 import { SimpleInput } from '@/components/editables/assets/TextInput';
 import { useEditablesStore } from '@/store/editables/useEditablesStore';
-import {
-  Agent,
-  AssetType,
-  Material,
-  MaterialContentType,
-  RenderedMaterial,
-} from '@/types/editables/assetTypes';
+import { Agent, AssetType, Material, MaterialContentType, RenderedMaterial } from '@/types/editables/assetTypes';
 import { cn } from '@/utils/common/cn';
 import showNotification from '@/utils/common/showNotification';
 import { getEditableObjectType } from '@/utils/editables/getEditableObjectType';
-import {
-  MaterialContentNames,
-  getMaterialContentName,
-} from '@/utils/editables/getMaterialContentName';
+import { MaterialContentNames, getMaterialContentName } from '@/utils/editables/getMaterialContentName';
 import { EditablesAPI } from '../../../api/api/EditablesAPI';
 import { useAssetStore } from '@/store/editables/asset/useAssetStore';
+import { ConfirmationModal } from '@/components/common/ConfirmationModal';
+import { useDiscardAssetChangesStore } from '@/store/editables/asset/useDiscardAssetChangesStore';
 
 const MaterialContent = ({ material }: { material: Material }) => {
   const setSelectedAsset = useAssetStore((state) => state.setSelectedAsset);
@@ -74,9 +67,7 @@ const MaterialContent = ({ material }: { material: Material }) => {
         <CodeInput
           label="API Module"
           value={material.content_api}
-          onChange={(value) =>
-            setSelectedAsset({ ...material, content_api: value } as Material)
-          }
+          onChange={(value) => setSelectedAsset({ ...material, content_api: value } as Material)}
           className="flex-grow"
         />
       )}
@@ -91,9 +82,7 @@ const AgentContent = ({ agent }: { agent: Agent }) => {
     <CodeInput
       label="System information"
       value={agent.system}
-      onChange={(value) =>
-        setSelectedAsset({ ...agent, system: value } as Agent)
-      }
+      onChange={(value) => setSelectedAsset({ ...agent, system: value } as Agent)}
       className="flex-grow"
       codeLanguage="markdown"
     />
@@ -104,23 +93,18 @@ export function AssetEditor() {
   const asset = useAssetStore((state) => state.selectedAsset);
   const lastSavedAsset = useAssetStore((state) => state.lastSavedSelectedAsset);
   const setSelectedAsset = useAssetStore((state) => state.setSelectedAsset);
+  const { setIsChanged, setConfirmCallback, confirmCallback } = useDiscardAssetChangesStore();
 
   const searchParams = useSearchParams()[0];
-  const [preview, setPreview] = useState<RenderedMaterial | undefined>(
-    undefined,
-  );
+  const [preview, setPreview] = useState<RenderedMaterial | undefined>(undefined);
 
   const [typeName, setTypeName] = useState<MaterialContentNames>('Material');
   const [showPreview, setShowPreview] = useState(false);
 
-  const previewValue = preview
-    ? preview?.content.split('\\n').join('\n')
-    : 'Generating preview...';
+  const previewValue = preview ? preview?.content.split('\\n').join('\n') : 'Generating preview...';
   const assetType = getEditableObjectType(asset) as AssetType;
 
-  const deleteEditableObject = useEditablesStore(
-    (state) => state.deleteEditableObject,
-  );
+  const deleteEditableObject = useEditablesStore((state) => state.deleteEditableObject);
   const navigate = useNavigate();
 
   const isAssetChanged = (() => {
@@ -130,14 +114,16 @@ export function AssetEditor() {
 
     const changedFields = Object.keys(asset).filter((key) => {
       return (
-        key !== 'status' &&
-        asset[key as keyof typeof asset] !==
-          lastSavedAsset[key as keyof typeof lastSavedAsset]
+        key !== 'status' && asset[key as keyof typeof asset] !== lastSavedAsset[key as keyof typeof lastSavedAsset]
       );
     });
 
     return changedFields.length > 0;
   })();
+
+  useEffect(() => {
+    setIsChanged(isAssetChanged);
+  }, [isAssetChanged, setIsChanged]);
 
   const isAssetStatusChanged = (() => {
     if (!asset || !lastSavedAsset) {
@@ -158,8 +144,7 @@ export function AssetEditor() {
     }
   };
 
-  const enableSubmit =
-    (isAssetChanged || isAssetStatusChanged) && asset?.id && asset?.name;
+  const enableSubmit = (isAssetChanged || isAssetStatusChanged) && asset?.id && asset?.name;
   const disableSubmit = !enableSubmit;
 
   const handleSaveClick = async () => {
@@ -212,6 +197,20 @@ export function AssetEditor() {
     }
 
     useAssetStore.setState({ lastSavedSelectedAsset: asset });
+    setIsChanged(false);
+    setConfirmCallback(null);
+  };
+
+  const handleCloseDiscardConfirmation = () => {
+    setConfirmCallback(null);
+  };
+
+  const handleDiscardChanges = () => {
+    if (confirmCallback) {
+      confirmCallback();
+    }
+    setIsChanged(false);
+    setConfirmCallback(null);
   };
 
   useEffect(() => {
@@ -226,9 +225,7 @@ export function AssetEditor() {
       setTypeName(getMaterialContentName(material?.content_type));
 
       if (lastSavedAsset === undefined) {
-        material.content_type =
-          (searchParams.get('type') as MaterialContentType | null) ||
-          material.content_type;
+        material.content_type = (searchParams.get('type') as MaterialContentType | null) || material.content_type;
       }
 
       timeout = setTimeout(() => {
@@ -282,8 +279,7 @@ export function AssetEditor() {
             className={cn(
               ' flex-none bg-primary hover:bg-gray-700/95 text-black hover:bg-primary-light px-4 py-1 rounded-full flow-right text-[16px] ',
               {
-                'opacity-[0.3] cursor-not-allowed hover:bg-initial':
-                  disableSubmit,
+                'opacity-[0.3] cursor-not-allowed hover:bg-initial': disableSubmit,
               },
             )}
             onClick={handleSaveClick}
@@ -292,6 +288,14 @@ export function AssetEditor() {
           </button>
         </>
       )}
+      <ConfirmationModal
+        confirmButtonText="Yes"
+        cancelButtonText="No"
+        opened={Boolean(confirmCallback)}
+        onClose={handleCloseDiscardConfirmation}
+        onConfirm={handleDiscardChanges}
+        title="Do you want to discard your changes and continue?"
+      />
     </div>
   );
 }
