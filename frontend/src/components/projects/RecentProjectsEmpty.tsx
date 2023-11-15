@@ -15,7 +15,7 @@
 // limitations under the License.
 
 import OpenAiApiKeyForm from '@/components/settings/OpenAiApiKeyForm';
-import { HomeTopBarElements } from './HomeTopBarElements';
+import { ProjectButtons } from './ProjectButtons';
 
 interface RecentProjectsEmptyProps {
   openAiApiKey: string | null | undefined;
@@ -32,7 +32,7 @@ export function RecentProjectsEmpty({ openAiApiKey, isApiKeyValid }: RecentProje
         </h1>
         Ł
         {openAiApiKey && isApiKeyValid ? (
-          <HomeTopBarElements className="flex justify-center gap-[20px] mt-[36px]" />
+          <ProjectButtons className="flex justify-center gap-[20px] mt-[36px]" />
         ) : (
           <div className="mb-[-40px]">
             <OpenAiApiKeyForm />
