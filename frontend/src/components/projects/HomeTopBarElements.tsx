@@ -14,53 +14,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { useProjectFileManager } from '@/utils/projects/useProjectFileManager';
 import { useRecentProjectsStore } from '@/store/projects/useRecentProjectsStore';
-import { FolderOpen, FolderPlus } from 'lucide-react';
-import { Button } from '../common/Button';
-import { ConfirmationModal } from '../common/ConfirmationModal';
-import { cn } from '@/utils/common/cn';
+import { ProjectButtons } from './ProjectButtons';
 
-export function HomeTopBarElements({ className }: { className?: string }) {
-  const {
-    isProjectDirectory,
-    isNewProjectModalOpen,
-    isOpenProjectModalOpen,
-    openProject,
-    newProject,
-    resetIsProjectFlag,
-    openProjectConfirmation,
-  } = useProjectFileManager();
+export function HomeTopBarElements() {
   const recentProjects = useRecentProjectsStore((state) => state.recentProjects);
 
-  return (
-    recentProjects.length > 0 && (
-      <div className={cn('flex gap-[20px]', className)}>
-        <ConfirmationModal
-          confirmButtonText="Yes"
-          cancelButtonText="No"
-          opened={isProjectDirectory === true && isNewProjectModalOpen}
-          onClose={resetIsProjectFlag}
-          onConfirm={openProjectConfirmation}
-          title={`This folder already contains an AIConsole project, do you want to open it instead?`}
-        />
-        <ConfirmationModal
-          confirmButtonText="Yes"
-          cancelButtonText="No"
-          opened={isProjectDirectory === false && isOpenProjectModalOpen}
-          onClose={resetIsProjectFlag}
-          onConfirm={openProjectConfirmation}
-          title={`There is no project in this directory, do you want to create one there instead?`}
-        />
-
-        <Button small onClick={newProject}>
-          <FolderPlus /> New Project ...
-        </Button>
-
-        <Button small variant="secondary" onClick={openProject}>
-          <FolderOpen /> Open Project ...
-        </Button>
-      </div>
-    )
-  );
+  return recentProjects.length > 0 && <ProjectButtons className="flex gap-[20px]" />;
 }
