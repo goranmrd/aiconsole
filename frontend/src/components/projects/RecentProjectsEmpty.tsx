@@ -26,7 +26,7 @@ export function RecentProjectsEmpty({ openAiApiKey, isApiKeyValid }: RecentProje
   return (
     <div className="flex justify-center items-center flex-col min-h-[100vh] px-[60px] relative">
       <div className="my-[180px]">
-        <img src="favicon.svg" className="shadows-lg w-[60px] h-[60px] mx-auto " alt="Logo" />
+        <img src="logo.png" className="shadows-lg w-[90px] h-[90px] mx-auto " alt="Logo" />
         <h1 className="text-[56px] text-center font-black text-white ">
           Welcome to <span className=" text-primary">AIConsole!</span>
         </h1>

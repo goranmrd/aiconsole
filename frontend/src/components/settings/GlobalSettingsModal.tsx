@@ -80,7 +80,7 @@ export const GlobalSettingsModal = () => {
       }}
     >
       <div className="flex justify-between items-center px-[5px] pb-[26px] pt-[1px] ">
-        <img src={`favicon.svg`} className="h-[48px] w-[48px] cursor-pointer filter" />
+        <img src={`logo.png`} className="h-[48px] w-[48px] cursor-pointer filter" />
         <Button variant="secondary" onClick={onClose} small>
           <X />
           Close
