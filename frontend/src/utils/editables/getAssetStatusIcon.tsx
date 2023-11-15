@@ -15,13 +15,14 @@
 // limitations under the License.
 
 import { AssetStatus } from '@/types/editables/assetTypes';
-import { Ban, Check } from 'lucide-react';
+import { Ban } from 'lucide-react';
 import { EmptyIcon } from '../../components/EmptyIcon';
+import { PinIconRotated } from './PinIconRotated';
 
 export function getAssetStatusIcon(status?: AssetStatus) {
   switch (status) {
     case 'forced':
-      return Check;
+      return PinIconRotated;
     case 'enabled':
       return EmptyIcon;
     default:
@@ -29,5 +30,3 @@ export function getAssetStatusIcon(status?: AssetStatus) {
       return Ban;
   }
 }
-
-
