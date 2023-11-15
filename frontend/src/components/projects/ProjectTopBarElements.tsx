@@ -14,15 +14,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { useProjectContextMenu } from '@/utils/projects/useProjectContextMenu';
+import { ProjectsAPI } from '@/api/api/ProjectsAPI';
+import { Button } from '@/components/common/Button';
+import { useDiscardAssetChangesStore } from '@/store/editables/asset/useDiscardAssetChangesStore';
 import { useProjectStore } from '@/store/projects/useProjectStore';
+import { useAddMenu } from '@/utils/editables/useAddMenu';
+import { useProjectContextMenu } from '@/utils/projects/useProjectContextMenu';
 import { PlusIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-import { Button } from '@/components/common/Button';
-import { useAddMenu } from '@/utils/editables/useAddMenu';
-import { useDiscardAssetChangesStore } from '@/store/editables/asset/useDiscardAssetChangesStore';
-import { ProjectsAPI } from '@/api/api/ProjectsAPI';
 
 export function ProjectTopBarElements() {
   const projectName = useProjectStore((state) => state.projectName);
