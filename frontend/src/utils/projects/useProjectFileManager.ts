@@ -29,6 +29,8 @@ export const useProjectFileManager = () => {
   const openProjectConfirmation = useCallback(() => {
     chooseProject(tempPath);
     resetIsProjectFlag();
+    setNewProjectModalOpen(false);
+    setOpenProjectModalOpen(false);
   }, [chooseProject, resetIsProjectFlag, tempPath]);
 
   useEffect(() => {
@@ -40,12 +42,7 @@ export const useProjectFileManager = () => {
       openProjectConfirmation();
       return;
     }
-  }, [
-    openProjectConfirmation,
-    isNewProjectModalOpen,
-    isOpenProjectModalOpen,
-    isProjectDirectory,
-  ]);
+  }, [openProjectConfirmation, isNewProjectModalOpen, isOpenProjectModalOpen, isProjectDirectory]);
 
   const openProject = () => {
     checkPath();
@@ -59,6 +56,12 @@ export const useProjectFileManager = () => {
     setOpenProjectModalOpen(false);
   };
 
+  const handleReset = () => {
+    resetIsProjectFlag();
+    setNewProjectModalOpen(false);
+    setOpenProjectModalOpen(false);
+  };
+
   useEffect(() => {
     resetIsProjectFlag();
   }, [resetIsProjectFlag]);
@@ -69,7 +72,8 @@ export const useProjectFileManager = () => {
     isProjectDirectory,
     isNewProjectModalOpen,
     isOpenProjectModalOpen,
-    resetIsProjectFlag,
+    handleReset,
     openProjectConfirmation,
+    tempPath,
   };
 };

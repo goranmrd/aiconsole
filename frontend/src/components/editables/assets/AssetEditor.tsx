@@ -255,7 +255,7 @@ export function AssetEditor() {
             tootltipText={`Usage is used to help identify when this ${typeName} should be used. `}
           />
           <div className="flex-grow flex flex-row w-full gap-4 overflow-clip">
-            <div className="flex-1">
+            <div className="flex-1 w-1/2">
               {assetType === 'agent' ? (
                 <AgentContent agent={asset as Agent} />
               ) : (
@@ -263,7 +263,7 @@ export function AssetEditor() {
               )}
             </div>
             {showPreview && (
-              <div className="flex-1">
+              <div className="flex-1 w-1/2">
                 <CodeInput
                   label="Preview of text to be injected into AI context"
                   value={preview?.error ? preview.error : previewValue}
