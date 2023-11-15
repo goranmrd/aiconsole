@@ -4,14 +4,14 @@
 
 # Features
 
-| Feature | Description |
-| ------------- | ------------- |
-| Run Code Locally | Run it locally; the console can perform all the tasks that your machine is capable of executing. |
-| Improves with Use | Describe in plain text how to perform a given task once, and thereafter AIConsole will know how to execute it indefinitely. |
-| Utilize Your Notes for AI Training | Employ your notes to instruct the AI in completing and automating tasks. |
-| Better than Vector Databases | For each step of your tasks, leverage a precise, efficient, and automated multi-agent Retrieval-Augmented Generation (RAG) system that is on par with expert prompt engineering. |
-| Completely Open Sourced | This software does not transmit any data to any parties other than the LLM APIs – and you can confirm this for yourself. |
-| Share Your Tools with the Community | Develop and share your domain-specific AI tools, for instance, on platforms like GitHub or Discord.
+| Feature                             | Description                                                                                                                                                                      |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Run Code Locally                    | Run it locally; the console can perform all the tasks that your machine is capable of executing.                                                                                 |
+| Improves with Use                   | Describe in plain text how to perform a given task once, and thereafter AIConsole will know how to execute it indefinitely.                                                      |
+| Utilize Your Notes for AI Training  | Employ your notes to instruct the AI in completing and automating tasks.                                                                                                         |
+| Better than Vector Databases        | For each step of your tasks, leverage a precise, efficient, and automated multi-agent Retrieval-Augmented Generation (RAG) system that is on par with expert prompt engineering. |
+| Completely Open Sourced             | This software does not transmit any data to any parties other than the LLM APIs – and you can confirm this for yourself.                                                         |
+| Share Your Tools with the Community | Develop and share your domain-specific AI tools, for instance, on platforms like GitHub or Discord.                                                                              |
 
 # Downloading and Installing
 
@@ -39,15 +39,15 @@ After updating these materials, you can retry the step, and provided all the inf
 
 Structure of a project folder
 
-```/``` - root directory is added to the python system path, you can place here any custom modules that you want the python interpreter to have access to.
+`/` - root directory is added to the python system path, you can place here any custom modules that you want the python interpreter to have access to.
 
-```/agents``` - agent .toml files define available agents you can disable and enable them from the app. [example agents](../blob/master/backend/aiconsole/preinstalled/agents)
+`/agents` - agent .toml files define available agents you can disable and enable them from the app. [example agents](../blob/master/backend/aiconsole/preinstalled/agents)
 
-```/materials``` - various materials, notes, manuals and APIs to be injected into GPT context. [examples materials](../blob/master/backend/aiconsole/preinstalled/materials)
+`/materials` - various materials, notes, manuals and APIs to be injected into GPT context. [examples materials](../blob/master/backend/aiconsole/preinstalled/materials)
 
-```/.aic```
+`/.aic`
 
-```/settings.toml``` - configuration file containing information about disabled materials
+`/settings.toml` - configuration file containing information about disabled materials
 
 Note that in your home app directory you have additional settings.toml which stored global settings.
 
@@ -55,7 +55,7 @@ Material, Agent and settings files are monitored and automatically loaded, then 
 
 # Accessing AIConsole internals from the Python APIs
 
-The only module you can safelly access is aiconsole.dev, it's built with running it from the interpreter subprocess and has a stable interface.
+The only module you can safelly access is aiconsole.dev, it's built with running it from the interpreter subprocess and has a stable interface. The stable interface is documented in the core materials referring to those APIs.
 
 # Roadmap
 
@@ -107,5 +107,5 @@ AI Console is open-source software licensed under the [Apache License ver. 2.0](
 
 - [Landing page](https://aiconsole.ai)
 - [Discord](https://discord.gg/gYPJqFC7hF)
-- [Twitter](https://twitter.com/ai_console) 
+- [Twitter](https://twitter.com/ai_console)
 - [Creator's Twitter](https://twitter.com/mcielecki)
