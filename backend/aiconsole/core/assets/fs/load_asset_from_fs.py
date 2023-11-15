@@ -19,7 +19,7 @@ import os
 
 import rtoml
 from aiconsole.core.assets.agents.agent import Agent
-from aiconsole.core.assets.asset import Asset, AssetLocation, AssetType
+from aiconsole.core.assets.asset import Asset, AssetLocation, AssetStatus, AssetType
 from aiconsole.core.assets.materials.material import (Material,
                                                       MaterialContentType)
 from aiconsole.core.gpt.consts import GPTMode
@@ -27,7 +27,6 @@ from aiconsole.core.project.paths import (get_core_assets_directory,
                                           get_project_assets_directory)
 
 _log = logging.getLogger(__name__)
-
 
 
 async def load_asset_from_fs(asset_type: AssetType, asset_id: str) -> Asset:
@@ -61,8 +60,9 @@ async def load_asset_from_fs(asset_type: AssetType, asset_id: str) -> Asset:
         "defined_in": location,
         "usage": str(tomldoc["usage"]).strip(),
         "usage_examples": tomldoc.get("usage_examples", []),
+        "default_status": AssetStatus(str(tomldoc.get("default_status", "enabled")).strip())
     }
-    
+
     if asset_type == AssetType.MATERIAL:
         material = Material(
             **params,

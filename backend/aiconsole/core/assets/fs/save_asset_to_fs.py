@@ -13,7 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
+
 from aiconsole.core.assets.agents.agent import Agent
 from aiconsole.core.assets.asset import AssetLocation, Asset
 from aiconsole.core.assets.fs.load_asset_from_fs import load_asset_from_fs
@@ -77,6 +77,7 @@ async def save_asset_to_fs(asset: Asset, create: bool, old_asset_id: str | None 
         doc.append("version", tomlkit.string(asset.version))
         doc.append("usage", tomlkit.string(asset.usage))
         doc.append("usage_examples", tomlkit.item(asset.usage_examples))
+        doc.append("default_status", tomlkit.string(asset.default_status))
 
         if isinstance(asset, Material):
             doc.append("content_type", tomlkit.string(asset.content_type))

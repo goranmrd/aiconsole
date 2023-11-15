@@ -18,6 +18,7 @@ import logging
 import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+from aiconsole.core.project import project
 
 import litellm
 import tomlkit
@@ -128,17 +129,23 @@ class Settings:
         s = self._settings
 
         if asset_type == AssetType.MATERIAL:
+            default_status = project.get_project_materials().get_asset(id).default_status
             if id in s.forced_materials:
                 return AssetStatus.FORCED
             if id in s.disabled_materials:
                 return AssetStatus.DISABLED
-            return AssetStatus.ENABLED
+            if id in s.enabled_materials:
+                return AssetStatus.ENABLED
+            return default_status
         elif asset_type == AssetType.AGENT:
+            default_status = project.get_project_agents().get_asset(id).default_status
             if id == s.forced_agent:
                 return AssetStatus.FORCED
             if id in s.disabled_agents:
                 return AssetStatus.DISABLED
-            return AssetStatus.ENABLED
+            if id in s.enabled_agents:
+                return AssetStatus.ENABLED
+            return default_status
 
         else:
             raise ValueError(f"Unknown asset type {asset_type}")
@@ -215,7 +222,17 @@ class Settings:
                 for material, status in settings.get('materials', {}).items()
                 if status == AssetStatus.FORCED
             ],
-            forced_agent=forced_agents[0] if forced_agents else "",)
+            forced_agent=forced_agents[0] if forced_agents else "",
+            enabled_materials=[
+                material
+                for material, status in settings.get('materials', {}).items()
+                if status == AssetStatus.ENABLED
+            ],
+            enabled_agents=[
+                agent for agent, status in settings.get('agents', {}).items()
+                if status == AssetStatus.ENABLED
+            ],
+        )
 
         _set_openai_api_key_environment(settings_data)
 

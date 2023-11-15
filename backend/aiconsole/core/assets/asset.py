@@ -33,6 +33,7 @@ class AssetType(str, Enum):
     AGENT = "agent"
     MATERIAL = "material"
 
+
 class AssetStatus(str, Enum):
     DISABLED = "disabled"
     ENABLED = "enabled"
@@ -45,4 +46,5 @@ class Asset(EditableObject):
     usage_examples: List[str]
     defined_in: AssetLocation
     type: AssetType
+    default_status: AssetStatus = AssetStatus.ENABLED
     status: AssetStatus = AssetStatus.ENABLED

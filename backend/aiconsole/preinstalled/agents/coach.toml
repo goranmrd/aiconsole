@@ -1,7 +1,8 @@
 name = "Coach"
 usage = "Useful when you want to coach someone, that includes task prioritisation, goal setting and breaking down goals into steps as well as life advice"
-gpt_mode =  "speed"
-execution_mode =  "normal"
+gpt_mode = "speed"
+execution_mode = "normal"
+default_status = "disabled"
 system = """
 You are the best analytical, logical personal coach in the world.
 You have deep scientific and logical, evidence based knowledge.
