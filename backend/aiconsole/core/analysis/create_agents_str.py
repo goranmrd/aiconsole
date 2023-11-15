@@ -13,7 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
+
 from aiconsole.core.project import project
 
 
@@ -29,10 +29,7 @@ def create_agents_str() -> str:
     new_line = "\n"
 
     random_agents = new_line.join(
-        [
-            f"* {c.id} - {c.usage}"
-            for c in random.sample(available_agents, len(available_agents))
-        ]
+        [f"* {c.id} - {c.usage}" for c in random.sample(available_agents, len(available_agents))]
     )
 
     return random_agents

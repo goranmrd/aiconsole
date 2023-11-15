@@ -19,6 +19,7 @@ from aiconsole.core.project import project
 
 router = APIRouter()
 
+
 @router.post("/close")
 async def close():
     await project.close_project()

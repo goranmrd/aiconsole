@@ -38,9 +38,7 @@ _log = logging.getLogger(__name__)
 
 def pick_agent(arguments, chat: Chat, available_agents: list[Agent]) -> Agent:
     # Try support first
-    default_agent = next(
-        (agent for agent in available_agents if agent.id == "assistant"), None
-    )
+    default_agent = next((agent for agent in available_agents if agent.id == "assistant"), None)
 
     # Pick any if not available
     if not default_agent:
@@ -61,11 +59,7 @@ def pick_agent(arguments, chat: Chat, available_agents: list[Agent]) -> Agent:
         )
     else:
         picked_agent = next(
-            (
-                agent
-                for agent in available_agents
-                if agent.id == arguments.agent_id
-            ),
+            (agent for agent in available_agents if agent.id == arguments.agent_id),
             None,
         )
 
@@ -90,9 +84,7 @@ class AnalysisStepWithFunctionReturnValue(BaseModel):
 def _get_relevant_materials(relevant_material_ids: List[str]) -> List[Material]:
     # Maximum of 5 materials
     relevant_materials = [
-        cast(Material, k)
-        for k in project.get_project_materials().enabled_assets()
-        if k.id in relevant_material_ids
+        cast(Material, k) for k in project.get_project_materials().enabled_assets() if k.id in relevant_material_ids
     ][:5]
 
     relevant_materials += cast(list[Material], project.get_project_materials().forced_assets())
@@ -120,17 +112,14 @@ async def gpt_analysis_function_step(
     request = GPTRequest(
         system_message=initial_system_prompt,
         gpt_mode=gpt_mode,
-        messages=[*convert_messages(chat), GPTMessage(
-            role="system",
-            content=last_system_prompt
-        )],
+        messages=[*convert_messages(chat), GPTMessage(role="system", content=last_system_prompt)],
         functions=[plan_class.openai_schema],
         presence_penalty=2,
         min_tokens=DIRECTOR_MIN_TOKENS,
         preferred_tokens=DIRECTOR_PREFERRED_TOKENS,
     )
 
-    if (force_call):
+    if force_call:
         request.function_call = EnforcedFunctionCall(name=plan_class.__name__)
 
     async for chunk in gpt_executor.execute(request):
@@ -141,8 +130,7 @@ async def gpt_analysis_function_step(
                 await AnalysisUpdatedWSMessage(
                     analysis_request_id=analysis_request_id,
                     agent_id=arguments.get("agent_id", None),
-                    relevant_material_ids=arguments.get(
-                        "relevant_material_ids", None),
+                    relevant_material_ids=arguments.get("relevant_material_ids", None),
                     next_step=arguments.get("next_step", None),
                     thinking_process=arguments.get("thinking_process", None),
                 ).send_to_chat(chat.id)
@@ -158,22 +146,18 @@ async def gpt_analysis_function_step(
     result = gpt_executor.response.choices[0].message
 
     if result.function_call is None:
-        return AnalysisStepWithFunctionReturnValue(
-            next_step=result.content or ""
-        )
+        return AnalysisStepWithFunctionReturnValue(next_step=result.content or "")
 
     arguments = result.function_call.arguments
 
     if isinstance(arguments, str):
-        raise ValueError(
-            f"Could not parse arguments from the text: {arguments}")
+        raise ValueError(f"Could not parse arguments from the text: {arguments}")
 
     arguments = plan_class(**arguments)
 
     picked_agent = pick_agent(arguments, chat, available_agents)
 
-    relevant_materials = _get_relevant_materials(
-        arguments.relevant_material_ids)
+    relevant_materials = _get_relevant_materials(arguments.relevant_material_ids)
 
     return AnalysisStepWithFunctionReturnValue(
         next_step=arguments.next_step,

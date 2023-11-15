@@ -63,8 +63,7 @@ async def is_project(params: ChooseParams):
     if not directory:
         return {"is_project": False, "path": None}
 
-    is_project = directory.joinpath("materials").is_dir(
-    ) or directory.joinpath("agents").is_dir()
+    is_project = directory.joinpath("materials").is_dir() or directory.joinpath("agents").is_dir()
 
     return {"is_project": is_project, "path": str(directory)}
 

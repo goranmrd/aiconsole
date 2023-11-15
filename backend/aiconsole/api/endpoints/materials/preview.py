@@ -13,7 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
+
 from datetime import datetime
 from aiconsole.core.assets.asset import AssetLocation
 from fastapi import APIRouter
@@ -25,6 +25,7 @@ from aiconsole.core.assets.materials.content_evaluation_context import ContentEv
 from aiconsole.core.assets.materials.material import Material
 
 router = APIRouter()
+
 
 @router.post("/preview")
 async def materials_preview(material: Material):

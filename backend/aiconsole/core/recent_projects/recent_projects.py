@@ -25,14 +25,13 @@ from appdirs import user_config_dir
 
 
 def _get_user_recent_projects_file():
-    return Path(user_config_dir('aiconsole')) / "recent"
+    return Path(user_config_dir("aiconsole")) / "recent"
 
 
 def _read_recent_projects():
     recent_projects_file = _get_user_recent_projects_file()
     if recent_projects_file.exists():
-        recent_projects = [
-            Path(path_str) for path_str in recent_projects_file.read_text().splitlines()]
+        recent_projects = [Path(path_str) for path_str in recent_projects_file.read_text().splitlines()]
     else:
         recent_projects = []
 
@@ -76,9 +75,8 @@ async def get_recent_project():
                 name=os.path.basename(path),
                 path=path,
                 recent_chats=[
-                    (await load_chat_history(id, path)).name
-                    for id in list_possible_historic_chat_ids(path)[:4]
-                ]
+                    (await load_chat_history(id, path)).name for id in list_possible_historic_chat_ids(path)[:4]
+                ],
             )
         )
 

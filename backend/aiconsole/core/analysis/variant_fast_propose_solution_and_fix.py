@@ -13,7 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
+
 from aiconsole.core.analysis.AnalysisResponse import AnalysisResponse
 from aiconsole.core.analysis.create_agents_str import create_agents_str
 from aiconsole.core.analysis.create_materials_str import create_materials_str
@@ -114,7 +114,7 @@ Your job is to prepare a new better plan.
 
 Now fix the solution.
 """.strip(),
-        force_call=True
+        force_call=True,
     )
 
     return {

@@ -13,7 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
+
 from aiconsole.core.assets.asset import AssetType
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
@@ -31,6 +31,7 @@ async def materials_get():
             {
                 **material.model_dump(),
                 "status": settings.get_asset_status(AssetType.MATERIAL, material.id),
-            } for material in project.get_project_materials().all_assets()
+            }
+            for material in project.get_project_materials().all_assets()
         ]
     )

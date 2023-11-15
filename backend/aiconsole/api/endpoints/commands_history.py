@@ -25,6 +25,7 @@ from fastapi import APIRouter
 
 router = APIRouter()
 
+
 @router.get("/commands/history")
 def get_history():
     file_path = os.path.join(get_aic_directory(), COMMANDS_HISTORY_JSON)
@@ -34,7 +35,7 @@ def get_history():
             commands = json.load(f)
     else:
         commands = []
-    
+
     return commands
 
 

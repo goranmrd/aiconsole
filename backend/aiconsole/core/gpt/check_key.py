@@ -19,22 +19,22 @@ import openai
 
 cached_good_keys = set()
 
+
 # Verify the OpenAI key has access to the required models
 async def check_key(key: str) -> bool:
-
-    if (key in cached_good_keys):
+    if key in cached_good_keys:
         return True
-    
-    try: 
+
+    try:
         # set key
         openai.api_key = key
-        models = openai.Model.list(key=key)["data"] # type: ignore
+        models = openai.Model.list(key=key)["data"]  # type: ignore
         available_models = [model["id"] for model in models]
         needed_models = MODEL_DATA.keys()
 
         good = set(needed_models).issubset(set(available_models))
 
-        if (good):
+        if good:
             cached_good_keys.add(key)
 
         return good

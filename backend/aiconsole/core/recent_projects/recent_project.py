@@ -18,6 +18,7 @@ from aiconsole.utils.serializable_path import SerializablePath
 
 from pydantic import BaseModel
 
+
 class RecentProject(BaseModel):
     name: str
     path: SerializablePath

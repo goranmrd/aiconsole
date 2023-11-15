@@ -25,10 +25,12 @@ class BaseWSMessage(BaseModel):
 
     def send_to_chat(self, chat_id: str):
         from aiconsole.api.websockets.connection_manager import send_message_to_chat
+
         return send_message_to_chat(chat_id, self)
 
     def send_to_all(self):
         from aiconsole.api.websockets.connection_manager import send_message_to_all
+
         return send_message_to_all(self)
 
     def model_dump(self):
@@ -54,6 +56,7 @@ class InitialProjectStatusWSMessage(BaseWSMessage):
     project_name: Optional[str] = None
     project_path: Optional[str] = None
 
+
 class ProjectOpenedWSMessage(BaseWSMessage):
     name: str
     path: str
@@ -62,8 +65,10 @@ class ProjectOpenedWSMessage(BaseWSMessage):
 class ProjectClosedWSMessage(BaseWSMessage):
     pass
 
+
 class ProjectLoadingWSMessage(BaseWSMessage):
     pass
+
 
 class AssetsUpdatedWSMessage(BaseWSMessage):
     initial: bool

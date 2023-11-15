@@ -13,7 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
+
 import asyncio
 import traceback
 from fastapi import APIRouter, Request
@@ -28,6 +28,7 @@ from aiconsole.api.websockets.outgoing_messages import ErrorWSMessage
 router = APIRouter()
 
 _log = logging.getLogger(__name__)
+
 
 @router.post("/chats/{chat_id}/run_code")
 @cancelable_endpoint
@@ -56,7 +57,4 @@ async def run_code(request: Request, code_to_run: CodeToRun, chat_id: str) -> St
             await ErrorWSMessage(error=str(e)).send_to_chat(chat_id)
             raise e
 
-    return StreamingResponse(
-        async_wrapper(), media_type="text/event-stream"
-    )
-    
+    return StreamingResponse(async_wrapper(), media_type="text/event-stream")

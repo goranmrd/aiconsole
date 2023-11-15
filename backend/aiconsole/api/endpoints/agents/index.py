@@ -13,7 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
+
 from aiconsole.core.assets.agents.agent import Agent
 from aiconsole.core.assets.asset import AssetLocation, AssetStatus, AssetType
 from aiconsole.core.gpt.consts import GPTMode
@@ -30,10 +30,12 @@ async def agents_get():
     settings = get_aiconsole_settings()
     return JSONResponse(
         [
-            *({
-                **agent.model_dump(),
-                "status": settings.get_asset_status(AssetType.AGENT, agent.id),
-            } for agent in project.get_project_agents().all_assets())
+            *(
+                {
+                    **agent.model_dump(),
+                    "status": settings.get_asset_status(AssetType.AGENT, agent.id),
+                }
+                for agent in project.get_project_agents().all_assets()
+            )
         ]
     )
-

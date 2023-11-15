@@ -13,7 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
+
 """
 
 Connection manager for websockets. Keeps track of all active connections
@@ -26,7 +26,7 @@ from typing import List
 from aiconsole.api.websockets.outgoing_messages import BaseWSMessage
 
 _log = logging.getLogger(__name__)
-_active_connections: List['AICConnection'] = []
+_active_connections: List["AICConnection"] = []
 
 
 class AICConnection:
@@ -37,10 +37,7 @@ class AICConnection:
         self._websocket = websocket
 
     async def send(self, msg: BaseWSMessage):
-        await self._websocket.send_json({
-            "type": msg.get_type(),
-            **msg.model_dump()
-        })
+        await self._websocket.send_json({"type": msg.get_type(), **msg.model_dump()})
 
 
 async def connect(websocket: WebSocket):

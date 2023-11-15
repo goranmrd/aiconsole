@@ -53,24 +53,28 @@ license_ts = """
 // limitations under the License.
 """.strip()
 
-for root, dirs, files in os.walk('.'):
+for root, dirs, files in os.walk("."):
     for file in files:
         file_path = Path(root) / file
 
         # check ignore file patterns
-        if 'node_modules' in str(file_path) or 'electron/python' in str(file_path) or 'backend/aiconsole/core/code_running/code_interpreters' in str(file_path):
+        if (
+            "node_modules" in str(file_path)
+            or "electron/python" in str(file_path)
+            or "backend/aiconsole/core/code_running/code_interpreters" in str(file_path)
+        ):
             continue
 
-        if file_path.suffix in ['.tsx', '.ts', '.py']:
-            with open(file_path, 'r+') as f:
+        if file_path.suffix in [".tsx", ".ts", ".py"]:
+            with open(file_path, "r+") as f:
                 content = f.read()
 
-                if file_path.suffix == '.tsx' or file_path.suffix == '.ts':
+                if file_path.suffix == ".tsx" or file_path.suffix == ".ts":
                     choosen_licence = license_ts
                 else:
                     choosen_licence = license_python
 
                 if not content.startswith(choosen_licence):
-                    print(f'Adding licence to {file_path}')
+                    print(f"Adding licence to {file_path}")
                     f.seek(0)
-                    f.write(choosen_licence + '\n\n' + content)
+                    f.write(choosen_licence + "\n\n" + content)

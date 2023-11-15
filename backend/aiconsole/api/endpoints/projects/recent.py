@@ -20,14 +20,18 @@ from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
+
 class _DeleteProjectPayload(BaseModel):
     path: Path
 
+
 router = APIRouter()
+
 
 @router.get("/recent")
 async def choose_project():
     return JSONResponse([rp.model_dump() for rp in await get_recent_project()])
+
 
 @router.delete("/recent")
 async def delete_project(data: _DeleteProjectPayload):

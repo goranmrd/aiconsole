@@ -13,7 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
+
 from aiconsole.consts import DIRECTOR_MIN_TOKENS, DIRECTOR_PREFERRED_TOKENS
 from aiconsole.core.chat.types import Chat
 from aiconsole.core.gpt.consts import GPTMode
@@ -36,10 +36,7 @@ async def gpt_analysis_text_step(
     request = GPTRequest(
         system_message=initial_system_prompt,
         gpt_mode=gpt_mode,
-        messages=[*convert_messages(chat), GPTMessage(
-            role="system",
-            content=last_system_prompt
-        )],
+        messages=[*convert_messages(chat), GPTMessage(role="system", content=last_system_prompt)],
         presence_penalty=2,
         min_tokens=DIRECTOR_MIN_TOKENS,
         preferred_tokens=DIRECTOR_PREFERRED_TOKENS,

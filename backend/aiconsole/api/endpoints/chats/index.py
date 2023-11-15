@@ -23,6 +23,7 @@ from aiconsole.core.chats.save_chat_history import save_chat_history
 
 _log = logging.getLogger(__name__)
 
+
 @router.get("/")
 async def get_history_headlines():
     headlines = []
@@ -32,15 +33,12 @@ async def get_history_headlines():
             chat = await load_chat_history(chat_id)
 
             if chat:
-                headlines.append(ChatHeadline(
-                    id=chat_id,
-                    name=chat.name,
-                    last_modified=chat.last_modified
-                ).model_dump())
+                headlines.append(
+                    ChatHeadline(id=chat_id, name=chat.name, last_modified=chat.last_modified).model_dump()
+                )
 
         except Exception as e:
             _log.exception(e)
             _log.error(f"Failed to get history: {e} {chat_id}")
 
     return headlines
-

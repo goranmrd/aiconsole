@@ -13,7 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
+
 import asyncio
 import logging
 from typing import cast
@@ -24,8 +24,7 @@ from aiconsole.core.assets.materials.material import Material
 from aiconsole.core.chat.types import ChatWithAgentAndMaterials
 from aiconsole.core.execution_modes.interpreter import execution_mode_interpreter
 from aiconsole.core.execution_modes.normal import execution_mode_normal
-from aiconsole.core.assets.materials.content_evaluation_context import \
-    ContentEvaluationContext
+from aiconsole.core.assets.materials.content_evaluation_context import ContentEvaluationContext
 from aiconsole.core.project import project
 from aiconsole.utils.cancel_on_disconnect import cancelable_endpoint
 from fastapi import APIRouter, Request
@@ -48,7 +47,9 @@ async def execute(request: Request, chat: ChatWithAgentAndMaterials, chat_id) ->
         chat=chat,
         agent=agent,
         gpt_mode=agent.gpt_mode,
-        relevant_materials=[cast(Material, project.get_project_materials().get_asset(id)) for id in chat.relevant_materials_ids],
+        relevant_materials=[
+            cast(Material, project.get_project_materials().get_asset(id)) for id in chat.relevant_materials_ids
+        ],
     )
 
     rendered_materials = [await material.render(content_context) for material in content_context.relevant_materials]
@@ -77,7 +78,4 @@ async def execute(request: Request, chat: ChatWithAgentAndMaterials, chat_id) ->
             await ErrorWSMessage(error=str(e)).send_to_chat(chat.id)
             raise e
 
-    return StreamingResponse(
-        async_wrapper(), media_type="text/event-stream"
-    )
-    
+    return StreamingResponse(async_wrapper(), media_type="text/event-stream")

@@ -13,7 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
+
 import logging
 from pathlib import Path
 from fastapi import APIRouter
@@ -33,5 +33,5 @@ async def image(path: str):
     if abs_path.exists():
         return FileResponse(str(abs_path))
 
-    static_path = AICONSOLE_PATH / 'agents' / 'core' / 'default.jpg'
+    static_path = AICONSOLE_PATH / "agents" / "core" / "default.jpg"
     return FileResponse(str(static_path))

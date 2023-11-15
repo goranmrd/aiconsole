@@ -38,5 +38,5 @@ async def profile_image(image: str):
     if static_path.exists():
         return FileResponse(str(static_path))
 
-    default_path = get_core_assets_directory(AssetType.AGENT) / 'default.jpg'
+    default_path = get_core_assets_directory(AssetType.AGENT) / "default.jpg"
     return FileResponse(str(default_path))

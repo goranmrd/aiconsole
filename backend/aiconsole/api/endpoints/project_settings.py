@@ -13,13 +13,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
+
 from fastapi import APIRouter
 from starlette.responses import JSONResponse
 
 from aiconsole.core.settings.project_settings import PartialSettingsAndToGlobal, get_aiconsole_settings
 
 router = APIRouter()
+
 
 @router.patch("")
 async def patch(patch_data: PartialSettingsAndToGlobal):
@@ -30,4 +31,3 @@ async def patch(patch_data: PartialSettingsAndToGlobal):
 @router.get("")
 async def get():
     return JSONResponse(get_aiconsole_settings().model_dump())
-
