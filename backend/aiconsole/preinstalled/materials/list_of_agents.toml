@@ -1,0 +1,16 @@
+name = "List of Agents"
+version = "0.0.7"
+usage = "Contains info about all the agents in AIConsole, useful when you want to know what agents are available and what they can do."
+usage_examples = []
+content_type = "dynamic_text"
+content_dynamic_text = """
+from aiconsole.dev import project
+
+async def content(context):
+    newline = "\\n"
+    agents_list = newline.join(f"* {agent.id} - {agent.usage}" for agent in await project.get_all_agents())
+    return f""\"
+Available agents:
+{agents_list}
+""\".strip()
+"""

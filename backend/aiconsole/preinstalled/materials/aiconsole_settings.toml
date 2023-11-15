@@ -1,4 +1,4 @@
-name = "aiconsole_settings"
+name = "AIConsole Settings"
 usage = "Use it to change settings in aiconsole"
 content_type = "api"
 content_api = """

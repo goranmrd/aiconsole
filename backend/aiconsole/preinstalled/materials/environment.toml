@@ -20,7 +20,7 @@ def collect_python_packages():
     except subprocess.CalledProcessError:
         return ''
 
-def content(context):
+async def content(context):
     return f""\"
 # Execution environment
 
