@@ -252,6 +252,7 @@ export function AssetEditor() {
             value={asset.usage}
             onChange={(value) => setSelectedAsset({ ...asset, usage: value })}
             withTooltip
+            withResize
             tootltipText={`Usage is used to help identify when this ${typeName} should be used. `}
           />
           <div className="flex-grow flex flex-row w-full gap-4 overflow-clip">

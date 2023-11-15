@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ChangeEvent } from 'react';
+import { ChangeEvent, useEffect, useRef } from 'react';
 import { cn } from '@/utils/common/cn';
 import { Tooltip } from '@/components/common/Tooltip';
 
@@ -36,6 +36,7 @@ interface SimpleInputProps {
   errors?: ErrorObject;
   setErrors?: React.Dispatch<React.SetStateAction<ErrorObject>>;
   withTooltip?: boolean;
+  withResize?: boolean;
   tootltipText?: string;
 }
 
@@ -51,8 +52,19 @@ export function SimpleInput({
   errors,
   setErrors,
   withTooltip = false,
+  withResize = false,
   tootltipText,
 }: SimpleInputProps) {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (textareaRef.current && withResize) {
+      textareaRef.current.style.height = '40px';
+      const scrollHeight = textareaRef.current.scrollHeight;
+      textareaRef.current.style.height = `${Math.min(scrollHeight, 80)}px`;
+    }
+  }, [value, withResize]);
+
   const checkIfEmpty = (value: string) => {
     if (required && value.trim() === '') {
       setErrors?.((prevErrors) => ({
@@ -86,6 +98,7 @@ export function SimpleInput({
       value={value}
       onBlur={handleBlur}
       onChange={handleChange}
+      ref={textareaRef}
       className={cn(
         className,
         'resize-none flex-none h-10 bg-black/20 appearance-none border border-transparent rounded w-full py-2 px-3 leading-tight placeholder-gray-400 focus:outline-none focus:border-primary/50 focus:shadow-outline mt-1',
@@ -99,20 +112,17 @@ export function SimpleInput({
 
   return (
     <div className="relative">
-      <label
-        htmlFor={label}
-        className="font-bold flex items-center gap-1 w-fit-content"
-      >
+      <label htmlFor={label} className="font-bold flex items-center gap-1 w-fit-content">
         {label}:
       </label>
-      { withTooltip ? (
-      <Tooltip label={tootltipText} position="top-end" offset={{ mainAxis: 7 }}>
-        {core}
-      </Tooltip>
-      ) : ( core ) }
-      {error && (
-        <div className="text-red-700 text-sm absolute right-0">{error}</div>
+      {withTooltip ? (
+        <Tooltip label={tootltipText} position="top-end" offset={{ mainAxis: 7 }}>
+          {core}
+        </Tooltip>
+      ) : (
+        core
       )}
+      {error && <div className="text-red-700 text-sm absolute right-0">{error}</div>}
     </div>
   );
 }
