@@ -28,10 +28,7 @@ export type ChatSlice = {
   updateSelectedChat: (name: string, newId: string) => void;
 };
 
-export const createChatSlice: StateCreator<ChatStore, [], [], ChatSlice> = (
-  set,
-  get,
-) => ({
+export const createChatSlice: StateCreator<ChatStore, [], [], ChatSlice> = (set, get) => ({
   chat: undefined,
   agent: undefined,
   materials: [],
@@ -44,11 +41,7 @@ export const createChatSlice: StateCreator<ChatStore, [], [], ChatSlice> = (
     const chat = deepCopyChat(c);
 
     // update title
-    if (
-      !chat.title_edited &&
-      chat.message_groups.length > 0 &&
-      chat.message_groups[0].messages.length > 0
-    ) {
+    if (!chat.title_edited && chat.message_groups.length > 0 && chat.message_groups[0].messages.length > 0) {
       chat.name = chat.message_groups[0].messages[0].content;
     }
 
@@ -66,7 +59,6 @@ export const createChatSlice: StateCreator<ChatStore, [], [], ChatSlice> = (
         {
           id: chat.id,
           name: chat.name,
-          type: 'chat',
           last_modified: new Date().toISOString(),
         },
         ...useEditablesStore.getState().chats.filter((c) => c.id !== chat.id),

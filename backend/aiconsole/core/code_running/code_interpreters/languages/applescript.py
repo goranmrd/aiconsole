@@ -21,12 +21,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-#     ____                      ____      __                            __           
+#     ____                      ____      __                            __
 #    / __ \____  ___  ____     /  _/___  / /____  _________  ________  / /____  _____
 #   / / / / __ \/ _ \/ __ \    / // __ \/ __/ _ \/ ___/ __ \/ ___/ _ \/ __/ _ \/ ___/
-#  / /_/ / /_/ /  __/ / / /  _/ // / / / /_/  __/ /  / /_/ / /  /  __/ /_/  __/ /    
-#  \____/ .___/\___/_/ /_/  /___/_/ /_/\__/\___/_/  / .___/_/   \___/\__/\___/_/     
-#      /_/                                         /_/                               
+#  / /_/ / /_/ /  __/ / / /  _/ // / / / /_/  __/ /  / /_/ / /  /  __/ /_/  __/ /
+#  \____/ .___/\___/_/ /_/  /___/_/ /_/\__/\___/_/  / .___/_/   \___/\__/\___/_/
+#      /_/                                         /_/
 #
 # This file has been taken from the wonderful project "open-interpreter" by Killian Lucas
 # https://github.com/KillianLucas/open-interpreter
@@ -35,10 +35,12 @@
 import os
 from typing import TYPE_CHECKING, List
 
-from ..subprocess_code_interpreter import SubprocessCodeInterpreter
 
 if TYPE_CHECKING:
-    from aiconsole.core.assets.agents import Assets
+    from aiconsole.core.assets.assets import Assets
+
+from ..subprocess_code_interpreter import SubprocessCodeInterpreter
+
 
 class AppleScript(SubprocessCodeInterpreter):
     file_extension = "applescript"
@@ -46,27 +48,26 @@ class AppleScript(SubprocessCodeInterpreter):
 
     def __init__(self):
         super().__init__()
-        self.start_cmd = os.environ.get('SHELL', '/bin/zsh')
+        self.start_cmd = os.environ.get("SHELL", "/bin/zsh")
 
-    def preprocess_code(self, code, materials: List['Assets']):
+    def preprocess_code(self, code, materials: List["Assets"]):
         """
         Inserts an end_of_execution marker and adds active line indicators.
         """
 
         # Escape double quotes
-        code = code.replace('"', r'\"')
-        
+        code = code.replace('"', r"\"")
+
         # Wrap in double quotes
         code = '"' + code + '"'
-        
+
         # Prepend start command for AppleScript
         code = "osascript -e " + code
 
         # Append end of execution indicator
         code += '; echo "## end_of_execution ##"'
-        
-        return code
 
+        return code
 
     def detect_end_of_execution(self, line):
         """

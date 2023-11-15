@@ -15,13 +15,7 @@
 // limitations under the License.
 
 import { cn } from '@/utils/common/cn';
-import {
-  Agent,
-  Asset,
-  EditableObject,
-  EditableObjectType,
-  Material,
-} from '@/types/editables/assetTypes';
+import { Agent, Asset, EditableObject, EditableObjectType, Material } from '@/types/editables/assetTypes';
 import { getEditableObjectColor } from '@/utils/editables/getEditableObjectColor';
 import { getEditableObjectIcon } from '@/utils/editables/getEditableObjectIcon';
 import { useEditableObjectContextMenu } from '@/utils/editables/useContextMenuForEditable';
@@ -46,28 +40,21 @@ const SideBarItem = ({
   const location = useLocation();
   const navigate = useNavigate();
 
-  const renameEditableObject = useEditablesStore(
-    (state) => state.renameEditableObject,
-  );
+  const renameEditableObject = useEditablesStore((state) => state.renameEditableObject);
   const updateSelectedChat = useChatStore((state) => state.updateSelectedChat);
-  const updateSelectedAsset = useAssetStore(
-    (state) => state.updateSelectedAsset,
-  );
+  const updateSelectedAsset = useAssetStore((state) => state.updateSelectedAsset);
   const updateChatItem = useEditablesStore((state) => state.updateChatItem);
-  const updateMaterialsItem = useEditablesStore(
-    (state) => state.updateMaterialsItem,
-  );
+  const updateMaterialsItem = useEditablesStore((state) => state.updateMaterialsItem);
   const updateAgentsItem = useEditablesStore((state) => state.updateAgentsItem);
 
   const [isEditing, setIsEditing] = useState(false);
   const [isShowingContext, setIsShowingContext] = useState(false);
 
-  const { showContextMenu, isContextMenuVisible } =
-    useEditableObjectContextMenu({
-      editableObjectType: editableObjectType,
-      editable: editableObject,
-      setIsEditing,
-    });
+  const { showContextMenu, isContextMenuVisible } = useEditableObjectContextMenu({
+    editableObjectType: editableObjectType,
+    editable: editableObject,
+    setIsEditing,
+  });
 
   useEffect(() => {
     if (!isContextMenuVisible) {
@@ -102,39 +89,29 @@ const SideBarItem = ({
     if (inputText === '') {
       setInputText(editableObject.name);
     } else {
-      let editableObjectWithType = {
+      editableObject = {
         ...editableObject,
         name: inputText,
-        type: editableObjectType,
       };
       if (editableObjectType === 'chat') {
-        const chat = await EditablesAPI.fetchEditableObject<ChatHeadline>(
-          editableObjectType,
-          editableObject.id,
-        );
-        editableObjectWithType = chat;
-        updateChatItem(editableObjectWithType as Chat);
+        const chat = await EditablesAPI.fetchEditableObject<ChatHeadline>(editableObjectType, editableObject.id);
+        editableObject = chat;
+        updateChatItem(editableObject as Chat);
       }
 
-      const newId = await renameEditableObject(
-        editableObjectWithType,
-        inputText,
-        false,
-      );
+      const newId = await renameEditableObject(editableObject, inputText, false);
       if (editableObjectType !== 'chat') {
-        if (
-          location.pathname === `/${editableObjectType}s/${editableObject.id}`
-        ) {
+        if (location.pathname === `/${editableObjectType}s/${editableObject.id}`) {
           navigate(`/${editableObjectType}s/${newId}`);
         }
-        updateSelectedAsset(editableObjectWithType.name, newId);
+        updateSelectedAsset(editableObject.name, newId);
         if (editableObjectType === 'material') {
-          updateMaterialsItem(editableObjectWithType as Material);
+          updateMaterialsItem(editableObject as Material);
         } else {
-          updateAgentsItem(editableObjectWithType as Agent);
+          updateAgentsItem(editableObject as Agent);
         }
       } else {
-        updateSelectedChat(editableObjectWithType.name, newId);
+        updateSelectedChat(editableObject.name, newId);
       }
     }
     hideInput();
@@ -181,31 +158,21 @@ const SideBarItem = ({
   };
 
   return (
-    <div
-      ref={popoverRef}
-      onContextMenu={handleContextMenu}
-      className="max-w-[275px]"
-    >
+    <div ref={popoverRef} onContextMenu={handleContextMenu} className="max-w-[275px]">
       <div className={cn(forced && 'text-primary', disabled && 'opacity-50')}>
         <NavLink
           className={({ isActive, isPending }) => {
             return cn(
               'group flex items-center gap-[12px] overflow-hidden p-[9px] rounded-[8px] cursor-pointer relative  hover:bg-gray-700',
               {
-                'bg-gray-700 text-white ':
-                  isActive || isPending || isShowingContext,
+                'bg-gray-700 text-white ': isActive || isPending || isShowingContext,
               },
             );
           }}
-          onClick={handleInterceptNavigation(
-            `/${editableObjectType}s/${editableObject.id}`,
-          )}
+          onClick={handleInterceptNavigation(`/${editableObjectType}s/${editableObject.id}`)}
           to={`/${editableObjectType}s/${editableObject.id}`}
         >
-          <Icon
-            className="min-w-[24px] min-h-[24px] w-[24px] h-[24px]"
-            style={{ color }}
-          />
+          <Icon className="min-w-[24px] min-h-[24px] w-[24px] h-[24px]" style={{ color }} />
           {/* TODO: add validation for empty input value */}
           {isEditing ? (
             <input
@@ -217,9 +184,7 @@ const SideBarItem = ({
               onChange={(e) => setInputText(e.target.value)}
             />
           ) : (
-            <p className="text-[14px] leading-[18.2px] group-hover:text-white truncate">
-              {editableObject.name}
-            </p>
+            <p className="text-[14px] leading-[18.2px] group-hover:text-white truncate">{editableObject.name}</p>
           )}
           {!isEditing ? extraStuff : null}
 

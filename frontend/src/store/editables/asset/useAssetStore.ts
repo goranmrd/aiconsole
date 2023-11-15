@@ -15,13 +15,7 @@
 // limitations under the License.
 
 import { EditablesAPI } from '@/api/api/EditablesAPI';
-import {
-  Agent,
-  Asset,
-  AssetStatus,
-  AssetType,
-  Material,
-} from '@/types/editables/assetTypes';
+import { Agent, Asset, AssetStatus, AssetType, Material } from '@/types/editables/assetTypes';
 import { canThereBeOnlyOneForcedAsset } from '@/utils/editables/canThereBeOnlyOneForcedAsset';
 import { create } from 'zustand';
 import { useEditablesStore } from '../useEditablesStore';
@@ -31,11 +25,7 @@ export type ProjectSlice = {
   lastSavedSelectedAsset?: Asset;
   getAsset: (assetType: AssetType, id: string) => Asset | undefined;
   setSelectedAsset: (asset: Asset) => void;
-  setAssetStatus: (
-    assetType: AssetType,
-    id: string,
-    status: AssetStatus,
-  ) => Promise<void>;
+  setAssetStatus: (assetType: AssetType, id: string, status: AssetStatus) => Promise<void>;
   updateSelectedAsset: (name: string, newId: string) => void;
 };
 
@@ -51,11 +41,11 @@ export const useAssetStore = create<ProjectSlice>((set) => ({
           usage: '',
           usage_examples: [],
           system: '',
-          type: 'agent',
           defined_in: 'aiconsole',
           status: 'enabled',
           gpt_mode: 'quality',
           execution_mode: 'normal',
+          default_status: 'enabled',
         };
 
         return agent;
@@ -68,19 +58,17 @@ export const useAssetStore = create<ProjectSlice>((set) => ({
           usage: '',
           usage_examples: [],
           system: '',
-          type: 'agent',
           defined_in: 'project',
           status: 'enabled',
           gpt_mode: 'quality',
           execution_mode: 'normal',
+          default_status: 'enabled',
         };
 
         return agent;
       }
 
-      return useEditablesStore
-        .getState()
-        .agents.find((agent) => agent.id === id);
+      return useEditablesStore.getState().agents.find((agent) => agent.id === id);
     }
 
     if (assetType === 'material') {
@@ -93,18 +81,16 @@ export const useAssetStore = create<ProjectSlice>((set) => ({
           defined_in: 'project',
           status: 'enabled',
           content_api: '',
-          type: 'material',
           content_type: 'static_text',
           content_dynamic_text: '',
           content_static_text: '',
+          default_status: 'enabled',
         };
 
         return material;
       }
 
-      return useEditablesStore
-        .getState()
-        .materials?.find((material) => material.id === id);
+      return useEditablesStore.getState().materials?.find((material) => material.id === id);
     }
 
     throw new Error(`Unknown asset type ${assetType}`);
@@ -114,11 +100,7 @@ export const useAssetStore = create<ProjectSlice>((set) => ({
       selectedAsset: asset,
     });
   },
-  setAssetStatus: async (
-    assetType: AssetType,
-    id: string,
-    status: AssetStatus,
-  ) => {
+  setAssetStatus: async (assetType: AssetType, id: string, status: AssetStatus) => {
     const plural = (assetType + 's') as 'materials' | 'agents';
 
     useEditablesStore.setState((state) => ({
@@ -140,9 +122,7 @@ export const useAssetStore = create<ProjectSlice>((set) => ({
   },
   updateSelectedAsset: (name: string, newId: string) => {
     set(({ selectedAsset }) => {
-      const updatedAsset = selectedAsset
-        ? { ...selectedAsset, name, id: newId }
-        : undefined;
+      const updatedAsset = selectedAsset ? { ...selectedAsset, name, id: newId } : undefined;
 
       return {
         selectedAsset: updatedAsset,

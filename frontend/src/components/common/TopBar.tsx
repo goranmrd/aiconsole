@@ -14,7 +14,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { cn } from '@/utils/common/cn';
 import { useUserContextMenu } from '../../utils/common/useUserContextMenu';
 import { getBaseURL } from '../../store/useAPIStore';
 
