@@ -17,17 +17,9 @@
 export type AssetDefinedIn = 'aiconsole' | 'project';
 export const assetDefinedInOptions: AssetDefinedIn[] = ['aiconsole', 'project'];
 export type AssetStatus = 'disabled' | 'enabled' | 'forced';
-export const assetStatusOptions: AssetStatus[] = [
-  'disabled',
-  'enabled',
-  'forced',
-];
+export const assetStatusOptions: AssetStatus[] = ['disabled', 'enabled', 'forced'];
 export type MaterialContentType = 'static_text' | 'dynamic_text' | 'api';
-export const materialContenTypeOptions: MaterialContentType[] = [
-  'static_text',
-  'dynamic_text',
-  'api',
-];
+export const materialContenTypeOptions: MaterialContentType[] = ['static_text', 'dynamic_text', 'api'];
 export type TabsValues = 'chats' | 'materials' | 'agents';
 
 export type Material = Asset & {
@@ -56,7 +48,6 @@ export type EditableObjectTypePlural = 'materials' | 'agents' | 'chats';
 export type EditableObject = {
   id: string;
   name: string;
-  type: EditableObjectType;
 };
 
 export type Asset = EditableObject & {
@@ -64,10 +55,9 @@ export type Asset = EditableObject & {
   usage_examples: string[];
   defined_in: MaterialDefinitionSource;
   status: AssetStatus;
+  default_status: AssetStatus;
+  override: boolean;
 };
-
-export type MaterialHeadline = EditableObject & Material;
-export type AgentHeadline = EditableObject & Agent;
 
 export type Agent = Asset & {
   system: string;
