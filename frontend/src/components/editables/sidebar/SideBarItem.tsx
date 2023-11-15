@@ -27,6 +27,8 @@ import { getEditableObjectIcon } from '@/utils/editables/getEditableObjectIcon';
 import { useEditableObjectContextMenu } from '@/utils/editables/useContextMenuForEditable';
 import { useEditablesStore } from '@/store/editables/useEditablesStore';
 import { KeyboardEvent, MouseEvent, useEffect, useRef, useState } from 'react';
+import { getAssetStatusIcon } from '@/utils/editables/getAssetStatusIcon';
+import { useDiscardAssetChangesStore } from '@/store/editables/asset/useDiscardAssetChangesStore';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { getAssetStatusIcon } from '@/utils/editables/getAssetStatusIcon';
 import { EditablesAPI } from '@/api/api/EditablesAPI';
@@ -41,6 +43,8 @@ const SideBarItem = ({
   editableObject: EditableObject;
   editableObjectType: EditableObjectType;
 }) => {
+  const { isChanged, setConfirmCallback } = useDiscardAssetChangesStore();
+  const renameEditableObject = useEditablesStore((state) => state.renameEditableObject);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -170,29 +174,29 @@ const SideBarItem = ({
     showContextMenu()(event);
   }
 
+  const handleInterceptNavigation = (path: string) => (event: MouseEvent) => {
+    if (isChanged) {
+      event.preventDefault();
+      setConfirmCallback(() => navigate(path));
+    }
+  };
+
   return (
-    <div
-      ref={popoverRef}
-      onContextMenu={handleContextMenu}
-      className="max-w-[275px]"
-    >
+    <div ref={popoverRef} onContextMenu={handleContextMenu} className="max-w-[275px]">
       <div className={cn(forced && 'text-primary', disabled && 'opacity-50')}>
         <NavLink
           className={({ isActive, isPending }) => {
             return cn(
               'group flex items-center gap-[12px] overflow-hidden p-[9px] rounded-[8px] cursor-pointer relative  hover:bg-gray-700',
               {
-                'bg-gray-700 text-white ':
-                  isActive || isPending || isShowingContext,
+                'bg-gray-700 text-white ': isActive || isPending || isShowingContext,
               },
             );
           }}
+          onClick={handleInterceptNavigation(`/${editableObjectType}s/${editableObject.id}`)}
           to={`/${editableObjectType}s/${editableObject.id}`}
         >
-          <Icon
-            className="min-w-[24px] min-h-[24px] w-[24px] h-[24px]"
-            style={{ color }}
-          />
+          <Icon className="min-w-[24px] min-h-[24px] w-[24px] h-[24px]" style={{ color }} />
           {/* TODO: add validation for empty input value */}
           {isEditing ? (
             <input
@@ -204,9 +208,7 @@ const SideBarItem = ({
               onChange={(e) => setInputText(e.target.value)}
             />
           ) : (
-            <p className="text-[14px] leading-[18.2px] group-hover:text-white truncate">
-              {editableObject.name}
-            </p>
+            <p className="text-[14px] leading-[18.2px] group-hover:text-white truncate">{editableObject.name}</p>
           )}
           {!isEditing ? extraStuff : null}
 

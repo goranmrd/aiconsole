@@ -13,7 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
+
 from enum import Enum
 import traceback
 from aiconsole.core.assets.asset import Asset, AssetLocation, AssetType
@@ -39,7 +39,7 @@ class Material(Asset):
     version: str = "0.0.1"
     usage: str
     defined_in: AssetLocation
-    
+
     # Content, either static or dynamic
     content_type: MaterialContentType = MaterialContentType.STATIC_TEXT
     content_static_text: str = """
@@ -58,7 +58,7 @@ Bullets in sub header:
 
 import random
     
-def content(context):
+async def content(context):
     samples = ['sample 1' , 'sample 2', 'sample 3', 'sample 4']
     return f'''
 # Examples of great content
@@ -125,7 +125,7 @@ def fibonacci(n):
                 if callable(content_func):
                     return RenderedMaterial(
                         id=self.id,
-                        content=header + content_func(context),
+                        content=header + await content_func(context),
                         error=''
                     )
                 return RenderedMaterial(
@@ -142,13 +142,15 @@ def fibonacci(n):
             elif self.content_type == MaterialContentType.API:
                 return RenderedMaterial(
                     id=self.id,
-                    content=header + documentation_from_code(self, self.content_api)(context),
+                    content=header +
+                    documentation_from_code(self, self.content_api)(context),
                     error=''
                 )
         except Exception:
             return RenderedMaterial(id=self.id, content='', error=traceback.format_exc())
 
         raise ValueError("Material has no content")
+
 
 class MaterialWithStatus(Material):
     status: AssetStatus = AssetStatus.ENABLED

@@ -84,7 +84,7 @@ export function EditableObjectEditor() {
           className="flex-grow truncate"
           isNew={lastSavedEditable === undefined && editableType !== 'chat'}
         />
-        <div className="self-end">{extraStuff}</div>
+        <div className="self-end min-w-fit">{extraStuff}</div>
       </div>
       <div className="flex-grow overflow-auto">
         {editableType === 'chat' && <ChatPage />}

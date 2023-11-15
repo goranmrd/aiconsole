@@ -3,7 +3,7 @@ content_type = "dynamic_text"
 content_dynamic_text = '''
 from aiconsole import projects
 
-def content(context):
+async def content(context):
     newline = "\\n"
     materials_list = newline.join(f"* {material.id} - {material.usage}" for material in projects.get_project_materials().all_assets())
     return f"# List of Materials{newline}{newline}Available materials:{newline}{materials_list}"

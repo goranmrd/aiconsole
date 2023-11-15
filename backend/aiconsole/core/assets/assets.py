@@ -16,24 +16,19 @@
 
 import datetime
 import logging
-import os
-from pathlib import Path
 from typing import Dict, List, Optional
 from aiconsole.core.assets.asset import Asset, AssetLocation, AssetStatus, AssetType
 from aiconsole.core.assets.fs.delete_asset_from_fs import delete_asset_from_fs
-from aiconsole.core.assets.fs.load_asset_from_fs import load_asset_from_fs
 from aiconsole.core.assets.fs.move_asset_in_fs import move_asset_in_fs
 from aiconsole.core.assets.fs.save_asset_to_fs import save_asset_to_fs
+from aiconsole.core.assets.load_all_assets import load_all_assets
 
 import watchdog.events
 import watchdog.observers
-from aiconsole.core.assets.materials.material import (Material)
-from aiconsole.core.project.paths import get_core_assets_directory, get_project_assets_directory
+from aiconsole.core.project.paths import get_project_assets_directory
 from aiconsole.core.settings.project_settings import get_aiconsole_settings
 from aiconsole.utils.BatchingWatchDogHandler import BatchingWatchDogHandler
-from aiconsole.utils.list_files_in_file_system import list_files_in_file_system
-from aiconsole.api.websockets.outgoing_messages import (ErrorWSMessage,
-                                                    AssetsUpdatedWSMessage)
+from aiconsole.api.websockets.outgoing_messages import (AssetsUpdatedWSMessage)
 
 _log = logging.getLogger(__name__)
 
@@ -48,7 +43,8 @@ class Assets:
 
         self.observer = watchdog.observers.Observer()
 
-        get_project_assets_directory(asset_type).mkdir(parents=True, exist_ok=True)
+        get_project_assets_directory(asset_type).mkdir(
+            parents=True, exist_ok=True)
         self.observer.schedule(BatchingWatchDogHandler(self.reload),
                                get_project_assets_directory(asset_type),
                                recursive=True)
@@ -62,7 +58,6 @@ class Assets:
         Return all loaded assets.
         """
         return list(self._assets.values())
-    
 
     def enabled_assets(self) -> List[Asset]:
         """
@@ -86,7 +81,6 @@ class Assets:
                 AssetStatus.FORCED]
         ]
 
-    
     @property
     def assets_project_dir(self) -> Dict[str, Asset]:
         """
@@ -97,7 +91,7 @@ class Assets:
             for material in self._assets.values()
             if material.defined_in == AssetLocation.PROJECT_DIR
         }
-    
+
     @property
     def assets_aiconsole_core(self) -> Dict[str, Asset]:
         """
@@ -108,7 +102,7 @@ class Assets:
             for material in self._assets.values()
             if material.defined_in == AssetLocation.AICONSOLE_CORE
         }
-    
+
     async def save_asset(self, asset: Asset, new: bool, old_asset_id: Optional[str] = None):
         self._assets[asset.id] = await save_asset_to_fs(asset, new, old_asset_id)
         self._suppress_notification()
@@ -122,9 +116,9 @@ class Assets:
         move_asset_in_fs(self.asset_type, old_asset_id, new_asset_id)
         self._suppress_notification()
 
-
     def _suppress_notification(self):
-        self._suppress_notification_until = datetime.datetime.now() + datetime.timedelta(seconds=10)
+        self._suppress_notification_until = datetime.datetime.now() + \
+            datetime.timedelta(seconds=10)
 
     def get_asset(self, name):
         """
@@ -133,32 +127,15 @@ class Assets:
         if name not in self._assets:
             raise KeyError(f"Asset {name} not found")
         return self._assets[name]
-    
+
     async def reload(self, initial: bool = False):
         _log.info(f"Reloading {self.asset_type}s ...")
 
-        self._assets = {}
-
-        asset_ids = set([
-            os.path.splitext(os.path.basename(path))[0]
-            for paths_yielding_function in [
-                list_files_in_file_system(get_core_assets_directory(self.asset_type)),
-                list_files_in_file_system(get_project_assets_directory(self.asset_type)),
-            ] for path in paths_yielding_function
-            if os.path.splitext(Path(path))[-1] == ".toml"
-        ])
-
-        for id in asset_ids:
-            try:
-                self._assets[id] = await load_asset_from_fs(self.asset_type, id)
-            except Exception as e:
-                await ErrorWSMessage(
-                    error=f"Invalid {self.asset_type} {id} {e}",
-                ).send_to_all()
-                continue
+        self._assets = await load_all_assets(self.asset_type)
 
         await AssetsUpdatedWSMessage(
-            initial=(initial or not (not self._suppress_notification_until or self._suppress_notification_until < datetime.datetime.now())),
+            initial=(initial or not (
+                not self._suppress_notification_until or self._suppress_notification_until < datetime.datetime.now())),
             asset_type=self.asset_type,
             count=len(self._assets),
         ).send_to_all()

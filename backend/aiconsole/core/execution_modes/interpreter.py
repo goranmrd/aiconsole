@@ -140,3 +140,10 @@ async def execution_mode_interpreter(
     if language:
         yield "<<<< END CODE >>>>"
         language = None
+
+    function_call = executor.response.choices[0].message.function_call
+    if function_call and function_call.name not in [python.__name__, shell.__name__, applescript.__name__]:
+        _log.info(f"function_call: {function_call}")
+        _log.info(f"function_call.arguments: {function_call.arguments}")
+
+        yield f"<<<< START CODE (python) >>>>{function_call.name}()<<<< END CODE >>>>"

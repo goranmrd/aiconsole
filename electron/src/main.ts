@@ -22,6 +22,7 @@ import {
   dialog,
   IpcMainEvent,
   MenuItemConstructorOptions,
+  shell,
 } from "electron";
 import { spawn } from "child_process";
 import path from "path";
@@ -83,7 +84,8 @@ async function error(browserWindow: BrowserWindow, message: string) {
 
 async function waitForServerToStart(window: AIConsoleWindow) {
   const RETRY_INTERVAL = 100;
-  log(window.browserWindow,
+  log(
+    window.browserWindow,
     `Waiting for backend to start on port ${window.port}`
   );
 
@@ -144,6 +146,11 @@ async function createWindow() {
     show: false,
   });
 
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    shell.openExternal(url);
+    return { action: "deny" };
+  });
+
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
     mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
     mainWindow.webContents.openDevTools();
@@ -198,17 +205,18 @@ const handleDirPicker = async (event: IpcMainEvent) => {
   }
 
   try {
-    const { canceled, filePaths } = await dialog.showOpenDialog(window.browserWindow, {
-      properties: ["openDirectory", "createDirectory"],
-    });
+    const { canceled, filePaths } = await dialog.showOpenDialog(
+      window.browserWindow,
+      {
+        properties: ["openDirectory", "createDirectory"],
+      }
+    );
 
     if (!canceled && filePaths?.length) {
       return filePaths[0];
     }
   } catch (error) {
-    error(window.browserWindow,
-      `Error from backend process: ${error.message}`
-    );
+    error(window.browserWindow, `Error from backend process: ${error.message}`);
   }
 };
 
@@ -230,9 +238,7 @@ ipcMain.on("request-backend-port", async (event) => {
       });
 
       window.backendProcess.on("error", (e: Error) => {
-        error(window.browserWindow,
-          `Error from backend process: ${e.message}`
-        );
+        error(window.browserWindow, `Error from backend process: ${e.message}`);
       });
 
       window.backendProcess.stdout.on("data", (data: Buffer) => {
@@ -253,9 +259,7 @@ ipcMain.on("request-backend-port", async (event) => {
       });
 
       window.backendProcess.on("exit", (code: string) => {
-        log(window.browserWindow,
-          `FastAPI server exited with code ${code}`
-        );
+        log(window.browserWindow, `FastAPI server exited with code ${code}`);
       });
 
       //wait for the server to come up online
