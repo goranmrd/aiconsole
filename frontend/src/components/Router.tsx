@@ -47,12 +47,19 @@ function NoProject() {
   return <Outlet />;
 }
 
+const HomeRoute = () => (
+  <>
+    <Home />
+    <GlobalSettingsModal />
+  </>
+)
+
 export function Router() {
   return (
     <HashRouter>
       <Routes>
         <Route path="/" element={<NoProject />}>
-          <Route index element={<Home />} />
+          <Route index element={<HomeRoute />} />
         </Route>
         <Route path="/" element={<MustHaveProject />}>
           <Route
