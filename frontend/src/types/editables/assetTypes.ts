@@ -15,10 +15,7 @@
 // limitations under the License.
 
 export type AssetDefinedIn = 'aiconsole' | 'project';
-export const assetDefinedInOptions: AssetDefinedIn[] = [
-  'aiconsole',
-  'project',
-];
+export const assetDefinedInOptions: AssetDefinedIn[] = ['aiconsole', 'project'];
 export type AssetStatus = 'disabled' | 'enabled' | 'forced';
 export const assetStatusOptions: AssetStatus[] = [
   'disabled',
@@ -52,16 +49,15 @@ export type AssetType = 'material' | 'agent';
 
 export type GPTMode = 'quality' | 'speed' | 'cost';
 
-
 export type EditableObjectType = 'material' | 'agent' | 'chat';
 
 export type EditableObjectTypePlural = 'materials' | 'agents' | 'chats';
 
-
 export type EditableObject = {
   id: string;
   name: string;
-}
+  type: EditableObjectType;
+};
 
 export type Asset = EditableObject & {
   usage: string;
@@ -70,7 +66,8 @@ export type Asset = EditableObject & {
   status: AssetStatus;
 };
 
-
+export type MaterialHeadline = EditableObject & Material;
+export type AgentHeadline = EditableObject & Agent;
 
 export type Agent = Asset & {
   system: string;

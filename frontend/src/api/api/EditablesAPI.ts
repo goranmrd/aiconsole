@@ -26,7 +26,9 @@ import {
 import ky from 'ky';
 import { API_HOOKS, getBaseURL } from '../../store/useAPIStore';
 
-const previewMaterial: (material: Material) => Promise<RenderedMaterial> = async (material: Material) =>
+const previewMaterial: (
+  material: Material,
+) => Promise<RenderedMaterial> = async (material: Material) =>
   ky
     .post(`${getBaseURL()}/api/materials/preview`, {
       json: { ...material },
@@ -35,11 +37,19 @@ const previewMaterial: (material: Material) => Promise<RenderedMaterial> = async
     })
     .json();
 
-async function fetchEditableObjects<T extends EditableObject>(editableObjectType: EditableObjectType): Promise<T[]> {
-  return ky.get(`${getBaseURL()}/api/${editableObjectType}s/`, { hooks: API_HOOKS }).json();
+async function fetchEditableObjects<T extends EditableObject>(
+  editableObjectType: EditableObjectType,
+): Promise<T[]> {
+  return ky
+    .get(`${getBaseURL()}/api/${editableObjectType}s/`, { hooks: API_HOOKS })
+    .json();
 }
 
-async function setAssetStatus(assetType: AssetType, id: string, status: AssetStatus) {
+async function setAssetStatus(
+  assetType: AssetType,
+  id: string,
+  status: AssetStatus,
+) {
   return ky
     .post(`${getBaseURL()}/api/${assetType}s/${id}/status-change`, {
       json: { status, to_global: false },
@@ -48,11 +58,21 @@ async function setAssetStatus(assetType: AssetType, id: string, status: AssetSta
     .json();
 }
 
-async function fetchEditableObject<T extends EditableObject>(editableObjectType: EditableObjectType, id: string) {
-  return ky.get(`${getBaseURL()}/api/${editableObjectType}s/${id}`, { hooks: API_HOOKS }).json() as Promise<T>;
+async function fetchEditableObject<T extends EditableObject>(
+  editableObjectType: EditableObjectType,
+  id: string,
+) {
+  return ky
+    .get(`${getBaseURL()}/api/${editableObjectType}s/${id}`, {
+      hooks: API_HOOKS,
+    })
+    .json() as Promise<T>;
 }
 
-async function saveNewEditableObject(editableObjectType: EditableObjectType, asset: Asset) {
+async function saveNewEditableObject(
+  editableObjectType: EditableObjectType,
+  asset: Asset,
+) {
   return ky.post(`${getBaseURL()}/api/${editableObjectType}s/${asset.id}`, {
     json: { ...asset },
     timeout: 60000,
@@ -76,8 +96,13 @@ async function updateEditableObject(
   });
 }
 
-async function deleteEditableObject(editableObjectType: EditableObjectType, id: string) {
-  return ky.delete(`${getBaseURL()}/api/${editableObjectType}s/${id}`, { hooks: API_HOOKS });
+async function deleteEditableObject(
+  editableObjectType: EditableObjectType,
+  id: string,
+) {
+  return ky.delete(`${getBaseURL()}/api/${editableObjectType}s/${id}`, {
+    hooks: API_HOOKS,
+  });
 }
 
 export const EditablesAPI = {

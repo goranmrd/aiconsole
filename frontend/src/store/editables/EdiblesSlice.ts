@@ -16,11 +16,10 @@
 
 import { StateCreator } from 'zustand';
 
-
 import {
   EditableObject,
   EditableObjectType,
-  EditableObjectTypePlural
+  EditableObjectTypePlural,
 } from '@/types/editables/assetTypes';
 import { convertNameToId } from '@/utils/editables/convertNameToId';
 import { getEditableObjectType } from '@/utils/editables/getEditableObjectType';
@@ -29,21 +28,38 @@ import { EditablesStore } from './useEditablesStore';
 import { Chat } from '@/types/editables/chatTypes';
 
 export type EdiblesSlice = {
-  renameEditableObject: (editableObject: EditableObject, newName: string, isNew: boolean) => Promise<string>;
-  deleteEditableObject: (editableObjectType: EditableObjectType, id: string) => Promise<void>;
+  renameEditableObject: (
+    editableObject: EditableObject,
+    newName: string,
+    isNew: boolean,
+  ) => Promise<string>;
+  deleteEditableObject: (
+    editableObjectType: EditableObjectType,
+    id: string,
+  ) => Promise<void>;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const createEdiblesSlice: StateCreator<EditablesStore, [], [], EdiblesSlice> = (set, _get) => ({
+export const createEdiblesSlice: StateCreator<
+  EditablesStore,
+  [],
+  [],
+  EdiblesSlice
+> = (set) => ({
   //returns new id
-  renameEditableObject: async (editableObject: EditableObject, newName: string, isNew: boolean) => {
+  renameEditableObject: async (
+    editableObject: EditableObject,
+    newName: string,
+    isNew: boolean,
+  ) => {
     editableObject.name = newName;
 
     const originalId = editableObject.id;
     const editableObjectType = getEditableObjectType(editableObject);
-    const editableObjectTypePlural = (editableObjectType + 's') as EditableObjectTypePlural;
+    const editableObjectTypePlural = (editableObjectType +
+      's') as EditableObjectTypePlural;
 
-    if (!editableObjectType) throw new Error(`Unknown editable object type ${editableObjectType}`);
+    if (!editableObjectType)
+      throw new Error(`Unknown editable object type ${editableObjectType}`);
 
     // Chats have persistent ids, no need to update them
     if (editableObjectType !== 'chat') {
@@ -55,25 +71,34 @@ export const createEdiblesSlice: StateCreator<EditablesStore, [], [], EdiblesSli
     }
 
     set((state) => ({
-      [editableObjectTypePlural]: (state[editableObjectTypePlural] || []).map((editableObject) =>
-        editableObject.id === originalId ? editableObject : editableObject,
+      [editableObjectTypePlural]: (state[editableObjectTypePlural] || []).map(
+        (editableObject) =>
+          editableObject.id === originalId ? editableObject : editableObject,
       ),
     }));
 
     if (!isNew) {
-      await EditablesAPI.updateEditableObject(editableObjectType, editableObject, originalId);
+      await EditablesAPI.updateEditableObject(
+        editableObjectType,
+        editableObject,
+        originalId,
+      );
     }
 
     return editableObject.id;
   },
-  deleteEditableObject: async (editableObjectType: EditableObjectType, id: string) => {
+  deleteEditableObject: async (
+    editableObjectType: EditableObjectType,
+    id: string,
+  ) => {
     await EditablesAPI.deleteEditableObject(editableObjectType, id);
-    const editableObjectTypePlural = (editableObjectType + 's') as EditableObjectTypePlural;
+    const editableObjectTypePlural = (editableObjectType +
+      's') as EditableObjectTypePlural;
 
     set((state) => ({
-      [editableObjectTypePlural]: (state[editableObjectTypePlural] || []).filter(
-        (editableObject) => editableObject.id !== id,
-      ),
+      [editableObjectTypePlural]: (
+        state[editableObjectTypePlural] || []
+      ).filter((editableObject) => editableObject.id !== id),
     }));
   },
 });
