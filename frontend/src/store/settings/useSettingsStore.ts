@@ -47,7 +47,7 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
 
     set({
       openAiApiKey: key,
-      isApiKeyValid: true // We assume that they key was validated before saving
+      isApiKeyValid: true, // We assume that they key was validated before saving
     });
   },
   initSettings: async () => {

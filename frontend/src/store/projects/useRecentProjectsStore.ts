@@ -16,8 +16,7 @@
 
 import { create } from 'zustand';
 
-
-import { RecentProject } from "@/types/projects/RecentProject";
+import { RecentProject } from '@/types/projects/RecentProject';
 import { ProjectsAPI } from '../../api/api/ProjectsAPI';
 import { useProjectStore } from './useProjectStore';
 

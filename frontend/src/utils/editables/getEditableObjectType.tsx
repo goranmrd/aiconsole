@@ -16,8 +16,9 @@
 
 import { EditableObject, EditableObjectType, EditableObjectTypePlural } from '@/types/editables/assetTypes';
 
-export function getEditableObjectType(editableObject?: EditableObject | EditableObjectTypePlural): EditableObjectType | undefined {
-
+export function getEditableObjectType(
+  editableObject?: EditableObject | EditableObjectTypePlural,
+): EditableObjectType | undefined {
   if (typeof editableObject === 'string') {
     switch (editableObject) {
       case 'agents':

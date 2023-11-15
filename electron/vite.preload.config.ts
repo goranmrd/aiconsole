@@ -14,14 +14,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { defineConfig } from 'vite';
-import * as path from 'path';
+import { defineConfig } from "vite";
+import * as path from "path";
 
 // https://vitejs.dev/config
 export default defineConfig({
   resolve: {
     // Some libs that can run in both Web and Node.js, such as `axios`, we need to tell Vite to build them in Node.js.
     browserField: false,
-    mainFields: ['module', 'jsnext:main', 'jsnext']
+    mainFields: ["module", "jsnext:main", "jsnext"],
   },
 });

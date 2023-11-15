@@ -21,8 +21,8 @@ export function useOpenSettings() {
   const location = useLocation();
 
   return () => {
-    navigate(location.pathname, { 
-      state: { ...location.state, isSettingsModalVisible: true } 
-    })
-  }
+    navigate(location.pathname, {
+      state: { ...location.state, isSettingsModalVisible: true },
+    });
+  };
 }

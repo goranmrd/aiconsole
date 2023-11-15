@@ -18,7 +18,6 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { ContextMenuProvider } from 'mantine-contextmenu';
 
-
 import './index.css';
 import '@mantine/core/styles.css';
 import '@mantine/core/styles.layer.css';
@@ -30,7 +29,6 @@ import { initStore } from './store/initStore.ts';
 import { MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import { Router } from './components/Router.tsx';
-
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

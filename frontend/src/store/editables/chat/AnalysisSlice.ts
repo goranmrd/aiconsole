@@ -76,7 +76,9 @@ export const createAnalysisSlice: StateCreator<ChatStore, [], [], AnalysisSlice>
       }));
 
       const chat = get().chat;
-      if (!chat) { throw new Error('Chat is not initialized'); }
+      if (!chat) {
+        throw new Error('Chat is not initialized');
+      }
 
       const response = await ChatAPI.analyse(chat, analysisRequestId, abortController.signal);
 
@@ -104,8 +106,8 @@ export const createAnalysisSlice: StateCreator<ChatStore, [], [], AnalysisSlice>
           materials_ids: data.materials_ids,
           role: 'assistant',
           messages: [],
-        })
-    
+        });
+
         console.log('Executing');
         useChatStore.getState().doExecute();
       }

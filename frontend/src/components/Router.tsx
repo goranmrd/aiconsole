@@ -52,7 +52,7 @@ const HomeRoute = () => (
     <Home />
     <GlobalSettingsModal />
   </>
-)
+);
 
 export function Router() {
   return (
@@ -67,7 +67,9 @@ export function Router() {
             element={
               <div className="App flex flex-col h-screen fixed top-0 left-0 bottom-0 right-0 bg-gray-800/95 text-stone-400">
                 <GlobalSettingsModal />
-                <TopBar><ProjectTopBarElements /></TopBar>
+                <TopBar>
+                  <ProjectTopBarElements />
+                </TopBar>
                 <div className="flex flex-row h-full overflow-y-auto">
                   <Routes>
                     <Route path="/agents/*" element={<SideBar initialTab="agents" />} />
@@ -75,7 +77,7 @@ export function Router() {
                     <Route path="/chats/*" element={<SideBar initialTab="chats" />} />
                   </Routes>
                   <Routes>
-                    <Route path="/:type/:id" element={<ConvertParamsToStores />} >
+                    <Route path="/:type/:id" element={<ConvertParamsToStores />}>
                       <Route path="/:type/:id" element={<EditableObjectEditor />} />
                     </Route>
                   </Routes>
