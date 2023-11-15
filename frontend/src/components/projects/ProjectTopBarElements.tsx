@@ -43,9 +43,9 @@ export function ProjectTopBarElements() {
   return (
     <>
       <div className="flex text-sm gap-2 items-center pr-5">
-        <div className="flex items-center justify-center gap-[70px]">
-          <button className="w-12 h-12" onClick={handleBackToProjects}>
-            <img src="logo.png" className="h-[48px] mt-[2px] w-[48px] min-w-[48px]" alt="Logo" />
+        <div className='flex items-center justify-center gap-[70px]'>
+          <button className='w-12 h-12' onClick={handleBackToProjects}>
+            <img src="favicon.png" className="shadows-lg h-full w-full" alt="Logo" />
           </button>
           <Link
             to={`/chats/${uuidv4()}`}
