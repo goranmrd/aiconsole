@@ -40,7 +40,11 @@ async def _ask_directory():
     initial_dir = get_project_directory() if is_project_initialized() else os.getcwd()
     directory = filedialog.askdirectory(initialdir=initial_dir)
 
-    return Path(directory)
+    # Check if the dialog was cancelled (directory is an empty string)
+    if directory == "":
+        return None
+    else:
+        return Path(directory)
 
 
 class ChooseParams(BaseModel):
