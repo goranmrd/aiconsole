@@ -66,8 +66,8 @@ async def agent_post(agent_id: str, agent: Agent):
 
 
 @router.post("/{agent_id}/status-change")
-async def agent_status_change(asset_type: AssetType, agent_id: str, body: StatusChangePostBody):
-    return asset_status_change(asset_type, agent_id, body)
+async def agent_status_change(agent_id: str, body: StatusChangePostBody):
+    return asset_status_change(AssetType.AGENT, agent_id, body)
 
 
 @router.delete("/{agent_id}")
