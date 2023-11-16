@@ -20,7 +20,7 @@ import { canThereBeOnlyOneForcedAsset } from '@/utils/editables/canThereBeOnlyOn
 import { create } from 'zustand';
 import { useEditablesStore } from '../useEditablesStore';
 
-export type ProjectSlice = {
+export type AssetStore = {
   selectedAsset?: Asset;
   lastSavedSelectedAsset?: Asset;
   getAsset: (assetType: AssetType, id: string) => Asset | undefined;
@@ -30,7 +30,7 @@ export type ProjectSlice = {
   updateSelectedAsset: (name: string, newId: string) => void;
 };
 
-export const useAssetStore = create<ProjectSlice>((set) => ({
+export const useAssetStore = create<AssetStore>((set) => ({
   lastSavedSelectedAsset: undefined,
   selectedAsset: undefined,
   setLastSavedSelectedAsset: (asset?: Asset) => {
