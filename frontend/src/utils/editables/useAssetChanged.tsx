@@ -6,7 +6,7 @@ export function useAssetChanged() {
   const lastSavedAsset = useAssetStore((state) => state.lastSavedSelectedAsset);
 
   const [isChanged, setIsChanged] = useState(false);
-  console.log(isChanged);
+
   useEffect(() => {
     setIsChanged(() => {
       if (!asset) {
