@@ -23,9 +23,8 @@ import { useEditablesStore } from '@/store/editables/useEditablesStore';
 import { useProjectStore } from '@/store/projects/useProjectStore';
 import { Chat } from '@/types/editables/chatTypes';
 import showNotification from '@/utils/common/showNotification';
-import { convertNameToId } from '@/utils/editables/convertNameToId';
 import { useEditableObjectContextMenu } from '@/utils/editables/useContextMenuForEditable';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import ScrollToBottom, { useScrollToBottom } from 'react-scroll-to-bottom';
 import { v4 as uuidv4 } from 'uuid';
@@ -64,9 +63,8 @@ export function ChatPage() {
   const isProjectLoading = useProjectStore((state) => state.isProjectLoading);
   const { showContextMenu } = useEditableObjectContextMenu({ editable: chat, editableObjectType: 'chat' });
 
-  // Acquire the initial object
-  useEffect(() => {
-    const setChat = (chat: Chat) => {
+  const setChat = useMemo(
+    () => (chat: Chat) => {
       useWebSocketStore.getState().sendMessage({
         type: 'SetChatIdWSMessage',
         chat_id: chat.id,
@@ -75,8 +73,12 @@ export function ChatPage() {
       useChatStore.setState(() => {
         return { chat };
       });
-    };
+    },
+    [],
+  );
 
+  // Acquire the initial object
+  useEffect(() => {
     if (copyId) {
       EditablesAPI.fetchEditableObject<Chat>('chat', id).then((chat) => {
         chat.id = uuidv4();
@@ -117,11 +119,10 @@ export function ChatPage() {
 
   const handleRename = async (newName: string) => {
     if (newName !== chat.name) {
-      await EditablesAPI.updateEditableObject(
-        'chat',
-        { ...chat, name: newName, id: convertNameToId(newName), title_edited: true } as Chat,
-        chat.id,
-      );
+      const newChat = { ...chat, name: newName, title_edited: true } as Chat;
+      await EditablesAPI.updateEditableObject('chat', newChat, chat.id);
+
+      setChat(newChat);
 
       showNotification({
         title: 'Renamed',
