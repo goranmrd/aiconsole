@@ -194,8 +194,6 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
       return;
     }
 
-    console.log('handleSaveClick', asset, lastSavedAsset);
-
     if (lastSavedAsset === undefined) {
       await EditablesAPI.saveNewEditableObject(assetType, asset);
       await updateStatusIfNecessary();
