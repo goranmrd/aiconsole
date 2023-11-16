@@ -38,7 +38,8 @@ function groupAssetsByStatus(assets: Asset[]) {
   assets.forEach((asset) => {
     const { status } = asset;
     const assets = groupedAssets.get(status) || [];
-    groupedAssets.set(status, assets);
+    const updatedAssets = [...assets, asset];
+    groupedAssets.set(status, updatedAssets);
   });
 
   return [...groupedAssets.entries()];
