@@ -14,8 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from aiconsole.api.endpoints.agents.agent import agent_status_change
+from aiconsole.api.utils.asset_exists import asset_exists
 from aiconsole.api.utils.asset_get import asset_get
+from aiconsole.api.utils.asset_status_change import asset_status_change
 from aiconsole.api.utils.status_change_post_body import StatusChangePostBody
 from aiconsole.core.assets.asset import AssetLocation, AssetStatus, AssetType
 from aiconsole.core.assets.materials.material import Material, MaterialWithStatus
@@ -32,7 +33,7 @@ async def material_get(request: Request, material_id: str):
         request,
         AssetType.MATERIAL,
         material_id,
-        lambda location: MaterialWithStatus(
+        lambda: MaterialWithStatus(
             id="",
             name="",
             usage="",
@@ -69,7 +70,7 @@ async def material_post(material_id: str, material: Material):
 
 @router.post("/{material_id}/status-change")
 async def material_status_change(material_id: str, body: StatusChangePostBody):
-    return agent_status_change(AssetType.MATERIAL, material_id, body)
+    return asset_status_change(AssetType.MATERIAL, material_id, body)
 
 
 @router.delete("/{material_id}")
@@ -79,3 +80,8 @@ async def delete_material(material_id: str):
         return JSONResponse({"status": "ok"})
     except KeyError:
         raise HTTPException(status_code=404, detail="Material not found")
+
+
+@router.get("/{asset_id}/exists")
+async def material_exists(request: Request, asset_id: str):
+    return await asset_exists(AssetType.MATERIAL, request, asset_id)

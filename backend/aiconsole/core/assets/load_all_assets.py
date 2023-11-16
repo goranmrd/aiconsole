@@ -5,8 +5,7 @@ from typing import Dict
 from aiconsole.api.websockets.outgoing_messages import ErrorWSMessage
 from aiconsole.core.assets.asset import Asset, AssetLocation, AssetType
 from aiconsole.core.assets.fs.load_asset_from_fs import load_asset_from_fs
-from aiconsole.core.project.paths import (get_core_assets_directory,
-                                          get_project_assets_directory)
+from aiconsole.core.project.paths import get_core_assets_directory, get_project_assets_directory
 from aiconsole.utils.list_files_in_file_system import list_files_in_file_system
 
 
@@ -14,15 +13,18 @@ async def load_all_assets(asset_type: AssetType) -> Dict[str, list[Asset]]:
     _assets = {}
 
     locations = [
-        [AssetLocation.AICONSOLE_CORE, get_core_assets_directory(asset_type)],
         [AssetLocation.PROJECT_DIR, get_project_assets_directory(asset_type)],
+        [AssetLocation.AICONSOLE_CORE, get_core_assets_directory(asset_type)],
     ]
 
     for [location, dir] in locations:
-        ids = set([
-            os.path.splitext(os.path.basename(path))[0] for path in list_files_in_file_system(dir)
-            if os.path.splitext(Path(path))[-1] == ".toml"
-        ])
+        ids = set(
+            [
+                os.path.splitext(os.path.basename(path))[0]
+                for path in list_files_in_file_system(dir)
+                if os.path.splitext(Path(path))[-1] == ".toml"
+            ]
+        )
 
         for id in ids:
             try:

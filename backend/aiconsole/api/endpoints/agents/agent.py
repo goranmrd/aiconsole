@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from aiconsole.api.utils.asset_exists import asset_exists
 from aiconsole.api.utils.asset_get import asset_get
 from aiconsole.api.utils.asset_status_change import asset_status_change
 from aiconsole.api.utils.status_change_post_body import StatusChangePostBody
@@ -33,13 +34,13 @@ async def agent_get(request: Request, agent_id: str):
         request,
         AssetType.AGENT,
         agent_id,
-        lambda location: AgentWithStatus(
+        lambda: AgentWithStatus(
             id="",
             name="",
             usage="",
             usage_examples=[],
             status=AssetStatus.ENABLED,
-            defined_in=location if location else AssetLocation.PROJECT_DIR,
+            defined_in=AssetLocation.PROJECT_DIR,
             gpt_mode=GPTMode.QUALITY,
             system="",
             override=False,
@@ -76,3 +77,8 @@ async def delete_agent(agent_id: str):
         return JSONResponse({"status": "ok"})
     except KeyError:
         raise HTTPException(status_code=404, detail="Agent not found")
+
+
+@router.get("/{asset_id}/exists")
+async def agent_exists(request: Request, asset_id: str):
+    return await asset_exists(AssetType.AGENT, request, asset_id)

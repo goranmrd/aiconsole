@@ -8,12 +8,15 @@ from fastapi import HTTPException
 from fastapi.responses import JSONResponse
 
 
-async def asset_get(request, asset_type: AssetType, asset_id: str, new_asset: Callable[[AssetLocation | None], Asset]):
+async def asset_get(request, asset_type: AssetType, asset_id: str, new_asset: Callable[[], Asset]):
     location_param = request.query_params.get("location", None)
     location = AssetLocation(location_param) if location_param else None
 
     if asset_id == "new":
-        return JSONResponse(new_asset(location).model_dump())
+        asset = new_asset()
+        asset.defined_in = AssetLocation.PROJECT_DIR
+        asset.override = False
+        return JSONResponse(asset.model_dump())
     else:
         settings = get_aiconsole_settings()
 

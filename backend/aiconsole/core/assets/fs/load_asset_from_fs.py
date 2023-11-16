@@ -16,7 +16,6 @@
 
 import logging
 import os
-from typing import Optional
 
 import rtoml
 from aiconsole.core.assets.agents.agent import Agent
@@ -64,7 +63,7 @@ async def load_asset_from_fs(asset_type: AssetType, asset_id: str, location: Ass
         "usage": str(tomldoc["usage"]).strip(),
         "usage_examples": tomldoc.get("usage_examples", []),
         "default_status": AssetStatus(str(tomldoc.get("default_status", "enabled")).strip()),
-        "override": False,
+        "override": location == AssetLocation.PROJECT_DIR and (core_resource_path / f"{asset_id}.toml").exists(),
     }
 
     if asset_type == AssetType.MATERIAL:
