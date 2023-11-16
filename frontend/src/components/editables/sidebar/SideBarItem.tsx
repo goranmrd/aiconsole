@@ -23,11 +23,11 @@ import { useEditablesStore } from '@/store/editables/useEditablesStore';
 import { KeyboardEvent, MouseEvent, useEffect, useRef, useState } from 'react';
 import { useDiscardAssetChangesStore } from '@/store/editables/asset/useDiscardAssetChangesStore';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { getAssetStatusIcon } from '@/utils/editables/getAssetStatusIcon';
 import { EditablesAPI } from '@/api/api/EditablesAPI';
 import { Chat, ChatHeadline } from '@/types/editables/chatTypes';
 import { useAssetStore } from '@/store/editables/asset/useAssetStore';
 import { useChatStore } from '@/store/editables/chat/useChatStore';
+import { PinIconRotated } from '@/utils/editables/PinIconRotated';
 
 const SideBarItem = ({
   editableObjectType,
@@ -134,15 +134,16 @@ const SideBarItem = ({
 
   if (editableObjectType === 'agent' || editableObjectType === 'material') {
     const asset: Asset = editableObject as Asset;
-    const StatusIcon = getAssetStatusIcon(asset.status);
     forced = asset.status === 'forced';
     disabled = asset.status === 'disabled';
 
-    extraStuff = (
-      <div className="ml-auto items-center flex gap-[12px]">
-        <StatusIcon className={cn('w-[15px] h-[15px]  ')} />
-      </div>
-    );
+    if (forced) {
+      extraStuff = (
+        <div className="ml-auto items-center flex gap-[12px]">
+          <PinIconRotated className={cn('w-[15px] h-[15px]  ')} />
+        </div>
+      );
+    }
   }
 
   function handleContextMenu(event: MouseEvent) {
