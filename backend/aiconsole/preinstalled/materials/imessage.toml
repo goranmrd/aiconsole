@@ -1,11 +1,11 @@
 name = "IMessage"
-version = "0.0.2"
+version = "0.0.3"
 usage = "Use this to get to know how to handle iMessage and Contacts apps in mac in order to perform tasks using them."
 usage_examples = []
 default_status = "enabled"
 content_type = "static_text"
 content_static_text = """
-# How to get contact information from contacts
+## How to get contact information from contacts
 
 Example: looking for a contact with a name Agata:
 
@@ -19,7 +19,7 @@ tell application "Contacts"
 end tell
 ```
 
-# How to send an imessage to a contact given a phone number
+## How to send an imessage to a contact given a phone number
 
 You must always specify an icloud email or phone, don't use names surnames or nicks.
 
@@ -162,7 +162,7 @@ on GetSelectedConversation()
 \treturn {chat_id, selected_participant}
 end GetSelectedConversation
 
-# Sending an image
+## Sending an image
 
 on run {targetBuddyPhone, imagePath}
     set image to POSIX file imagePath

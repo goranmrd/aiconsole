@@ -1,12 +1,10 @@
-name = "Images"
-version = "0.0.2"
+name = "How to Display Images"
+version = "0.0.3"
 usage = "Information on how to display images. Outputing ![image info](./path/image.png) displays the image to the user."
 usage_examples = []
 default_status = "enabled"
 content_type = "static_text"
 content_static_text = """
-# How to handle images?
-
 When asked to display images, display them by outputing: ![image info](./pictures/image.png) in plain text, no function call required for displaying.
 
 Don't use IPython.display or mathplotlib to display images.

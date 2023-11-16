@@ -1,5 +1,5 @@
 name = "Today"
-version = "0.0.2"
+version = "0.0.4"
 usage = "When you need to know what is the Today's date"
 usage_examples = []
 default_status = "enabled"
@@ -15,8 +15,6 @@ async def content(context):
     current_date_string = current_date.strftime("%A, %B %d, %Y")
 
     return f""\"
-# Today
-
 Today is {current_date_string}
 ""\".strip()
 """

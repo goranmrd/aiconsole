@@ -1,5 +1,5 @@
 name = "Environment"
-version = "0.0.2"
+version = "0.0.3"
 usage = "Use this always when code is about to be executed. Execution environment information, like operating system, shell, current working directory and Python packages will be collected."
 usage_examples = []
 default_status = "enabled"
@@ -26,7 +26,7 @@ def collect_python_packages():
 
 async def content(context):
     return f""\"
-# Execution environment
+## Execution environment
 
 os: {platform.system()}
 cwd: {os.getcwd()}

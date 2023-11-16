@@ -1,0 +1,17 @@
+name = "List of Materials"
+version = "0.0.2"
+usage = "Contains an index of materials. Do not use if not tasked to list materials or learning about capabilities of this AIConsole instance."
+usage_examples = []
+default_status = "enabled"
+content_type = "dynamic_text"
+content_dynamic_text = """
+from aiconsole.dev import project
+
+async def content(context):
+    newline = "\\n"
+    agents_list = newline.join(f"* {agent.id} - {agent.usage}" for agent in await project.get_all_materials())
+    return f""\"
+Available Materials:
+{agents_list}
+""\".strip()
+"""
