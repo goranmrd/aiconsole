@@ -14,7 +14,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { useDiscardAssetChangesStore } from '@/store/editables/asset/useDiscardAssetChangesStore';
 import { useContextMenu } from '@/utils/common/useContextMenu';
 import { getEditableObjectColor } from '@/utils/editables/getEditableObjectColor';
 import { MATERIAL_CONTENT_TYPE_ICONS, getEditableObjectIcon } from '@/utils/editables/getEditableObjectIcon';
@@ -23,7 +22,6 @@ import { v4 as uuidv4 } from 'uuid';
 
 export function useAddMenu() {
   const { showContextMenu, hideContextMenu, isContextMenuVisible } = useContextMenu();
-  const { isChanged, setConfirmCallback } = useDiscardAssetChangesStore();
   const navigate = useNavigate();
   const ChatIcon = getEditableObjectIcon('chat');
   const MaterialNoteIcon = MATERIAL_CONTENT_TYPE_ICONS['static_text'];
@@ -32,11 +30,7 @@ export function useAddMenu() {
   const AgentIcon = getEditableObjectIcon('agent');
 
   const handleClick = (path: string) => () => {
-    if (isChanged) {
-      setConfirmCallback(() => navigate(path));
-    } else {
-      navigate(path);
-    }
+    navigate(path);
   };
 
   function showContextMenuReplacement() {

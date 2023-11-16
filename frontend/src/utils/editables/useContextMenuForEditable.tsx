@@ -22,7 +22,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { useContextMenu } from '../common/useContextMenu';
 import { getAssetStatusIcon } from './getAssetStatusIcon';
-import { useDiscardAssetChangesStore } from '@/store/editables/asset/useDiscardAssetChangesStore';
 import { useDeleteEditableObjectWithUserInteraction } from './useDeleteEditableObjectWithUserInteraction';
 
 function createIconForStatus(assetStatus: AssetStatus) {
@@ -42,7 +41,6 @@ export function useEditableObjectContextMenu({
   setIsEditing?: (isEditing: boolean) => void;
 }) {
   const { showContextMenu, hideContextMenu, isContextMenuVisible } = useContextMenu();
-  const { isChanged, setConfirmCallback } = useDiscardAssetChangesStore();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -69,12 +67,7 @@ export function useEditableObjectContextMenu({
         icon: <File className="w-4 h-4" />,
         title: 'Open',
         onClick: () => {
-          const path = `/${editableObjectType}s/${editableObject.id}`;
-          if (isChanged) {
-            setConfirmCallback(() => navigate(path));
-          } else {
-            navigate(path);
-          }
+          navigate(`/${editableObjectType}s/${editableObject.id}`);
         },
       });
     }
@@ -84,14 +77,9 @@ export function useEditableObjectContextMenu({
       icon: <Copy className="w-4 h-4" />,
       title: 'Edit as New',
       onClick: () => {
-        const path = `/${editableObjectType}s/${editableObjectType === 'chat' ? uuidv4() : 'new'}?copy=${
-          editableObject.id
-        }`;
-        if (isChanged) {
-          setConfirmCallback(() => navigate(path));
-        } else {
-          navigate(path);
-        }
+        navigate(
+          `/${editableObjectType}s/${editableObjectType === 'chat' ? uuidv4() : 'new'}?copy=${editableObject.id}`,
+        );
       },
     });
 

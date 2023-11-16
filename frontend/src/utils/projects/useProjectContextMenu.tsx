@@ -17,18 +17,22 @@
 import { useContextMenu } from '@/utils/common/useContextMenu';
 import { XIcon } from 'lucide-react';
 import { ProjectsAPI } from '@/api/api/ProjectsAPI';
-import { useDiscardAssetChangesStore } from '@/store/editables/asset/useDiscardAssetChangesStore';
+import { localStorageTyped } from '../common/localStorage';
+
+const { getItem: checkIfChanged } = localStorageTyped<boolean>('isAssetChanged');
 
 export function useProjectContextMenu() {
   const { showContextMenu, hideContextMenu, isContextMenuVisible } = useContextMenu();
-  const { isChanged, setConfirmCallback } = useDiscardAssetChangesStore();
 
   const handleBackToProjects = () => {
-    if (isChanged) {
-      setConfirmCallback(() => ProjectsAPI.closeProject());
-    } else {
-      ProjectsAPI.closeProject();
+    if (
+      checkIfChanged() &&
+      !window.confirm(`Are you sure you want to leave this project? Any unsaved changes will be lost.`)
+    ) {
+      return;
     }
+
+    ProjectsAPI.closeProject();
   };
 
   function showContextMenuReplacement() {

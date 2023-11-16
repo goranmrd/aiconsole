@@ -16,13 +16,15 @@
 
 import { ProjectsAPI } from '@/api/api/ProjectsAPI';
 import { Button } from '@/components/common/Button';
-import { useDiscardAssetChangesStore } from '@/store/editables/asset/useDiscardAssetChangesStore';
 import { useProjectStore } from '@/store/projects/useProjectStore';
+import { localStorageTyped } from '@/utils/common/localStorage';
 import { useAddMenu } from '@/utils/editables/useAddMenu';
 import { useProjectContextMenu } from '@/utils/projects/useProjectContextMenu';
 import { PlusIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
+
+const { getItem: checkIfChanged } = localStorageTyped<boolean>('isAssetChanged');
 
 export function ProjectTopBarElements() {
   const projectName = useProjectStore((state) => state.projectName);
@@ -30,14 +32,15 @@ export function ProjectTopBarElements() {
   const { showContextMenu: showProjectContextMenu } = useProjectContextMenu();
   const { showContextMenu: showPlusMenu } = useAddMenu();
 
-  const { isChanged, setConfirmCallback } = useDiscardAssetChangesStore();
-
   const handleBackToProjects = () => {
-    if (isChanged) {
-      setConfirmCallback(() => ProjectsAPI.closeProject());
-    } else {
-      ProjectsAPI.closeProject();
+    if (
+      checkIfChanged() &&
+      !window.confirm(`Are you sure you want to leave this project? Any unsaved changes will be lost.`)
+    ) {
+      return;
     }
+
+    ProjectsAPI.closeProject();
   };
 
   return (

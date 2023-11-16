@@ -15,14 +15,13 @@
 // limitations under the License.
 
 import { useCallback, useEffect, useState } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { unstable_useBlocker as useBlocker, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import { Button } from '@/components/common/Button';
 import { ConfirmationModal } from '@/components/common/ConfirmationModal';
 import { CodeInput } from '@/components/editables/assets/CodeInput';
 import { SimpleInput } from '@/components/editables/assets/TextInput';
 import { useAssetStore } from '@/store/editables/asset/useAssetStore';
-import { useDiscardAssetChangesStore } from '@/store/editables/asset/useDiscardAssetChangesStore';
 import { useEditablesStore } from '@/store/editables/useEditablesStore';
 import {
   Agent,
@@ -41,6 +40,9 @@ import { useDeleteEditableObjectWithUserInteraction } from '@/utils/editables/us
 import { EditablesAPI } from '../../../api/api/EditablesAPI';
 import { useAssetChanged } from '../../../utils/editables/useAssetChanged';
 import { EditorHeader } from '../EditorHeader';
+import { localStorageTyped } from '@/utils/common/localStorage';
+
+const { setItem } = localStorageTyped<boolean>('isAssetChanged');
 
 const MaterialContent = ({ material }: { material: Material }) => {
   const setSelectedAsset = useAssetStore((state) => state.setSelectedAsset);
@@ -111,7 +113,6 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
   const lastSavedAsset = useAssetStore((state) => state.lastSavedSelectedAsset);
   const setLastSavedSelectedAsset = useAssetStore((state) => state.setLastSavedSelectedAsset);
   const setSelectedAsset = useAssetStore((state) => state.setSelectedAsset);
-  const { setConfirmCallback, confirmCallback } = useDiscardAssetChangesStore();
   const [preview, setPreview] = useState<RenderedMaterial | undefined>(undefined);
   const [typeName, setTypeName] = useState<MaterialContentNames>('Material');
   const [showPreview, setShowPreview] = useState(false);
@@ -120,6 +121,14 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
   const handleDeleteWithInteraction = useDeleteEditableObjectWithUserInteraction(assetType);
   const navigate = useNavigate();
   const isAssetChanged = useAssetChanged();
+
+  const blocker = useBlocker(isAssetChanged);
+
+  const { reset, proceed, state: blockerState } = blocker || {};
+
+  useEffect(() => {
+    setItem(isAssetChanged);
+  }, [isAssetChanged]);
 
   function handleRevert(id: string) {
     if (isAssetChanged) {
@@ -230,7 +239,6 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
     }
 
     useAssetStore.setState({ lastSavedSelectedAsset: asset });
-    setConfirmCallback(null);
   }, [
     asset,
     assetType,
@@ -240,20 +248,10 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
     navigate,
     setSelectedAsset,
     updateStatusIfNecessary,
-    setConfirmCallback,
   ]);
 
-  const handleCloseDiscardConfirmation = () => {
-    setConfirmCallback(null);
-  };
-
   const handleDiscardChanges = () => {
-    if (confirmCallback) {
-      confirmCallback();
-    }
     //set last selected asset to the same as selected asset
-
-    setConfirmCallback(null);
 
     if (!asset) {
       return;
@@ -421,9 +419,9 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
             <ConfirmationModal
               confirmButtonText="Yes"
               cancelButtonText="No"
-              opened={Boolean(confirmCallback)}
-              onClose={handleCloseDiscardConfirmation}
-              onConfirm={handleDiscardChanges}
+              opened={blockerState === 'blocked'}
+              onClose={reset}
+              onConfirm={proceed || null}
               title="Do you want to discard your changes and continue?"
             />
           </div>

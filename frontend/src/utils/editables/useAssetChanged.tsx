@@ -17,7 +17,7 @@ export function useAssetChanged() {
         return true;
       }
 
-      const changedFields = Object.keys(asset).filter((key) => {
+      return Object.keys(asset).some((key) => {
         return (
           key !== 'override' &&
           key !== 'usage_examples' &&
@@ -26,8 +26,6 @@ export function useAssetChanged() {
       });
 
       //TODO: deep compare usage_examples
-
-      return changedFields.length > 0;
     });
   }, [asset, lastSavedAsset]);
 
