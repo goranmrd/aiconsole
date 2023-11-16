@@ -138,10 +138,7 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
     }
   }
 
-  console.log(isAssetChanged);
-
   const getInitialAsset = useCallback(() => {
-    console.log(copyId, id);
     if (copyId) {
       setLastSavedSelectedAsset(undefined);
 
