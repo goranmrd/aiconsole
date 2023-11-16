@@ -259,6 +259,7 @@ ipcMain.on("request-backend-port", async (event) => {
           data = Uint8Array.prototype.slice.call(data, 0, -1);
         }
         log(window.browserWindow, `${data}`);
+        console.log(`${data}`);
       });
 
       window.backendProcess.stderr.on("data", (data: Buffer) => {
