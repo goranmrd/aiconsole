@@ -14,13 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from aiconsole.core.assets.agents.agent import Agent
-from aiconsole.core.assets.asset import AssetLocation, AssetStatus, AssetType
-from aiconsole.core.gpt.consts import GPTMode
-from fastapi import APIRouter
-from fastapi.responses import JSONResponse
+from aiconsole.core.assets.asset import AssetType
 from aiconsole.core.project import project
 from aiconsole.core.settings.project_settings import get_aiconsole_settings
+from fastapi import APIRouter
+from fastapi.responses import JSONResponse
 
 router = APIRouter()
 
