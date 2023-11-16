@@ -14,45 +14,56 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Asset, AssetType } from '@/types/editables/assetTypes';
+import { Asset, AssetStatus, AssetType } from '@/types/editables/assetTypes';
 import SideBarItem from './SideBarItem';
 
-interface GroupedMaterial {
-  status: string;
-  assets: Asset[];
+const getTitle = (status: AssetStatus, isAgentChosen: boolean, assetType: AssetType) => {
+  switch (status) {
+    case 'forced':
+      return 'User enforced';
+    case 'enabled':
+      return isAgentChosen && assetType === 'agent' ? 'Inactive' : 'AI choice';
+    case 'disabled':
+      return 'Disabled';
+  }
+};
+
+function groupAssetsByStatus(assets: Asset[]) {
+  const groupedAssets = new Map<AssetStatus, Asset[]>([
+    ['forced', []],
+    ['enabled', []],
+    ['disabled', []],
+  ]);
+
+  assets.forEach((asset) => {
+    const { status } = asset;
+    const assets = groupedAssets.get(status) || [];
+    groupedAssets.set(status, assets);
+  });
+
+  return [...groupedAssets.entries()];
 }
 
 export const AssetsSidebarTab = ({ assetType, assets }: { assetType: AssetType; assets: Asset[] }) => {
-  function groupAssetsByStatus(): GroupedMaterial[] {
-    if (!assets) return [];
-
-    const groupedMaterials: Record<string, Asset[]> = assets.reduce((grouped: Record<string, Asset[]>, asset) => {
-      const { status } = asset;
-      grouped[status] = grouped[status] || [];
-      grouped[status].push(asset);
-      return grouped;
-    }, {});
-
-    return Object.entries(groupedMaterials).map(([status, assets]) => ({ status, assets }));
-  }
-
-  const groupedAssets = groupAssetsByStatus();
+  const groupedAssets = groupAssetsByStatus(assets);
+  const hasForcedAssets = Boolean(groupedAssets[0][1].length);
 
   return (
     <div className="flex flex-col gap-[5px] pr-[20px] overflow-y-auto h-full max-h-[calc(100vh-210px)]">
-      {groupedAssets.map(
-        (assetGroup) =>
-          assetGroup.status.length > 0 && (
-            <div key={assetGroup.status}>
-              <h3 className="uppercase px-[9px] py-[5px] text-gray-400 text-[12px] leading-[18px]">
-                {assetGroup.status}
-              </h3>
-              {assetGroup.assets.map((asset) => (
+      {groupedAssets.map(([status, assets]) => {
+        const title = getTitle(status, !hasForcedAssets, assetType);
+
+        return (
+          assets.length > 0 && (
+            <div key={status}>
+              <h3 className="uppercase px-[9px] py-[5px] text-gray-400 text-[12px] leading-[18px]">{title}</h3>
+              {assets.map((asset) => (
                 <SideBarItem key={asset.id} editableObject={asset} editableObjectType={assetType} />
               ))}
             </div>
-          ),
-      )}
+          )
+        );
+      })}
     </div>
   );
 };
