@@ -21,7 +21,6 @@ import { getEditableObjectIcon } from '@/utils/editables/getEditableObjectIcon';
 import { useEditableObjectContextMenu } from '@/utils/editables/useContextMenuForEditable';
 import { useEditablesStore } from '@/store/editables/useEditablesStore';
 import { KeyboardEvent, MouseEvent, useEffect, useRef, useState } from 'react';
-import { useDiscardAssetChangesStore } from '@/store/editables/asset/useDiscardAssetChangesStore';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { getAssetStatusIcon } from '@/utils/editables/getAssetStatusIcon';
 import { EditablesAPI } from '@/api/api/EditablesAPI';
@@ -36,7 +35,6 @@ const SideBarItem = ({
   editableObject: EditableObject;
   editableObjectType: EditableObjectType;
 }) => {
-  const { isChanged, setConfirmCallback } = useDiscardAssetChangesStore();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -150,13 +148,6 @@ const SideBarItem = ({
     showContextMenu()(event);
   }
 
-  const handleInterceptNavigation = (path: string) => (event: MouseEvent) => {
-    if (isChanged) {
-      event.preventDefault();
-      setConfirmCallback(() => navigate(path));
-    }
-  };
-
   return (
     <div ref={popoverRef} onContextMenu={handleContextMenu} className="max-w-[275px]">
       <div className={cn(forced && 'text-primary', disabled && 'opacity-50')}>
@@ -169,7 +160,6 @@ const SideBarItem = ({
               },
             );
           }}
-          onClick={handleInterceptNavigation(`/${editableObjectType}s/${editableObject.id}`)}
           to={`/${editableObjectType}s/${editableObject.id}`}
         >
           <Icon className="min-w-[24px] min-h-[24px] w-[24px] h-[24px]" style={{ color }} />
