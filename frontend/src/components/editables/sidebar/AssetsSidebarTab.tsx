@@ -52,7 +52,7 @@ export const AssetsSidebarTab = ({ assetType, assets }: { assetType: AssetType; 
   return (
     <div className="flex flex-col gap-[5px] pr-[20px] overflow-y-auto h-full max-h-[calc(100vh-210px)]">
       {groupedAssets.map(([status, assets]) => {
-        const title = getTitle(status, !hasForcedAssets, assetType);
+        const title = getTitle(status, hasForcedAssets, assetType);
 
         return (
           assets.length > 0 && (
