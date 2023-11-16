@@ -1,5 +1,8 @@
-name="Domain Availability"
-usage = "How to check domain availability?"
+name = "Domain Availability"
+version = "0.0.2"
+usage = "How to check domain availability???"
+usage_examples = []
+default_status = "enabled"
 content_type = "api"
 content_api = """
 import subprocess
@@ -35,5 +38,4 @@ def is_domain_available(domain) -> bool:
     except Exception as e:
         print(f"Error checking domain {domain}: {e}")
         return False  # Can't determine
-    
 """

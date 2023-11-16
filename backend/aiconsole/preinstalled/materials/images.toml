@@ -1,4 +1,8 @@
+name = "Images"
+version = "0.0.2"
 usage = "Information on how to display images. Outputing ![image info](./path/image.png) displays the image to the user."
+usage_examples = []
+default_status = "enabled"
 content_type = "static_text"
 content_static_text = """
 # How to handle images?
@@ -10,5 +14,4 @@ Don't use IPython.display or mathplotlib to display images.
 Display multiple images in one line.
 
 Usual types of images: png, jpg, jpeg, gif.
-
 """

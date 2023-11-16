@@ -1,4 +1,8 @@
+name = "Weather"
+version = "0.0.2"
 usage = "Use this to get to know how to get weather information."
+usage_examples = []
+default_status = "enabled"
 content_type = "static_text"
 content_static_text = """
 # How to get weather information

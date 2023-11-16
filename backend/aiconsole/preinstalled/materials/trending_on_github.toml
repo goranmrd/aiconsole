@@ -1,4 +1,8 @@
+name = "Trending on Github"
+version = "0.0.2"
 usage = "When you need to know what are the top trending repos on GitHub"
+usage_examples = []
+default_status = "enabled"
 content_type = "api"
 content_api = """
 from typing import List, Literal, Dict

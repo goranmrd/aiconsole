@@ -1,5 +1,8 @@
-name = "materials_api"
+name = "Materials API"
+version = "0.0.2"
 usage = "When you have to write new aiconsole material."
+usage_examples = []
+default_status = "enabled"
 content_type = "api"
 content_api = """
 ""\"

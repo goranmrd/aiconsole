@@ -1,4 +1,8 @@
+name = "IMessage"
+version = "0.0.2"
 usage = "Use this to get to know how to handle iMessage and Contacts apps in mac in order to perform tasks using them."
+usage_examples = []
+default_status = "enabled"
 content_type = "static_text"
 content_static_text = """
 # How to get contact information from contacts
