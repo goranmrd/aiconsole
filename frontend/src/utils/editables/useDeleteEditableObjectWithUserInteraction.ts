@@ -8,7 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 export function useDeleteEditableObjectWithUserInteraction(editableObjectType: EditableObjectType) {
   const navigate = useNavigate();
   const deleteEditableObject = useEditablesStore((state) => state.deleteEditableObject);
-  const editable = useSelectedEditableObject();
+  const [editable] = useSelectedEditableObject();
 
   function handleDelete(id: string) {
     if (!window.confirm(`Are you sure you want to delete this ${editableObjectType}?`)) {

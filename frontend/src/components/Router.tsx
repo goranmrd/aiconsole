@@ -19,8 +19,8 @@ import { ProjectTopBarElements } from '@/components/projects/ProjectTopBarElemen
 import { useProjectStore } from '@/store/projects/useProjectStore';
 import { HashRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
-import { EditableObjectEditor } from './editables/EditableObjectEditor';
-import { ConvertParamsToStores } from './editables/ConvertParamsToStores';
+import { AssetEditor } from './editables/assets/AssetEditor';
+import { ChatPage } from './editables/chat/ChatPage';
 import SideBar from './editables/sidebar/SideBar';
 import { Home } from './projects/Home';
 import { GlobalSettingsModal } from './settings/GlobalSettingsModal';
@@ -77,9 +77,9 @@ export function Router() {
                     <Route path="/chats/*" element={<SideBar initialTab="chats" />} />
                   </Routes>
                   <Routes>
-                    <Route path="/:type/:id" element={<ConvertParamsToStores />}>
-                      <Route path="/:type/:id" element={<EditableObjectEditor />} />
-                    </Route>
+                    <Route path="/chats/:id" element={<ChatPage />} />
+                    <Route path="/materials/:id" element={<AssetEditor assetType={'material'} />} />
+                    <Route path="/agents/:id" element={<AssetEditor assetType={'agent'} />} />
                   </Routes>
                 </div>
               </div>

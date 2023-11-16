@@ -14,33 +14,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { useEditablesStore } from '@/store/editables/useEditablesStore';
-import { EditableObject, EditableObjectType } from '@/types/editables/assetTypes';
+import { EditableObject } from '@/types/editables/assetTypes';
 import { cn } from '@/utils/common/cn';
 import { useEffect, useRef, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
 
 const InlineEditableObjectName = ({
   editableObject, // The editable object with 'id' and 'name'
-  editableObjectType, // The type of the editable object
   isEditing,
   setIsEditing,
   className,
-  isNew,
+  onRename,
 }: {
   editableObject: EditableObject;
-  editableObjectType: EditableObjectType;
   isEditing: boolean;
   setIsEditing: (isEditing: boolean) => void;
   className?: string;
-  isNew: boolean;
+  onRename?: (newName: string) => void;
 }) => {
   const [inputText, setInputText] = useState(editableObject.name);
   const inputRef = useRef<HTMLInputElement>(null);
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  const renameEditableObject = useEditablesStore((state) => state.renameEditableObject);
 
   useEffect(() => {
     if (isEditing) {
@@ -51,18 +43,7 @@ const InlineEditableObjectName = ({
 
   const handleRename = async () => {
     if (inputText.trim() && inputText !== editableObject.name) {
-      const oldId = editableObject.id;
-      const newId = await renameEditableObject(editableObject, inputText.trim(), isNew);
-
-      //if we are in details of this object, we need to update the location
-      if (location.pathname === `/${editableObjectType}s/${oldId}`) {
-        navigate(`/${editableObjectType}s/${newId}`);
-      }
-
-      //If it's chat we need to reload chat history because there is no autoreload on change for chats
-      if (editableObjectType === 'chat') {
-        useEditablesStore.getState().initChatHistory();
-      }
+      onRename?.(inputText);
     }
     setIsEditing(false); // Exit editing mode regardless of whether a change was made
   };

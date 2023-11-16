@@ -16,89 +16,23 @@
 
 import { StateCreator } from 'zustand';
 
-import {
-  EditableObject,
-  EditableObjectType,
-  EditableObjectTypePlural,
-} from '@/types/editables/assetTypes';
-import { convertNameToId } from '@/utils/editables/convertNameToId';
-import { getEditableObjectType } from '@/utils/editables/getEditableObjectType';
+import { EditableObjectType, EditableObjectTypePlural } from '@/types/editables/assetTypes';
 import { EditablesAPI } from '../../api/api/EditablesAPI';
 import { EditablesStore } from './useEditablesStore';
-import { Chat } from '@/types/editables/chatTypes';
 
 export type EdiblesSlice = {
-  renameEditableObject: (
-    editableObject: EditableObject,
-    newName: string,
-    isNew: boolean,
-  ) => Promise<string>;
-  deleteEditableObject: (
-    editableObjectType: EditableObjectType,
-    id: string,
-  ) => Promise<void>;
+  deleteEditableObject: (editableObjectType: EditableObjectType, id: string) => Promise<void>;
 };
 
-export const createEdiblesSlice: StateCreator<
-  EditablesStore,
-  [],
-  [],
-  EdiblesSlice
-> = (set) => ({
-  //returns new id
-  renameEditableObject: async (
-    editableObject: EditableObject,
-    newName: string,
-    isNew: boolean,
-  ) => {
-    editableObject.name = newName;
-
-    const originalId = editableObject.id;
-    const editableObjectType = getEditableObjectType(editableObject);
-    const editableObjectTypePlural = (editableObjectType +
-      's') as EditableObjectTypePlural;
-
-    if (!editableObjectType)
-      throw new Error(`Unknown editable object type ${editableObjectType}`);
-
-    // Chats have persistent ids, no need to update them
-    if (editableObjectType !== 'chat') {
-      const newId = convertNameToId(newName);
-      editableObject.id = newId;
-    } else {
-      const chat = editableObject as Chat;
-      chat.title_edited = true;
-    }
-
-    set((state) => ({
-      [editableObjectTypePlural]: (state[editableObjectTypePlural] || []).map(
-        (editableObject) =>
-          editableObject.id === originalId ? editableObject : editableObject,
-      ),
-    }));
-
-    if (!isNew) {
-      await EditablesAPI.updateEditableObject(
-        editableObjectType,
-        editableObject,
-        originalId,
-      );
-    }
-
-    return editableObject.id;
-  },
-  deleteEditableObject: async (
-    editableObjectType: EditableObjectType,
-    id: string,
-  ) => {
+export const createEdiblesSlice: StateCreator<EditablesStore, [], [], EdiblesSlice> = (set) => ({
+  deleteEditableObject: async (editableObjectType: EditableObjectType, id: string) => {
     await EditablesAPI.deleteEditableObject(editableObjectType, id);
-    const editableObjectTypePlural = (editableObjectType +
-      's') as EditableObjectTypePlural;
+    const editableObjectTypePlural = (editableObjectType + 's') as EditableObjectTypePlural;
 
     set((state) => ({
-      [editableObjectTypePlural]: (
-        state[editableObjectTypePlural] || []
-      ).filter((editableObject) => editableObject.id !== id),
+      [editableObjectTypePlural]: (state[editableObjectTypePlural] || []).filter(
+        (editableObject) => editableObject.id !== id,
+      ),
     }));
   },
 });

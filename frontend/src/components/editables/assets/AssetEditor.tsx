@@ -14,21 +14,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useCallback, useEffect, useState } from 'react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
+import { Button } from '@/components/common/Button';
+import { ConfirmationModal } from '@/components/common/ConfirmationModal';
 import { CodeInput } from '@/components/editables/assets/CodeInput';
 import { SimpleInput } from '@/components/editables/assets/TextInput';
+import { useAssetStore } from '@/store/editables/asset/useAssetStore';
+import { useDiscardAssetChangesStore } from '@/store/editables/asset/useDiscardAssetChangesStore';
 import { useEditablesStore } from '@/store/editables/useEditablesStore';
-import { Agent, AssetType, Material, MaterialContentType, RenderedMaterial } from '@/types/editables/assetTypes';
+import {
+  Agent,
+  Asset,
+  AssetType,
+  Material,
+  MaterialContentType,
+  RenderedMaterial,
+} from '@/types/editables/assetTypes';
 import { cn } from '@/utils/common/cn';
 import showNotification from '@/utils/common/showNotification';
-import { getEditableObjectType } from '@/utils/editables/getEditableObjectType';
+import { convertNameToId } from '@/utils/editables/convertNameToId';
 import { MaterialContentNames, getMaterialContentName } from '@/utils/editables/getMaterialContentName';
+import { useEditableObjectContextMenu } from '@/utils/editables/useContextMenuForEditable';
+import { useDeleteEditableObjectWithUserInteraction } from '@/utils/editables/useDeleteEditableObjectWithUserInteraction';
 import { EditablesAPI } from '../../../api/api/EditablesAPI';
-import { useAssetStore } from '@/store/editables/asset/useAssetStore';
-import { ConfirmationModal } from '@/components/common/ConfirmationModal';
-import { useDiscardAssetChangesStore } from '@/store/editables/asset/useDiscardAssetChangesStore';
+import { useAssetChanged } from '../../../utils/editables/useAssetChanged';
+import { EditorHeader } from '../EditorHeader';
 
 const MaterialContent = ({ material }: { material: Material }) => {
   const setSelectedAsset = useAssetStore((state) => state.setSelectedAsset);
@@ -89,50 +101,72 @@ const AgentContent = ({ agent }: { agent: Agent }) => {
   );
 };
 
-export function AssetEditor() {
+export function AssetEditor({ assetType }: { assetType: AssetType }) {
+  const params = useParams();
+  const id = params.id || '';
+  const editableObjectType = assetType;
+  const searchParams = useSearchParams()[0];
+  const copyId = searchParams.get('copy');
+  const forceRefresh = searchParams.get('forceRefresh'); // used to force a refresh
   const asset = useAssetStore((state) => state.selectedAsset);
   const lastSavedAsset = useAssetStore((state) => state.lastSavedSelectedAsset);
+  const setLastSavedSelectedAsset = useAssetStore((state) => state.setLastSavedSelectedAsset);
   const setSelectedAsset = useAssetStore((state) => state.setSelectedAsset);
-  const { setIsChanged, setConfirmCallback, confirmCallback } = useDiscardAssetChangesStore();
-
-  const searchParams = useSearchParams()[0];
+  const { setConfirmCallback, confirmCallback } = useDiscardAssetChangesStore();
   const [preview, setPreview] = useState<RenderedMaterial | undefined>(undefined);
-
   const [typeName, setTypeName] = useState<MaterialContentNames>('Material');
   const [showPreview, setShowPreview] = useState(false);
-
   const previewValue = preview ? preview?.content.split('\\n').join('\n') : 'Generating preview...';
-  const assetType = getEditableObjectType(asset) as AssetType;
-
   const deleteEditableObject = useEditablesStore((state) => state.deleteEditableObject);
+  const handleDeleteWithInteraction = useDeleteEditableObjectWithUserInteraction(assetType);
   const navigate = useNavigate();
+  const isAssetChanged = useAssetChanged();
 
-  const isAssetChanged = (() => {
-    if (!asset || !lastSavedAsset) {
-      return true;
+  function handleRevert(id: string) {
+    if (lastSavedAsset === undefined) {
+      handleDiscardChanges();
+    } else {
+      handleDeleteWithInteraction(id);
     }
+  }
 
-    const changedFields = Object.keys(asset).filter((key) => {
-      return (
-        key !== 'status' && asset[key as keyof typeof asset] !== lastSavedAsset[key as keyof typeof lastSavedAsset]
-      );
-    });
+  const getInitialAsset = useCallback(() => {
+    if (copyId) {
+      setLastSavedSelectedAsset(undefined);
 
-    return changedFields.length > 0;
-  })();
+      EditablesAPI.fetchEditableObject<Asset>(editableObjectType, copyId).then((assetToCopy) => {
+        assetToCopy.name += ' Copy';
+        assetToCopy.defined_in = 'project';
+        assetToCopy.id = convertNameToId(assetToCopy.name);
+        setSelectedAsset(assetToCopy);
+      });
+    } else {
+      //For id === 'new' This will get a default new asset
+      EditablesAPI.fetchEditableObject<Asset>(editableObjectType, id).then((editable) => {
+        setLastSavedSelectedAsset(id !== 'new' ? editable : undefined); // for new assets, lastSavedAsset is undefined
+        setSelectedAsset(editable);
+      });
+    }
+  }, [copyId, editableObjectType, id, setLastSavedSelectedAsset, setSelectedAsset]);
 
+  // Acquire the initial object
   useEffect(() => {
-    setIsChanged(isAssetChanged);
-  }, [isAssetChanged, setIsChanged]);
+    getInitialAsset();
+
+    return () => {
+      setSelectedAsset(undefined);
+      setLastSavedSelectedAsset(undefined);
+    };
+  }, [copyId, id, editableObjectType, forceRefresh, setLastSavedSelectedAsset, setSelectedAsset]);
 
   const isAssetStatusChanged = (() => {
     if (!asset || !lastSavedAsset) {
-      return true;
+      return false;
     }
     return asset.status !== lastSavedAsset.status;
   })();
 
-  const updateStatusIfNecessary = async () => {
+  const updateStatusIfNecessary = useCallback(async () => {
     if (isAssetStatusChanged && asset) {
       await EditablesAPI.setAssetStatus(assetType, asset.id, asset.status);
 
@@ -142,24 +176,19 @@ export function AssetEditor() {
         variant: 'success',
       });
     }
-  };
+  }, [asset, assetType, isAssetStatusChanged]);
 
   const enableSubmit = (isAssetChanged || isAssetStatusChanged) && asset?.id && asset?.name;
   const disableSubmit = !enableSubmit;
 
-  const handleSaveClick = async () => {
-    let isReallyNew = lastSavedAsset === undefined;
-
+  const handleSaveClick = useCallback(async () => {
     if (asset === undefined) {
       return;
     }
 
-    if (asset.defined_in === 'aiconsole') {
-      asset.defined_in = 'project';
-      isReallyNew = true;
-    }
+    console.log('handleSaveClick', asset, lastSavedAsset);
 
-    if (isReallyNew) {
+    if (lastSavedAsset === undefined) {
       await EditablesAPI.saveNewEditableObject(assetType, asset);
       await updateStatusIfNecessary();
 
@@ -194,12 +223,26 @@ export function AssetEditor() {
 
     if (lastSavedAsset?.id !== asset.id) {
       navigate(`/${assetType}s/${asset.id}`);
+    } else {
+      // Reload the asset from server
+      const newAsset = await EditablesAPI.fetchEditableObject<Material>(assetType, asset.id);
+      setSelectedAsset(newAsset);
+      useAssetStore.setState({ lastSavedSelectedAsset: newAsset });
     }
 
     useAssetStore.setState({ lastSavedSelectedAsset: asset });
-    setIsChanged(false);
     setConfirmCallback(null);
-  };
+  }, [
+    asset,
+    assetType,
+    deleteEditableObject,
+    isAssetChanged,
+    lastSavedAsset,
+    navigate,
+    setSelectedAsset,
+    updateStatusIfNecessary,
+    setConfirmCallback,
+  ]);
 
   const handleCloseDiscardConfirmation = () => {
     setConfirmCallback(null);
@@ -209,8 +252,19 @@ export function AssetEditor() {
     if (confirmCallback) {
       confirmCallback();
     }
-    setIsChanged(false);
+    //set last selected asset to the same as selected asset
+
     setConfirmCallback(null);
+
+    if (!asset) {
+      return;
+    }
+
+    if (lastSavedAsset === undefined) {
+      getInitialAsset();
+    } else {
+      setSelectedAsset({ ...lastSavedAsset } as Asset);
+    }
   };
 
   useEffect(() => {
@@ -242,61 +296,140 @@ export function AssetEditor() {
     };
   }, [asset, assetType, lastSavedAsset, searchParams]);
 
+  // If edited a core asset, set override and defined in
+  useEffect(() => {
+    if (asset && asset.defined_in === 'aiconsole' && isAssetChanged) {
+      console.log('CORE');
+      setSelectedAsset({ ...asset, defined_in: 'project' } as Material);
+      setLastSavedSelectedAsset(undefined);
+    }
+  }, [asset, setSelectedAsset, isAssetChanged, setLastSavedSelectedAsset]);
+
+  const [hasCore, setHasCore] = useState(false);
+
+  // hasCore
+  useEffect(() => {
+    if (!assetType || !asset?.id) {
+      setHasCore(false);
+      return;
+    }
+
+    EditablesAPI.doesEdibleExist(assetType, asset?.id, 'aiconsole').then((exists) => {
+      setHasCore(exists);
+      setSelectedAsset({ ...asset, override: exists });
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [assetType, asset?.id, setSelectedAsset]);
+
+  const handleRename = async (newName: string) => {
+    if (!asset) {
+      return;
+    }
+
+    setSelectedAsset({ ...asset, name: newName, id: convertNameToId(newName) });
+  };
+
+  const { showContextMenu } = useEditableObjectContextMenu({ editable: asset, editableObjectType: assetType });
+
   return (
-    <div className="flex flex-col w-full h-full overflow-auto p-6 gap-4">
-      {asset && (
-        <>
-          <SimpleInput
-            label="Usage"
-            name="usage"
-            value={asset.usage}
-            onChange={(value) => setSelectedAsset({ ...asset, usage: value })}
-            withTooltip
-            withResize
-            tootltipText={`Usage is used to help identify when this ${typeName} should be used. `}
-          />
-          <div className="flex-grow flex flex-row w-full gap-4 overflow-clip">
-            <div className="flex-1 w-1/2">
-              {assetType === 'agent' ? (
-                <AgentContent agent={asset as Agent} />
-              ) : (
-                <MaterialContent material={asset as Material} />
+    <div className="flex flex-col w-full h-full max-h-full overflow-auto">
+      <EditorHeader
+        editable={asset}
+        onRename={handleRename}
+        isChanged={isAssetChanged}
+        onContextMenu={showContextMenu}
+      >
+        (Defined in {asset?.defined_in})
+      </EditorHeader>
+      <div className="flex-grow overflow-auto">
+        <div className="flex w-full h-full flex-col justify-between downlight">
+          <div className="w-full h-full overflow-auto">
+            <div className="flex-grow flex flex-col w-full h-full overflow-auto p-6 gap-4">
+              {asset && (
+                <>
+                  {hasCore && asset.defined_in === 'aiconsole' && (
+                    <div className="flex-none flex flex-row gap-2 bg-primary/10 px-6 py-2 items-center -m-6 mb-0 ">
+                      <span className="flex-grow">This is a system {assetType} start editing to override it.</span>
+                    </div>
+                  )}
+                  {hasCore && asset.defined_in === 'project' && (
+                    <div className="flex-none flex flex-row gap-2 bg-secondary/10 px-6 py-2 items-center -m-6 mb-0 ">
+                      <span className="flex-grow">
+                        This {assetType} {lastSavedAsset !== undefined ? 'is overriding' : 'will override'} a default
+                        system {assetType}.
+                      </span>
+                      <Button
+                        variant="secondary"
+                        small
+                        classNames="self-end m-0 text-xs p-2 px-4"
+                        onClick={() => handleRevert(asset.id)}
+                      >
+                        Revert
+                      </Button>{' '}
+                    </div>
+                  )}
+                  <SimpleInput
+                    label="Usage"
+                    name="usage"
+                    value={asset.usage}
+                    onChange={(value) => setSelectedAsset({ ...asset, usage: value })}
+                    withTooltip
+                    withResize
+                    tootltipText={`Usage is used to help identify when this ${typeName} should be used. `}
+                  />
+                  <div className="flex-grow flex flex-row w-full gap-4 overflow-clip">
+                    <div className="flex-1 w-1/2">
+                      {assetType === 'agent' ? (
+                        <AgentContent agent={asset as Agent} />
+                      ) : (
+                        <MaterialContent material={asset as Material} />
+                      )}
+                    </div>
+                    {showPreview && (
+                      <div className="flex-1 w-1/2">
+                        <CodeInput
+                          label="Preview of text to be injected into AI context"
+                          value={preview?.error ? preview.error : previewValue}
+                          readOnly={true}
+                          className="flex-grow"
+                          codeLanguage="markdown"
+                        />
+                      </div>
+                    )}
+                  </div>
+                  <button
+                    disabled={disableSubmit}
+                    className={cn(
+                      ' flex-none bg-primary hover:bg-gray-700/95 text-black hover:bg-primary-light px-4 py-1 rounded-full flow-right text-[16px] ',
+                      {
+                        'opacity-[0.3] cursor-not-allowed hover:bg-initial': disableSubmit,
+                      },
+                    )}
+                    onClick={handleSaveClick}
+                  >
+                    {lastSavedAsset === undefined
+                      ? hasCore
+                        ? 'Override'
+                        : 'Create'
+                      : isAssetChanged
+                      ? 'Save Changes'
+                      : 'Saved'}
+                  </button>
+                </>
               )}
             </div>
-            {showPreview && (
-              <div className="flex-1 w-1/2">
-                <CodeInput
-                  label="Preview of text to be injected into AI context"
-                  value={preview?.error ? preview.error : previewValue}
-                  readOnly={true}
-                  className="flex-grow"
-                  codeLanguage="markdown"
-                />
-              </div>
-            )}
+
+            <ConfirmationModal
+              confirmButtonText="Yes"
+              cancelButtonText="No"
+              opened={Boolean(confirmCallback)}
+              onClose={handleCloseDiscardConfirmation}
+              onConfirm={handleDiscardChanges}
+              title="Do you want to discard your changes and continue?"
+            />
           </div>
-          <button
-            disabled={disableSubmit}
-            className={cn(
-              ' flex-none bg-primary hover:bg-gray-700/95 text-black hover:bg-primary-light px-4 py-1 rounded-full flow-right text-[16px] ',
-              {
-                'opacity-[0.3] cursor-not-allowed hover:bg-initial': disableSubmit,
-              },
-            )}
-            onClick={handleSaveClick}
-          >
-            Save
-          </button>
-        </>
-      )}
-      <ConfirmationModal
-        confirmButtonText="Yes"
-        cancelButtonText="No"
-        opened={Boolean(confirmCallback)}
-        onClose={handleCloseDiscardConfirmation}
-        onConfirm={handleDiscardChanges}
-        title="Do you want to discard your changes and continue?"
-      />
+        </div>
+      </div>
     </div>
   );
 }

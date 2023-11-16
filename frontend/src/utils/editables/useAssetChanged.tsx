@@ -9,13 +9,17 @@ export function useAssetChanged() {
 
   useEffect(() => {
     setIsChanged(() => {
-      if (!asset || !lastSavedAsset) {
+      if (!asset) {
+        return false;
+      }
+
+      if (!lastSavedAsset) {
         return true;
       }
 
       const changedFields = Object.keys(asset).filter((key) => {
         return (
-          key !== 'status' && asset[key as keyof typeof asset] !== lastSavedAsset[key as keyof typeof lastSavedAsset]
+          key !== 'override' && asset[key as keyof typeof asset] !== lastSavedAsset[key as keyof typeof lastSavedAsset]
         );
       });
 

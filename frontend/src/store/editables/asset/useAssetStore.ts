@@ -24,7 +24,8 @@ export type ProjectSlice = {
   selectedAsset?: Asset;
   lastSavedSelectedAsset?: Asset;
   getAsset: (assetType: AssetType, id: string) => Asset | undefined;
-  setSelectedAsset: (asset: Asset) => void;
+  setSelectedAsset: (asset?: Asset) => void;
+  setLastSavedSelectedAsset: (asset?: Asset) => void;
   setAssetStatus: (assetType: AssetType, id: string, status: AssetStatus) => Promise<void>;
   updateSelectedAsset: (name: string, newId: string) => void;
 };
@@ -32,6 +33,11 @@ export type ProjectSlice = {
 export const useAssetStore = create<ProjectSlice>((set) => ({
   lastSavedSelectedAsset: undefined,
   selectedAsset: undefined,
+  setLastSavedSelectedAsset: (asset?: Asset) => {
+    set({
+      lastSavedSelectedAsset: asset,
+    });
+  },
   getAsset: (assetType: AssetType, id: string): Asset | undefined => {
     if (assetType === 'agent') {
       if (id === 'user') {
@@ -100,7 +106,7 @@ export const useAssetStore = create<ProjectSlice>((set) => ({
 
     throw new Error(`Unknown asset type ${assetType}`);
   },
-  setSelectedAsset: (asset: Asset) => {
+  setSelectedAsset: (asset?: Asset) => {
     set({
       selectedAsset: asset,
     });
