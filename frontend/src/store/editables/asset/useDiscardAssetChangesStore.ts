@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { create } from 'zustand';
+import { createWithEqualityFn } from 'zustand/traditional';
 import { shallow } from 'zustand/shallow';
 
 type Callback = () => void;
@@ -26,7 +26,7 @@ interface DiscardStore {
   setConfirmCallback: (value: null | Callback) => void;
 }
 
-const discardStore = create<DiscardStore>()((set) => ({
+const discardStore = createWithEqualityFn<DiscardStore>()((set) => ({
   isChanged: false,
   confirmCallback: null,
   setIsChanged: (isChanged: boolean) => set({ isChanged }),
