@@ -73,20 +73,29 @@ class Assets:
     async def save_asset(self, asset: Asset, new: bool, old_asset_id: Optional[str] = None):
         new_asset = await save_asset_to_fs(asset, new, old_asset_id)
 
-        if asset.id in self._assets:
-            self._assets[asset.id][0] = new_asset
+        if asset.id not in self._assets:
+            self._assets[asset.id] = []
+
+        # integrity checks and deleting old assets from structure
+        if not new:
+            if not self._assets[asset.id] or self._assets[asset.id][0].defined_in != AssetLocation.PROJECT_DIR:
+                raise Exception(f"Asset {asset.id} cannot be edited")
+            self._assets[asset.id].pop(0)
         else:
-            self._assets[asset.id] = [new_asset]
+            if self._assets[asset.id] and self._assets[asset.id][0].defined_in == AssetLocation.PROJECT_DIR:
+                raise Exception(f"Asset {asset.id} already exists")
+
+        self._assets[asset.id].insert(0, new_asset)
 
         self._suppress_notification()
 
     async def delete_asset(self, asset_id):
-        delete_asset_from_fs(self.asset_type, asset_id)
-
         self._assets[asset_id].pop(0)
 
         if len(self._assets[asset_id]) == 0:
             del self._assets[asset_id]
+
+        delete_asset_from_fs(self.asset_type, asset_id)
 
         self._suppress_notification()
 
@@ -97,14 +106,14 @@ class Assets:
     def _suppress_notification(self):
         self._suppress_notification_until = datetime.datetime.now() + datetime.timedelta(seconds=10)
 
-    def get_asset(self, name, location: AssetLocation | None = None):
+    def get_asset(self, id, location: AssetLocation | None = None):
         """
         Get a specific asset.
         """
-        if name not in self._assets or len(self._assets[name]) == 0:
+        if id not in self._assets or len(self._assets[id]) == 0:
             return None
 
-        for asset in self._assets[name]:
+        for asset in self._assets[id]:
             if location == None or asset.defined_in == location:
                 return asset
 

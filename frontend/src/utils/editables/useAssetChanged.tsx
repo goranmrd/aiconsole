@@ -19,9 +19,13 @@ export function useAssetChanged() {
 
       const changedFields = Object.keys(asset).filter((key) => {
         return (
-          key !== 'override' && asset[key as keyof typeof asset] !== lastSavedAsset[key as keyof typeof lastSavedAsset]
+          key !== 'override' &&
+          key !== 'usage_examples' &&
+          asset[key as keyof typeof asset] !== lastSavedAsset[key as keyof typeof lastSavedAsset]
         );
       });
+
+      //TODO: deep compare usage_examples
 
       return changedFields.length > 0;
     });

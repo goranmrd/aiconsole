@@ -107,7 +107,6 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
   const editableObjectType = assetType;
   const searchParams = useSearchParams()[0];
   const copyId = searchParams.get('copy');
-  const forceRefresh = searchParams.get('forceRefresh'); // used to force a refresh
   const asset = useAssetStore((state) => state.selectedAsset);
   const lastSavedAsset = useAssetStore((state) => state.lastSavedSelectedAsset);
   const setLastSavedSelectedAsset = useAssetStore((state) => state.setLastSavedSelectedAsset);
@@ -123,7 +122,7 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
   const isAssetChanged = useAssetChanged();
 
   function handleRevert(id: string) {
-    if (lastSavedAsset === undefined) {
+    if (isAssetChanged) {
       handleDiscardChanges();
     } else {
       handleDeleteWithInteraction(id);
@@ -157,7 +156,7 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
       setSelectedAsset(undefined);
       setLastSavedSelectedAsset(undefined);
     };
-  }, [copyId, id, editableObjectType, forceRefresh, setLastSavedSelectedAsset, setSelectedAsset]);
+  }, [getInitialAsset, setLastSavedSelectedAsset, setSelectedAsset]);
 
   const isAssetStatusChanged = (() => {
     if (!asset || !lastSavedAsset) {
@@ -300,7 +299,7 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
   useEffect(() => {
     if (asset && asset.defined_in === 'aiconsole' && isAssetChanged) {
       console.log('CORE');
-      setSelectedAsset({ ...asset, defined_in: 'project' } as Material);
+      setSelectedAsset({ ...asset, defined_in: 'project' } as Asset);
       setLastSavedSelectedAsset(undefined);
     }
   }, [asset, setSelectedAsset, isAssetChanged, setLastSavedSelectedAsset]);
