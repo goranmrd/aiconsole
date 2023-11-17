@@ -241,7 +241,6 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
 
     if (lastSavedAsset?.id !== asset.id) {
       useAssetStore.setState({ lastSavedSelectedAsset: asset });
-      console.log('SHOULD NAVIGATE');
       setNewPath(`/${assetType}s/${asset.id}`);
     } else {
       // Reload the asset from server
