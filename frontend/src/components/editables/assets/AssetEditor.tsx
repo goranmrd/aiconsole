@@ -40,6 +40,7 @@ import { EditablesAPI } from '../../../api/api/EditablesAPI';
 import { useAssetChanged } from '../../../utils/editables/useAssetChanged';
 import { EditorHeader } from '../EditorHeader';
 import { localStorageTyped } from '@/utils/common/localStorage';
+import { usePrevious } from '@mantine/hooks';
 
 const { setItem } = localStorageTyped<boolean>('isAssetChanged');
 
@@ -119,6 +120,9 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
   const handleDeleteWithInteraction = useDeleteEditableObjectWithUserInteraction(assetType);
   const navigate = useNavigate();
   const isAssetChanged = useAssetChanged();
+  const isPrevAssetChanged = usePrevious(isAssetChanged);
+
+  const wasAssetChangedInitially = !isPrevAssetChanged && isAssetChanged;
 
   const blocker = useBlocker(isAssetChanged);
 
@@ -286,12 +290,12 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
 
   // If edited a core asset, set override and defined in
   useEffect(() => {
-    if (asset && asset.defined_in === 'aiconsole' && isAssetChanged) {
+    if (asset && asset.defined_in === 'aiconsole' && wasAssetChangedInitially) {
       console.log('CORE');
       setSelectedAsset({ ...asset, defined_in: 'project' } as Asset);
       setLastSavedSelectedAsset(undefined);
     }
-  }, [asset, setSelectedAsset, isAssetChanged, setLastSavedSelectedAsset]);
+  }, [asset, setSelectedAsset, wasAssetChangedInitially, setLastSavedSelectedAsset]);
 
   const [hasCore, setHasCore] = useState(false);
 
