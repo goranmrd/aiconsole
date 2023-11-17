@@ -14,30 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from aiconsole.core.assets.asset import Asset
+import tomlkit
 from aiconsole.core.assets.agents.agent import Agent
-from aiconsole.core.assets.asset import AssetLocation, Asset
 from aiconsole.core.assets.fs.load_asset_from_fs import load_asset_from_fs
-from aiconsole.core.assets.fs.move_asset_in_fs import move_asset_in_fs
 from aiconsole.core.assets.materials.material import Material, MaterialContentType
 from aiconsole.core.project.paths import get_project_assets_directory
-import tomlkit
 
 
-async def save_asset_to_fs(asset: Asset, create: bool, old_asset_id: str | None = None):
-    if asset.defined_in != AssetLocation.PROJECT_DIR:
-        raise Exception("Cannot save asset not defined in project.")
-
+async def save_asset_to_fs(asset: Asset):
     path = get_project_assets_directory(asset.type)
-    file_path = path / f"{asset.id}.toml"
-
-    if create and file_path.exists():
-        raise Exception(f"Asset {asset.id} already exists.")
-
-    if not create and not (path / f"{old_asset_id}.toml").exists():
-        raise Exception(f"Asset {old_asset_id} does not exist.")
-
-    if not create and old_asset_id and not file_path.exists():
-        move_asset_in_fs(asset.type, old_asset_id, asset.id)
 
     try:
         current_version = (await load_asset_from_fs(asset.type, asset.id)).version

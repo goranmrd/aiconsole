@@ -18,8 +18,9 @@ import datetime
 import logging
 from typing import Dict, List, Optional
 from aiconsole.core.assets.asset import Asset, AssetLocation, AssetStatus, AssetType
-from aiconsole.core.assets.fs.delete_asset_from_fs import delete_asset_from_fs
 from aiconsole.core.assets.fs.move_asset_in_fs import move_asset_in_fs
+from aiconsole.core.assets.fs.project_asset_exists_fs import project_asset_exists_fs
+from aiconsole.core.assets.fs.delete_asset_from_fs import delete_asset_from_fs
 from aiconsole.core.assets.fs.save_asset_to_fs import save_asset_to_fs
 from aiconsole.core.assets.load_all_assets import load_all_assets
 
@@ -70,14 +71,32 @@ class Assets:
             if settings.get_asset_status(self.asset_type, assets[0].id) in [status]
         ]
 
-    async def save_asset(self, asset: Asset, new: bool, old_asset_id: Optional[str] = None):
-        new_asset = await save_asset_to_fs(asset, new, old_asset_id)
+    async def save_asset(self, asset: Asset, old_asset_id: str, create: bool):
+        if asset.defined_in != AssetLocation.PROJECT_DIR:
+            raise Exception("Cannot save asset not defined in project.")
+
+        exists_in_project = project_asset_exists_fs(self.asset_type, asset.id)
+        old_exists = project_asset_exists_fs(self.asset_type, old_asset_id)
+
+        if create and exists_in_project:
+            raise Exception(f"Asset {asset.id} already exists.")
+
+        if not create and not exists_in_project:
+            raise Exception(f"Asset {asset.id} does not exist.")
+
+        rename = False
+
+        if create and old_asset_id and not exists_in_project and old_exists:
+            await move_asset_in_fs(asset.type, old_asset_id, asset.id)
+            rename = True
+
+        new_asset = await save_asset_to_fs(asset)
 
         if asset.id not in self._assets:
             self._assets[asset.id] = []
 
         # integrity checks and deleting old assets from structure
-        if not new:
+        if not create:
             if not self._assets[asset.id] or self._assets[asset.id][0].defined_in != AssetLocation.PROJECT_DIR:
                 raise Exception(f"Asset {asset.id} cannot be edited")
             self._assets[asset.id].pop(0)
@@ -89,6 +108,8 @@ class Assets:
 
         self._suppress_notification()
 
+        return rename
+
     async def delete_asset(self, asset_id):
         self._assets[asset_id].pop(0)
 
@@ -97,10 +118,6 @@ class Assets:
 
         delete_asset_from_fs(self.asset_type, asset_id)
 
-        self._suppress_notification()
-
-    def move(self, old_asset_id: str, new_asset_id: str) -> None:
-        move_asset_in_fs(self.asset_type, old_asset_id, new_asset_id)
         self._suppress_notification()
 
     def _suppress_notification(self):

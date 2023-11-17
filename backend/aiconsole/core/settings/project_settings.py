@@ -15,17 +15,16 @@
 # limitations under the License.
 import datetime
 import logging
-import os
 from pathlib import Path
-from typing import Any, Dict, List, Optional
-from aiconsole.core.project import project
+from typing import Any
 
 import litellm
 import tomlkit
 import tomlkit.container
 import tomlkit.exceptions
-from aiconsole.api.websockets.outgoing_messages import DebugJSONWSMessage, SettingsWSMessage
+from aiconsole.api.websockets.outgoing_messages import SettingsWSMessage
 from aiconsole.core.assets.asset import AssetStatus, AssetType
+from aiconsole.core.project import project
 from aiconsole.core.project.paths import get_project_directory
 from aiconsole.core.project.project import is_project_initialized
 from aiconsole.utils.BatchingWatchDogHandler import BatchingWatchDogHandler
@@ -39,14 +38,12 @@ _log = logging.getLogger(__name__)
 
 
 class PartialSettingsData(BaseModel):
-    code_autorun: Optional[bool] = None
-    openai_api_key: Optional[str] = None
-    disabled_materials: Optional[List[str]] = None
-    disabled_agents: Optional[List[str]] = None
-    enabled_materials: Optional[List[str]] = None
-    enabled_agents: Optional[List[str]] = None
-    forced_materials: Optional[List[str]] = None
-    forced_agent: Optional[str] = None
+    code_autorun: bool | None = None
+    openai_api_key: str | None = None
+    materials: dict[str, AssetStatus] = {}
+    materials_to_reset: list[str] = []
+    agents: dict[str, AssetStatus] = {}
+    agents_to_reset: list[str] = []
     to_global: bool = False
 
 
@@ -56,16 +53,12 @@ class PartialSettingsAndToGlobal(PartialSettingsData):
 
 class SettingsData(BaseModel):
     code_autorun: bool = False
-    openai_api_key: Optional[str] = None
-    disabled_materials: List[str] = []
-    disabled_agents: List[str] = []
-    enabled_materials: List[str] = []
-    enabled_agents: List[str] = []
-    forced_materials: List[str] = []
-    forced_agent: str = ""
+    openai_api_key: str | None = None
+    materials: dict[str, AssetStatus] = {}
+    agents: dict[str, AssetStatus] = {}
 
 
-def _load_from_path(file_path: Path) -> Dict[str, Any]:
+def _load_from_path(file_path: Path) -> dict[str, Any]:
     with file_path.open() as file:
         document = tomlkit.loads(file.read())
 
@@ -80,7 +73,7 @@ def _set_openai_api_key_environment(settings: SettingsData) -> None:
 
 
 class Settings:
-    def __init__(self, project_path: Optional[Path] = None):
+    def __init__(self, project_path: Path | None = None):
         self._suppress_notification_until = None
         self._settings = SettingsData()
 
@@ -110,7 +103,7 @@ class Settings:
 
         self._observer.start()
 
-    def model_dump(self) -> Dict[str, Any]:
+    def model_dump(self) -> dict[str, Any]:
         return self._settings.model_dump()
 
     def stop(self):
@@ -130,50 +123,42 @@ class Settings:
         s = self._settings
 
         if asset_type == AssetType.MATERIAL:
+            if id in s.materials:
+                return s.materials[id]
             asset = project.get_project_materials().get_asset(id)
             default_status = asset.default_status if asset else AssetStatus.ENABLED
-            if id in s.forced_materials:
-                return AssetStatus.FORCED
-            if id in s.disabled_materials:
-                return AssetStatus.DISABLED
-            if id in s.enabled_materials:
-                return AssetStatus.ENABLED
             return default_status
         elif asset_type == AssetType.AGENT:
+            if id in s.agents:
+                return s.agents[id]
             asset = project.get_project_agents().get_asset(id)
             default_status = asset.default_status if asset else AssetStatus.ENABLED
-            if id == s.forced_agent:
-                return AssetStatus.FORCED
-            if id in s.disabled_agents:
-                return AssetStatus.DISABLED
-            if id in s.enabled_agents:
-                return AssetStatus.ENABLED
             return default_status
 
         else:
             raise ValueError(f"Unknown asset type {asset_type}")
+
+    def rename_asset(self, asset_type: AssetType, old_id: str, new_id: str):
+        if asset_type == AssetType.MATERIAL:
+            partial_settings = PartialSettingsData(
+                materials_to_reset=[old_id], materials={new_id: self.get_asset_status(asset_type, old_id)}
+            )
+        elif asset_type == AssetType.AGENT:
+            partial_settings = PartialSettingsData(
+                agents_to_reset=[old_id], agents={new_id: self.get_asset_status(asset_type, old_id)}
+            )
+        else:
+            raise ValueError(f"Unknown asset type {asset_type}")
+
+        self.save(partial_settings, to_global=True)
 
     def set_asset_status(self, asset_type: AssetType, id: str, status: AssetStatus, to_global: bool = False) -> None:
         if asset_type == AssetType.MATERIAL:
-            partial_settings = {
-                AssetStatus.DISABLED: PartialSettingsData(disabled_materials=[id]),
-                AssetStatus.ENABLED: PartialSettingsData(enabled_materials=[id]),
-                AssetStatus.FORCED: PartialSettingsData(forced_materials=[id]),
-            }
+            self.save(PartialSettingsData(materials={id: status}), to_global=to_global)
         elif asset_type == AssetType.AGENT:
-            partial_settings = {
-                AssetStatus.DISABLED: PartialSettingsData(disabled_agents=[id]),
-                AssetStatus.ENABLED: PartialSettingsData(enabled_agents=[id]),
-                AssetStatus.FORCED: PartialSettingsData(
-                    forced_agent=id,
-                    enabled_agents=[self._settings.forced_agent] if self._settings.forced_agent else None,
-                ),
-            }
-
+            self.save(PartialSettingsData(agents={id: status}), to_global=to_global)
         else:
             raise ValueError(f"Unknown asset type {asset_type}")
-
-        self.save(partial_settings[status], to_global=to_global)
 
     def get_code_autorun(self) -> bool:
         return self._settings.code_autorun
@@ -192,28 +177,28 @@ class Settings:
 
         forced_agents = [agent for agent, status in settings.get("agents", {}).items() if status == AssetStatus.FORCED]
 
+        settings_materials = settings.get("materials", {})
+
+        materials = {}
+        for material, status in settings_materials.items():
+            materials[material] = AssetStatus(status)
+
+        agents = {}
+        for agent, status in settings.get("agents", {}).items():
+            agents[agent] = AssetStatus(status)
+
         settings_data = SettingsData(
             code_autorun=settings.get("settings", {}).get("code_autorun", False),
             openai_api_key=settings.get("settings", {}).get("openai_api_key", None),
-            disabled_materials=[
-                material
-                for material, status in settings.get("materials", {}).items()
-                if status == AssetStatus.DISABLED
-            ],
-            disabled_agents=[
-                agent for agent, status in settings.get("agents", {}).items() if status == AssetStatus.DISABLED
-            ],
-            forced_materials=[
-                material for material, status in settings.get("materials", {}).items() if status == AssetStatus.FORCED
-            ],
-            forced_agent=forced_agents[0] if forced_agents else "",
-            enabled_materials=[
-                material for material, status in settings.get("materials", {}).items() if status == AssetStatus.ENABLED
-            ],
-            enabled_agents=[
-                agent for agent, status in settings.get("agents", {}).items() if status == AssetStatus.ENABLED
-            ],
+            materials=materials,
+            agents=agents,
         )
+
+        # Enforce only one forced agent
+        if len(forced_agents) > 1:
+            _log.warning(f"More than one agent is forced: {forced_agents}")
+            for agent in forced_agents[1:]:
+                settings_data.agents[agent] = AssetStatus.ENABLED
 
         _set_openai_api_key_environment(settings_data)
 
@@ -257,28 +242,27 @@ class Settings:
         if settings_data.openai_api_key is not None:
             doc_settings["openai_api_key"] = settings_data.openai_api_key
 
-        if settings_data.disabled_materials is not None:
-            for material in settings_data.disabled_materials:
-                doc_materials[material] = AssetStatus.DISABLED.value
+        for material in settings_data.materials_to_reset:
+            if material in doc_materials:
+                del doc_materials[material]
 
-        if settings_data.forced_materials is not None:
-            for material in settings_data.forced_materials:
-                doc_materials[material] = AssetStatus.FORCED.value
+        for agent in settings_data.agents_to_reset:
+            if agent in doc_agents:
+                del doc_agents[agent]
 
-        if settings_data.enabled_materials is not None:
-            for material in settings_data.enabled_materials:
-                doc_materials[material] = AssetStatus.ENABLED.value
+        for material in settings_data.materials:
+            doc_materials[material] = settings_data.materials[material].value
 
-        if settings_data.disabled_agents is not None:
-            for agent in settings_data.disabled_agents:
-                doc_agents[agent] = AssetStatus.DISABLED.value
+        was_forced = False
+        for agent in settings_data.agents:
+            doc_agents[agent] = settings_data.agents[agent].value
+            if settings_data.agents[agent] == AssetStatus.FORCED:
+                was_forced = agent
 
-        if settings_data.forced_agent is not None:
-            doc_agents[settings_data.forced_agent] = AssetStatus.FORCED.value
-
-        if settings_data.enabled_agents is not None:
-            for agent in settings_data.enabled_agents:
-                doc_agents[agent] = AssetStatus.ENABLED.value
+        if was_forced:
+            for agent in doc_agents:
+                if agent != was_forced and doc_agents[agent] == AssetStatus.FORCED.value:
+                    doc_agents[agent] = AssetStatus.ENABLED.value
 
         self._suppress_notification_until = datetime.datetime.now() + datetime.timedelta(seconds=30)
 

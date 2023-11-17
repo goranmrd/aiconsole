@@ -15,6 +15,7 @@
 # limitations under the License.
 
 from typing import cast
+from aiconsole.api.utils.asset_save import asset_patch, asset_post
 from aiconsole.core.assets.get_material_content_name import get_material_content_name
 from aiconsole.api.utils.asset_exists import asset_exists
 from aiconsole.api.utils.asset_get import asset_get
@@ -23,7 +24,6 @@ from aiconsole.api.utils.status_change_post_body import StatusChangePostBody
 from aiconsole.core.assets.asset import AssetLocation, AssetStatus, AssetType
 from aiconsole.core.assets.materials.material import Material, MaterialContentType, MaterialWithStatus
 from aiconsole.core.project import project
-from aiconsole.utils.capitalize_first import capitalize_first
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import JSONResponse
 
@@ -50,32 +50,19 @@ async def material_get(request: Request, material_id: str):
     )
 
 
-@router.patch("/{material_id}")
-async def material_patch(material_id: str, material: Material):
-    try:
-        await project.get_project_materials().save_asset(material, new=False, old_asset_id=material_id)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-    return JSONResponse({"status": "ok"})
+@router.patch("/{asset_id}")
+async def agent_patch(asset_id: str, material: Material):
+    return await asset_patch(AssetType.MATERIAL, material, asset_id)
 
 
-@router.post("/{material_id}")
-async def material_post(material_id: str, material: Material):
-    if material_id != material.id:
-        raise HTTPException(status_code=400, detail="Material ID mismatch")
-
-    try:
-        await project.get_project_materials().save_asset(material, new=True, old_asset_id=material_id)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-    return JSONResponse({"status": "ok"})
+@router.post("/{asset_id}")
+async def agent_post(asset_id: str, material: Material):
+    return await asset_post(AssetType.MATERIAL, material, asset_id)
 
 
 @router.post("/{material_id}/status-change")
 async def material_status_change(material_id: str, body: StatusChangePostBody):
-    return asset_status_change(AssetType.MATERIAL, material_id, body)
+    return await asset_status_change(AssetType.MATERIAL, material_id, body)
 
 
 @router.delete("/{material_id}")

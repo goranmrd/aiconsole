@@ -95,12 +95,16 @@ async function doesEdibleExist(
   }
 }
 
-async function saveNewEditableObject(editableObjectType: EditableObjectType, asset: Asset) {
-  return ky.post(`${getBaseURL()}/api/${editableObjectType}s/${asset.id}`, {
-    json: { ...asset },
-    timeout: 60000,
-    hooks: API_HOOKS,
-  });
+async function saveNewEditableObject(editableObjectType: EditableObjectType, asset_id: string, asset: Asset) {
+  return (
+    (await ky
+      .post(`${getBaseURL()}/api/${editableObjectType}s/${asset_id}`, {
+        json: { ...asset },
+        timeout: 60000,
+        hooks: API_HOOKS,
+      })
+      .json()) as { renamed: boolean }
+  ).renamed;
 }
 
 async function updateEditableObject(

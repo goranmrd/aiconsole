@@ -16,6 +16,7 @@
 
 from aiconsole.api.utils.asset_exists import asset_exists
 from aiconsole.api.utils.asset_get import asset_get
+from aiconsole.api.utils.asset_save import asset_patch, asset_post
 from aiconsole.api.utils.asset_status_change import asset_status_change
 from aiconsole.api.utils.status_change_post_body import StatusChangePostBody
 from aiconsole.core.assets.agents.agent import Agent, AgentWithStatus
@@ -50,19 +51,12 @@ async def agent_get(request: Request, agent_id: str):
 
 @router.patch("/{agent_id}")
 async def agent_patch(agent_id: str, agent: Agent):
-    try:
-        await project.get_project_agents().save_asset(agent, new=False, old_asset_id=agent_id)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-    return JSONResponse({"status": "ok"})
+    return await asset_patch(AssetType.AGENT, agent, agent_id)
 
 
 @router.post("/{agent_id}")
 async def agent_post(agent_id: str, agent: Agent):
-    await project.get_project_agents().save_asset(agent, new=True, old_asset_id=agent_id)
-
-    return JSONResponse({"status": "ok"})
+    return await asset_post(AssetType.AGENT, agent, agent_id)
 
 
 @router.post("/{agent_id}/status-change")

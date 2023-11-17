@@ -22,7 +22,6 @@ import { ConfirmationModal } from '@/components/common/ConfirmationModal';
 import { CodeInput } from '@/components/editables/assets/CodeInput';
 import { SimpleInput } from '@/components/editables/assets/TextInput';
 import { useAssetStore } from '@/store/editables/asset/useAssetStore';
-import { useEditablesStore } from '@/store/editables/useEditablesStore';
 import {
   Agent,
   Asset,
@@ -117,7 +116,6 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
   const [typeName, setTypeName] = useState<MaterialContentNames>('Material');
   const [showPreview, setShowPreview] = useState(false);
   const previewValue = preview ? preview?.content.split('\\n').join('\n') : 'Generating preview...';
-  const deleteEditableObject = useEditablesStore((state) => state.deleteEditableObject);
   const handleDeleteWithInteraction = useDeleteEditableObjectWithUserInteraction(assetType);
   const navigate = useNavigate();
   const isAssetChanged = useAssetChanged();
@@ -197,7 +195,7 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
     }
 
     if (lastSavedAsset === undefined) {
-      await EditablesAPI.saveNewEditableObject(assetType, asset);
+      await EditablesAPI.saveNewEditableObject(assetType, asset.id, asset);
       await updateStatusIfNecessary();
 
       showNotification({
@@ -206,8 +204,7 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
         variant: 'success',
       });
     } else if (lastSavedAsset && lastSavedAsset.id !== asset.id) {
-      await EditablesAPI.saveNewEditableObject(assetType, asset);
-      await deleteEditableObject(assetType, lastSavedAsset.id);
+      await EditablesAPI.saveNewEditableObject(assetType, lastSavedAsset.id, asset);
       await updateStatusIfNecessary();
 
       showNotification({
@@ -242,16 +239,7 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
     }
 
     useAssetStore.setState({ lastSavedSelectedAsset: asset });
-  }, [
-    asset,
-    assetType,
-    deleteEditableObject,
-    isAssetChanged,
-    lastSavedAsset,
-    navigate,
-    setSelectedAsset,
-    updateStatusIfNecessary,
-  ]);
+  }, [asset, assetType, isAssetChanged, lastSavedAsset, navigate, setSelectedAsset, updateStatusIfNecessary]);
 
   const handleDiscardChanges = () => {
     //set last selected asset to the same as selected asset
@@ -411,6 +399,10 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
                       ? hasCore
                         ? 'Override'
                         : 'Create'
+                      : lastSavedAsset && lastSavedAsset.id !== asset.id
+                      ? isAssetChanged
+                        ? 'Rename and Save Changes'
+                        : 'Saved'
                       : isAssetChanged
                       ? 'Save Changes'
                       : 'Saved'}
