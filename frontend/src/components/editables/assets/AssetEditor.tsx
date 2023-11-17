@@ -243,7 +243,6 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
       useAssetStore.setState({ lastSavedSelectedAsset: asset });
       console.log('SHOULD NAVIGATE');
       setNewPath(`/${assetType}s/${asset.id}`);
-      //  navigate(`/${assetType}s/${asset.id}`);
     } else {
       // Reload the asset from server
       const newAsset = await EditablesAPI.fetchEditableObject<Material>({
