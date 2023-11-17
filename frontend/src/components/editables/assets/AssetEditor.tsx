@@ -148,6 +148,7 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
       handleDeleteWithInteraction(id);
     }
   }
+  const [hasCore, setHasCore] = useState(false);
 
   const getInitialAsset = useCallback(() => {
     if (copyId) {
@@ -161,6 +162,8 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
       });
     } else {
       //For id === 'new' This will get a default new asset
+      console.log('USE EFFECT 1');
+
       const raw_type = searchParams.get('type');
       const type = raw_type ? raw_type : undefined;
       EditablesAPI.fetchEditableObject<Asset>({ editableObjectType, id, type }).then((editable) => {
@@ -168,13 +171,13 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
         setSelectedAsset(editable);
       });
     }
-  }, [copyId, editableObjectType, id, setLastSavedSelectedAsset, setSelectedAsset, searchParams]);
+  }, [copyId, editableObjectType, id, searchParams, setLastSavedSelectedAsset, setSelectedAsset]);
 
   // Acquire the initial object
   useEffect(() => {
     getInitialAsset();
-
     return () => {
+      console.log('test');
       setSelectedAsset(undefined);
       setLastSavedSelectedAsset(undefined);
     };
@@ -296,30 +299,20 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
     };
   }, [asset, assetType, lastSavedAsset, searchParams]);
 
-  // If edited a core asset, set override and defined in
-  useEffect(() => {
-    if (asset && asset.defined_in === 'aiconsole' && wasAssetChangedInitially) {
-      console.log('CORE');
-      setSelectedAsset({ ...asset, defined_in: 'project' } as Asset);
-      setLastSavedSelectedAsset(undefined);
-    }
-  }, [asset, setSelectedAsset, wasAssetChangedInitially, setLastSavedSelectedAsset]);
-
-  const [hasCore, setHasCore] = useState(false);
-
-  // hasCore
   useEffect(() => {
     if (!assetType || !asset?.id) {
       setHasCore(false);
       return;
     }
 
-    EditablesAPI.doesEdibleExist(assetType, asset?.id, 'aiconsole').then((exists) => {
-      setHasCore(exists);
-      setSelectedAsset({ ...asset, override: exists });
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [assetType, asset?.id, setSelectedAsset]);
+    if (asset && asset.defined_in === 'aiconsole' && wasAssetChangedInitially) {
+      EditablesAPI.doesEdibleExist(assetType, asset?.id, 'aiconsole').then((exists) => {
+        setHasCore(exists);
+        setSelectedAsset({ ...asset, defined_in: 'project', override: exists } as Asset);
+        setLastSavedSelectedAsset(undefined);
+      });
+    }
+  }, [asset, setSelectedAsset, wasAssetChangedInitially, setLastSavedSelectedAsset, assetType]);
 
   const handleRename = async (newName: string) => {
     if (!asset) {
@@ -385,7 +378,7 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
                         <MaterialContent material={asset as Material} />
                       )}
                     </div>
-                    {showPreview && (
+                    {showPreview && preview && (
                       <div className="flex-1 w-1/2">
                         <CodeInput
                           label="Preview of text to be injected into AI context"
