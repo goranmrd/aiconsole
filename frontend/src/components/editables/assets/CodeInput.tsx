@@ -46,12 +46,13 @@ export function CodeInput({
 }: CodeInputProps) {
   const [focus, setFocus] = useState(false);
   const onHighlight = (code: string) => {
+    if (!code) return '';
+
     let lang = codeLanguage;
     if (!lang) {
       const { language } = hljs.highlightAuto(code);
       lang = language;
     }
-
     return hljs.highlight(code, { language: lang || 'python' }).value;
   };
 
