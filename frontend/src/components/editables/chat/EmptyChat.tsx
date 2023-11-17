@@ -17,13 +17,13 @@
 import { useEditablesStore } from '@/store/editables/useEditablesStore';
 import { useProjectStore } from '@/store/projects/useProjectStore';
 import { Agent, Asset, AssetType } from '@/types/editables/assetTypes';
-import { getEditableObjectColor } from '@/utils/editables/getEditableObjectColor';
 import { getEditableObjectIcon } from '@/utils/editables/getEditableObjectIcon';
 import { useEditableObjectContextMenu } from '@/utils/editables/useContextMenuForEditable';
 import { useProjectContextMenu } from '@/utils/projects/useProjectContextMenu';
 import { Tooltip } from '@mantine/core';
 import React from 'react';
 import { AgentAvatar } from './AgentAvatar';
+import { cn } from '@/utils/common/cn';
 
 function EmptyChatAgentAvatar({ agent }: { agent: Agent }) {
   const { showContextMenu } = useEditableObjectContextMenu({ editableObjectType: 'agent', editable: agent });
@@ -53,12 +53,17 @@ function EmptyChatAssetLink({ assetType, asset }: { assetType: AssetType; asset:
   const { showContextMenu } = useEditableObjectContextMenu({ editableObjectType: assetType, editable: asset });
 
   const Icon = getEditableObjectIcon(asset);
-  const color = getEditableObjectColor(asset);
 
   return (
     <div className="inline-block cursor-pointer" onClick={showContextMenu()} onContextMenu={showContextMenu()}>
       <div className="hover:text-secondary flex flex-row items-center gap-1 opacity-80 hover:opacity-100">
-        <Icon style={{ color }} className="w-4 h-4 inline-block mr-1" />
+        <Icon
+          className={cn(
+            'w-4 h-4 inline-block mr-1',
+            assetType === 'agent' && 'text-agent',
+            assetType === 'material' && 'text-material',
+          )}
+        />
         {asset.name}
       </div>
     </div>

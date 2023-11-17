@@ -16,7 +16,6 @@
 
 import { cn } from '@/utils/common/cn';
 import { Agent, Asset, EditableObject, EditableObjectType, Material } from '@/types/editables/assetTypes';
-import { getEditableObjectColor } from '@/utils/editables/getEditableObjectColor';
 import { getEditableObjectIcon } from '@/utils/editables/getEditableObjectIcon';
 import { useEditableObjectContextMenu } from '@/utils/editables/useContextMenuForEditable';
 import { useEditablesStore } from '@/store/editables/useEditablesStore';
@@ -61,7 +60,6 @@ const SideBarItem = ({
   }, [isContextMenuVisible]);
 
   const Icon = getEditableObjectIcon(editableObject);
-  const color = getEditableObjectColor(editableObject);
 
   const [inputText, setInputText] = useState(editableObject.name);
 
@@ -151,7 +149,13 @@ const SideBarItem = ({
 
   return (
     <div ref={popoverRef} onContextMenu={handleContextMenu} className="max-w-[275px]">
-      <div className={cn(forced && 'text-primary', disabled && 'opacity-50')}>
+      <div
+        className={cn(
+          forced && editableObjectType === 'agent' && 'text-agent',
+          forced && editableObjectType === 'material' && 'text-material',
+          disabled && 'opacity-50',
+        )}
+      >
         <NavLink
           className={({ isActive, isPending }) => {
             return cn(
@@ -163,7 +167,14 @@ const SideBarItem = ({
           }}
           to={`/${editableObjectType}s/${editableObject.id}`}
         >
-          <Icon className="min-w-[24px] min-h-[24px] w-[24px] h-[24px]" style={{ color }} />
+          <Icon
+            className={cn(
+              'min-w-[24px] min-h-[24px] w-[24px] h-[24px]',
+              editableObjectType === 'chat' && 'text-chat',
+              editableObjectType === 'agent' && 'text-agent',
+              editableObjectType === 'material' && 'text-material',
+            )}
+          />
           {/* TODO: add validation for empty input value */}
           {isEditing ? (
             <input
@@ -182,11 +193,13 @@ const SideBarItem = ({
           <div
             className={cn(
               'absolute bottom-[-15px] hidden left-[0px] opacity-[0.3] blur-[10px]  h-[34px] w-[34px] group-hover:block',
+              editableObjectType === 'chat' && 'fill-chat bg-chat',
+              editableObjectType === 'agent' && 'fill-agent bg-agent',
+              editableObjectType === 'material' && 'fill-material bg-material',
               {
                 block: false,
               },
             )}
-            style={{ background: color, fill: color }}
           />
         </NavLink>
       </div>

@@ -15,7 +15,6 @@
 // limitations under the License.
 
 import { useContextMenu } from '@/utils/common/useContextMenu';
-import { getEditableObjectColor } from '@/utils/editables/getEditableObjectColor';
 import { MATERIAL_CONTENT_TYPE_ICONS, getEditableObjectIcon } from '@/utils/editables/getEditableObjectIcon';
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
@@ -37,31 +36,31 @@ export function useAddMenu() {
     return showContextMenu([
       {
         key: 'chat',
-        icon: <ChatIcon className="w-4 h-4" style={{ color: getEditableObjectColor('chat') }} />,
+        icon: <ChatIcon className="w-4 h-4 text-chat" />,
         title: 'New Chat ...',
         onClick: handleClick(`/chats/${uuidv4()}`),
       },
       {
         key: 'note',
-        icon: <MaterialNoteIcon className="w-4 h-4" style={{ color: getEditableObjectColor('material') }} />,
+        icon: <MaterialNoteIcon className="w-4 h-4 text-material" />,
         title: 'New Note ...',
         onClick: handleClick(`/materials/new?type=static_text`),
       },
       {
         key: 'dynamic_note',
-        icon: <MaterialDynamicNoteIcon className="w-4 h-4" style={{ color: getEditableObjectColor('material') }} />,
+        icon: <MaterialDynamicNoteIcon className="w-4 h-4 text-material" />,
         title: 'New Dynamic Note ...',
         onClick: handleClick(`/materials/new?type=dynamic_text`),
       },
       {
         key: 'python_api',
-        icon: <MaterialPythonAPIIcon className="w-4 h-4" style={{ color: getEditableObjectColor('material') }} />,
+        icon: <MaterialPythonAPIIcon className="w-4 h-4 text-material" />,
         title: 'New Python API ...',
         onClick: handleClick(`/materials/new?type=api`),
       },
       {
         key: 'agent',
-        icon: <AgentIcon className="w-4 h-4" style={{ color: getEditableObjectColor('agent') }} />,
+        icon: <AgentIcon className="w-4 h-4 text-agent" />,
         title: 'New Agent ...',
         onClick: handleClick(`/agents/new`),
       },
