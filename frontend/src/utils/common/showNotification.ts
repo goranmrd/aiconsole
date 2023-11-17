@@ -30,17 +30,18 @@ const getStyles = (variant: NotificationVariant) => {
   const rootClassNames = 'w-[400px] ml-auto !bg-gray-600 !rounded-lg !p-4 gap-5 !shadow-dark before:!hidden';
   const titleClassNames = '!text-white !font-semibold !text-sm';
   const descriptionClassNames = '!text-gray-300 !font-normal !text-[13px]';
-  const closeButtonClassNames = '!text-gray-300 hover:!text-white hover:!bg-transparent self-start !h-[16px] !w-[16px]';
+  const closeButtonClassNames =
+    '!text-gray-300 hover:!text-white hover:!bg-transparent self-start !h-[16px] !w-[16px]';
 
   switch (variant) {
     case 'success':
-      bodyClassNames = cn(bodyClassNames, 'border-green-400')
+      bodyClassNames = cn(bodyClassNames, 'border-green');
       break;
     case 'error':
-      bodyClassNames = cn(bodyClassNames, 'border-red-400')
+      bodyClassNames = cn(bodyClassNames, 'border-red');
       break;
     case 'info':
-      bodyClassNames = cn(bodyClassNames, 'border-primary-dark')
+      bodyClassNames = cn(bodyClassNames, 'border-gray-400');
       break;
   }
 
@@ -57,10 +58,10 @@ const showNotification = ({ title, message, variant = 'info' }: Notification) =>
   notifications.show({
     title,
     message,
-    classNames: {...getStyles(variant)},
+    classNames: { ...getStyles(variant) },
     closeButtonProps: {
-      size: 1
-    }
+      size: 1,
+    },
   });
 };
 
