@@ -148,7 +148,6 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
       handleDeleteWithInteraction(id);
     }
   }
-  const [hasCore, setHasCore] = useState(false);
 
   const getInitialAsset = useCallback(() => {
     if (copyId) {
@@ -162,8 +161,6 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
       });
     } else {
       //For id === 'new' This will get a default new asset
-      console.log('USE EFFECT 1');
-
       const raw_type = searchParams.get('type');
       const type = raw_type ? raw_type : undefined;
       EditablesAPI.fetchEditableObject<Asset>({ editableObjectType, id, type }).then((editable) => {
@@ -177,7 +174,6 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
   useEffect(() => {
     getInitialAsset();
     return () => {
-      console.log('test');
       setSelectedAsset(undefined);
       setLastSavedSelectedAsset(undefined);
     };
@@ -298,6 +294,8 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
       clearTimeout(timeout);
     };
   }, [asset, assetType, lastSavedAsset, searchParams]);
+
+  const [hasCore, setHasCore] = useState(false);
 
   useEffect(() => {
     if (!assetType || !asset?.id) {
