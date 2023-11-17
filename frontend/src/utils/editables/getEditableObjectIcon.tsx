@@ -15,13 +15,13 @@
 // limitations under the License.
 
 import { EditableObject, EditableObjectType, Material, MaterialContentType } from '@/types/editables/assetTypes';
-import { Bot, BugPlay, FileQuestion, FileType2, MessageSquare, StickyNote } from 'lucide-react';
+import { Blocks, Bot, FileQuestion, MessageSquare, ScanText, StickyNote } from 'lucide-react';
 import { getEditableObjectType } from './getEditableObjectType';
 
 export const MATERIAL_CONTENT_TYPE_ICONS = {
   static_text: StickyNote,
-  dynamic_text: FileType2,
-  api: BugPlay,
+  dynamic_text: ScanText,
+  api: Blocks,
 };
 
 export function getEditableObjectIcon(editableObject?: EditableObject | EditableObjectType) {
