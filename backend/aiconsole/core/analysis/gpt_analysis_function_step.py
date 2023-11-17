@@ -111,6 +111,9 @@ async def gpt_analysis_function_step(
     )
     available_agents = cast(list[Agent], available_agents)
 
+    if len(available_agents) == 0:
+        raise ValueError("No active agents")
+
     plan_class = create_plan_class(available_agents)
 
     request = GPTRequest(

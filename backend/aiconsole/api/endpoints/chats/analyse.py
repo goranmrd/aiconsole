@@ -17,7 +17,7 @@
 import asyncio
 import logging
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, HTTPException, Request
 
 from aiconsole.core.analysis.director import director_analyse
 from aiconsole.core.chat.types import Chat
@@ -45,5 +45,4 @@ async def analyse(request: Request, data: AnalysisRequestData, chat_id):
     except asyncio.CancelledError:
         _log.info("Analysis cancelled")
     except Exception as e:
-        await ErrorWSMessage(error=str(e)).send_to_chat(data.chat.id)
-        raise e
+        raise HTTPException(status_code=400, detail=str(e))
