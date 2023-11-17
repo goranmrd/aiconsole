@@ -8,7 +8,7 @@
 | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Run Code Locally                    | Run it locally; the console can perform all the tasks that your machine is capable of executing.                                                                                 |
 | Improves with Use                   | Describe in plain text how to perform a given task once, and thereafter AIConsole will know how to execute it indefinitely.                                                      |
-| Utilize Your Notes for AI Training  | Employ your notes to instruct the AI in completing and automating tasks.                                                                                                         |
+| Use your notes to teach AI  | Employ your notes to instruct the AI in completing and automating tasks.                                                                                                         |
 | Better than Vector Databases        | For each step of your tasks, leverage a precise, efficient, and automated multi-agent Retrieval-Augmented Generation (RAG) system that is on par with expert prompt engineering. |
 | Completely Open Sourced             | This software does not transmit any data to any parties other than the LLM APIs – and you can confirm this for yourself.                                                         |
 | Share Your Tools with the Community | Develop and share your domain-specific AI tools, for instance, on platforms like GitHub or Discord.                                                                              |
