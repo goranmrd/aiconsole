@@ -20,7 +20,7 @@ import { getEditableObjectIcon } from '@/utils/editables/getEditableObjectIcon';
 import { useEditableObjectContextMenu } from '@/utils/editables/useContextMenuForEditable';
 import { useEditablesStore } from '@/store/editables/useEditablesStore';
 import { KeyboardEvent, MouseEvent, useEffect, useRef, useState } from 'react';
-import { NavLink, useNavigate, useLocation, useParams } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { EditablesAPI } from '@/api/api/EditablesAPI';
 import { Chat, ChatHeadline } from '@/types/editables/chatTypes';
 import { useAssetStore } from '@/store/editables/asset/useAssetStore';
@@ -37,8 +37,7 @@ const SideBarItem = ({
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const param = useParams();
-  console.log(param);
+
   const renameEditableObject = useEditablesStore((state) => state.renameEditableObject);
   const updateSelectedChat = useChatStore((state) => state.updateSelectedChat);
   const updateSelectedAsset = useAssetStore((state) => state.updateSelectedAsset);
