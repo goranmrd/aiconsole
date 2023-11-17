@@ -111,43 +111,27 @@ def fibonacci(n):
     return fibonacci(n - 1) + fibonacci(n - 2)
 """.strip()
 
-    async def render(self, context: 'ContentEvaluationContext'):
+    async def render(self, context: "ContentEvaluationContext"):
         header = f"# {self.name}\n\n"
 
         try:
             if self.content_type == MaterialContentType.DYNAMIC_TEXT:
                 # Try compiling the python code and run it
-                source_code = compile(
-                    self.content_dynamic_text, '<string>', 'exec')
+                source_code = compile(self.content_dynamic_text, "<string>", "exec")
                 local_vars = {}
                 exec(source_code, local_vars)
-                content_func = local_vars.get('content')
+                content_func = local_vars.get("content")
                 if callable(content_func):
-                    return RenderedMaterial(
-                        id=self.id,
-                        content=header + await content_func(context),
-                        error=''
-                    )
-                return RenderedMaterial(
-                    id=self.id,
-                    content='',
-                    error='No callable content function found!'
-                )
+                    return RenderedMaterial(id=self.id, content=header + await content_func(context), error="")
+                return RenderedMaterial(id=self.id, content="", error="No callable content function found!")
             elif self.content_type == MaterialContentType.STATIC_TEXT:
-                return RenderedMaterial(
-                    id=self.id,
-                    content=header + self.content_static_text,
-                    error=''
-                )
+                return RenderedMaterial(id=self.id, content=header + self.content_static_text, error="")
             elif self.content_type == MaterialContentType.API:
                 return RenderedMaterial(
-                    id=self.id,
-                    content=header +
-                    documentation_from_code(self, self.content_api)(context),
-                    error=''
+                    id=self.id, content=header + documentation_from_code(self, self.content_api)(context), error=""
                 )
         except Exception:
-            return RenderedMaterial(id=self.id, content='', error=traceback.format_exc())
+            return RenderedMaterial(id=self.id, content="", error=traceback.format_exc())
 
         raise ValueError("Material has no content")
 

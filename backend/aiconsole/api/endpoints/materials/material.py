@@ -14,13 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from typing import cast
+from aiconsole.core.assets.get_material_content_name import get_material_content_name
 from aiconsole.api.utils.asset_exists import asset_exists
 from aiconsole.api.utils.asset_get import asset_get
 from aiconsole.api.utils.asset_status_change import asset_status_change
 from aiconsole.api.utils.status_change_post_body import StatusChangePostBody
 from aiconsole.core.assets.asset import AssetLocation, AssetStatus, AssetType
-from aiconsole.core.assets.materials.material import Material, MaterialWithStatus
+from aiconsole.core.assets.materials.material import Material, MaterialContentType, MaterialWithStatus
 from aiconsole.core.project import project
+from aiconsole.utils.capitalize_first import capitalize_first
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import JSONResponse
 
@@ -29,13 +32,15 @@ router = APIRouter()
 
 @router.get("/{material_id}")
 async def material_get(request: Request, material_id: str):
+    type = cast(MaterialContentType, request.query_params.get("type", ""))
+
     return await asset_get(
         request,
         AssetType.MATERIAL,
         material_id,
         lambda: MaterialWithStatus(
             id="",
-            name="",
+            name="New " + get_material_content_name(type),
             usage="",
             usage_examples=[],
             status=AssetStatus.ENABLED,

@@ -142,7 +142,7 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
     if (copyId) {
       setLastSavedSelectedAsset(undefined);
 
-      EditablesAPI.fetchEditableObject<Asset>(editableObjectType, copyId).then((assetToCopy) => {
+      EditablesAPI.fetchEditableObject<Asset>({ editableObjectType, id: copyId }).then((assetToCopy) => {
         assetToCopy.name += ' Copy';
         assetToCopy.defined_in = 'project';
         assetToCopy.id = convertNameToId(assetToCopy.name);
@@ -150,12 +150,14 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
       });
     } else {
       //For id === 'new' This will get a default new asset
-      EditablesAPI.fetchEditableObject<Asset>(editableObjectType, id).then((editable) => {
+      const raw_type = searchParams.get('type');
+      const type = raw_type ? raw_type : undefined;
+      EditablesAPI.fetchEditableObject<Asset>({ editableObjectType, id, type }).then((editable) => {
         setLastSavedSelectedAsset(id !== 'new' ? editable : undefined); // for new assets, lastSavedAsset is undefined
         setSelectedAsset(editable);
       });
     }
-  }, [copyId, editableObjectType, id, setLastSavedSelectedAsset, setSelectedAsset]);
+  }, [copyId, editableObjectType, id, setLastSavedSelectedAsset, setSelectedAsset, searchParams]);
 
   // Acquire the initial object
   useEffect(() => {
@@ -231,7 +233,10 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
       navigate(`/${assetType}s/${asset.id}`);
     } else {
       // Reload the asset from server
-      const newAsset = await EditablesAPI.fetchEditableObject<Material>(assetType, asset.id);
+      const newAsset = await EditablesAPI.fetchEditableObject<Material>({
+        editableObjectType: assetType,
+        id: asset.id,
+      });
       setSelectedAsset(newAsset);
       useAssetStore.setState({ lastSavedSelectedAsset: newAsset });
     }

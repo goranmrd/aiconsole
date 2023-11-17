@@ -36,7 +36,7 @@ async def agent_get(request: Request, agent_id: str):
         agent_id,
         lambda: AgentWithStatus(
             id="",
-            name="",
+            name="New Agent",
             usage="",
             usage_examples=[],
             status=AssetStatus.ENABLED,

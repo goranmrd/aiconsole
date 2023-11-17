@@ -80,14 +80,14 @@ export function ChatPage() {
   // Acquire the initial object
   useEffect(() => {
     if (copyId) {
-      EditablesAPI.fetchEditableObject<Chat>('chat', id).then((chat) => {
+      EditablesAPI.fetchEditableObject<Chat>({ editableObjectType: 'chat', id }).then((chat) => {
         chat.id = uuidv4();
         chat.name = chat.name + ' (copy)';
         setChat(chat);
       });
     } else {
       //For id === 'new' This will get a default new asset
-      EditablesAPI.fetchEditableObject<Chat>(editableObjectType, id).then((newChat) => {
+      EditablesAPI.fetchEditableObject<Chat>({ editableObjectType, id }).then((newChat) => {
         setChat(newChat);
       });
     }

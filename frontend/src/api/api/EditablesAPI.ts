@@ -49,14 +49,20 @@ async function setAssetStatus(assetType: AssetType, id: string, status: AssetSta
     .json();
 }
 
-async function fetchEditableObject<T extends EditableObject>(
-  editableObjectType: EditableObjectType,
-  id: string,
-  location?: MaterialDefinitionSource,
-) {
+async function fetchEditableObject<T extends EditableObject>({
+  editableObjectType,
+  id,
+  location,
+  type,
+}: {
+  editableObjectType: EditableObjectType;
+  id: string;
+  location?: MaterialDefinitionSource;
+  type?: string;
+}): Promise<T> {
   return ky
     .get(`${getBaseURL()}/api/${editableObjectType}s/${id}`, {
-      searchParams: { location: location || '' },
+      searchParams: { location: location || '', type: type || '' },
       hooks: API_HOOKS,
     })
     .json() as Promise<T>;

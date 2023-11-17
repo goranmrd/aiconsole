@@ -23,7 +23,7 @@ export function useDeleteEditableObjectWithUserInteraction(editableObjectType: E
     if (editable?.id === id) {
       if (isAsset(editableObjectType) && (editable as Asset).override) {
         //Force reload of the current asset
-        const newAsset = await EditablesAPI.fetchEditableObject<Asset>(editableObjectType, id);
+        const newAsset = await EditablesAPI.fetchEditableObject<Asset>({ editableObjectType, id });
         setSelectedAsset(newAsset);
         setLastSavedSelectedAsset(newAsset);
       } else {

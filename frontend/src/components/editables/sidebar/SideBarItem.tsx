@@ -90,7 +90,10 @@ const SideBarItem = ({
         name: inputText,
       };
       if (editableObjectType === 'chat') {
-        const chat = await EditablesAPI.fetchEditableObject<ChatHeadline>(editableObjectType, editableObject.id);
+        const chat = await EditablesAPI.fetchEditableObject<ChatHeadline>({
+          editableObjectType,
+          id: editableObject.id,
+        });
         editableObject = chat;
         updateChatItem(editableObject as Chat);
       }
