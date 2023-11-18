@@ -13,7 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
+
 import logging
 from typing import AsyncGenerator
 from aiconsole.core.assets.agents.agent import ExecutionModeContext
@@ -23,12 +23,13 @@ from aiconsole.core.gpt.create_full_prompt_with_materials import create_full_pro
 from aiconsole.utils.convert_messages import convert_messages
 from openai_function_call import OpenAISchema
 from aiconsole.core.gpt.gpt_executor import GPTExecutor
-from aiconsole.core.gpt.request import GPTRequest
+from aiconsole.core.gpt.request import GPTRequest, ToolDefinition, ToolFunctionDefinition
 from aiconsole.core.gpt.types import CLEAR_STR
 from pydantic import Field
 
 
 _log = logging.getLogger(__name__)
+
 
 class python(OpenAISchema):
     """
@@ -38,8 +39,9 @@ class python(OpenAISchema):
     code: str = Field(
         ...,
         description="python code to execute, it will be executed in a stateful Jupyter notebook environment",
-        json_schema_extra={"type": "string"}
+        json_schema_extra={"type": "string"},
     )
+
 
 class shell(OpenAISchema):
     """
@@ -55,6 +57,7 @@ class applescript(OpenAISchema):
     """
 
     code: str = Field(..., json_schema_extra={"type": "string"})
+
 
 async def execution_mode_interpreter(
     context: ExecutionModeContext,
@@ -77,23 +80,21 @@ async def execution_mode_interpreter(
         GPTRequest(
             system_message=system_message,
             gpt_mode=context.agent.gpt_mode,
-            messages=[message for message in convert_messages(
-                context.chat)],
-            functions=[
-                python.openai_schema,
-                shell.openai_schema,
-                applescript.openai_schema
+            messages=[message for message in convert_messages(context.chat)],
+            tools=[
+                ToolDefinition(type="function", function=ToolFunctionDefinition(**python.openai_schema)),
+                ToolDefinition(type="function", function=ToolFunctionDefinition(**shell.openai_schema)),
+                ToolDefinition(type="function", function=ToolFunctionDefinition(**applescript.openai_schema)),
             ],
             min_tokens=250,
-            preferred_tokens=2000
+            preferred_tokens=2000,
         )
     ):
-
         if chunk == CLEAR_STR:
             yield CLEAR_STR
             continue
 
-        if ('choices' not in chunk or len(chunk['choices']) == 0):
+        if "choices" not in chunk or len(chunk["choices"]) == 0:
             continue
 
         delta = chunk["choices"][0]["delta"]
@@ -101,49 +102,57 @@ async def execution_mode_interpreter(
         if "content" in delta and delta["content"]:
             yield delta["content"]
 
-        function_call = executor.partial_response.choices[0].message.function_call
+        tool_calls = executor.partial_response.choices[0].message.tool_calls
 
-        if function_call and function_call.arguments:
-            # This can now be both a string and a json object
+        for tool_call in tool_calls:
+            if tool_call.type == "function":
+                function_call = tool_call.function
 
-            arguments = function_call.arguments
-            languages = language_map.keys()
+                if function_call.arguments:
+                    # This can now be both a string and a json object
 
-            if language is None and function_call.name in languages:
-                # Languge is in the name of the function call
-                language = function_call.name
-                yield f'<<<< START CODE ({language}) >>>>'
+                    arguments = function_call.arguments
+                    languages = language_map.keys()
 
-            if isinstance(arguments, str):
-                # We need to handle incorrect OpenAI responses, sometmes arguments is a string containing the code
-                if arguments and not arguments.startswith("{"):
-                    if language is None:
-                        language = "python"
-                        yield f'<<<< START CODE ({language}) >>>>'
+                    if language is None and function_call.name in languages:
+                        # Languge is in the name of the function call
+                        language = function_call.name
+                        yield f"<<<< START CODE ({language}) >>>>"
 
-                    code_delta = arguments[len(code):]
-                    code = arguments
+                    if isinstance(arguments, str):
+                        # We need to handle incorrect OpenAI responses, sometmes arguments is a string containing the code
+                        if arguments and not arguments.startswith("{"):
+                            if language is None:
+                                language = "python"
+                                yield f"<<<< START CODE ({language}) >>>>"
 
-                    if code_delta:
-                        yield code_delta
-            else:
-                if arguments and "code" in arguments:
-                    if language is None:
-                        language = "python"
-                        yield f'<<<< START CODE ({language}) >>>>'
-                    code_delta = arguments["code"][len(code):]
-                    code = arguments["code"]
+                            code_delta = arguments[len(code) :]
+                            code = arguments
 
-                    if code_delta:
-                        yield code_delta
+                            if code_delta:
+                                yield code_delta
+                    else:
+                        if arguments and "code" in arguments:
+                            if language is None:
+                                language = "python"
+                                yield f"<<<< START CODE ({language}) >>>>"
+                            code_delta = arguments["code"][len(code) :]
+                            code = arguments["code"]
+
+                            if code_delta:
+                                yield code_delta
 
     if language:
         yield "<<<< END CODE >>>>"
         language = None
 
-    function_call = executor.response.choices[0].message.function_call
-    if function_call and function_call.name not in [python.__name__, shell.__name__, applescript.__name__]:
-        _log.info(f"function_call: {function_call}")
-        _log.info(f"function_call.arguments: {function_call.arguments}")
+    tool_calls = executor.response.choices[0].message.tool_calls
+    for tool_call in tool_calls:
+        if tool_call.type == "function":
+            function_call = tool_call.function
 
-        yield f"<<<< START CODE (python) >>>>{function_call.name}()<<<< END CODE >>>>"
+            if function_call and function_call.name not in [python.__name__, shell.__name__, applescript.__name__]:
+                _log.info(f"function_call: {function_call}")
+                _log.info(f"function_call.arguments: {function_call.arguments}")
+
+                yield f"<<<< START CODE (python) >>>>{function_call.name}()<<<< END CODE >>>>"

@@ -24,11 +24,15 @@ import random
 def create_materials_str() -> str:
     new_line = "\n"
 
-    enabled_materials = project.get_project_materials().assets_with_status(AssetStatus.ENABLED)
+    # We add forced becuase it may influence the choice of enabled materials
+    available_materials = [
+        *project.get_project_materials().assets_with_status(AssetStatus.FORCED),
+        *project.get_project_materials().assets_with_status(AssetStatus.ENABLED),
+    ]
 
     random_materials = (
-        new_line.join([f"* {c.id} - {c.usage}" for c in random.sample(enabled_materials, len(enabled_materials))])
-        if enabled_materials
+        new_line.join([f"* {c.id} - {c.usage}" for c in random.sample(available_materials, len(available_materials))])
+        if available_materials
         else ""
     )
 

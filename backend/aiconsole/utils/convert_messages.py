@@ -13,11 +13,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
+
 import json
 from aiconsole.core.chat.types import AICCodeMessage, AICMessage, AICMessageGroup, Chat
 from aiconsole.consts import FUNCTION_CALL_OUTPUT_LIMIT
-from aiconsole.core.gpt.types import GPTFunctionCall, GPTMessage, GPTRole
+from aiconsole.core.gpt.types import (
+    GPTFunctionCall,
+    GPTRequestMessage,
+    GPTRequestTextMessage,
+    GPTRequestToolMessage,
+    GPTToolCall,
+)
 
 
 from typing import List
@@ -26,7 +32,7 @@ from typing import List
 last_system_message = None
 
 
-def convert_message(group: AICMessageGroup, message: AICMessage, is_last: bool) -> List[GPTMessage]:
+def convert_message(group: AICMessageGroup, message: AICMessage, is_last: bool) -> List[GPTRequestMessage]:
     global last_system_message
 
     result = []
@@ -46,7 +52,7 @@ As a director I have assigned you ({group.agent_id}) and given you access to the
 
         if last_system_message != system_message:
             result.append(
-                GPTMessage(
+                GPTRequestTextMessage(
                     role="system",
                     name="director",
                     content=system_message,
@@ -54,23 +60,28 @@ As a director I have assigned you ({group.agent_id}) and given you access to the
             )
             last_system_message = system_message
 
-    
-
     if isinstance(message, AICCodeMessage):
+        tool_call_id = message.id
+
         result.append(
-            GPTMessage(
+            GPTRequestTextMessage(
                 role="assistant",
                 content=message.content,
-                function_call=GPTFunctionCall(
-                    name="execute",
-                    arguments=json.dumps(
-                        {
-                            "code": message.content,
-                            "language": message.language,
-                        }
-                    ),
-                ),
-                name="code"
+                tool_calls=[
+                    GPTToolCall(
+                        id=tool_call_id,
+                        function=GPTFunctionCall(
+                            name="execute",
+                            arguments=json.dumps(
+                                {
+                                    "code": message.content,
+                                    "language": message.language,
+                                }
+                            ),
+                        ),
+                    )
+                ],
+                name="code",
             )
         )
 
@@ -88,38 +99,28 @@ Output truncated to last {FUNCTION_CALL_OUTPUT_LIMIT} characters:
 ...
 {content[-FUNCTION_CALL_OUTPUT_LIMIT:]}
 """.strip()
-            
-            result.append(
-                GPTMessage(
-                    role="function",
-                    content=content,
-                    name="Run"
-                )
-            )
+
+            result.append(GPTRequestToolMessage(tool_call_id=tool_call_id, content=content))
     else:
         result.append(
-            GPTMessage(
-                role=group.role,
-                content=message.content,
-                name=group.agent_id if group.agent_id != "user" else None
+            GPTRequestTextMessage(
+                role=group.role, content=message.content, name=group.agent_id if group.agent_id != "user" else None
             )
         )
 
     return result
 
 
-def convert_messages(chat: Chat) -> List[GPTMessage]:
+def convert_messages(chat: Chat) -> List[GPTRequestMessage]:
     global last_system_message
     last_system_message = None
 
-    messages: List[GPTMessage] = []
+    messages: List[GPTRequestMessage] = []
 
     for message_group in chat.message_groups:
         is_last_group = message_group == chat.message_groups[-1]
         for message in message_group.messages:
             is_last = is_last_group and message == message_group.messages[-1]
-            messages.extend(
-                convert_message(message_group, message, is_last=is_last)
-            )
+            messages.extend(convert_message(message_group, message, is_last=is_last))
 
     return messages

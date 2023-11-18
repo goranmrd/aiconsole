@@ -14,22 +14,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from aiconsole.core.project import project
-
-
 import random
+
+from aiconsole.core.analysis.agents_to_choose_from import agents_to_choose_from
 
 
 def create_agents_str() -> str:
     """
     Randomization of agents is done because LLMs have a tendency to overfit to the first few examples.
     """
-    available_agents = project.get_project_agents().all_assets()
+
+    # Forced agents if available or enabled agents otherwise
+    possible_agent_choices = agents_to_choose_from()
 
     new_line = "\n"
 
     random_agents = new_line.join(
-        [f"* {c.id} - {c.usage}" for c in random.sample(available_agents, len(available_agents))]
+        [f"* {c.id} - {c.usage}" for c in random.sample(possible_agent_choices, len(possible_agent_choices))]
     )
 
     return random_agents
