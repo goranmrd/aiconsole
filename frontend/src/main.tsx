@@ -18,11 +18,11 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { ContextMenuProvider } from 'mantine-contextmenu';
 
-import './index.css';
 import '@mantine/core/styles.css';
 import '@mantine/core/styles.layer.css';
 import '@mantine/notifications/styles.css';
 import 'mantine-contextmenu/styles.layer.css';
+import './index.css';
 import './layout.css';
 
 import { initStore } from './store/initStore.ts';

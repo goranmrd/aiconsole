@@ -20,6 +20,7 @@ import { Tabs } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { AssetsSidebarTab } from './AssetsSidebarTab';
 import { ChatsSidebarTab } from './ChatsSidebarTab';
+import { cn } from '@/utils/common/cn';
 
 const SideBar = ({ initialTab }: { initialTab: string }) => {
   const agents = useEditablesStore((state) => state.agents);
@@ -31,6 +32,12 @@ const SideBar = ({ initialTab }: { initialTab: string }) => {
 
   const [activeTab, setActiveTab] = useState<TabsValues | string | null>(initialTab);
 
+  const tabs = [
+    { label: 'Chats', key: 'chats' },
+    { label: 'Materials', key: 'materials' },
+    { label: 'Agents', key: 'agents' },
+  ];
+
   return (
     <div
       className={`min-w-[336px] w-[336px] h-full  bg-gray-900 pl-[30px] py-[20px] drop-shadow-md flex flex-col border-r  border-gray-600 `}
@@ -40,23 +47,25 @@ const SideBar = ({ initialTab }: { initialTab: string }) => {
         onChange={setActiveTab}
         color="#F1FF99"
         classNames={{
-          tab: 'px-[26px] py-[10px] [&:first-letter:] tab-hover font-medium',
+          list: 'before:border-gray-500',
         }}
-        vars={() => ({
-          root: {},
-          list: { '--_tab-border-color': '#3E3E3E' },
-          tab: {
-            '--mantine-spacing-xs': '10px 0px',
-            '--mantine-spacing-md': '25px 0px',
-            '--mantine-font-size-sm': '14px',
-            '--_tab-hover-color': 'transparent',
-          },
-        })}
       >
         <Tabs.List grow justify="center" className="mb-[15px] mr-[30px]">
-          <Tabs.Tab value="chats">Chats</Tabs.Tab>
-          <Tabs.Tab value="materials">Materials</Tabs.Tab>
-          <Tabs.Tab value="agents">Agents</Tabs.Tab>
+          {tabs.map(({ label, key }) => (
+            <Tabs.Tab
+              value={key}
+              key={key}
+              className={cn(
+                'px-[26px] pt-[10px] pb-[25px] [&:first-letter:] tab-hover font-medium text-[14px] w-1/3 hover:bg-transparent overflow-hidden',
+                {
+                  'text-white after:blur-[15px] after:opacity-20 after:w-[40px] after:h-[30px] after:absolute after:bottom-[-8px] after:z-[99] after:bg-yellow':
+                    activeTab === key,
+                },
+              )}
+            >
+              {label}
+            </Tabs.Tab>
+          ))}
         </Tabs.List>
 
         <Tabs.Panel value="chats">

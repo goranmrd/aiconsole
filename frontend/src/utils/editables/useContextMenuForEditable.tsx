@@ -16,20 +16,16 @@
 
 import { useAssetStore } from '@/store/editables/asset/useAssetStore';
 import { Asset, AssetStatus, EditableObject, EditableObjectType } from '@/types/editables/assetTypes';
-import { Copy, Edit, File, Trash, Undo2 } from 'lucide-react';
+import { Circle, Copy, Edit, File, Trash, Undo2 } from 'lucide-react';
 import { ContextMenuContent } from 'mantine-contextmenu';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { useContextMenu } from '../common/useContextMenu';
-import { getAssetStatusIcon } from './getAssetStatusIcon';
 import { useDeleteEditableObjectWithUserInteraction } from './useDeleteEditableObjectWithUserInteraction';
+import { useMemo } from 'react';
+import { RadioCheckedIcon } from '@/components/common/icons/RadioCheckedIcon';
 
-function createIconForStatus(assetStatus: AssetStatus) {
-  const Icon = getAssetStatusIcon(assetStatus);
-  return <Icon className="w-4 h-4" />;
-}
-
-export const DISABLED = 'font-bold opacity-50 max-w-[400px] truncate !cursor-default hover:!bg-gray-700';
+export const DISABLED = 'max-w-[400px] truncate !text-gray-400 pointer-events-none !cursor-default ';
 
 export function useEditableObjectContextMenu({
   editableObjectType,
@@ -41,146 +37,126 @@ export function useEditableObjectContextMenu({
   setIsEditing?: (isEditing: boolean) => void;
 }) {
   const { showContextMenu, hideContextMenu, isContextMenuVisible } = useContextMenu();
-
+  const hasDelete = useMemo(
+    () => (editableObjectType === 'chat' ? true : (editableObject as Asset)?.defined_in === 'project'),
+    [editableObject, editableObjectType],
+  );
+  const isDeleteRevert = useMemo(
+    () => (editableObjectType === 'chat' ? false : (editableObject as Asset)?.override),
+    [editableObject, editableObjectType],
+  );
   const navigate = useNavigate();
   const location = useLocation();
   const handleDelete = useDeleteEditableObjectWithUserInteraction(editableObjectType);
 
-  function showContextMenuReplacement() {
-    const content: ContextMenuContent = [];
+  const assetStatusIcon = (itemStatus: AssetStatus) => {
+    if ((editableObject as Asset)?.status === itemStatus) {
+      return <RadioCheckedIcon classNames="w-4 h-4" />;
+    }
 
+    return <Circle className="w-[14px] h-[14px] text-gray-400" />;
+  };
+
+  function showContextMenuReplacement() {
     if (!editableObject) {
       return () => {};
     }
 
-    content.push({
-      key: 'Name',
-      title: editableObject.name,
-      className: 'font-bold opacity-50 max-w-[400px] truncate !cursor-default hover:!bg-gray-700',
-      disabled: true,
-      onClick: () => {},
-    });
+    const assetItems = () => {
+      if (editableObjectType === 'chat') return [];
+      const asset = editableObject as Asset;
 
-    if (location.pathname !== `/${editableObjectType}s/${editableObject.id}`) {
-      content.push({
+      return [
+        { key: 'divider' },
+        {
+          key: 'usage',
+          title: 'Usage',
+          className: DISABLED,
+          disabled: true,
+          onClick: () => {},
+        },
+
+        {
+          key: 'Enforced',
+          icon: assetStatusIcon('forced'),
+          title: 'Enforced',
+          className: asset.status === 'forced' ? '!text-white' : '!text-gray-400',
+          hidden: !editableObject && asset?.status === 'forced',
+          onClick: () => {
+            useAssetStore.getState().setAssetStatus(editableObjectType, editableObject.id, 'forced');
+          },
+        },
+
+        {
+          key: 'AI Choice',
+          icon: assetStatusIcon('enabled'),
+          title: 'AI Choice',
+          className: asset.status === 'enabled' ? '!text-white' : '!text-gray-400',
+          hidden: !editableObject && asset?.status === 'enabled',
+          onClick: () => {
+            useAssetStore.getState().setAssetStatus(editableObjectType, editableObject.id, 'enabled');
+          },
+        },
+
+        {
+          key: 'Disabled',
+          icon: assetStatusIcon('disabled'),
+          title: 'Disabled',
+          className: asset.status === 'disabled' ? '!text-white' : '!text-gray-400',
+          hidden: !editableObject && asset?.status === 'disabled',
+          onClick: () => {
+            useAssetStore.getState().setAssetStatus(editableObjectType, editableObject.id, 'disabled');
+          },
+        },
+      ];
+    };
+
+    const content: ContextMenuContent = [
+      {
+        key: 'Rename',
+        icon: <Edit className="w-4 h-4" />,
+        title: 'Rename',
+        hidden: !setIsEditing || (editableObject as Asset)?.defined_in === 'aiconsole',
+        onClick: () => {
+          if (!setIsEditing) {
+            return;
+          }
+          setIsEditing(true);
+        },
+      },
+      {
+        key: 'Duplicate',
+        icon: <Copy className="w-4 h-4" />,
+        title: 'Duplicate',
+        onClick: () => {
+          navigate(
+            `/${editableObjectType}s/${editableObjectType === 'chat' ? uuidv4() : 'new'}?copy=${editableObject.id}`,
+          );
+        },
+      },
+      {
         key: 'Open',
         icon: <File className="w-4 h-4" />,
         title: 'Open',
+        hidden: location.pathname === `/${editableObjectType}s/${editableObject.id}`,
         onClick: () => {
           navigate(`/${editableObjectType}s/${editableObject.id}`);
         },
-      });
-    }
-
-    content.push({
-      key: 'Edit as New',
-      icon: <Copy className="w-4 h-4" />,
-      title: 'Edit as New',
-      onClick: () => {
-        navigate(
-          `/${editableObjectType}s/${editableObjectType === 'chat' ? uuidv4() : 'new'}?copy=${editableObject.id}`,
-        );
       },
-    });
 
-    let hasDelete = true;
-    let isDeleteRevert = false;
-
-    if (editableObjectType == 'chat') {
-      content.push(
-        ...[
-          {
-            key: 'Rename',
-            icon: <Edit className="w-4 h-4" />,
-            title: 'Rename',
-            hidden: !setIsEditing,
-            onClick: () => {
-              if (!setIsEditing) {
-                return;
-              }
-              setIsEditing(true);
-            },
-          },
-        ],
-      );
-    } else {
-      const asset = editableObject as Asset;
-      hasDelete = asset?.defined_in === 'project';
-      isDeleteRevert = asset?.override;
-
-      content.push(
-        ...[
-          ...(asset?.defined_in === 'project' && setIsEditing
-            ? [
-                {
-                  key: 'Rename',
-                  icon: <Edit className="w-4 h-4" />,
-                  title: 'Rename',
-                  onClick: () => {
-                    setIsEditing(true);
-                  },
-                },
-              ]
-            : []),
-          { key: 'divider' },
-          {
-            key: 'usage',
-            title: 'Change Use to ...',
-            className: DISABLED,
-            disabled: true,
-            onClick: () => {},
-          },
-          ...(editableObject && asset?.status !== 'forced'
-            ? [
-                {
-                  key: 'Always',
-                  icon: createIconForStatus('forced'),
-                  title: 'Always',
-                  onClick: () => {
-                    useAssetStore.getState().setAssetStatus(editableObjectType, editableObject.id, 'forced');
-                  },
-                },
-              ]
-            : []),
-          ...(editableObject && asset?.status !== 'enabled'
-            ? [
-                {
-                  key: 'Reset',
-                  icon: createIconForStatus('enabled'),
-                  title: 'Reset',
-                  onClick: () => {
-                    useAssetStore.getState().setAssetStatus(editableObjectType, editableObject.id, 'enabled');
-                  },
-                },
-              ]
-            : []),
-          ...(editableObject && asset?.status !== 'disabled'
-            ? [
-                {
-                  key: 'Disabled',
-                  icon: createIconForStatus('disabled'),
-                  title: 'Disabled',
-                  onClick: () => {
-                    useAssetStore.getState().setAssetStatus(editableObjectType, editableObject.id, 'disabled');
-                  },
-                },
-              ]
-            : []),
-        ],
-      );
-    }
-
-    if (hasDelete) {
-      content.push({ key: 'divider-delete' });
-      content.push({
+      ...assetItems(),
+      { key: 'divider-delete', hidden: !hasDelete },
+      {
         key: 'Delete',
         icon: isDeleteRevert ? <Undo2 className="w-4 h-4" /> : <Trash className="w-4 h-4" />,
         title: isDeleteRevert ? 'Revert' : 'Delete',
+        hidden: !hasDelete,
         onClick: () => handleDelete(editableObject.id),
-      });
-    }
+      },
+    ];
 
     return showContextMenu(content);
   }
+
   return { showContextMenu: showContextMenuReplacement, hideContextMenu, isContextMenuVisible };
 }
