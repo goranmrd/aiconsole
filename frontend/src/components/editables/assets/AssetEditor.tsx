@@ -30,7 +30,6 @@ import {
   MaterialContentType,
   RenderedMaterial,
 } from '@/types/editables/assetTypes';
-import { cn } from '@/utils/common/cn';
 import showNotification from '@/utils/common/showNotification';
 import { convertNameToId } from '@/utils/editables/convertNameToId';
 import { MaterialContentNames, getMaterialContentName } from '@/utils/editables/getMaterialContentName';
@@ -388,28 +387,21 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
                       </div>
                     )}
                   </div>
-                  <button
-                    disabled={disableSubmit}
-                    className={cn(
-                      ' flex-none bg-primary hover:bg-gray-700/95 text-black hover:bg-primary-light px-4 py-1 rounded-full flow-right text-[16px] ',
-                      {
-                        'opacity-[0.3] cursor-not-allowed hover:bg-initial': disableSubmit,
-                      },
-                    )}
-                    onClick={handleSaveClick}
-                  >
-                    {lastSavedAsset === undefined
-                      ? hasCore
-                        ? 'Override'
-                        : 'Create'
-                      : lastSavedAsset && lastSavedAsset.id !== asset.id
-                      ? isAssetChanged
-                        ? 'Rename and Save Changes'
-                        : 'Saved'
-                      : isAssetChanged
-                      ? 'Save Changes'
-                      : 'Saved'}
-                  </button>
+                  <div className="flex items-center gap-[10px] ml-auto">
+                    <Button disabled={disableSubmit} onClick={handleSaveClick}>
+                      {lastSavedAsset === undefined
+                        ? hasCore
+                          ? 'Override'
+                          : 'Create'
+                        : lastSavedAsset && lastSavedAsset.id !== asset.id
+                        ? isAssetChanged
+                          ? 'Rename and Save Changes'
+                          : 'Saved'
+                        : isAssetChanged
+                        ? 'Save Changes'
+                        : 'Saved'}
+                    </Button>
+                  </div>
                 </>
               )}
             </div>
