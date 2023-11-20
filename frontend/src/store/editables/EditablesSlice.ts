@@ -20,11 +20,11 @@ import { EditableObjectType, EditableObjectTypePlural } from '@/types/editables/
 import { EditablesAPI } from '../../api/api/EditablesAPI';
 import { EditablesStore } from './useEditablesStore';
 
-export type EdiblesSlice = {
+export type EditablesSlice = {
   deleteEditableObject: (editableObjectType: EditableObjectType, id: string) => Promise<void>;
 };
 
-export const createEdiblesSlice: StateCreator<EditablesStore, [], [], EdiblesSlice> = (set) => ({
+export const createEditablesSlice: StateCreator<EditablesStore, [], [], EditablesSlice> = (set) => ({
   deleteEditableObject: async (editableObjectType: EditableObjectType, id: string) => {
     await EditablesAPI.deleteEditableObject(editableObjectType, id);
     const editableObjectTypePlural = (editableObjectType + 's') as EditableObjectTypePlural;
