@@ -19,7 +19,7 @@ from aiconsole.core.chat.types import Chat
 from aiconsole.core.gpt.consts import GPTMode
 from aiconsole.core.gpt.gpt_executor import GPTExecutor
 from aiconsole.core.gpt.request import GPTRequest
-from aiconsole.core.gpt.types import GPTMessage
+from aiconsole.core.gpt.types import GPTRequestMessage, GPTRequestTextMessage
 from aiconsole.utils.convert_messages import convert_messages
 from aiconsole.api.websockets.outgoing_messages import AnalysisUpdatedWSMessage
 
@@ -36,7 +36,7 @@ async def gpt_analysis_text_step(
     request = GPTRequest(
         system_message=initial_system_prompt,
         gpt_mode=gpt_mode,
-        messages=[*convert_messages(chat), GPTMessage(role="system", content=last_system_prompt)],
+        messages=[*convert_messages(chat), GPTRequestTextMessage(role="system", content=last_system_prompt)],
         presence_penalty=2,
         min_tokens=DIRECTOR_MIN_TOKENS,
         preferred_tokens=DIRECTOR_PREFERRED_TOKENS,

@@ -19,6 +19,7 @@ from typing import List, Optional, cast
 
 from aiconsole.api.websockets.outgoing_messages import AnalysisUpdatedWSMessage
 from aiconsole.consts import DIRECTOR_MIN_TOKENS, DIRECTOR_PREFERRED_TOKENS
+from aiconsole.core.analysis.agents_to_choose_from import agents_to_choose_from
 from aiconsole.core.analysis.create_plan_class import create_plan_class
 from aiconsole.core.assets.agents.agent import Agent
 from aiconsole.core.assets.asset import AssetLocation, AssetStatus
@@ -26,8 +27,8 @@ from aiconsole.core.assets.materials.material import Material
 from aiconsole.core.chat.types import Chat
 from aiconsole.core.gpt.consts import GPTMode
 from aiconsole.core.gpt.gpt_executor import GPTExecutor
-from aiconsole.core.gpt.request import GPTRequest
-from aiconsole.core.gpt.types import EnforcedFunctionCall, GPTMessage
+from aiconsole.core.gpt.request import GPTRequest, ToolDefinition, ToolFunctionDefinition
+from aiconsole.core.gpt.types import EnforcedFunctionCall, EnforcedFunctionCallFuncSpec, GPTRequestTextMessage
 from aiconsole.core.project import project
 from aiconsole.utils.convert_messages import convert_messages
 from pydantic import BaseModel
@@ -105,33 +106,32 @@ async def gpt_analysis_function_step(
     gpt_executor = GPTExecutor()
 
     # Pick from forced or enabled agents if no agent is forced
-    forced_agents = project.get_project_agents().assets_with_status(AssetStatus.FORCED)
-    available_agents = (
-        forced_agents if forced_agents else project.get_project_agents().assets_with_status(AssetStatus.ENABLED)
-    )
-    available_agents = cast(list[Agent], available_agents)
+    possible_agent_choices = agents_to_choose_from()
 
-    if len(available_agents) == 0:
+    if len(possible_agent_choices) == 0:
         raise ValueError("No active agents")
 
-    plan_class = create_plan_class(available_agents)
+    plan_class = create_plan_class(possible_agent_choices)
 
     request = GPTRequest(
         system_message=initial_system_prompt,
         gpt_mode=gpt_mode,
-        messages=[*convert_messages(chat), GPTMessage(role="system", content=last_system_prompt)],
-        functions=[plan_class.openai_schema],
+        messages=[*convert_messages(chat), GPTRequestTextMessage(role="system", content=last_system_prompt)],
+        tools=[ToolDefinition(type="function", function=ToolFunctionDefinition(**plan_class.openai_schema))],
         presence_penalty=2,
         min_tokens=DIRECTOR_MIN_TOKENS,
         preferred_tokens=DIRECTOR_PREFERRED_TOKENS,
     )
 
     if force_call:
-        request.function_call = EnforcedFunctionCall(name=plan_class.__name__)
+        request.tool_choice = EnforcedFunctionCall(
+            type="function", function=EnforcedFunctionCallFuncSpec(name=plan_class.__name__)
+        )
 
     async for chunk in gpt_executor.execute(request):
-        function_call = gpt_executor.partial_response.choices[0].message.function_call
-        if function_call is not None:
+        tools_calls = gpt_executor.partial_response.choices[0].message.tool_calls
+        for tool_call in tools_calls:
+            function_call = tool_call.function
             arguments = function_call.arguments
             if not isinstance(arguments, str):
                 await AnalysisUpdatedWSMessage(
@@ -141,7 +141,7 @@ async def gpt_analysis_function_step(
                     next_step=arguments.get("next_step", None),
                     thinking_process=arguments.get("thinking_process", None),
                 ).send_to_chat(chat.id)
-        else:
+        if not tools_calls:
             await AnalysisUpdatedWSMessage(
                 analysis_request_id=analysis_request_id,
                 agent_id=None,
@@ -152,17 +152,20 @@ async def gpt_analysis_function_step(
 
     result = gpt_executor.response.choices[0].message
 
-    if result.function_call is None:
+    if len(result.tool_calls) == 0:
         return AnalysisStepWithFunctionReturnValue(next_step=result.content or "")
 
-    arguments = result.function_call.arguments
+    if len(result.tool_calls) > 1:
+        raise ValueError(f"Expected one tool call, got {len(result.tool_calls)}")
+
+    arguments = result.tool_calls[0].function.arguments
 
     if isinstance(arguments, str):
         raise ValueError(f"Could not parse arguments from the text: {arguments}")
 
     arguments = plan_class(**arguments)
 
-    picked_agent = pick_agent(arguments, chat, available_agents)
+    picked_agent = pick_agent(arguments, chat, possible_agent_choices)
 
     relevant_materials = _get_relevant_materials(arguments.relevant_material_ids)
 

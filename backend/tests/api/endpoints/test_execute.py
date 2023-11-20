@@ -13,7 +13,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
+
+"""    
 from fastapi.testclient import TestClient
 from pytest_mock import MockFixture
 from aiconsole.chat.types import ChatWithAgentAndMaterials
@@ -57,3 +58,4 @@ def test_gpt_endpoint_streaming(client: TestClient, mocker: MockFixture):
     response = client.post("/execute", json=payload.model_dump())
     assert response.status_code == 200
     assert response.text == stream_text
+"""

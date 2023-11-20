@@ -45,4 +45,5 @@ async def analyse(request: Request, data: AnalysisRequestData, chat_id):
     except asyncio.CancelledError:
         _log.info("Analysis cancelled")
     except Exception as e:
+        _log.exception("Analysis failed", exc_info=e)
         raise HTTPException(status_code=400, detail=str(e))

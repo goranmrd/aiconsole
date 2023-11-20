@@ -659,13 +659,13 @@ i18n = ["Babel (>=2.7)"]
 
 [[package]]
 name = "litellm"
-version = "0.6.2"
+version = "0.6.6"
 description = "Library to easily interface with LLM API providers"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "litellm-0.6.2-py3-none-any.whl", hash = "sha256:c1581013470cfffe85fff7993af7c42a88bf043f741c0535adcdc34bcab217b4"},
-    {file = "litellm-0.6.2.tar.gz", hash = "sha256:0ffae97a40710622ec84f78112add47b2cf3a613992df9f5576aa2cf5795b248"},
+    {file = "litellm-0.6.6-py3-none-any.whl", hash = "sha256:f410b0c0441d67e5aa456543ade6ba80cc1f81a29149804bd85b44f42784970a"},
+    {file = "litellm-0.6.6.tar.gz", hash = "sha256:df83deb4cd19de8be70ffc1fa9baf3183e01a6ae4f1fbb655c93cb66eea54c2a"},
 ]
 
 [package.dependencies]

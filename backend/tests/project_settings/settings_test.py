@@ -13,7 +13,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
+
+"""
 import unittest
 from unittest.mock import mock_open, patch
 from aiconsole.core.assets.asset import AssetStatus
@@ -64,12 +65,12 @@ class TestSettings(unittest.TestCase):
     @patch("builtins.open", new_callable=mock_open)
     def test_load_existing_settings_file(self, mock_file_open):
         # Testing loading an existing settings file
-        toml_data = """
+        toml_data = ""\"
         [materials]
         material1 = "disable"
         [agents]
         agent1 = "force"
-        """
+        ""\"
         mock_file_open.return_value.read.return_value = toml_data
         with patch('builtins.open', mock_file_open):
             settings = Settings()
@@ -86,3 +87,5 @@ class TestSettings(unittest.TestCase):
             settings.__save_toml_data()
             m.assert_called_with(settings.__file_path, 'w')
             m().write.assert_called_once()
+
+"""

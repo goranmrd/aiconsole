@@ -83,7 +83,7 @@ export function CodeInput({
       <div
         className={cn(
           className,
-          'font-mono text-sm overflow-y-auto h-full  max-h-[calc(100%-40px)] bg-black/20 border border-transparent rounded',
+          'font-mono text-sm overflow-y-auto h-full  max-h-[calc(100%-50px)] bg-black/20 border border-transparent rounded',
           { 'border-primary/50 ': focus },
         )}
       >
@@ -97,13 +97,13 @@ export function CodeInput({
           highlight={(code) => onHighlight(code)}
           padding={10}
           className={cn(
-            'resize-none  appearance-none border border-transparent rounded w-full leading-tight placeholder-gray-400 bottom-0 p-0   ',
+            'resize-none  appearance-none border border-transparent rounded w-full leading-tight placeholder-gray-400 bottom-0 p-0 h-full',
             {
               'opacity-[0.7] ': disabled,
               'bg-transparent': transparent,
             },
           )}
-          textareaClassName={cn('focus:!outline-none focus:!shadow-none ', {
+          textareaClassName={cn('focus:!outline-none focus:!shadow-none h-full', {
             'cursor-not-allowed': disabled,
           })}
         />
