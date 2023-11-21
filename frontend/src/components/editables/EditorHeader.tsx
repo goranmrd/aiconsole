@@ -24,7 +24,7 @@ export function EditorHeader({
   const editableType = getEditableObjectType(editable);
 
   if (!editable) {
-    return <div className="flex flex-col w-full h-full items-center justify-center">Not found</div>;
+    return <div className="flex flex-col w-full h-full items-center justify-center"></div>;
   }
 
   return (

@@ -32,20 +32,22 @@ import { EditableObject } from './assetTypes';
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export type AICContentMessage = {
+export type AICToolCall = {
+  id: string;
+  language: string;
+  is_code_executing: boolean; //HACK: For now this is frontend only, but if we move message management to backend, this should be moved there as well.
+  is_streaming: boolean; //HACK: For now this is frontend only, but if we move message management to backend, this should be moved there as well.
+  code: string;
+  output?: string;
+};
+
+export type AICMessage = {
   id: string;
   timestamp: string;
   content: string;
+  tool_calls: AICToolCall[];
+  is_streaming: boolean; //HACK: For now this is frontend only, but if we move message management to backend, this should be moved there as well.
 };
-
-export type AICCodeMessage = AICContentMessage & {
-  language: string;
-  //HACK: For now this is frontend only, but if we move message management to backend, this should be moved there as well.
-  is_code_executing: boolean;
-  outputs: AICContentMessage[];
-};
-
-export type AICMessage = AICContentMessage | AICCodeMessage;
 
 export type AICMessageGroup = {
   id: string;

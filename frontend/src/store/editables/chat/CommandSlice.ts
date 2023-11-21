@@ -18,22 +18,19 @@ import { StateCreator } from 'zustand';
 
 import { ChatStore } from './useChatStore';
 import { ChatAPI } from '../../../api/api/ChatAPI';
-
+import { v4 as uuid } from 'uuid';
 
 export type CommandSlice = {
   commandHistory: string[];
   commandIndex: number;
   historyUp: () => void;
   historyDown: () => void;
-  scrollChatToBottom: undefined | ((props: {behavior: "auto" | "smooth" | undefined}) => void);
-  setScrollChatToBottom: (scrollChatToBottom: (props: {behavior: "auto" | "smooth" | undefined}) => void) => void;
+  scrollChatToBottom: undefined | ((props: { behavior: 'auto' | 'smooth' | undefined }) => void);
+  setScrollChatToBottom: (scrollChatToBottom: (props: { behavior: 'auto' | 'smooth' | undefined }) => void) => void;
   newCommand: () => Promise<void>;
   editCommand: (prompt: string) => void;
   getCommand: () => string;
-  saveCommandAndMessagesToHistory: (
-    command: string,
-    isUserCommand: boolean,
-  ) => Promise<void>;
+  saveCommandAndMessagesToHistory: (command: string, isUserCommand: boolean) => Promise<void>;
   submitCommand: (prompt: string) => Promise<void>;
   initCommandHistory: () => Promise<void>;
 };
@@ -53,10 +50,7 @@ export const createCommandSlice: StateCreator<ChatStore, [], [], CommandSlice> =
   },
   historyDown: () => {
     set((state) => ({
-      commandIndex: Math.min(
-        state.commandHistory.length - 1,
-        state.commandIndex + 1,
-      ),
+      commandIndex: Math.min(state.commandHistory.length - 1, state.commandIndex + 1),
     }));
   },
   historyUp: () => {
@@ -72,24 +66,16 @@ export const createCommandSlice: StateCreator<ChatStore, [], [], CommandSlice> =
       commandHistory: [
         ...state.commandHistory.slice(0, state.commandIndex),
         command,
-        ...state.commandHistory.slice(
-          state.commandIndex + 1,
-          state.commandHistory.length,
-        ),
+        ...state.commandHistory.slice(state.commandIndex + 1, state.commandHistory.length),
       ],
     }));
   },
   getCommand: () => {
     return get().commandHistory[get().commandIndex];
   },
-  saveCommandAndMessagesToHistory: async (
-    command: string,
-    isUserCommand: boolean,
-  ) => {
+  saveCommandAndMessagesToHistory: async (command: string, isUserCommand: boolean) => {
     if (isUserCommand) {
-      const history: string[] = await (
-        await ChatAPI.saveCommandToHistory({ command })
-      ).json();
+      const history: string[] = await (await ChatAPI.saveCommandToHistory({ command })).json();
       set(() => ({
         commandHistory: [...history, ''],
         commandIndex: history.length,
@@ -98,11 +84,10 @@ export const createCommandSlice: StateCreator<ChatStore, [], [], CommandSlice> =
     get().saveCurrentChatHistory();
   },
   submitCommand: async (command: string) => {
-    
     if (get().isExecuteRunning || get().currentAnalysisRequestId) {
       await get().stopWork();
     }
-    
+
     if (command.trim() !== '') {
       get().appendGroup({
         agent_id: 'user',
@@ -112,11 +97,12 @@ export const createCommandSlice: StateCreator<ChatStore, [], [], CommandSlice> =
         messages: [],
       });
 
-      get().appendMessage(
-        {
-          content: command,
-        },
-      );
+      get().appendMessage({
+        id: uuid(),
+        content: command,
+        tool_calls: [],
+        is_streaming: false,
+      });
 
       get().saveCommandAndMessagesToHistory(command, true);
     }
@@ -124,7 +110,7 @@ export const createCommandSlice: StateCreator<ChatStore, [], [], CommandSlice> =
 
     if (scrollChatToBottom) {
       scrollChatToBottom({
-        behavior: 'smooth'
+        behavior: 'smooth',
       });
     }
 

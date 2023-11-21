@@ -14,15 +14,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 // Analysis
 
-import ky from "ky";
-import { API_HOOKS, getBaseURL } from "../../store/useAPIStore";
-import { Chat } from "@/types/editables/chatTypes";
+import ky from 'ky';
+import { API_HOOKS, getBaseURL } from '../../store/useAPIStore';
+import { Chat } from '@/types/editables/chatTypes';
 
-
-const execute = (chatWithAnalysis: Chat & { relevant_materials_ids: string[]; agent_id: string }, signal?: AbortSignal) =>
+const execute = (
+  chatWithAnalysis: Chat & { relevant_materials_ids: string[]; agent_id: string },
+  signal?: AbortSignal,
+) =>
   ky.post(`${getBaseURL()}/api/chats/${chatWithAnalysis.id}/execute`, {
     json: { ...chatWithAnalysis },
     signal,
@@ -40,6 +41,7 @@ const runCode = ({
   code: string;
   materials_ids: string[];
   signal?: AbortSignal;
+  tool_call_id: string;
 }) =>
   ky.post(`${getBaseURL()}/chats/${chatId}/run_code`, {
     json: rest,
@@ -47,7 +49,6 @@ const runCode = ({
     timeout: 60000,
     hooks: API_HOOKS,
   });
-
 
 // Commands
 
@@ -60,8 +61,6 @@ const saveCommandToHistory = (body: object) =>
     hooks: API_HOOKS,
   });
 
-
-
 const analyse = (chat: Chat, analysis_request_id: string, signal?: AbortSignal) =>
   ky.post(`${getBaseURL()}/api/chats/${chat.id}/analyse`, {
     json: { chat: chat, analysis_request_id: analysis_request_id },
@@ -69,7 +68,6 @@ const analyse = (chat: Chat, analysis_request_id: string, signal?: AbortSignal) 
     timeout: 60000,
     hooks: API_HOOKS,
   });
-
 
 export const ChatAPI = {
   execute,

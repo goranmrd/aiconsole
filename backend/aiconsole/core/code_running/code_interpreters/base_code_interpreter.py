@@ -21,26 +21,34 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-#     ____                      ____      __                            __           
+#     ____                      ____      __                            __
 #    / __ \____  ___  ____     /  _/___  / /____  _________  ________  / /____  _____
 #   / / / / __ \/ _ \/ __ \    / // __ \/ __/ _ \/ ___/ __ \/ ___/ _ \/ __/ _ \/ ___/
-#  / /_/ / /_/ /  __/ / / /  _/ // / / / /_/  __/ /  / /_/ / /  /  __/ /_/  __/ /    
-#  \____/ .___/\___/_/ /_/  /___/_/ /_/\__/\___/_/  / .___/_/   \___/\__/\___/_/     
-#      /_/                                         /_/                               
+#  / /_/ / /_/ /  __/ / / /  _/ // / / / /_/  __/ /  / /_/ / /  /  __/ /_/  __/ /
+#  \____/ .___/\___/_/ /_/  /___/_/ /_/\__/\___/_/  / .___/_/   \___/\__/\___/_/
+#      /_/                                         /_/
 #
 # This file has been taken from the wonderful project "open-interpreter" by Killian Lucas
 # https://github.com/KillianLucas/open-interpreter
 #
 
+
+from typing import AsyncGenerator, Generator
+from aiconsole.core.assets.materials.material import Material
+
+
 class BaseCodeInterpreter:
     """
     .run is a generator that yields a dict with attributes: active_line, output
     """
+
     def __init__(self):
         pass
 
-    def run(self, code):
-        pass
+    async def run(
+        self, code: str, chat_id: str, tool_call_id: str, materials: list[Material]
+    ) -> AsyncGenerator[str, None]:
+        yield "Not implemented"
 
     def terminate(self):
         pass

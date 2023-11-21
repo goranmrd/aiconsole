@@ -16,97 +16,69 @@
 
 import { StateCreator } from 'zustand';
 
-import { AICCodeMessage, AICContentMessage, AICMessageGroup } from '@/types/editables/chatTypes';
+import { AICToolCall, AICMessage, AICMessageGroup } from '@/types/editables/chatTypes';
 import { ChatStore } from './useChatStore';
-import { deepCopyChat, getGroup, getMessage, getOutput } from '@/utils/editables/chatUtils';
+import {
+  deepCopyChat,
+  getGroup,
+  getLastGroup,
+  getLastMessage,
+  getMessage,
+  getToolCall,
+} from '@/utils/editables/chatUtils';
 import { v4 as uuidv4 } from 'uuid';
 
 export type MessageSlice = {
   loadingMessages: boolean;
-  isViableForRunningCode: (groupId: string, messageId: string) => boolean;
-  removeMessageFromGroup: (groupId?: string, messageId?: string) => void;
-  removeOutputFromCode: (groupId: string, codeId: string, outputId: string) => void;
-  editMessageContent: (groupId: string, messageId: string, newContent: string) => void;
-  editOutputContent: (groupId: string, messageId: string, outputId: string, newOutput: string) => void;
-  markAsExecuting: (executing: boolean, groupId?: string, messageId?: string) => void;
-  appendEmptyOutput: (groupId?: string, messageId?: string) => void;
-  appendTextAtTheEnd: (text: string, groupId?: string, messageId?: string) => void;
+  isViableForRunningCode: (toolCallId: string) => boolean;
+  removeMessageFromGroup: (messageId: string) => void;
+  removeToolCallFromMessage: (outputId: string) => void;
+  editMessage: (change: (message: AICMessage) => void, messageId: string) => void;
+  editToolCall: (change: (output: AICToolCall) => void, outputId: string) => void;
+  appendToolCall: (toolCall: Omit<AICToolCall, 'timestamp'>, messageId?: string) => void;
   appendGroup: (group: Omit<AICMessageGroup, 'id'>) => void;
-  appendMessage: (
-    message: Omit<AICContentMessage, 'id' | 'timestamp'> | Omit<AICCodeMessage, 'id' | 'timestamp'>,
-    groupId?: string,
-  ) => void;
+  appendMessage: (message: Omit<AICMessage, 'timestamp'>, groupId?: string) => void;
 };
 
 export const createMessageSlice: StateCreator<ChatStore, [], [], MessageSlice> = (set, get) => ({
-  isViableForRunningCode: (groupId: string, messageId: string) => {
+  isViableForRunningCode: (toolCallId: string) => {
     const chat = get().chat;
 
-    if (!chat) { throw new Error('Chat is not initialized'); }
+    if (!chat) {
+      throw new Error('Chat is not initialized');
+    }
 
-    const message = chat.message_groups.find((group) => group.id === groupId)
-      ?.messages.find((message) => message.id === messageId);
-    if (message && 'outputs' in message) {
-      return message.outputs.length === 0;
-    } else {
+    try {
+      const toolCallLocation = getToolCall(chat, toolCallId);
+
+      if (toolCallLocation) {
+        return toolCallLocation.toolCall.output === undefined;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      console.error(e);
       return false;
     }
   },
-  appendTextAtTheEnd: (text: string, groupId?: string, messageId?: string) => {
-    //append text to last content
-    set((state) => {
-      if (!state.chat) { throw new Error('Chat is not initialized'); }
-
-      const chat = deepCopyChat(state.chat);
-
-      const group = getGroup(chat, groupId).group;
-      const message = getMessage(group, messageId).message;
-
-      if ('outputs' in message && message.outputs.length > 0) {
-        const lastOutput = message.outputs[message.outputs.length - 1];
-
-        lastOutput.content += text;
-      } else {
-        message.content += text;
-      }
-
-      return {
-        chat,
-      };
-    });
-  },
-  markAsExecuting: (executing: boolean, groupId?: string, messageId?: string) => {
-    set((state) => {
-      if (!state.chat) { throw new Error('Chat is not initialized'); }
-
-      const chat = deepCopyChat(state.chat);
-      const group = getGroup(chat, groupId).group;
-      const message = getMessage(group, messageId).message;
-
-      if (!('language' in message)) {
-        throw new Error('Last message is not a code message');
-      }
-
-      message.is_code_executing = executing;
-
-      return {
-        chat,
-      };
-    });
-  },
   loadingMessages: false,
-  removeMessageFromGroup: (groupId?: string, messageId?: string) => {
+  removeMessageFromGroup: (messageId: string) => {
     set((state) => {
-      if (!state.chat) { throw new Error('Chat is not initialized'); }
+      if (!state.chat) {
+        throw new Error('Chat is not initialized');
+      }
 
       const chat = deepCopyChat(state.chat);
-      const groupLocation = getGroup(chat, groupId);
-      const messageLocation = getMessage(groupLocation.group, messageId);
+      const messageLocation = getMessage(chat, messageId);
 
-      groupLocation.group.messages.splice(messageLocation.messageIndex, 1);
+      if (!messageLocation) {
+        throw new Error('Message not found');
+      }
 
-      if (groupLocation.group.messages.length === 0) {
-        chat.message_groups.splice(chat.message_groups.indexOf(groupLocation.group), 1);
+      messageLocation.group.messages.splice(messageLocation.messageIndex, 1);
+
+      if (messageLocation.group.messages.length === 0) {
+        chat.message_groups.splice(chat.message_groups.indexOf(messageLocation.group), 1);
       }
 
       return {
@@ -115,20 +87,25 @@ export const createMessageSlice: StateCreator<ChatStore, [], [], MessageSlice> =
     });
     get().saveCurrentChatHistory();
   },
-  removeOutputFromCode: (groupId: string, messageId: string, outputId: string) => {
+  removeToolCallFromMessage: (toolCallId: string) => {
     set((state) => {
-      if (!state.chat) { throw new Error('Chat is not initialized'); }
-
-      const chat = deepCopyChat(state.chat);
-      const groupLocation = getGroup(chat, groupId);
-      const messageLocation = getMessage(groupLocation.group, messageId);
-      const outputLocation = getOutput(messageLocation.message, outputId);
-
-      if (!('outputs' in messageLocation.message)) {
-        throw new Error(`Message with id ${messageId} is not a code message`);
+      if (!state.chat) {
+        throw new Error('Chat is not initialized');
       }
 
-      messageLocation.message.outputs.splice(outputLocation.outputIndex, 1);
+      const chat = deepCopyChat(state.chat);
+      const toolCallLocation = getToolCall(chat, toolCallId);
+
+      if (!toolCallLocation) {
+        throw new Error(`Tool Call with id ${toolCallId} not found`);
+      }
+
+      console.log(`Removing tool call ${toolCallId} from message ${toolCallLocation.message.id}`);
+      toolCallLocation.message.tool_calls.splice(toolCallLocation.toolCallIndex, 1);
+
+      if (toolCallLocation.message.tool_calls.length === 0 && toolCallLocation.message.content === '') {
+        toolCallLocation.group.messages.splice(toolCallLocation.messageIndex, 1);
+      }
 
       return {
         chat,
@@ -137,20 +114,21 @@ export const createMessageSlice: StateCreator<ChatStore, [], [], MessageSlice> =
 
     get().saveCurrentChatHistory();
   },
-  editMessageContent: (groupId: string, messageId: string, newContent: string) => {
+  editMessage: (change: (message: AICMessage) => void, messageId: string) => {
     set((state) => {
-      if (!state.chat) { throw new Error('Chat is not initialized'); }
+      if (!state.chat) {
+        throw new Error('Chat is not initialized');
+      }
 
       const chat = deepCopyChat(state.chat);
-      const groupLocation = getGroup(chat, groupId);
-      const messageLocation = getMessage(groupLocation.group, messageId);
-      const message = messageLocation.message;
-
-      if ('code' in message) {
-        message.code = newContent;
-      } else {
-        message.content = newContent;
+      const messageLocation = getMessage(chat, messageId);
+      if (!messageLocation) {
+        console.trace();
+        console.error(`Message with id ${messageId} not found in`, chat);
+        throw new Error('Message not found');
       }
+
+      if (change) change(messageLocation.message);
 
       return {
         chat,
@@ -159,63 +137,59 @@ export const createMessageSlice: StateCreator<ChatStore, [], [], MessageSlice> =
 
     const chat = get().chat;
 
-    if (!chat) { throw new Error('Chat is not initialized'); }
-
-    const group = getGroup(chat, groupId).group;
-
-    get().saveCommandAndMessagesToHistory(newContent, group.role === 'user');
+    if (!chat) {
+      throw new Error('Chat is not initialized');
+    }
   },
-  editOutputContent: (groupId: string, messageId: string, outputId: string, newOutput: string) => {
+  editToolCall: (change: (toolCall: AICToolCall) => void, toolCallId: string) => {
     set((state) => {
-      if (!state.chat) { throw new Error('Chat is not initialized'); }
-
-      const chat = deepCopyChat(state.chat);
-      const groupLocation = getGroup(chat, groupId);
-      const messageLocation = getMessage(groupLocation.group, messageId);
-      const outputLocation = getOutput(messageLocation.message, outputId);
-
-      if (!('outputs' in messageLocation.message)) {
-        throw new Error(`Message with id ${messageId} is not a code message`);
+      if (!state.chat) {
+        throw new Error('Chat is not initialized');
       }
 
-      messageLocation.message.outputs[outputLocation.outputIndex].content = newOutput;
+      const chat = deepCopyChat(state.chat);
+      const outputLocation = getToolCall(chat, toolCallId);
+
+      if (!outputLocation) {
+        console.trace();
+        console.error(`Tool call with id ${toolCallId} not found in`, chat);
+        throw new Error(`Tool call with id ${toolCallId} not found`);
+      }
+
+      if (change) change(outputLocation.toolCall);
 
       return {
         chat,
       };
     });
-
-    get().saveCurrentChatHistory();
   },
-  appendEmptyOutput: (groupId?: string, messageId?: string) => {
+  appendToolCall: (toolCall: AICToolCall, messageId?: string) => {
     set((state) => {
-      if (!state.chat) { throw new Error('Chat is not initialized'); }
+      if (!state.chat) {
+        throw new Error('Chat is not initialized');
+      }
 
       const chat = deepCopyChat(state.chat);
-      const groupLocation = getGroup(chat, groupId);
-      const messageLocation = getMessage(groupLocation.group, messageId);
-      const message = messageLocation.message;
+      const messageLocation = messageId === undefined ? getLastMessage(chat) : getMessage(chat, messageId);
 
-      if (!('outputs' in message)) {
+      if (!messageLocation) {
         throw new Error(`Message with id ${messageId} is not a code message`);
       }
 
-      message.outputs.push({
-        id: uuidv4(),
-        timestamp: new Date().toISOString(),
-        content: '',
+      messageLocation.message.tool_calls.push({
+        ...toolCall,
       });
 
       return {
         chat,
       };
     });
-
-    get().saveCurrentChatHistory();
   },
   appendGroup: (group: Omit<AICMessageGroup, 'id'>) => {
     set((state) => {
-      if (!state.chat) { throw new Error('Chat is not initialized'); }
+      if (!state.chat) {
+        throw new Error('Chat is not initialized');
+      }
 
       const chat = deepCopyChat(state.chat);
 
@@ -229,19 +203,21 @@ export const createMessageSlice: StateCreator<ChatStore, [], [], MessageSlice> =
       };
     });
   },
-  appendMessage: (
-    message: Omit<AICContentMessage, 'id' | 'timestamp'> | Omit<AICCodeMessage, 'id' | 'timestamp'>,
-    groupId?: string,
-  ) => {
+  appendMessage: (message: Omit<AICMessage, 'timestamp'>, groupId?: string) => {
     set((state) => {
-      if (!state.chat) { throw new Error('Chat is not initialized'); }
+      if (!state.chat) {
+        throw new Error('Chat is not initialized');
+      }
 
       const chat = deepCopyChat(state.chat);
 
-      const group = getGroup(chat, groupId).group;
+      const groupLocation = groupId === undefined ? getLastGroup(chat) : getGroup(chat, groupId);
 
-      group.messages.push({
-        id: uuidv4(),
+      if (!groupLocation) {
+        throw new Error('Group not found');
+      }
+
+      groupLocation.group.messages.push({
         timestamp: new Date().toISOString(),
         ...message,
       });
@@ -250,7 +226,5 @@ export const createMessageSlice: StateCreator<ChatStore, [], [], MessageSlice> =
         chat,
       };
     });
-
-    get().saveCurrentChatHistory();
   },
 });

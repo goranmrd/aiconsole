@@ -13,14 +13,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
 
+
+from aiconsole.core.code_running.code_interpreters.base_code_interpreter import BaseCodeInterpreter
 from aiconsole.core.code_running.code_interpreters.language_map import language_map
 
 
 code_interpreters = {}
 
-def get_code_interpreter(language):
+
+def get_code_interpreter(language) -> BaseCodeInterpreter:
     if language not in code_interpreters:
         # Case in-sensitive
         language = language.lower()
@@ -29,7 +31,7 @@ def get_code_interpreter(language):
             code_interpreters[language] = language_map[language]()
         except KeyError:
             raise ValueError(f"Unknown or unsupported language: {language}")
-    
+
     return code_interpreters[language]
 
 

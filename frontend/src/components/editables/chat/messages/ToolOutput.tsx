@@ -14,48 +14,48 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { useCallback } from 'react';
 import { useChatStore } from '@/store/editables/chat/useChatStore';
+import { AICToolCall as AICToolCall } from '@/types/editables/chatTypes';
+import { useCallback } from 'react';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { duotoneDark as vs2015 } from 'react-syntax-highlighter/dist/cjs/styles/prism';
-import { AICCodeMessage, AICContentMessage, AICMessageGroup } from "@/types/editables/chatTypes";
 import { EditableContentMessage } from './EditableContentMessage';
 
 interface OutputProps {
-  group: AICMessageGroup;
-  message: AICCodeMessage;
-  output: AICContentMessage;
-  isStreaming: boolean;
+  tool_call: AICToolCall;
 }
 
-export function CodeOutput({ group, message, output, isStreaming }: OutputProps) {
-  const removeOutputFromCode = useChatStore((state) => state.removeOutputFromCode);
-  const editOutputContent = useChatStore((state) => state.editOutputContent);
+export function ToolOutput({ tool_call }: OutputProps) {
+  const editToolCall = useChatStore((state) => state.editToolCall);
 
   const handleAcceptedContent = useCallback(
     (content: string) => {
-      editOutputContent(group.id, message.id, output.id, content);
+      editToolCall((toolCall) => {
+        toolCall.output = content;
+      }, tool_call.id);
     },
-    [message.id, group.id, output.id, editOutputContent],
+    [tool_call.id, editToolCall],
   );
 
   const handleRemoveClick = useCallback(() => {
-    removeOutputFromCode(group.id, message.id, output.id);
-  }, [group.id, message.id, output.id, removeOutputFromCode]);
+    editToolCall((toolCall) => {
+      toolCall.output = undefined;
+    }, tool_call.id);
+  }, [tool_call.id, editToolCall]);
 
   return (
     <div className="flex flex-row w-full">
       <span className="w-20 flex-none">Output: </span>
       <EditableContentMessage
-        initialContent={output.content}
-        isStreaming={isStreaming}
+        initialContent={tool_call.output || ''}
+        isStreaming={tool_call.is_code_executing}
         handleAcceptedContent={handleAcceptedContent}
         handleRemoveClick={handleRemoveClick}
         className="flex-grow"
       >
         <SyntaxHighlighter
           style={vs2015}
-          children={output.content}
+          children={tool_call.output || ''}
           language={'text'}
           className="basis-0 flex-grow rounded-md p-2 overflow-auto"
         />

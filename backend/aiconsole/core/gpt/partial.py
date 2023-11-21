@@ -202,7 +202,7 @@ class GPTPartialResponse(BaseModel):
                             chunk_tool_function = tool_call["function"]
 
                             if chunk_tool_function:
-                                while len(message.tool_calls) < index + 1:
+                                while len(message.tool_calls) < chunk_tool_index + 1:
                                     message.tool_calls.append(
                                         GPTPartialToolsCall(
                                             id=tool_call["id"],

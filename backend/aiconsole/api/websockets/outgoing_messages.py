@@ -14,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import List, Optional
 from aiconsole.core.assets.asset import AssetType
 from pydantic import BaseModel
 
@@ -53,8 +52,8 @@ class ErrorWSMessage(BaseWSMessage):
 
 
 class InitialProjectStatusWSMessage(BaseWSMessage):
-    project_name: Optional[str] = None
-    project_path: Optional[str] = None
+    project_name: str | None = None
+    project_path: str | None = None
 
 
 class ProjectOpenedWSMessage(BaseWSMessage):
@@ -78,11 +77,3 @@ class AssetsUpdatedWSMessage(BaseWSMessage):
 
 class SettingsWSMessage(BaseWSMessage):
     initial: bool
-
-
-class AnalysisUpdatedWSMessage(BaseWSMessage):
-    analysis_request_id: str
-    agent_id: Optional[str] = None
-    relevant_material_ids: Optional[List[str]] = None
-    next_step: Optional[str] = None
-    thinking_process: Optional[str] = None

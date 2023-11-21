@@ -23,18 +23,18 @@ from aiconsole.core.gpt.types import GPTRole
 from pydantic import BaseModel
 
 
-class AICContentMessage(BaseModel):
+class AICToolCall(BaseModel):
+    id: str
+    language: LanguageStr
+    code: str
+    output: str | None = None
+
+
+class AICMessage(BaseModel):
     id: str
     timestamp: str
     content: str
-
-
-class AICCodeMessage (AICContentMessage):
-    language: LanguageStr
-    outputs: List[AICContentMessage]
-
-
-AICMessage = Union[AICCodeMessage, AICContentMessage]
+    tool_calls: list[AICToolCall]
 
 
 class AICMessageGroup(BaseModel):

@@ -94,6 +94,7 @@ class GPTExecutor:
                 _log.exception(f"Error on attempt {attempt}: {error}", exc_info=error)
                 if attempt == 2:
                     raise error
+            _log.info(f"Retrying GPT request")
             yield CLEAR_STR
 
         raise Exception("Unable to complete GPT request.")

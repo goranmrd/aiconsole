@@ -15,7 +15,7 @@
 # limitations under the License.
 
 import json
-from aiconsole.core.chat.types import AICCodeMessage, AICMessage, AICMessageGroup, Chat
+from aiconsole.core.chat.types import AICMessage, AICMessageGroup, Chat
 from aiconsole.consts import FUNCTION_CALL_OUTPUT_LIMIT
 from aiconsole.core.gpt.types import (
     GPTFunctionCall,
@@ -60,34 +60,43 @@ As a director I have assigned you ({group.agent_id}) and given you access to the
             )
             last_system_message = system_message
 
-    if isinstance(message, AICCodeMessage):
-        tool_call_id = message.id
-
-        result.append(
-            GPTRequestTextMessage(
-                role="assistant",
-                content=message.content,
-                tool_calls=[
-                    GPTToolCall(
-                        id=tool_call_id,
-                        function=GPTFunctionCall(
-                            name="execute",
-                            arguments=json.dumps(
-                                {
-                                    "code": message.content,
-                                    "language": message.language,
-                                }
-                            ),
-                        ),
-                    )
-                ],
-                name="code",
-            )
+    tool_calls = [
+        GPTToolCall(
+            id=tool_call.id,
+            function=GPTFunctionCall(
+                name=tool_call.language,
+                arguments=json.dumps(
+                    {
+                        "code": tool_call.code,
+                    }
+                ),
+            ),
         )
+        for tool_call in message.tool_calls
+    ]
 
-        for output in message.outputs:
-            content = output.content
+    result.append(
+        GPTRequestTextMessage(
+            role=group.role,
+            content=message.content,
+            name=group.agent_id if group.agent_id != "user" else None,
+            tool_calls=tool_calls or None,
+        ),
+    )
 
+    for tool_call in message.tool_calls:
+        tool_call_id = tool_call.id
+
+        content = tool_call.output
+
+        if content is None:
+            result.append(
+                GPTRequestToolMessage(
+                    tool_call_id=tool_call_id,
+                    content="Running...",
+                )
+            )
+        else:
             if content == "":
                 content = "No output"
 
@@ -101,12 +110,6 @@ Output truncated to last {FUNCTION_CALL_OUTPUT_LIMIT} characters:
 """.strip()
 
             result.append(GPTRequestToolMessage(tool_call_id=tool_call_id, content=content))
-    else:
-        result.append(
-            GPTRequestTextMessage(
-                role=group.role, content=message.content, name=group.agent_id if group.agent_id != "user" else None
-            )
-        )
 
     return result
 

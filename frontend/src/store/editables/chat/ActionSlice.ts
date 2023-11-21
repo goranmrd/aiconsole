@@ -16,251 +16,84 @@
 
 import { StateCreator } from 'zustand';
 
-import { useSettingsStore } from '../../settings/useSettingsStore';
+import { getLastGroup, getToolCall } from '@/utils/editables/chatUtils';
 import { ChatAPI } from '../../../api/api/ChatAPI';
 import { ChatStore } from './useChatStore';
-import { getGroup, getMessage } from '@/utils/editables/chatUtils';
 
 export type ActionSlice = {
   doExecute: () => Promise<void>;
-  doRun: (groupId?: string, messageId?: string) => Promise<void>;
+  doRun: (toolCallId: string) => Promise<void>;
   isExecuteRunning: boolean;
   stopWork: () => Promise<void>;
   executeAbortSignal: AbortController;
 };
 
-export const createActionSlice: StateCreator<ChatStore, [], [], ActionSlice> = (
-  set,
-  get,
-) => ({
+export const createActionSlice: StateCreator<ChatStore, [], [], ActionSlice> = (set, get) => ({
   isExecuteRunning: false,
 
   executeAbortSignal: new AbortController(),
 
-  doRun: async (groupId?: string, messageId?: string) => {
+  doRun: async (toolCallId: string) => {
     set(() => ({
       executeAbortSignal: new AbortController(),
-      isExecuteRunning: true,
     }));
 
-    const lastGroupLocation = getGroup(get().chat, groupId);
-    const lastMessageLocation = getMessage(lastGroupLocation.group, messageId);
-    const lastMessage = lastMessageLocation.message;
+    const chat = get().chat;
 
-    if (!('language' in lastMessage)) {
-      throw new Error('Last message is not a code message');
+    if (!chat) {
+      throw new Error('Chat is not initialized');
     }
 
-    const language = lastMessage.language;
-    const code = lastMessage.content;
-    const materials_ids = lastGroupLocation.group.materials_ids;
+    const toolCallLocation = getToolCall(chat, toolCallId);
 
-    try {
-      get().markAsExecuting(true, groupId, messageId);
-
-      const response = await ChatAPI.runCode({
-        chatId: get().chat?.id || '',
-        language,
-        code,
-        materials_ids,
-        signal: get().executeAbortSignal.signal,
-      });
-
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder('utf-8');
-
-      get().appendEmptyOutput(groupId, messageId)
-
-      while (true) {
-        try {
-          const { value, done } = (await reader?.read()) || {
-            value: undefined,
-            done: true,
-          };
-
-          const textChunk = decoder.decode(value);
-
-          get().appendTextAtTheEnd(textChunk, groupId, messageId)
-
-          if (done) {
-            break;
-          }
-        } catch (err) {
-          if ((err as Error).name === 'AbortError') {
-            console.log('Execution operation aborted');
-            return;
-          } else {
-            throw err;
-          }
-        }
-      }
-    } finally {
-      get().saveCurrentChatHistory();
-
-      get().markAsExecuting(false, groupId, messageId);
-
-      set(() => ({
-        isExecuteRunning: false,
-      }));
+    if (!toolCallLocation) {
+      throw new Error('Message not found');
     }
 
-    {
-      // If We ran code on the last message, continue operation with the same agent
-      const lastGroup = getGroup(get().chat).group;
-      const lastMessage = getMessage(lastGroup).message;
-      if ((groupId == undefined || lastGroup.id === groupId) && (messageId == undefined || lastMessage.id == messageId)) {
-        await get().doExecute();
-      }
-    }
+    const toolCall = toolCallLocation.toolCall;
+
+    const language = toolCall.language;
+    const code = toolCall.code;
+    const materials_ids = toolCallLocation.group.materials_ids;
+
+    // We can not meaningfully await the result of the execution, bacause the processing may take more than just the time of this request
+    ChatAPI.runCode({
+      chatId: get().chat?.id || '',
+      tool_call_id: toolCallId,
+      language,
+      code,
+      materials_ids,
+      signal: get().executeAbortSignal.signal,
+    });
   },
 
   /**
    * doExecute expects that the last message is the one it should be filling in.
    */
   doExecute: async () => {
-
+    console.log('Executing');
     set(() => ({
       executeAbortSignal: new AbortController(),
       isExecuteRunning: true,
     }));
 
-    try {
-      const chat = get().chat;
+    const chat = get().chat;
 
-      if (!chat) {
-        throw new Error('Chat is not initialized');
-      }
-
-      const lastGroup = getGroup(chat).group;
-
-      const response = await ChatAPI.execute(
-        {
-          ...chat,
-          relevant_materials_ids: lastGroup.materials_ids,
-          agent_id: lastGroup.agent_id,
-        },
-        get().executeAbortSignal.signal,
-      );
-
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder('utf-8');
-
-      let messageDone = true;
-
-      while (true) {
-        try {
-          const { value, done } = (await reader?.read()) || {
-            value: undefined,
-            done: true,
-          };
-
-          const TOKEN_PROCESSORS = [
-            ...['python', 'shell', 'applescript'].map((language) => ({
-              token: `<<<< START CODE (${language}) >>>>`,
-              processor: () => {
-                get().appendMessage({
-                  content: '',
-                  language,
-                  is_code_executing: false,
-                  outputs: [],
-                });
-                messageDone = false;
-              },
-            })),
-            {
-              token: '<<<< END CODE >>>>',
-              processor: () => {
-                if (messageDone) throw new Error('Invalid chunk');
-                messageDone = true;
-              },
-            },
-            {
-              token: '<<<< CLEAR >>>>',
-              processor: () => {
-                get().removeMessageFromGroup();
-                messageDone = true;
-              }
-            },
-          ];
-
-          const textChunk = decoder.decode(value);
-
-          const escapeRegExp = (string: string) =>
-            string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-          const tokens = TOKEN_PROCESSORS.map((processor) => processor.token);
-          const regexPattern = new RegExp(
-            `(${tokens.map(escapeRegExp).join('|')})`,
-            'g',
-          );
-          const splitText = textChunk
-            .split(regexPattern)
-            .filter((text) => text !== '');
-
-          for (const text of splitText) {
-            let consumed = false;
-            TOKEN_PROCESSORS.forEach((tokenProcessor) => {
-              if (text === tokenProcessor.token) {
-                tokenProcessor.processor();
-                consumed = true;
-              }
-            });
-
-            if (!consumed) {
-              if (messageDone) {
-                //new plain message
-                get().appendMessage({
-                  content: '',
-                });
-                messageDone = false;
-              }
-              get().appendTextAtTheEnd(text);
-            }
-          }
-
-          if (done) {
-            break;
-          }
-        } catch (err) {
-          if ((err as Error).name === 'AbortError') {
-            console.log('Execution operation aborted');
-            return;
-          } else {
-            throw err;
-          }
-        }
-      }
-    } finally {
-
-      //If the message is still empty, remove it
-      const lastGroup = getGroup(get().chat).group;
-      if (lastGroup.messages.length > 0) {
-        const lastMessage = getMessage(lastGroup).message;
-
-        if (lastMessage.content === '') {
-          get().removeMessageFromGroup();
-        }
-      }
-
-      get().saveCurrentChatHistory();
-
-      set(() => ({
-        isExecuteRunning: false,
-      }));
+    if (!chat) {
+      throw new Error('Chat is not initialized');
     }
 
-    {
-      const lastGroup = getGroup(get().chat).group;
-      const lastMessage = getMessage(lastGroup).message;
-      const isCode = 'language' in lastMessage;
+    const lastGroupLocation = getLastGroup(chat);
+    const lastGroup = lastGroupLocation.group;
 
-      if (isCode) {
-        if (useSettingsStore.getState().alwaysExecuteCode) {
-          await get().doRun();
-        }
-      } else {
-        get().doAnalysis();
-      }
-    }
+    ChatAPI.execute(
+      {
+        ...chat,
+        relevant_materials_ids: lastGroup.materials_ids,
+        agent_id: lastGroup.agent_id,
+      },
+      get().executeAbortSignal.signal,
+    );
   },
   stopWork: async () => {
     get().executeAbortSignal.abort();

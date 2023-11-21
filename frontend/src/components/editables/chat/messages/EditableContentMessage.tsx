@@ -29,7 +29,15 @@ interface EditableContentMessageProps {
   className?: string;
 }
 
-export function EditableContentMessage({ initialContent, isStreaming, children, language, handleAcceptedContent, handleRemoveClick, className }: EditableContentMessageProps) {
+export function EditableContentMessage({
+  initialContent,
+  isStreaming,
+  children,
+  language,
+  handleAcceptedContent,
+  handleRemoveClick,
+  className,
+}: EditableContentMessageProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [content, setContent] = useState(initialContent);
 
@@ -41,7 +49,7 @@ export function EditableContentMessage({ initialContent, isStreaming, children, 
     setIsEditing(true);
   };
 
-  const handleCancelEditClick =  useCallback(() => {
+  const handleCancelEditClick = useCallback(() => {
     setIsEditing(false);
     setContent(initialContent);
   }, [initialContent, setIsEditing, setContent]);
@@ -60,7 +68,7 @@ export function EditableContentMessage({ initialContent, isStreaming, children, 
   }, [handleSaveClick]);
 
   return (
-    <div className={cn("flex flex-row items-start overflow-auto", className)}>
+    <div className={cn('flex flex-row items-start overflow-auto', className)}>
       {isEditing ? (
         <div className="bg-[#00000080] rounded-md flex-grow">
           <CodeInput
@@ -73,9 +81,7 @@ export function EditableContentMessage({ initialContent, isStreaming, children, 
           />
         </div>
       ) : (
-        <div className="flex-grow overflow-auto">
-          {children}
-        </div>
+        <div className="flex-grow overflow-auto">{children}</div>
       )}
 
       {!isStreaming && (
@@ -84,7 +90,8 @@ export function EditableContentMessage({ initialContent, isStreaming, children, 
           onCancelClick={handleCancelEditClick}
           onEditClick={handleEditClick}
           onSaveClick={handleSaveClick}
-          onRemoveClick={handleRemoveClick} />
+          onRemoveClick={handleRemoveClick}
+        />
       )}
     </div>
   );

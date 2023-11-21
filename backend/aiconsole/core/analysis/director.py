@@ -14,10 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from aiconsole.core.analysis.AnalysisResponse import AnalysisResponse
 from aiconsole.core.analysis.variant_quality_single_shot import variant_quality_single_shot
 from aiconsole.core.chat.types import Chat
 
 
-async def director_analyse(chat: Chat, analysis_request_id: str) -> AnalysisResponse:
+async def director_analyse(chat: Chat, analysis_request_id: str):
     return await variant_quality_single_shot(chat, analysis_request_id)

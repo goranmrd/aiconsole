@@ -14,16 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from logging import config
-from contextlib import asynccontextmanager
 import os
+from contextlib import asynccontextmanager
+from logging import config
+
+from aiconsole.api.routers import app_router
+from aiconsole.consts import log_config
+from aiconsole.core.project import project
+from aiconsole.core.settings import project_settings
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from aiconsole.core.project import project
-from aiconsole.api.routers import app_router
-from aiconsole.core.settings import project_settings
-from aiconsole.consts import ORIGINS, log_config
-from aiconsole.api.websockets.outgoing_messages import NotificationWSMessage
 
 
 @asynccontextmanager

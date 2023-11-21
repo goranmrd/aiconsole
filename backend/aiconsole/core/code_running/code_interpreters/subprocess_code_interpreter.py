@@ -21,12 +21,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-#     ____                      ____      __                            __           
+#     ____                      ____      __                            __
 #    / __ \____  ___  ____     /  _/___  / /____  _________  ________  / /____  _____
 #   / / / / __ \/ _ \/ __ \    / // __ \/ __/ _ \/ ___/ __ \/ ___/ _ \/ __/ _ \/ ___/
-#  / /_/ / /_/ /  __/ / / /  _/ // / / / /_/  __/ /  / /_/ / /  /  __/ /_/  __/ /    
-#  \____/ .___/\___/_/ /_/  /___/_/ /_/\__/\___/_/  / .___/_/   \___/\__/\___/_/     
-#      /_/                                         /_/                               
+#  / /_/ / /_/ /  __/ / / /  _/ // / / / /_/  __/ /  / /_/ / /  /  __/ /_/  __/ /
+#  \____/ .___/\___/_/ /_/  /___/_/ /_/\__/\___/_/  / .___/_/   \___/\__/\___/_/
+#      /_/                                         /_/
 #
 # This file has been taken and slighly modified from the wonderful project
 # "open-interpreter" by Killian Lucas https://github.com/KillianLucas/open-interpreter
@@ -37,13 +37,14 @@ import threading
 import queue
 import time
 import traceback
-from typing import Generator, List
+from typing import AsyncGenerator, Generator, List
 
 from aiconsole.core.assets.materials.material import Material
 from .base_code_interpreter import BaseCodeInterpreter
 import logging
 
 _log = logging.getLogger(__name__)
+
 
 class SubprocessCodeInterpreter(BaseCodeInterpreter):
     def __init__(self):
@@ -55,10 +56,10 @@ class SubprocessCodeInterpreter(BaseCodeInterpreter):
 
     def detect_end_of_execution(self, line):
         return None
-    
+
     def line_postprocessor(self, line):
         return line
-    
+
     def preprocess_code(self, code, materials: List[Material]):
         """
         This needs to insert an end_of_execution marker of some kind,
@@ -67,7 +68,7 @@ class SubprocessCodeInterpreter(BaseCodeInterpreter):
         Optionally, add active line markers for detect_active_line.
         """
         return code
-    
+
     def terminate(self):
         if self.process:
             self.process.terminate()
@@ -78,21 +79,21 @@ class SubprocessCodeInterpreter(BaseCodeInterpreter):
         if self.process:
             self.terminate()
 
-        self.process = subprocess.Popen(self.start_cmd.split(),
-                                        stdin=subprocess.PIPE,
-                                        stdout=subprocess.PIPE,
-                                        stderr=subprocess.PIPE,
-                                        text=True,
-                                        bufsize=0,
-                                        universal_newlines=True)
-        threading.Thread(target=self.handle_stream_output,
-                            args=(self.process.stdout, False),
-                            daemon=True).start()
-        threading.Thread(target=self.handle_stream_output,
-                            args=(self.process.stderr, True),
-                            daemon=True).start()
+        self.process = subprocess.Popen(
+            self.start_cmd.split(),
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            bufsize=0,
+            universal_newlines=True,
+        )
+        threading.Thread(target=self.handle_stream_output, args=(self.process.stdout, False), daemon=True).start()
+        threading.Thread(target=self.handle_stream_output, args=(self.process.stderr, True), daemon=True).start()
 
-    def run(self, code: str, materials: List[Material]) -> Generator[str, None, None]:
+    async def run(
+        self, code: str, chat_id: str, tool_call_id: str, materials: List[Material]
+    ) -> AsyncGenerator[str, None]:
         retry_count = 0
         max_retries = 3
 
@@ -114,7 +115,7 @@ class SubprocessCodeInterpreter(BaseCodeInterpreter):
             try:
                 if not self.process or not self.process.stdin:
                     raise Exception("Process not started")
-                
+
                 self.process.stdin.write(code + "\n")
                 self.process.stdin.flush()
                 break
@@ -131,7 +132,7 @@ class SubprocessCodeInterpreter(BaseCodeInterpreter):
 
                 retry_count += 1
                 if retry_count > max_retries:
-                    yield "Maximum retries reached. Could not execute code."
+                    yield "Maximum retries reached. Could not execute code.."
                     return
 
         while True:
@@ -140,8 +141,7 @@ class SubprocessCodeInterpreter(BaseCodeInterpreter):
             else:
                 time.sleep(0.1)
             try:
-                output = self.output_queue.get(
-                    timeout=0.3)  # Waits for 0.3 seconds
+                output = self.output_queue.get(timeout=0.3)  # Waits for 0.3 seconds
                 yield output
             except queue.Empty:
                 # AIConsole Fix: Added proces.pool check to fix hanging
@@ -156,13 +156,13 @@ class SubprocessCodeInterpreter(BaseCodeInterpreter):
                     break
 
     def handle_stream_output(self, stream, is_error_stream):
-        for line in iter(stream.readline, ''):
+        for line in iter(stream.readline, ""):
             _log.debug(f"Received output line:\n{line}\n---")
 
             line = self.line_postprocessor(line)
 
             if line is None:
-                continue # `line = None` is the postprocessor's signal to discard completely
+                continue  # `line = None` is the postprocessor's signal to discard completely
 
             if self.detect_end_of_execution(line):
                 self.done.set()
@@ -172,4 +172,3 @@ class SubprocessCodeInterpreter(BaseCodeInterpreter):
                 self.done.set()
             else:
                 self.output_queue.put(line)
-

@@ -14,30 +14,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AICContentMessage, AICMessage, AICMessageGroup, Chat } from "@/types/editables/chatTypes";
+import { AICMessage, AICMessageGroup, AICToolCall as AICToolCall, Chat } from '@/types/editables/chatTypes';
 
 export type AICGroupLocation = { groupIndex: number; group: AICMessageGroup };
-export type AICMessageLocation = { messageIndex: number; message: AICMessage; };
-export type AICOutputLocaion = { outputIndex: number; output: AICContentMessage; };
+export type AICMessageLocation = AICGroupLocation & { messageIndex: number; message: AICMessage };
+export type AICOutputLocaion = AICMessageLocation & { toolCallIndex: number; toolCall: AICToolCall };
 
-/**
- *
- * @param groupId if undefined returns last group
- */
-export function getGroup(
-  chat?: Chat,
-  groupId?: string,
-): AICGroupLocation {
-  if (!chat) {
-    throw new Error('Chat is not initialized');
+export function getLastGroup(chat: Chat): AICGroupLocation {
+  const group = chat.message_groups[chat.message_groups.length - 1];
+
+  if (!group) {
+    throw new Error('No groups found');
   }
 
+  return {
+    group,
+    groupIndex: chat.message_groups.length - 1,
+  };
+}
+
+export function getGroup(chat: Chat, groupId: string): AICGroupLocation {
   const groupIndex = groupId
     ? chat.message_groups.findIndex((group) => group.id === groupId)
     : chat.message_groups.length - 1;
 
   if (groupIndex === -1) {
-    throw new Error(`Group with id ${groupId} not found`);
+    throw new Error('No groups found');
   }
 
   const group = chat.message_groups[groupIndex];
@@ -48,64 +50,105 @@ export function getGroup(
   };
 }
 
-/**
- *
- * @param messageId if undefined returns last message
- */
-export function getMessage(
-  group: AICMessageGroup,
-  messageId?: string,
-): AICMessageLocation {
-  const messageIndex = messageId
-    ? group.messages.findIndex((message) => message.id === messageId)
-    : group.messages.length - 1;
+export function getLastMessage(chat: Chat): AICMessageLocation {
+  const group = chat.message_groups[chat.message_groups.length - 1];
+  const message = group.messages[group.messages.length - 1];
 
-  if (messageIndex === -1) {
-    throw new Error(`Message with id ${messageId} not found`);
+  if (!message) {
+    throw new Error('No messages found');
   }
 
   return {
-    messageIndex,
-    message: group.messages[messageIndex],
+    groupIndex: chat.message_groups.length - 1,
+    group,
+    messageIndex: group.messages.length - 1,
+    message,
   };
 }
 
-/**
- * 
- * @param outputId if undefined returns last output
- */
-export function getOutput(
-  message: AICMessage,
-  outputId?: string,
-): AICOutputLocaion {
-  
+export function getMessage(chat: Chat, messageId: string): AICMessageLocation | undefined {
+  let groupIndex = 0;
+  for (const group of chat.message_groups) {
+    let messageIndex = 0;
+    for (const message of group.messages) {
+      if (message.id === messageId) {
+        return {
+          groupIndex,
+          group,
+          messageIndex,
+          message,
+        };
+      }
+
+      messageIndex++;
+    }
+    groupIndex++;
+  }
+}
+
+export function getLastToolCall(chat: Chat): AICOutputLocaion {
+  const group = chat.message_groups[chat.message_groups.length - 1];
+  const message = group.messages[group.messages.length - 1];
+
   if (!('outputs' in message)) {
-    throw new Error(`Message with id ${message.id} is not a code message`);
+    throw new Error('Last message is not a code message');
   }
 
-  const outputs = message.outputs;
+  const toolCall = message.tool_calls[message.tool_calls.length - 1];
 
-  const outputIndex = outputId
-    ? outputs.findIndex((output) => output.id === outputId)
-    : outputs.length - 1;
-
-  if (outputIndex === -1) {
-    throw new Error(`Output with id ${outputId} not found`);
+  if (!toolCall) {
+    throw new Error('No tool_call found');
   }
 
   return {
-    outputIndex,
-    output: outputs[outputIndex],
+    groupIndex: chat.message_groups.length - 1,
+    group,
+    messageIndex: group.messages.length - 1,
+    message,
+    toolCallIndex: message.tool_calls.length - 1,
+    toolCall,
   };
 }
 
+export function getToolCall(chat: Chat, outputId: string): AICOutputLocaion | undefined {
+  let groupIndex = 0;
+  for (const group of chat.message_groups) {
+    let messageIndex = 0;
+    for (const message of group.messages) {
+      let outputIndex = 0;
+      for (const tool_call of message.tool_calls) {
+        if (tool_call.id === outputId) {
+          return {
+            groupIndex,
+            group,
+            messageIndex,
+            message,
+            toolCallIndex: outputIndex,
+            toolCall: tool_call,
+          };
+        }
+        outputIndex++;
+      }
+      messageIndex++;
+    }
+    groupIndex++;
+  }
+
+  return undefined;
+}
+
+function deepCopyToolCall(toolCall: AICToolCall): AICToolCall {
+  return {
+    ...toolCall,
+  };
+}
 
 function deepCopyMessage(message: AICMessage): AICMessage {
   if ('language' in message) {
-    const {outputs, ...rest} = message;
+    const { tool_calls, ...rest } = message;
     return {
       ...rest,
-      outputs: outputs.map((output) => deepCopyMessage(output)),
+      tool_calls: tool_calls.map((toolCall) => deepCopyToolCall(toolCall)),
     };
   } else {
     return {

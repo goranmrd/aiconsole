@@ -28,9 +28,10 @@ export const API_HOOKS: Hooks = {
   beforeError: [
     async (error) => {
       const res = (await error.response.json()) as ErrorResponse;
+      console.error(res.detail || error.message);
       showNotification({
         title: 'Error',
-        message: res.detail || error.message,
+        message: `${res.detail || error.message}`,
         variant: 'error',
       });
       return error;

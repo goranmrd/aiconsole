@@ -15,13 +15,13 @@
 # limitations under the License.
 
 from aiconsole.consts import DIRECTOR_MIN_TOKENS, DIRECTOR_PREFERRED_TOKENS
+from aiconsole.core.chat.chat_outgoing_messages import SequenceStage, UpdateAnalysisWSMessage
 from aiconsole.core.chat.types import Chat
 from aiconsole.core.gpt.consts import GPTMode
 from aiconsole.core.gpt.gpt_executor import GPTExecutor
 from aiconsole.core.gpt.request import GPTRequest
-from aiconsole.core.gpt.types import GPTRequestMessage, GPTRequestTextMessage
+from aiconsole.core.gpt.types import GPTRequestTextMessage
 from aiconsole.utils.convert_messages import convert_messages
-from aiconsole.api.websockets.outgoing_messages import AnalysisUpdatedWSMessage
 
 
 async def gpt_analysis_text_step(
@@ -42,13 +42,25 @@ async def gpt_analysis_text_step(
         preferred_tokens=DIRECTOR_PREFERRED_TOKENS,
     )
 
-    async for chunk in gpt_executor.execute(request):
-        await AnalysisUpdatedWSMessage(
+    await UpdateAnalysisWSMessage(
+        analysis_request_id=analysis_request_id,
+        stage=SequenceStage.START,
+    ).send_to_chat(chat.id)
+
+    try:
+        async for chunk in gpt_executor.execute(request):
+            await UpdateAnalysisWSMessage(
+                stage=SequenceStage.MIDDLE,
+                analysis_request_id=analysis_request_id,
+                agent_id=None,
+                relevant_material_ids=None,
+                next_step=None,
+                thinking_process=gpt_executor.partial_response.choices[0].message.content,
+            ).send_to_chat(chat.id)
+    finally:
+        await UpdateAnalysisWSMessage(
             analysis_request_id=analysis_request_id,
-            agent_id=None,
-            relevant_material_ids=None,
-            next_step=None,
-            thinking_process=gpt_executor.partial_response.choices[0].message.content,
+            stage=SequenceStage.END,
         ).send_to_chat(chat.id)
 
     return gpt_executor.response.choices[0].message.content or ""

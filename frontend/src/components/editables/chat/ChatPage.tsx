@@ -95,7 +95,7 @@ export function ChatPage() {
     return () => {
       useChatStore.setState({ chat: undefined });
     };
-  }, [copyId, id, editableObjectType, forceRefresh]);
+  }, [copyId, id, editableObjectType, forceRefresh, setChat]);
 
   const isLastMessageFromUser =
     chat?.message_groups.length && chat.message_groups[chat.message_groups.length - 1].agent_id === 'user';
@@ -150,12 +150,8 @@ export function ChatPage() {
               <ChatWindowScrollToBottomSave />
               {chat.message_groups.length === 0 && <EmptyChat />}
 
-              {chat.message_groups.map((group, index) => (
-                <MessageGroup
-                  group={group}
-                  key={group.id}
-                  isStreaming={isExecuteRunning && index === chat.message_groups.length - 1}
-                />
+              {chat.message_groups.map((group) => (
+                <MessageGroup group={group} key={group.id} />
               ))}
               <Analysis />
 

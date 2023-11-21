@@ -25,6 +25,7 @@ import { useAPIStore } from '../../store/useAPIStore';
 import { useSettingsStore } from '../../store/settings/useSettingsStore';
 import { useProjectStore } from '@/store/projects/useProjectStore';
 import { useEditablesStore } from '@/store/editables/useEditablesStore';
+import { handleChatMessage } from './handleChatMessage';
 
 export type WebSockeStore = {
   ws: ReconnectingWebSocket | null;
@@ -73,7 +74,7 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
         case 'NotificationWSMessage':
           showNotification({
             title: data.title,
-            message: data.message,
+            message: `${data.message}`,
           });
           break;
         case 'DebugJSONWSMessage':
@@ -124,16 +125,7 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
             }
           }
           break;
-        case 'AnalysisUpdatedWSMessage':
-          if (data.analysis_request_id === useChatStore.getState().currentAnalysisRequestId) {
-            useChatStore.setState({
-              agent_id: data.agent_id,
-              relevant_material_ids: data.relevant_material_ids,
-              next_step: data.next_step,
-              thinking_process: data.thinking_process,
-            });
-          }
-          break;
+
         case 'SettingsWSMessage':
           useSettingsStore.getState().initSettings();
           useEditablesStore.getState().initMaterials();
@@ -145,6 +137,15 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
             });
           }
           break;
+        case 'ResetMessageWSMessage':
+        case 'UpdateAnalysisWSMessage':
+        case 'UpdateMessageWSMessage':
+        case 'UpdateToolCallWSMessage':
+        case 'UpdateToolCallOutputWSMessage':
+          await handleChatMessage(data);
+          break;
+        default:
+          console.error('Unknown message type: ', data);
       }
     };
 

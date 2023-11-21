@@ -19,77 +19,71 @@ import { useCallback, useState } from 'react';
 import { Spinner } from '@/components/editables/chat/Spinner';
 import { useChatStore } from '@/store/editables/chat/useChatStore';
 import { ChevronDown, ChevronUp, Play, Infinity } from 'lucide-react';
-import { AICCodeMessage, AICMessageGroup } from "@/types/editables/chatTypes";
+import { AICToolCall, AICMessage, AICMessageGroup } from '@/types/editables/chatTypes';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { Button } from '../../../common/Button';
 import { duotoneDark as vs2015 } from 'react-syntax-highlighter/dist/cjs/styles/prism';
-import { CodeOutput } from './CodeOutput';
+import { ToolOutput } from './ToolOutput';
 import { EditableContentMessage } from './EditableContentMessage';
 import { useSettingsStore } from '@/store/settings/useSettingsStore';
+import { upperFirst } from '@mantine/hooks';
 
 interface MessageProps {
   group: AICMessageGroup;
-  message: AICCodeMessage;
-  isStreaming: boolean;
+  tool_call: AICToolCall;
 }
 
-export function CodeMessage({ group, message, isStreaming }: MessageProps) {
-  const removeMessageFromGroup = useChatStore(
-    (state) => state.removeMessageFromGroup,
-  );
-  const editMessageContent = useChatStore((state) => state.editMessageContent);
+export function ToolCall({ group, tool_call }: MessageProps) {
+  const removeToolCallFromMessage = useChatStore((state) => state.removeToolCallFromMessage);
+  const editMessage = useChatStore((state) => state.editMessage);
+  const saveCommandAndMessagesToHistory = useChatStore((state) => state.saveCommandAndMessagesToHistory);
 
   const alwaysExecuteCode = useSettingsStore((state) => state.alwaysExecuteCode);
 
   const [folded, setFolded] = useState(alwaysExecuteCode);
   const doRun = useChatStore((state) => state.doRun);
-  const enableAutoCodeExecution = useSettingsStore(
-    (state) => state.setAutoCodeExecution,
-  );
-  const isViableForRunningCode = useChatStore(
-    (state) => state.isViableForRunningCode,
-  );
+  const enableAutoCodeExecution = useSettingsStore((state) => state.setAutoCodeExecution);
+  const isViableForRunningCode = useChatStore((state) => state.isViableForRunningCode);
 
   const handleAlwaysRunClick = () => {
     enableAutoCodeExecution(true);
-    doRun(group.id, message.id);
+    doRun(tool_call.id);
   };
 
   const handleRunClick = () => {
-    doRun(group.id, message.id);
+    doRun(tool_call.id);
   };
 
   const handleAcceptedContent = useCallback(
     (content: string) => {
-      editMessageContent(group.id, message.id, content);
+      editMessage((message: AICMessage) => {
+        message.content = content;
+      }, tool_call.id);
+
+      saveCommandAndMessagesToHistory(content, group.role === 'user');
     },
-    [message.id, group.id, editMessageContent],
+    [tool_call.id, editMessage, saveCommandAndMessagesToHistory, group.role],
   );
 
   const handleRemoveClick = useCallback(() => {
-    removeMessageFromGroup(group.id, message.id);
-  }, [message.id, group.id, removeMessageFromGroup]);
+    removeToolCallFromMessage(tool_call.id);
+  }, [tool_call.id, removeToolCallFromMessage]);
 
   //Either executing or streaming while there are still no output messages
   const shouldDisplaySpinner =
-    message.is_code_executing || (isStreaming && message.outputs.length === 0);
+    tool_call.is_code_executing || (tool_call.is_streaming && tool_call.output === undefined);
 
   return (
     <div className="flex justify-between items-center">
       <div className="p-5 rounded-md flex flex-col gap-5 bg-primary/5 flex-grow mr-4 overflow-auto">
-        <div
-          className="cursor-pointer"
-          onClick={() => setFolded((folded) => !folded)}
-        >
+        <div className="cursor-pointer" onClick={() => setFolded((folded) => !folded)}>
           <div className="flex flex-row gap-2 items-center">
             {shouldDisplaySpinner ? (
               <div className="flex-grow flex flex-row gap-3 items-center">
                 Working ... <Spinner />
               </div>
             ) : (
-              <div className="flex-grow">
-                {folded ? 'Check' : 'Hide'} the code
-              </div>
+              <div className="flex-grow">{folded ? 'Check' : 'Hide'} the code</div>
             )}
 
             {folded && <ChevronUp className="h-5 w-5" />}
@@ -100,61 +94,41 @@ export function CodeMessage({ group, message, isStreaming }: MessageProps) {
         {!folded && (
           <>
             <div className="flex flex-row w-full">
-              <span className="w-20 flex-none">Code: </span>
+              <span className="w-20 flex-none">{upperFirst(tool_call.language)}: </span>
               <div className="flex-grow overflow-auto">
                 <EditableContentMessage
-                  initialContent={message.content}
-                  isStreaming={isStreaming}
-                  language={message.language}
+                  initialContent={tool_call.code}
+                  isStreaming={tool_call.is_streaming}
+                  language={tool_call.language}
                   handleAcceptedContent={handleAcceptedContent}
                   handleRemoveClick={handleRemoveClick}
                 >
                   <SyntaxHighlighter
                     style={vs2015}
-                    children={message.content}
-                    language={message.language}
+                    children={tool_call.code}
+                    language={tool_call.language}
                     className="overflow-scroll flex-grow rounded-md"
                   />
                 </EditableContentMessage>
-                {isViableForRunningCode(group.id, message.id) &&
-                  !isStreaming && (
-                    <div className="flex gap-4 pt-2">
-                      <Button
-                        variant="status"
-                        statusColor="green"
-                        small
-                        onClick={handleRunClick}
-                      >
-                        <Play />
-                        Run
-                      </Button>
+                {isViableForRunningCode(tool_call.id) && !tool_call.is_streaming && (
+                  <div className="flex gap-4 pt-2">
+                    <Button variant="status" statusColor="green" small onClick={handleRunClick}>
+                      <Play />
+                      Run
+                    </Button>
 
-                      {!alwaysExecuteCode && (
-                        <Button
-                          onClick={handleAlwaysRunClick}
-                          variant="status"
-                          statusColor="purple"
-                          small
-                        >
-                          <Infinity />
-                          Always Run
-                        </Button>
-                      )}
-                    </div>
-                  )}
+                    {!alwaysExecuteCode && (
+                      <Button onClick={handleAlwaysRunClick} variant="status" statusColor="purple" small>
+                        <Infinity />
+                        Always Run
+                      </Button>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 
-            {...message.outputs.map((output) => (
-              <div key={output.id}>
-                <CodeOutput
-                  group={group}
-                  message={message}
-                  output={output}
-                  isStreaming={isStreaming}
-                />
-              </div>
-            ))}
+            <div>{tool_call.output && <ToolOutput tool_call={tool_call} />}</div>
           </>
         )}
       </div>
