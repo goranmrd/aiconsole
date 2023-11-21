@@ -25,7 +25,7 @@ import { useDeleteEditableObjectWithUserInteraction } from './useDeleteEditableO
 import { useMemo } from 'react';
 import { RadioCheckedIcon } from '@/components/common/icons/RadioCheckedIcon';
 
-export const DISABLED = 'max-w-[400px] truncate !text-gray-400 pointer-events-none !cursor-default ';
+export const DISABLED_CSS_CLASSES = 'max-w-[400px] truncate !text-gray-400 pointer-events-none !cursor-default ';
 
 export function useEditableObjectContextMenu({
   editableObjectType,
