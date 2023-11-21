@@ -38,10 +38,10 @@ import { ToolOutput } from './ToolOutput';
 
 interface MessageProps {
   group: AICMessageGroup;
-  tool_call: AICToolCall;
+  toolCall: AICToolCall;
 }
 
-export function ToolCall({ group, tool_call }: MessageProps) {
+export function ToolCall({ group, toolCall: tool_call }: MessageProps) {
   const removeToolCallFromMessage = useChatStore((state) => state.removeToolCallFromMessage);
   const editMessage = useChatStore((state) => state.editMessage);
   const saveCommandAndMessagesToHistory = useChatStore((state) => state.saveCommandAndMessagesToHistory);

@@ -135,8 +135,8 @@ export function MessageComponent({ message, group }: MessageProps) {
             </>
           )}
 
-          {message.tool_calls.map((tool_call) => (
-            <ToolCall key={tool_call.id} group={group} tool_call={tool_call} />
+          {message.tool_calls.map((toolCall) => (
+            <ToolCall key={toolCall.id} group={group} toolCall={toolCall} />
           ))}
         </div>
       </EditableContentMessage>
