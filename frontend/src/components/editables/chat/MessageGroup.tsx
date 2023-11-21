@@ -28,7 +28,7 @@ export function MessageGroup({ group }: { group: AICMessageGroup }) {
       )}
     >
       <div className="container flex mx-auto gap-5">
-        <UserInfo agent_id={group.agent_id} materials_ids={group.materials_ids} task={group.task} />
+        <UserInfo agentId={group.agent_id} materialsIds={group.materials_ids} task={group.task} />
         <div className="flex-grow flex flex-col gap-5  overflow-auto">
           {group.messages.map((message) => (
             <MessageComponent key={message.id} message={message} group={group} />
