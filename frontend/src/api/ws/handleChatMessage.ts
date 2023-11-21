@@ -47,10 +47,6 @@ export async function handleChatMessage(data: ChatWSMessage) {
           //TODO: Should this be in above if?
           await useChatStore.getState().saveCurrentChatHistory();
 
-          useChatStore.setState(() => ({
-            isExecuteRunning: false,
-          }));
-
           {
             const chat = useChatStore.getState().chat;
 
@@ -60,11 +56,9 @@ export async function handleChatMessage(data: ChatWSMessage) {
               const lastMessage = getLastMessage(chat).message;
 
               //run all in this group
-              for (const toolCall of lastMessage.tool_calls) {
-                if (useSettingsStore.getState().alwaysExecuteCode) {
-                  useChatStore.getState().doRun(toolCall.id);
-                  ranCode = true;
-                }
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              for (const _toolCall of lastMessage.tool_calls) {
+                ranCode = true;
               }
             }
 
@@ -102,20 +96,18 @@ export async function handleChatMessage(data: ChatWSMessage) {
             if (data.language) message.language = data.language;
             message.is_streaming = false;
           }, data.id);
+
+          if (useSettingsStore.getState().alwaysExecuteCode) {
+            useChatStore.getState().doRun(data.id);
+          }
+
           break;
       }
       break;
     case 'UpdateToolCallOutputWSMessage':
       switch (data.stage) {
         case 'start':
-          useChatStore.getState().editToolCall((toolCall: AICToolCall) => {
-            toolCall.output = '';
-            toolCall.is_code_executing = true;
-          }, data.id);
-
-          useChatStore.setState(() => ({
-            isExecuteRunning: true,
-          }));
+          //is_code_executing was set in doRun
           break;
         case 'middle':
           useChatStore.getState().editToolCall((toolCall: AICToolCall) => {
@@ -127,10 +119,6 @@ export async function handleChatMessage(data: ChatWSMessage) {
             if (data.output_delta) toolCall.output += data.output_delta;
             toolCall.is_code_executing = false;
           }, data.id);
-
-          useChatStore.setState(() => ({
-            isExecuteRunning: false,
-          }));
 
           useChatStore.getState().saveCurrentChatHistory();
           const chat = useChatStore.getState().chat;
