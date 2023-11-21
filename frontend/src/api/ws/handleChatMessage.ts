@@ -84,18 +84,21 @@ export async function handleChatMessage(data: ChatWSMessage) {
             language: 'python',
             is_code_executing: false,
             code: '',
+            headline: '',
             is_streaming: true,
           });
           break;
         case 'middle':
           useChatStore.getState().editToolCall((message: AICToolCall) => {
             if (data.code_delta) message.code += data.code_delta;
+            if (data.headline_delta) message.headline += data.headline_delta;
             if (data.language) message.language = data.language;
           }, data.id);
           break;
         case 'end':
           useChatStore.getState().editToolCall((message: AICToolCall) => {
             if (data.code_delta) message.code += data.code_delta;
+            if (data.headline_delta) message.headline += data.headline_delta;
             if (data.language) message.language = data.language;
             message.is_streaming = false;
           }, data.id);

@@ -44,7 +44,7 @@ export type UpdateToolCallWSMessage = {
   stage: SequenceStage;
   language?: string;
   code_delta?: string;
-  output_delta?: string;
+  headline_delta?: string;
 };
 
 export type UpdateToolCallOutputWSMessage = {

@@ -18,7 +18,7 @@ import { useCallback, useState } from 'react';
 
 import { Spinner } from '@/components/editables/chat/Spinner';
 import { useChatStore } from '@/store/editables/chat/useChatStore';
-import { ChevronDown, ChevronUp, Play, Infinity } from 'lucide-react';
+import { ChevronDown, ChevronUp, Play, Infinity, CheckIcon, AlertCircleIcon, CheckCircle2Icon } from 'lucide-react';
 import { AICToolCall, AICMessage, AICMessageGroup } from '@/types/editables/chatTypes';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { Button } from '../../../common/Button';
@@ -73,17 +73,18 @@ export function ToolCall({ group, tool_call }: MessageProps) {
   const shouldDisplaySpinner =
     tool_call.is_code_executing || (tool_call.is_streaming && tool_call.output === undefined);
 
+  const isError = tool_call.output?.includes('Traceback') || tool_call.output?.includes('Error');
+
   return (
     <div className="p-5 rounded-md flex flex-col gap-5 bg-primary/5 flex-grow mr-4 overflow-auto">
       <div className="cursor-pointer" onClick={() => setFolded((folded) => !folded)}>
         <div className="flex flex-row gap-2 items-center">
-          {shouldDisplaySpinner ? (
-            <div className="flex-grow flex flex-row gap-3 items-center">
-              Working ... <Spinner />
-            </div>
-          ) : (
-            <div className="flex-grow">{folded ? 'Check' : 'Hide'} the code</div>
-          )}
+          <div className="flex-grow flex flex-row gap-3 items-center">
+            {shouldDisplaySpinner && <Spinner />}
+            {!shouldDisplaySpinner && <CheckCircle2Icon className="h-5 w-5 text-green-500" />}
+            {isError && <AlertCircleIcon className="h-5 w-5 text-red-500" />}
+            {tool_call.headline ? `${tool_call.headline}` : `${folded ? 'Check' : 'Hide'} the code`}
+          </div>
 
           {folded && <ChevronUp className="h-5 w-5" />}
           {!folded && <ChevronDown className="h-5 w-5" />}

@@ -38,6 +38,7 @@ export type AICToolCall = {
   is_code_executing: boolean; //HACK: For now this is frontend only, but if we move message management to backend, this should be moved there as well.
   is_streaming: boolean; //HACK: For now this is frontend only, but if we move message management to backend, this should be moved there as well.
   code: string;
+  headline: string;
   output?: string;
 };
 

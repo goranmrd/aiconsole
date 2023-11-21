@@ -27,6 +27,7 @@ class AICToolCall(BaseModel):
     id: str
     language: LanguageStr
     code: str
+    headline: str
     output: str | None = None
 
 

@@ -37,7 +37,15 @@ from pydantic import BaseModel, Field
 _log = logging.getLogger(__name__)
 
 
-class python(OpenAISchema):
+class CodeTask(OpenAISchema):
+    headline: str = Field(
+        ...,
+        description="Short title of this task, it will be displayed to the user",
+        json_schema_extra={"type": "string"},
+    )
+
+
+class python(CodeTask):
     """
     When you send a message containing Python code to python, it will be executed in a stateful Jupyter notebook environment
     """
@@ -49,7 +57,7 @@ class python(OpenAISchema):
     )
 
 
-class shell(OpenAISchema):
+class shell(CodeTask):
     """
     This function executes the given code on the user's system using the local environment and returns the output.
     """
@@ -57,7 +65,7 @@ class shell(OpenAISchema):
     code: str = Field(..., json_schema_extra={"type": "string"})
 
 
-class applescript(OpenAISchema):
+class applescript(CodeTask):
     """
     This function executes the given code on the user's system using the local environment and returns the output.
     """
@@ -83,6 +91,7 @@ async def execution_mode_interpreter(
         id: str
         language: str | None = None
         code: str = ""
+        headline: str = ""
         end_with_code: str = ""
 
     tool_calls_data: dict[str, ToolCallStatus] = {}
@@ -152,24 +161,31 @@ async def execution_mode_interpreter(
                                 language=tool_call_data.language,
                             ).send_to_chat(context.chat.id)
 
-                    async def send_code_delta(code_delta: str):
-                        if code_delta:
+                    async def send_code_delta(code_delta: str = "", headline_delta: str = ""):
+                        if code_delta or headline_delta:
                             await UpdateToolCallWSMessage(
                                 stage=SequenceStage.MIDDLE,
                                 id=tool_call.id,
                                 code_delta=code_delta,
+                                headline_delta=headline_delta,
                             ).send_to_chat(context.chat.id)
 
                     if function_call.arguments:
                         if function_call.name not in [python.__name__, shell.__name__, applescript.__name__]:
-                            await send_language_if_needed("python")
+                            if tool_call_data.language is None:
+                                await send_language_if_needed("python")
 
-                            _log.info(f"function_call: {function_call}")
-                            _log.info(f"function_call.arguments: {function_call.arguments}")
+                                _log.info(f"function_call: {function_call}")
+                                _log.info(f"function_call.arguments: {function_call.arguments}")
 
-                            code_delta = f"{function_call.name}("  # TODO: This won't work
-                            await send_code_delta(code_delta)
-                            tool_call_data.end_with_code = ")"
+                                code_delta = f"{function_call.name}("  # TODO: This won't work
+                                await send_code_delta(code_delta)
+                                tool_call_data.end_with_code = ")"
+                            else:
+                                if isinstance(function_call.arguments, str):
+                                    code_delta = function_call.arguments[len(tool_call_data.code) :]
+                                    tool_call_data.code = function_call.arguments
+                                    await send_code_delta(code_delta)
                         else:
                             arguments = function_call.arguments
                             languages = language_map.keys()
@@ -189,13 +205,21 @@ async def execution_mode_interpreter(
 
                                     await send_code_delta(code_delta)
                             else:
+                                code_delta = ""
+                                headline_delta = ""
+
                                 if arguments and "code" in arguments:
                                     await send_language_if_needed("python")
 
                                     code_delta = arguments["code"][len(tool_call_data.code) :]
                                     tool_call_data.code = arguments["code"]
 
-                                    await send_code_delta(code_delta)
+                                if arguments and "headline" in arguments:
+                                    headline_delta = arguments["headline"][len(tool_call_data.headline) :]
+                                    tool_call_data.headline = arguments["headline"]
+
+                                if code_delta or headline_delta:
+                                    await send_code_delta(code_delta, headline_delta)
     finally:
         for tool_call_id in tool_calls_data:
             tool_call_data = tool_calls_data[tool_call_id]

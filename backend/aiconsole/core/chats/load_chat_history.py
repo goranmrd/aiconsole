@@ -66,6 +66,15 @@ async def load_chat_history(id: str, project_path: Path | None = None) -> Chat:
                         if not "tool_calls" in msg:
                             msg["tool_calls"] = []
 
+            # For all tool calls without headline add an empty headline
+            for group in data["message_groups"]:
+                if "messages" in group and group["messages"]:
+                    for msg in group["messages"]:
+                        if "tool_calls" in msg and msg["tool_calls"]:
+                            for tool_call in msg["tool_calls"]:
+                                if not "headline" in tool_call:
+                                    tool_call["headline"] = ""
+
             if not "name" in data or not data["name"]:
                 if "headline" in data and data["headline"]:
                     data["name"] = data["headline"]

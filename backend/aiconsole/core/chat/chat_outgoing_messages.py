@@ -36,6 +36,7 @@ class UpdateToolCallWSMessage(BaseWSMessage):
     language: str | None = None
 
     code_delta: str | None = None
+    headline_delta: str | None = None
 
 
 class UpdateToolCallOutputWSMessage(BaseWSMessage):
