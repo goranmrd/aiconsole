@@ -74,7 +74,7 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
         case 'NotificationWSMessage':
           showNotification({
             title: data.title,
-            message: `${data.message}`,
+            message: data.message,
           });
           break;
         case 'DebugJSONWSMessage':
