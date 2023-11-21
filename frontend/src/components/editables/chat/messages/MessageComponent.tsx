@@ -48,7 +48,7 @@ export function MessageComponent({ message, group }: MessageProps) {
         handleRemoveClick={handleRemoveClick}
       >
         <div className="flex flex-col gap-2">
-          {message.content && (
+          {(message.content || message.is_streaming) && (
             <>
               {group.role !== 'user' && (
                 <div className="flex-grow">
@@ -117,7 +117,7 @@ export function MessageComponent({ message, group }: MessageProps) {
                     >
                       {message.content}
                     </ReactMarkdown>
-                    {message.is_streaming && !message.content && !message.tool_calls && <BlinkingCursor />}
+                    {message.is_streaming && !message.content && message.tool_calls.length === 0 && <BlinkingCursor />}
                   </div>
                 </div>
               )}
