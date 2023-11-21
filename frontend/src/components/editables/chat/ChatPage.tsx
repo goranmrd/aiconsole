@@ -56,7 +56,7 @@ export function ChatPage() {
   const chat = useChatStore((state) => state.chat);
   const loadingMessages = useChatStore((state) => state.loadingMessages);
   const isAnalysisRunning = useChatStore((state) => !!state.currentAnalysisRequestId);
-  const isExecuteRunning = useChatStore((state) => state.isExecuteRunning);
+  const isExecutionRunning = useChatStore((state) => state.isExecutionRunning());
   const stopWork = useChatStore((state) => state.stopWork);
   const submitCommand = useChatStore((state) => state.submitCommand);
   const isProjectOpen = useProjectStore((state) => state.isProjectOpen);
@@ -156,7 +156,7 @@ export function ChatPage() {
               <Analysis />
 
               <div className="flex items-center justify-center m-5">
-                {!isExecuteRunning && !isAnalysisRunning && !isLastMessageFromUser && (
+                {!isExecutionRunning && !isAnalysisRunning && !isLastMessageFromUser && (
                   <Button
                     variant="secondary"
                     onClick={() =>

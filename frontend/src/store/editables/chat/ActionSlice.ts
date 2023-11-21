@@ -18,18 +18,43 @@ import { StateCreator } from 'zustand';
 
 import { getLastGroup, getToolCall } from '@/utils/editables/chatUtils';
 import { ChatAPI } from '../../../api/api/ChatAPI';
-import { ChatStore } from './useChatStore';
+import { ChatStore, useChatStore } from './useChatStore';
+import { AICToolCall } from '@/types/editables/chatTypes';
 
 export type ActionSlice = {
   doExecute: () => Promise<void>;
   doRun: (toolCallId: string) => Promise<void>;
-  isExecuteRunning: boolean;
+  isExecutionRunning: () => boolean;
   stopWork: () => Promise<void>;
   executeAbortSignal: AbortController;
 };
 
 export const createActionSlice: StateCreator<ChatStore, [], [], ActionSlice> = (set, get) => ({
-  isExecuteRunning: false,
+  isExecutionRunning: () => {
+    //if any message is streamed, return true
+
+    const chat = get().chat;
+
+    if (!chat) {
+      return false;
+    }
+
+    for (const group of chat.message_groups) {
+      for (const message of group.messages) {
+        if (message.is_streaming) {
+          return true;
+        }
+
+        for (const toolCall of message.tool_calls) {
+          if (toolCall.is_streaming || toolCall.is_code_executing) {
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
+  },
 
   executeAbortSignal: new AbortController(),
 
@@ -56,6 +81,11 @@ export const createActionSlice: StateCreator<ChatStore, [], [], ActionSlice> = (
     const code = toolCall.code;
     const materials_ids = toolCallLocation.group.materials_ids;
 
+    useChatStore.getState().editToolCall((toolCall: AICToolCall) => {
+      toolCall.output = '';
+      toolCall.is_code_executing = true;
+    }, toolCallId);
+
     // We can not meaningfully await the result of the execution, bacause the processing may take more than just the time of this request
     ChatAPI.runCode({
       chatId: get().chat?.id || '',
@@ -73,7 +103,6 @@ export const createActionSlice: StateCreator<ChatStore, [], [], ActionSlice> = (
   doExecute: async () => {
     set(() => ({
       executeAbortSignal: new AbortController(),
-      isExecuteRunning: true,
     }));
 
     const chat = get().chat;

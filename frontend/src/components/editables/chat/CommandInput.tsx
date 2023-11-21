@@ -26,9 +26,7 @@ interface MessageInputProps {
 }
 
 export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
-  const command = useChatStore(
-    (state) => state.commandHistory[state.commandIndex],
-  );
+  const command = useChatStore((state) => state.commandHistory[state.commandIndex]);
 
   const setCommand = useChatStore((state) => state.editCommand);
   const newCommand = useChatStore((state) => state.newCommand);
@@ -37,12 +35,11 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
   const promptDown = useChatStore((state) => state.historyDown);
   const stopWork = useChatStore((state) => state.stopWork);
   const isAnalysisRunning = useChatStore((state) => !!state.currentAnalysisRequestId);
-  const isExecuteRunning = useChatStore((state) => state.isExecuteRunning);
-  const isWorking = isAnalysisRunning || isExecuteRunning;
+  const isExecutionRunning = useChatStore((state) => state.isExecutionRunning());
+  const isWorking = isAnalysisRunning || isExecutionRunning;
   const chat = useChatStore((state) => state.chat);
 
-  const sendingMessagesBlocked =
-    (command === '' && chat?.message_groups?.length == 0);
+  const sendingMessagesBlocked = command === '' && chat?.message_groups?.length == 0;
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -53,19 +50,16 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
   const handleKeyDown = async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      
+
       if (!sendingMessagesBlocked) {
         await handleSendMessage();
       }
     }
 
     if (textAreaRef.current) {
-      const caretAtStart =
-        textAreaRef.current.selectionStart === 0 &&
-        textAreaRef.current.selectionEnd === 0;
+      const caretAtStart = textAreaRef.current.selectionStart === 0 && textAreaRef.current.selectionEnd === 0;
       const caretAtEnd =
-        textAreaRef.current.selectionStart ===
-          textAreaRef.current.value.length &&
+        textAreaRef.current.selectionStart === textAreaRef.current.value.length &&
         textAreaRef.current.selectionEnd === textAreaRef.current.value.length;
 
       if (e.key === 'ArrowUp' && caretAtStart) {
@@ -125,8 +119,7 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
           className={cn(
             'focus:ring-secondary ml-4 rounded-full p-2 text-gray-800 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-4',
             {
-              'bg-slate-500  text-slate-800 cursor-not-allowed':
-                sendingMessagesBlocked,
+              'bg-slate-500  text-slate-800 cursor-not-allowed': sendingMessagesBlocked,
               'bg-secondary-dark hover:bg-secondary': !sendingMessagesBlocked,
             },
           )}

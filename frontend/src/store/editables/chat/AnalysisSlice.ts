@@ -39,7 +39,7 @@ export const createAnalysisSlice: StateCreator<ChatStore, [], [], AnalysisSlice>
       if (
         prevState.chat?.id !== state.chat?.id ||
         prevState.chat?.message_groups.length !== state.chat?.message_groups.length ||
-        (state.isExecuteRunning && !prevState.isExecuteRunning)
+        (state.isExecutionRunning() && !prevState.isExecutionRunning())
       ) {
         get().resetAnalysis();
       }
