@@ -82,7 +82,7 @@ export default {
         danger: '#CF4840',
         success: '#60C164',
         black: '#000000',
-        white: '#ffffff',
+        white: '#FFFFFF',
         yellow: '#F1FF99',
         purple: {
           200: '#E5D9FF',

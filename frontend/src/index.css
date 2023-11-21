@@ -23,8 +23,6 @@ limitations under the License.
 @tailwind components;
 @tailwind utilities;
 
-@layer mantine, mantine-contextmenu;
-
 body {
   --mantine-color-body: #191919;
 }
@@ -121,4 +119,12 @@ body {
 .tab-hover:hover {
   border-color: #A6A6A6;
   transition: .3s all ease;
+}
+
+.context-menu-icon svg {
+  color: #737373;
+}
+
+.context-menu-icon:hover svg {
+  color: #ffffff;
 }

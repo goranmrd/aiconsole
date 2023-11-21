@@ -14,12 +14,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { TabsValues } from '@/types/editables/assetTypes';
 import { useEditablesStore } from '@/store/editables/useEditablesStore';
 import { Tabs } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { AssetsSidebarTab } from './AssetsSidebarTab';
 import { ChatsSidebarTab } from './ChatsSidebarTab';
+import { ActiveTab, Tab } from './Tab';
+
+const TABS = [
+  { label: 'Chats', key: 'chats' },
+  { label: 'Materials', key: 'materials' },
+  { label: 'Agents', key: 'agents' },
+];
 
 const SideBar = ({ initialTab }: { initialTab: string }) => {
   const agents = useEditablesStore((state) => state.agents);
@@ -29,7 +35,7 @@ const SideBar = ({ initialTab }: { initialTab: string }) => {
     setActiveTab(initialTab);
   }, [initialTab]);
 
-  const [activeTab, setActiveTab] = useState<TabsValues | string | null>(initialTab);
+  const [activeTab, setActiveTab] = useState<ActiveTab>(initialTab);
 
   return (
     <div
@@ -40,23 +46,13 @@ const SideBar = ({ initialTab }: { initialTab: string }) => {
         onChange={setActiveTab}
         color="#F1FF99"
         classNames={{
-          tab: 'px-[26px] py-[10px] [&:first-letter:] tab-hover font-medium',
+          list: 'before:border-gray-500',
         }}
-        vars={() => ({
-          root: {},
-          list: { '--_tab-border-color': '#3E3E3E' },
-          tab: {
-            '--mantine-spacing-xs': '10px 0px',
-            '--mantine-spacing-md': '25px 0px',
-            '--mantine-font-size-sm': '14px',
-            '--_tab-hover-color': 'transparent',
-          },
-        })}
       >
         <Tabs.List grow justify="center" className="mb-[15px] mr-[30px]">
-          <Tabs.Tab value="chats">Chats</Tabs.Tab>
-          <Tabs.Tab value="materials">Materials</Tabs.Tab>
-          <Tabs.Tab value="agents">Agents</Tabs.Tab>
+          {TABS.map(({ label, key }) => (
+            <Tab key={key} value={key} label={label} activeTab={activeTab} />
+          ))}
         </Tabs.List>
 
         <Tabs.Panel value="chats">
