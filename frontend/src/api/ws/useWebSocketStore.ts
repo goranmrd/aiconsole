@@ -25,7 +25,7 @@ import { useAPIStore } from '../../store/useAPIStore';
 import { useSettingsStore } from '../../store/settings/useSettingsStore';
 import { useProjectStore } from '@/store/projects/useProjectStore';
 import { useEditablesStore } from '@/store/editables/useEditablesStore';
-import { handleChatMessage } from './handleChatMessage';
+import { handleChatMessage } from './chat/handleChatMessage';
 
 export type WebSockeStore = {
   ws: ReconnectingWebSocket | null;
