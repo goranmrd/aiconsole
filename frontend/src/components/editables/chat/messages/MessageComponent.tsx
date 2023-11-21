@@ -40,7 +40,7 @@ export function MessageComponent({ message, group }: MessageProps) {
   const submitCommand = useChatStore((state) => state.submitCommand);
 
   return (
-    <div key={message.id}>
+    <div key={message.id} className="flex flex-col gap-2">
       <EditableContentMessage
         initialContent={message.content}
         isStreaming={message.is_streaming}

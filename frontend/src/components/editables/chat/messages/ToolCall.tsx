@@ -74,64 +74,62 @@ export function ToolCall({ group, tool_call }: MessageProps) {
     tool_call.is_code_executing || (tool_call.is_streaming && tool_call.output === undefined);
 
   return (
-    <div className="flex justify-between items-center">
-      <div className="p-5 rounded-md flex flex-col gap-5 bg-primary/5 flex-grow mr-4 overflow-auto">
-        <div className="cursor-pointer" onClick={() => setFolded((folded) => !folded)}>
-          <div className="flex flex-row gap-2 items-center">
-            {shouldDisplaySpinner ? (
-              <div className="flex-grow flex flex-row gap-3 items-center">
-                Working ... <Spinner />
-              </div>
-            ) : (
-              <div className="flex-grow">{folded ? 'Check' : 'Hide'} the code</div>
-            )}
-
-            {folded && <ChevronUp className="h-5 w-5" />}
-            {!folded && <ChevronDown className="h-5 w-5" />}
-          </div>
-        </div>
-
-        {!folded && (
-          <>
-            <div className="flex flex-row w-full">
-              <span className="w-20 flex-none">{upperFirst(tool_call.language)}: </span>
-              <div className="flex-grow overflow-auto">
-                <EditableContentMessage
-                  initialContent={tool_call.code}
-                  isStreaming={tool_call.is_streaming}
-                  language={tool_call.language}
-                  handleAcceptedContent={handleAcceptedContent}
-                  handleRemoveClick={handleRemoveClick}
-                >
-                  <SyntaxHighlighter
-                    style={vs2015}
-                    children={tool_call.code}
-                    language={tool_call.language}
-                    className="overflow-scroll flex-grow rounded-md"
-                  />
-                </EditableContentMessage>
-                {isViableForRunningCode(tool_call.id) && !tool_call.is_streaming && (
-                  <div className="flex gap-4 pt-2">
-                    <Button variant="status" statusColor="green" small onClick={handleRunClick}>
-                      <Play />
-                      Run
-                    </Button>
-
-                    {!alwaysExecuteCode && (
-                      <Button onClick={handleAlwaysRunClick} variant="status" statusColor="purple" small>
-                        <Infinity />
-                        Always Run
-                      </Button>
-                    )}
-                  </div>
-                )}
-              </div>
+    <div className="p-5 rounded-md flex flex-col gap-5 bg-primary/5 flex-grow mr-4 overflow-auto">
+      <div className="cursor-pointer" onClick={() => setFolded((folded) => !folded)}>
+        <div className="flex flex-row gap-2 items-center">
+          {shouldDisplaySpinner ? (
+            <div className="flex-grow flex flex-row gap-3 items-center">
+              Working ... <Spinner />
             </div>
+          ) : (
+            <div className="flex-grow">{folded ? 'Check' : 'Hide'} the code</div>
+          )}
 
-            <div>{tool_call.output && <ToolOutput tool_call={tool_call} />}</div>
-          </>
-        )}
+          {folded && <ChevronUp className="h-5 w-5" />}
+          {!folded && <ChevronDown className="h-5 w-5" />}
+        </div>
       </div>
+
+      {!folded && (
+        <>
+          <div className="flex flex-row w-full">
+            <span className="w-20 flex-none">{upperFirst(tool_call.language)}: </span>
+            <div className="flex-grow overflow-auto">
+              <EditableContentMessage
+                initialContent={tool_call.code}
+                isStreaming={tool_call.is_streaming}
+                language={tool_call.language}
+                handleAcceptedContent={handleAcceptedContent}
+                handleRemoveClick={handleRemoveClick}
+              >
+                <SyntaxHighlighter
+                  style={vs2015}
+                  children={tool_call.code}
+                  language={tool_call.language}
+                  className="overflow-scroll flex-grow rounded-md"
+                />
+              </EditableContentMessage>
+              {isViableForRunningCode(tool_call.id) && !tool_call.is_streaming && (
+                <div className="flex gap-4 pt-2">
+                  <Button variant="status" statusColor="green" small onClick={handleRunClick}>
+                    <Play />
+                    Run
+                  </Button>
+
+                  {!alwaysExecuteCode && (
+                    <Button onClick={handleAlwaysRunClick} variant="status" statusColor="purple" small>
+                      <Infinity />
+                      Always Run
+                    </Button>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div>{tool_call.output && <ToolOutput tool_call={tool_call} />}</div>
+        </>
+      )}
     </div>
   );
 }
