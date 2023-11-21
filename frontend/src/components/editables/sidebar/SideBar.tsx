@@ -14,13 +14,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { TabsValues } from '@/types/editables/assetTypes';
 import { useEditablesStore } from '@/store/editables/useEditablesStore';
 import { Tabs } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { AssetsSidebarTab } from './AssetsSidebarTab';
 import { ChatsSidebarTab } from './ChatsSidebarTab';
-import { cn } from '@/utils/common/cn';
+import { ActiveTab, Tab } from './Tab';
+
+const TABS = [
+  { label: 'Chats', key: 'chats' },
+  { label: 'Materials', key: 'materials' },
+  { label: 'Agents', key: 'agents' },
+];
 
 const SideBar = ({ initialTab }: { initialTab: string }) => {
   const agents = useEditablesStore((state) => state.agents);
@@ -30,13 +35,7 @@ const SideBar = ({ initialTab }: { initialTab: string }) => {
     setActiveTab(initialTab);
   }, [initialTab]);
 
-  const [activeTab, setActiveTab] = useState<TabsValues | string | null>(initialTab);
-
-  const tabs = [
-    { label: 'Chats', key: 'chats' },
-    { label: 'Materials', key: 'materials' },
-    { label: 'Agents', key: 'agents' },
-  ];
+  const [activeTab, setActiveTab] = useState<ActiveTab>(initialTab);
 
   return (
     <div
@@ -51,20 +50,8 @@ const SideBar = ({ initialTab }: { initialTab: string }) => {
         }}
       >
         <Tabs.List grow justify="center" className="mb-[15px] mr-[30px]">
-          {tabs.map(({ label, key }) => (
-            <Tabs.Tab
-              value={key}
-              key={key}
-              className={cn(
-                'px-[26px] pt-[10px] pb-[25px] [&:first-letter:] tab-hover font-medium text-[14px] w-1/3 hover:bg-transparent overflow-hidden',
-                {
-                  'text-white after:blur-[15px] after:opacity-20 after:w-[40px] after:h-[30px] after:absolute after:bottom-[-8px] after:z-[99] after:bg-yellow':
-                    activeTab === key,
-                },
-              )}
-            >
-              {label}
-            </Tabs.Tab>
+          {TABS.map(({ label, key }) => (
+            <Tab key={key} value={key} label={label} activeTab={activeTab} />
           ))}
         </Tabs.List>
 

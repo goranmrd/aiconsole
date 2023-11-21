@@ -24,8 +24,14 @@ import { useContextMenu } from '../common/useContextMenu';
 import { useDeleteEditableObjectWithUserInteraction } from './useDeleteEditableObjectWithUserInteraction';
 import { useMemo } from 'react';
 import { RadioCheckedIcon } from '@/components/common/icons/RadioCheckedIcon';
+import { noop } from '../common/noop';
 
 export const DISABLED_CSS_CLASSES = 'max-w-[400px] truncate !text-gray-400 pointer-events-none !cursor-default ';
+
+const helper = (active: boolean, editableObject: Asset) => ({
+  className: active ? '!text-white' : '!text-gray-400',
+  hidden: !editableObject && active,
+});
 
 export function useEditableObjectContextMenu({
   editableObjectType,
@@ -59,12 +65,15 @@ export function useEditableObjectContextMenu({
 
   function showContextMenuReplacement() {
     if (!editableObject) {
-      return () => {};
+      return noop;
     }
 
     const assetItems = () => {
       if (editableObjectType === 'chat') return [];
       const asset = editableObject as Asset;
+      const handleClick = (status: AssetStatus) => () => {
+        useAssetStore.getState().setAssetStatus(editableObjectType, editableObject.id, status);
+      };
 
       return [
         { key: 'divider' },
@@ -73,40 +82,31 @@ export function useEditableObjectContextMenu({
           title: 'Usage',
           className: DISABLED_CSS_CLASSES,
           disabled: true,
-          onClick: () => {},
+          onClick: noop,
         },
 
         {
           key: 'Enforced',
           icon: assetStatusIcon('forced'),
           title: 'Enforced',
-          className: asset.status === 'forced' ? '!text-white' : '!text-gray-400',
-          hidden: !editableObject && asset?.status === 'forced',
-          onClick: () => {
-            useAssetStore.getState().setAssetStatus(editableObjectType, editableObject.id, 'forced');
-          },
+          ...helper(asset?.status === 'forced', asset),
+          onClick: handleClick('forced'),
         },
 
         {
           key: 'AI Choice',
           icon: assetStatusIcon('enabled'),
           title: 'AI Choice',
-          className: asset.status === 'enabled' ? '!text-white' : '!text-gray-400',
-          hidden: !editableObject && asset?.status === 'enabled',
-          onClick: () => {
-            useAssetStore.getState().setAssetStatus(editableObjectType, editableObject.id, 'enabled');
-          },
+          ...helper(asset?.status === 'enabled', asset),
+          onClick: handleClick('enabled'),
         },
 
         {
           key: 'Disabled',
           icon: assetStatusIcon('disabled'),
           title: 'Disabled',
-          className: asset.status === 'disabled' ? '!text-white' : '!text-gray-400',
-          hidden: !editableObject && asset?.status === 'disabled',
-          onClick: () => {
-            useAssetStore.getState().setAssetStatus(editableObjectType, editableObject.id, 'disabled');
-          },
+          ...helper(asset?.status === 'disabled', asset),
+          onClick: handleClick('disabled'),
         },
       ];
     };
