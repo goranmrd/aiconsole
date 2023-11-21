@@ -3,10 +3,21 @@ import { useChatStore } from '../../../store/editables/chat/useChatStore';
 
 export async function handleUpdateAnalysisWSMessage(data: UpdateAnalysisWSMessage) {
   if (data.analysis_request_id === useChatStore.getState().currentAnalysisRequestId) {
-    if (data.agent_id) useChatStore.setState({ agent_id: data.agent_id });
-    if (data.relevant_material_ids) useChatStore.setState({ relevant_material_ids: data.relevant_material_ids });
-    if (data.next_step) useChatStore.setState({ next_step: data.next_step });
-    if (data.thinking_process) useChatStore.setState({ thinking_process: data.thinking_process });
+    if (data.agent_id) {
+      useChatStore.setState({ agent_id: data.agent_id });
+    }
+
+    if (data.relevant_material_ids) {
+      useChatStore.setState({ relevant_material_ids: data.relevant_material_ids });
+    }
+
+    if (data.next_step) {
+      useChatStore.setState({ next_step: data.next_step });
+    }
+
+    if (data.thinking_process) {
+      useChatStore.setState({ thinking_process: data.thinking_process });
+    }
   }
 
   switch (data.stage) {
