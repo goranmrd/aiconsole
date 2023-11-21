@@ -71,7 +71,7 @@ export function useEditableObjectContextMenu({
         {
           key: 'usage',
           title: 'Usage',
-          className: DISABLED,
+          className: DISABLED_CSS_CLASSES,
           disabled: true,
           onClick: () => {},
         },
