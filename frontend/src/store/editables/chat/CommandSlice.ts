@@ -16,17 +16,18 @@
 
 import { StateCreator } from 'zustand';
 
-import { ChatStore } from './useChatStore';
-import { ChatAPI } from '../../../api/api/ChatAPI';
+import { ScrollOption } from 'react-scroll-to-bottom';
 import { v4 as uuid } from 'uuid';
+import { ChatAPI } from '../../../api/api/ChatAPI';
+import { ChatStore } from './useChatStore';
 
 export type CommandSlice = {
   commandHistory: string[];
   commandIndex: number;
   historyUp: () => void;
   historyDown: () => void;
-  scrollChatToBottom: undefined | ((props: { behavior: 'auto' | 'smooth' | undefined }) => void);
-  setScrollChatToBottom: (scrollChatToBottom: (props: { behavior: 'auto' | 'smooth' | undefined }) => void) => void;
+  scrollChatToBottom: undefined | ((props: ScrollOption) => void);
+  setScrollChatToBottom: (scrollChatToBottom: (props: ScrollOption) => void) => void;
   newCommand: () => Promise<void>;
   editCommand: (prompt: string) => void;
   getCommand: () => string;
