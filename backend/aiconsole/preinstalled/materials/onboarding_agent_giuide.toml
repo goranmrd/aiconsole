@@ -1,3 +1,10 @@
+name = "How to onboard user"
+version = "0.0.2"
+usage = "Use this to get to help users with onboarding"
+usage_examples = []
+default_status = "enabled"
+content_type = "static_text"
+content_static_text = """
 AIConsole
 
 What is Console:
@@ -89,3 +96,4 @@ ACTION: Click on the +NEW button and select “New agent…”. First give it a 
 When your agent is ready, write click on it in the agents list and select Always or Auto.
 
 !!! Agent_4_image PAth !!! Agent_5_image PAth 
+"""
