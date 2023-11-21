@@ -190,7 +190,6 @@ export async function handleChatMessage(data: ChatWSMessage) {
             if (data.thinking_process) useChatStore.setState({ thinking_process: data.thinking_process });
           }
 
-          console.log('Analysis', data);
           if (useChatStore.getState().agent_id !== 'user' && useChatStore.getState().next_step) {
             useChatStore.getState().appendGroup({
               agent_id: useChatStore.getState().agent_id || '',
