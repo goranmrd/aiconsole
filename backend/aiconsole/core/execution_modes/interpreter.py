@@ -40,7 +40,7 @@ _log = logging.getLogger(__name__)
 class CodeTask(OpenAISchema):
     headline: str = Field(
         ...,
-        description="Short title of this task, it will be displayed to the user",
+        description="Short (max 25 chars) title of this task, it will be displayed to the user",
         json_schema_extra={"type": "string"},
     )
 
