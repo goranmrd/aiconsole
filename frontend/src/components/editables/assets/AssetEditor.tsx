@@ -302,6 +302,15 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
       return;
     }
 
+    if (
+      !wasAssetChangedInitially &&
+      Boolean(asset) &&
+      ((asset.defined_in === 'project' && asset.override) || (asset.defined_in === 'aiconsole' && !asset.override))
+    ) {
+      setHasCore(true);
+      return;
+    }
+
     if (asset && asset.defined_in === 'aiconsole' && wasAssetChangedInitially) {
       EditablesAPI.doesEdibleExist(assetType, asset?.id, 'aiconsole').then((exists) => {
         setHasCore(exists);
