@@ -14,14 +14,49 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+export type SequenceStage = 'start' | 'middle' | 'end';
 
+export type UpdateAnalysisWSMessage = {
+  type: 'UpdateAnalysisWSMessage';
+  stage: SequenceStage;
+  analysis_request_id: string;
+  agent_id?: string;
+  relevant_material_ids?: string[];
+  next_step?: string;
+  thinking_process?: string;
+};
 
-export type AnalysisUpdatedWSMessage = {
-    type: 'AnalysisUpdatedWSMessage';
-    analysis_request_id: string;
-    agent_id?: string;
-    relevant_material_ids?: string[];
-    next_step?: string;
-    thinking_process?: string;
-  };
-  
+export type UpdateMessageWSMessage = {
+  type: 'UpdateMessageWSMessage';
+  id: string;
+  stage: SequenceStage;
+  text_delta?: string;
+};
+
+export type ResetMessageWSMessage = {
+  type: 'ResetMessageWSMessage';
+  id: string;
+};
+
+export type UpdateToolCallWSMessage = {
+  type: 'UpdateToolCallWSMessage';
+  id: string;
+  stage: SequenceStage;
+  language?: string;
+  code_delta?: string;
+  headline_delta?: string;
+};
+
+export type UpdateToolCallOutputWSMessage = {
+  type: 'UpdateToolCallOutputWSMessage';
+  id: string;
+  stage: SequenceStage;
+  output_delta?: string;
+};
+
+export type ChatWSMessage =
+  | UpdateAnalysisWSMessage
+  | UpdateMessageWSMessage
+  | ResetMessageWSMessage
+  | UpdateToolCallWSMessage
+  | UpdateToolCallOutputWSMessage;

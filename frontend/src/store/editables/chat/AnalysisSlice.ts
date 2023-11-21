@@ -39,7 +39,7 @@ export const createAnalysisSlice: StateCreator<ChatStore, [], [], AnalysisSlice>
       if (
         prevState.chat?.id !== state.chat?.id ||
         prevState.chat?.message_groups.length !== state.chat?.message_groups.length ||
-        (state.isExecuteRunning && !prevState.isExecuteRunning)
+        (state.isExecutionRunning() && !prevState.isExecutionRunning())
       ) {
         get().resetAnalysis();
       }
@@ -80,52 +80,12 @@ export const createAnalysisSlice: StateCreator<ChatStore, [], [], AnalysisSlice>
         throw new Error('Chat is not initialized');
       }
 
-      const response = await ChatAPI.analyse(chat, analysisRequestId, abortController.signal);
-
-      const data = await response.json<{
-        agent_id: string;
-        materials_ids: string[];
-        next_step: string;
-      }>();
-
-      if (get().currentAnalysisRequestId !== analysisRequestId) {
-        // another analysis was started
-        return;
-      }
-
-      set(() => ({
-        agent_id: data.agent_id,
-        relevant_material_ids: data.materials_ids,
-        next_step: data.next_step,
-      }));
-
-      if (data.agent_id !== 'user' && data.next_step) {
-        useChatStore.getState().appendGroup({
-          agent_id: data.agent_id,
-          task: data.next_step,
-          materials_ids: data.materials_ids,
-          role: 'assistant',
-          messages: [],
-        });
-
-        console.log('Executing');
-        useChatStore.getState().doExecute();
-      }
+      await ChatAPI.analyse(chat, analysisRequestId, abortController.signal);
     } catch (err) {
       if ((err as Error).name === 'AbortError') {
         return;
       } else {
         throw err;
-      }
-    } finally {
-      if (get().currentAnalysisRequestId === analysisRequestId) {
-        set(() => ({
-          currentAnalysisRequestId: undefined,
-          agent_id: undefined,
-          relevant_material_ids: undefined,
-          next_step: undefined,
-          thinking_process: undefined,
-        }));
       }
     }
   },

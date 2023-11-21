@@ -35,7 +35,7 @@ export function MessageControls({
       {isEditing ? (
         <>
           <button>
-            <Check onClick={onSaveClick} className="h-5 w-5 fill-green" />{' '}
+            <Check onClick={onSaveClick} className="h-5 w-5 text-green" />{' '}
           </button>
           <button>
             <X onClick={onCancelClick} className="h-5 w-5 text-red" />{' '}

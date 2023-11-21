@@ -17,13 +17,13 @@
 import logging
 from typing import List, Optional, cast
 
-from aiconsole.api.websockets.outgoing_messages import AnalysisUpdatedWSMessage
 from aiconsole.consts import DIRECTOR_MIN_TOKENS, DIRECTOR_PREFERRED_TOKENS
 from aiconsole.core.analysis.agents_to_choose_from import agents_to_choose_from
 from aiconsole.core.analysis.create_plan_class import create_plan_class
 from aiconsole.core.assets.agents.agent import Agent
 from aiconsole.core.assets.asset import AssetLocation, AssetStatus
 from aiconsole.core.assets.materials.material import Material
+from aiconsole.core.chat.chat_outgoing_messages import SequenceStage, UpdateAnalysisWSMessage
 from aiconsole.core.chat.types import Chat
 from aiconsole.core.gpt.consts import GPTMode
 from aiconsole.core.gpt.gpt_executor import GPTExecutor
@@ -76,12 +76,6 @@ def pick_agent(arguments, chat: Chat, available_agents: list[Agent]) -> Agent:
     return picked_agent
 
 
-class AnalysisStepWithFunctionReturnValue(BaseModel):
-    next_step: str
-    picked_agent: Optional[Agent] = None
-    relevant_materials: List[Material] = []
-
-
 def _get_relevant_materials(relevant_material_ids: List[str]) -> List[Material]:
     # Maximum of 5 materials
     relevant_materials = [
@@ -102,7 +96,7 @@ async def gpt_analysis_function_step(
     initial_system_prompt: str,
     last_system_prompt: str,
     force_call: bool,
-) -> AnalysisStepWithFunctionReturnValue:
+):
     gpt_executor = GPTExecutor()
 
     # Pick from forced or enabled agents if no agent is forced
@@ -128,49 +122,72 @@ async def gpt_analysis_function_step(
             type="function", function=EnforcedFunctionCallFuncSpec(name=plan_class.__name__)
         )
 
-    async for chunk in gpt_executor.execute(request):
-        tools_calls = gpt_executor.partial_response.choices[0].message.tool_calls
-        for tool_call in tools_calls:
-            function_call = tool_call.function
-            arguments = function_call.arguments
-            if not isinstance(arguments, str):
-                await AnalysisUpdatedWSMessage(
-                    analysis_request_id=analysis_request_id,
-                    agent_id=arguments.get("agent_id", None),
-                    relevant_material_ids=arguments.get("relevant_material_ids", None),
-                    next_step=arguments.get("next_step", None),
-                    thinking_process=arguments.get("thinking_process", None),
-                ).send_to_chat(chat.id)
-        if not tools_calls:
-            await AnalysisUpdatedWSMessage(
-                analysis_request_id=analysis_request_id,
-                agent_id=None,
-                relevant_material_ids=None,
-                next_step=None,
-                thinking_process=gpt_executor.partial_response.choices[0].message.content,
-            ).send_to_chat(chat.id)
-
-    result = gpt_executor.response.choices[0].message
-
-    if len(result.tool_calls) == 0:
-        return AnalysisStepWithFunctionReturnValue(next_step=result.content or "")
-
-    if len(result.tool_calls) > 1:
-        raise ValueError(f"Expected one tool call, got {len(result.tool_calls)}")
-
-    arguments = result.tool_calls[0].function.arguments
-
-    if isinstance(arguments, str):
-        raise ValueError(f"Could not parse arguments from the text: {arguments}")
-
-    arguments = plan_class(**arguments)
-
-    picked_agent = pick_agent(arguments, chat, possible_agent_choices)
-
-    relevant_materials = _get_relevant_materials(arguments.relevant_material_ids)
-
-    return AnalysisStepWithFunctionReturnValue(
-        next_step=arguments.next_step,
-        picked_agent=picked_agent,
-        relevant_materials=relevant_materials,
+    await UpdateAnalysisWSMessage(analysis_request_id=analysis_request_id, stage=SequenceStage.START).send_to_chat(
+        chat.id
     )
+
+    try:
+        async for chunk in gpt_executor.execute(request):
+            if len(gpt_executor.partial_response.choices) > 0:
+                tool_calls = gpt_executor.partial_response.choices[0].message.tool_calls
+                for tool_call in tool_calls:
+                    function_call = tool_call.function
+                    arguments = function_call.arguments
+                    if not isinstance(arguments, str):
+                        await UpdateAnalysisWSMessage(
+                            stage=SequenceStage.MIDDLE,
+                            analysis_request_id=analysis_request_id,
+                            agent_id=arguments.get("agent_id", None),
+                            relevant_material_ids=arguments.get("relevant_material_ids", None),
+                            next_step=arguments.get("next_step", None),
+                            thinking_process=arguments.get("thinking_process", None),
+                        ).send_to_chat(chat.id)
+                if not tool_calls:
+                    await UpdateAnalysisWSMessage(
+                        stage=SequenceStage.MIDDLE,
+                        analysis_request_id=analysis_request_id,
+                        agent_id=None,
+                        relevant_material_ids=None,
+                        next_step=None,
+                        thinking_process=gpt_executor.partial_response.choices[0].message.content,
+                    ).send_to_chat(chat.id)
+            else:
+                _log.warning("No choices in partial response")
+                _log.warning(chunk)
+
+        result = gpt_executor.response.choices[0].message
+
+        if len(result.tool_calls) == 0:
+            await UpdateAnalysisWSMessage(
+                analysis_request_id=analysis_request_id,
+                next_step=result.content or "",
+                stage=SequenceStage.MIDDLE,
+            ).send_to_chat(chat.id)
+            return
+
+        if len(result.tool_calls) > 1:
+            raise ValueError(f"Expected one tool call, got {len(result.tool_calls)}")
+
+        arguments = result.tool_calls[0].function.arguments
+
+        if isinstance(arguments, str):
+            raise ValueError(f"Could not parse arguments from the text: {arguments}")
+
+        arguments = plan_class(**arguments)
+
+        picked_agent = pick_agent(arguments, chat, possible_agent_choices)
+
+        relevant_materials = _get_relevant_materials(arguments.relevant_material_ids)
+
+        await UpdateAnalysisWSMessage(
+            analysis_request_id=analysis_request_id,
+            next_step=arguments.next_step,
+            agent_id=picked_agent.id,
+            relevant_material_ids=[material.id for material in relevant_materials],
+            stage=SequenceStage.MIDDLE,
+        ).send_to_chat(chat.id)
+    finally:
+        await UpdateAnalysisWSMessage(
+            analysis_request_id=analysis_request_id,
+            stage=SequenceStage.END,
+        ).send_to_chat(chat.id)

@@ -14,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from aiconsole.core.analysis.AnalysisResponse import AnalysisResponse
 from aiconsole.core.analysis.create_agents_str import create_agents_str
 from aiconsole.core.analysis.create_materials_str import create_materials_str
 from aiconsole.core.analysis.gpt_analysis_function_step import gpt_analysis_function_step
@@ -23,12 +22,12 @@ from aiconsole.core.chat.types import Chat
 from aiconsole.core.gpt.consts import GPTMode
 
 
-async def variant_fast_propose_solution_and_fix(chat: Chat, analysis_request_id: str) -> AnalysisResponse:
+async def variant_fast_propose_solution_and_fix(chat: Chat, analysis_request_id: str):
     """
     Using SPEED mode propose a solution and then fix it
     """
 
-    proposed_solution = await gpt_analysis_text_step(
+    await gpt_analysis_text_step(
         analysis_request_id=analysis_request_id,
         chat=chat,
         gpt_mode=GPTMode.SPEED,
@@ -60,7 +59,10 @@ Your job:
 """.strip(),
     )
 
-    result = await gpt_analysis_function_step(
+    # TODO: This is a hack just to make the type checker happy, fix it if this function is ever used
+    proposed_solution = ""
+
+    await gpt_analysis_function_step(
         analysis_request_id=analysis_request_id,
         chat=chat,
         gpt_mode=GPTMode.SPEED,
@@ -116,9 +118,3 @@ Now fix the solution.
 """.strip(),
         force_call=True,
     )
-
-    return {
-        "next_step": result.next_step,
-        "agent_id": result.picked_agent.id if result.picked_agent else None,
-        "materials_ids": [material.id for material in result.relevant_materials],
-    }

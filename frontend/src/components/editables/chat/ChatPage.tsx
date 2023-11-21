@@ -56,7 +56,7 @@ export function ChatPage() {
   const chat = useChatStore((state) => state.chat);
   const loadingMessages = useChatStore((state) => state.loadingMessages);
   const isAnalysisRunning = useChatStore((state) => !!state.currentAnalysisRequestId);
-  const isExecuteRunning = useChatStore((state) => state.isExecuteRunning);
+  const isExecutionRunning = useChatStore((state) => state.isExecutionRunning());
   const stopWork = useChatStore((state) => state.stopWork);
   const submitCommand = useChatStore((state) => state.submitCommand);
   const isProjectOpen = useProjectStore((state) => state.isProjectOpen);
@@ -95,7 +95,7 @@ export function ChatPage() {
     return () => {
       useChatStore.setState({ chat: undefined });
     };
-  }, [copyId, id, editableObjectType, forceRefresh]);
+  }, [copyId, id, editableObjectType, forceRefresh, setChat]);
 
   const isLastMessageFromUser =
     chat?.message_groups.length && chat.message_groups[chat.message_groups.length - 1].agent_id === 'user';
@@ -150,17 +150,13 @@ export function ChatPage() {
               <ChatWindowScrollToBottomSave />
               {chat.message_groups.length === 0 && <EmptyChat />}
 
-              {chat.message_groups.map((group, index) => (
-                <MessageGroup
-                  group={group}
-                  key={group.id}
-                  isStreaming={isExecuteRunning && index === chat.message_groups.length - 1}
-                />
+              {chat.message_groups.map((group) => (
+                <MessageGroup group={group} key={group.id} />
               ))}
               <Analysis />
 
               <div className="flex items-center justify-center m-5">
-                {!isExecuteRunning && !isAnalysisRunning && !isLastMessageFromUser && (
+                {!isExecutionRunning && !isAnalysisRunning && !isLastMessageFromUser && (
                   <Button
                     variant="secondary"
                     onClick={() =>

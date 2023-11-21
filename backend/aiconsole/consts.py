@@ -13,7 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-    
+
 from pathlib import Path
 
 from aiconsole.core.gpt.consts import GPTMode
@@ -29,11 +29,16 @@ if MAX_BUDGET:
 
 AICONSOLE_PATH = Path(__file__).parent
 
-ORIGINS: list[str] = ["http://localhost:3000", "http://localhost:3001", "http://127.0.0.1:3000", "http://127.0.0.1:3001"]
+ORIGINS: list[str] = [
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:3001",
+]
 
 LOG_FORMAT: str = "{asctime} {name} [{levelname}] {message}"
 LOG_STYLE: str = "{"
-LOG_LEVEL: str = "INFO"
+LOG_LEVEL: str = "DEBUG"
 LOG_HANDLERS: list[str] = ["console"]
 
 

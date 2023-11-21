@@ -13,20 +13,13 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-    
-import { AICMessageGroup } from "../../../types/editables/chatTypes";
-import { cn } from '@/utils/common/cn';
-import { CodeMessage } from './messages/CodeMessage';
-import { UserInfo } from '@/components/editables/chat/UserInfo';
-import { TextMessage } from './messages/TextMessage';
 
-export function MessageGroup({
-  group,
-  isStreaming,
-}: {
-  group: AICMessageGroup;
-  isStreaming: boolean;
-}) {
+import { AICMessageGroup } from '../../../types/editables/chatTypes';
+import { cn } from '@/utils/common/cn';
+import { UserInfo } from '@/components/editables/chat/UserInfo';
+import { MessageComponent } from './messages/MessageComponent';
+
+export function MessageGroup({ group }: { group: AICMessageGroup }) {
   return (
     <div
       className={cn(
@@ -35,28 +28,10 @@ export function MessageGroup({
       )}
     >
       <div className="container flex mx-auto gap-5">
-        <UserInfo
-          agent_id={group.agent_id}
-          materials_ids={group.materials_ids}
-          task={group.task}
-        />
+        <UserInfo agentId={group.agent_id} materialsIds={group.materials_ids} task={group.task} />
         <div className="flex-grow flex flex-col gap-5  overflow-auto">
-          {group.messages.map((message, index) => (
-            'language' in message ? (
-              <CodeMessage
-                key={message.id}
-                group={group}
-                message={message}
-                isStreaming={index === group.messages.length - 1 && isStreaming}
-              />
-            ) : (
-              <TextMessage
-                key={message.id}
-                message={message}
-                group={group}
-                isStreaming={index === group.messages.length - 1 && isStreaming}
-              />
-            )
+          {group.messages.map((message) => (
+            <MessageComponent key={message.id} message={message} group={group} />
           ))}
         </div>
       </div>

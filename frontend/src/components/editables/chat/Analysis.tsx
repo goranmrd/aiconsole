@@ -20,37 +20,32 @@ import { UserInfo } from '@/components/editables/chat/UserInfo';
 import { useChatStore } from '../../../store/editables/chat/useChatStore';
 
 export function Analysis() {
-  const currentAnalysisRequestId = useChatStore(store => store.currentAnalysisRequestId);
-  const agent_id = useChatStore(store => store.agent_id);
-  const relevant_material_ids = useChatStore(store => store.relevant_material_ids);
-  const thinking_process = useChatStore(store => store.thinking_process);
-  const next_step = useChatStore(store => store.next_step);
+  const currentAnalysisRequestId = useChatStore((store) => store.currentAnalysisRequestId);
+  const agentId = useChatStore((store) => store.agent_id);
+  const relevantMaterialIds = useChatStore((store) => store.relevant_material_ids);
+  const thinkingProcess = useChatStore((store) => store.thinking_process);
+  const nextStep = useChatStore((store) => store.next_step);
 
   if (currentAnalysisRequestId) {
     return (
       <div className={cn('flex flex-row py-10 text-stone-400/50')}>
         <div className="container flex mx-auto gap-5 ">
           <UserInfo
-            agent_id={
-              agent_id !== 'user' ? agent_id || '' : ''
-            }
-            materials_ids={
-              agent_id !== 'user'
-                ? relevant_material_ids || []
-                : []
-            }
+            agentId={agentId !== 'user' ? agentId || '' : ''}
+            materialsIds={agentId !== 'user' ? relevantMaterialIds || [] : []}
           />
           <div className="flex-grow mr-20">
             Analysing ...
-            {<>{` ${thinking_process || ''}`}{' '}
-            {next_step && (
+            {
               <>
-                <br /> Next step:{' '}
-                <span className="text-secondary/50 leading-[24px]">
-                  {next_step}
-                </span>
+                {` ${thinkingProcess || ''}`}{' '}
+                {nextStep && (
+                  <>
+                    <br /> Next step: <span className="text-secondary/50 leading-[24px]">{nextStep}</span>
+                  </>
+                )}{' '}
               </>
-            )}{' '}</>}
+            }
             <BlinkingCursor />
           </div>
         </div>

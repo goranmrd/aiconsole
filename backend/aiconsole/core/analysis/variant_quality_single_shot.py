@@ -14,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from aiconsole.core.analysis.AnalysisResponse import AnalysisResponse
 from aiconsole.core.analysis.create_agents_str import create_agents_str
 from aiconsole.core.analysis.create_materials_str import create_materials_str
 from aiconsole.core.analysis.gpt_analysis_function_step import gpt_analysis_function_step
@@ -22,12 +21,12 @@ from aiconsole.core.chat.types import Chat
 from aiconsole.core.gpt.consts import GPTMode
 
 
-async def variant_quality_single_shot(chat: Chat, analysis_request_id: str) -> AnalysisResponse:
+async def variant_quality_single_shot(chat: Chat, analysis_request_id: str):
     """
     FIRST SPEED, THEN QUALITY
     """
 
-    result = await gpt_analysis_function_step(
+    await gpt_analysis_function_step(
         analysis_request_id=analysis_request_id,
         chat=chat,
         gpt_mode=GPTMode.QUALITY,
@@ -90,9 +89,3 @@ Now make the plan
 """.strip(),
         force_call=True,
     )
-
-    return {
-        "next_step": result.next_step,
-        "agent_id": result.picked_agent.id if result.picked_agent else None,
-        "materials_ids": [material.id for material in result.relevant_materials],
-    }

@@ -15,23 +15,37 @@
 # limitations under the License.
 
 import logging
-from typing import AsyncGenerator
+from uuid import uuid4
+
 from aiconsole.core.assets.agents.agent import ExecutionModeContext
+from aiconsole.core.chat.chat_outgoing_messages import (
+    ResetMessageWSMessage,
+    SequenceStage,
+    UpdateMessageWSMessage,
+    UpdateToolCallWSMessage,
+)
 from aiconsole.core.code_running.code_interpreters.language_map import language_map
 from aiconsole.core.execution_modes.get_agent_system_message import get_agent_system_message
 from aiconsole.core.gpt.create_full_prompt_with_materials import create_full_prompt_with_materials
-from aiconsole.utils.convert_messages import convert_messages
-from openai_function_call import OpenAISchema
 from aiconsole.core.gpt.gpt_executor import GPTExecutor
 from aiconsole.core.gpt.request import GPTRequest, ToolDefinition, ToolFunctionDefinition
 from aiconsole.core.gpt.types import CLEAR_STR
-from pydantic import Field
-
+from aiconsole.utils.convert_messages import convert_messages
+from openai_function_call import OpenAISchema
+from pydantic import BaseModel, Field
 
 _log = logging.getLogger(__name__)
 
 
-class python(OpenAISchema):
+class CodeTask(OpenAISchema):
+    headline: str = Field(
+        ...,
+        description="Short (max 25 chars) title of this task, it will be displayed to the user",
+        json_schema_extra={"type": "string"},
+    )
+
+
+class python(CodeTask):
     """
     When you send a message containing Python code to python, it will be executed in a stateful Jupyter notebook environment
     """
@@ -43,7 +57,7 @@ class python(OpenAISchema):
     )
 
 
-class shell(OpenAISchema):
+class shell(CodeTask):
     """
     This function executes the given code on the user's system using the local environment and returns the output.
     """
@@ -51,7 +65,7 @@ class shell(OpenAISchema):
     code: str = Field(..., json_schema_extra={"type": "string"})
 
 
-class applescript(OpenAISchema):
+class applescript(CodeTask):
     """
     This function executes the given code on the user's system using the local environment and returns the output.
     """
@@ -61,7 +75,7 @@ class applescript(OpenAISchema):
 
 async def execution_mode_interpreter(
     context: ExecutionModeContext,
-) -> AsyncGenerator[str, None]:
+):
     global llm
 
     system_message = create_full_prompt_with_materials(
@@ -73,86 +87,172 @@ async def execution_mode_interpreter(
 
     executor = GPTExecutor()
 
-    language = None
-    code = ""
-
-    async for chunk in executor.execute(
-        GPTRequest(
-            system_message=system_message,
-            gpt_mode=context.agent.gpt_mode,
-            messages=[message for message in convert_messages(context.chat)],
-            tools=[
-                ToolDefinition(type="function", function=ToolFunctionDefinition(**python.openai_schema)),
-                ToolDefinition(type="function", function=ToolFunctionDefinition(**shell.openai_schema)),
-                ToolDefinition(type="function", function=ToolFunctionDefinition(**applescript.openai_schema)),
-            ],
-            min_tokens=250,
-            preferred_tokens=2000,
+    class ToolCallStatus(BaseModel):
+        id: str
+        language: str | None = None
+        code: str = ""
+        headline: str = ""
+        end_with_code: str = ""
+        finished: bool | None = (
+            False  # None is for marking that the finished status has been consumed and final message is sent
         )
-    ):
-        if chunk == CLEAR_STR:
-            yield CLEAR_STR
-            continue
 
-        if "choices" not in chunk or len(chunk["choices"]) == 0:
-            continue
+    tool_calls_data: dict[str, ToolCallStatus] = {}
 
-        delta = chunk["choices"][0]["delta"]
+    async def finish_finished():
+        for tool_call_id in tool_calls_data:
+            tool_call_data = tool_calls_data[tool_call_id]
+            if tool_call_data.finished:
+                if tool_call_data.end_with_code:
+                    await UpdateToolCallWSMessage(
+                        stage=SequenceStage.MIDDLE,
+                        id=tool_call_id,
+                        code_delta=tool_call_data.end_with_code,
+                    ).send_to_chat(context.chat.id)
+                await UpdateToolCallWSMessage(
+                    stage=SequenceStage.END,
+                    id=tool_call_id,
+                ).send_to_chat(context.chat.id)
+                tool_call_data.finished = None
 
-        if "content" in delta and delta["content"]:
-            yield delta["content"]
+    message_id = str(uuid4())
+    await UpdateMessageWSMessage(
+        stage=SequenceStage.START,
+        id=message_id,
+    ).send_to_chat(context.chat.id)
 
-        tool_calls = executor.partial_response.choices[0].message.tool_calls
+    try:
+        async for chunk in executor.execute(
+            GPTRequest(
+                system_message=system_message,
+                gpt_mode=context.agent.gpt_mode,
+                messages=[message for message in convert_messages(context.chat)],
+                tools=[
+                    ToolDefinition(type="function", function=ToolFunctionDefinition(**python.openai_schema)),
+                    ToolDefinition(type="function", function=ToolFunctionDefinition(**shell.openai_schema)),
+                    ToolDefinition(type="function", function=ToolFunctionDefinition(**applescript.openai_schema)),
+                ],
+                min_tokens=250,
+                preferred_tokens=2000,
+            )
+        ):
+            if chunk == CLEAR_STR:
+                if message_id:
+                    await ResetMessageWSMessage(
+                        id=message_id,
+                    ).send_to_chat(context.chat.id)
+                continue
 
-        for tool_call in tool_calls:
-            if tool_call.type == "function":
-                function_call = tool_call.function
+            if "choices" not in chunk or len(chunk["choices"]) == 0:
+                continue
 
-                if function_call.arguments:
-                    # This can now be both a string and a json object
+            delta = chunk["choices"][0]["delta"]
 
-                    arguments = function_call.arguments
-                    languages = language_map.keys()
+            if "content" in delta and delta["content"]:
+                await UpdateMessageWSMessage(
+                    stage=SequenceStage.MIDDLE,
+                    id=message_id,
+                    text_delta=delta["content"],
+                ).send_to_chat(context.chat.id)
 
-                    if language is None and function_call.name in languages:
-                        # Languge is in the name of the function call
-                        language = function_call.name
-                        yield f"<<<< START CODE ({language}) >>>>"
+            tool_calls = executor.partial_response.choices[0].message.tool_calls
 
-                    if isinstance(arguments, str):
-                        # We need to handle incorrect OpenAI responses, sometmes arguments is a string containing the code
-                        if arguments and not arguments.startswith("{"):
-                            if language is None:
-                                language = "python"
-                                yield f"<<<< START CODE ({language}) >>>>"
+            for index, tool_call in enumerate(tool_calls):
+                # All tool calls with lower indexes are finished
+                if index > 0 and tool_calls_data[tool_calls[index - 1].id].finished == False:
+                    tool_calls_data[tool_calls[index - 1].id].finished = True
 
-                            code_delta = arguments[len(code) :]
-                            code = arguments
+                await finish_finished()
 
-                            if code_delta:
-                                yield code_delta
-                    else:
-                        if arguments and "code" in arguments:
-                            if language is None:
-                                language = "python"
-                                yield f"<<<< START CODE ({language}) >>>>"
-                            code_delta = arguments["code"][len(code) :]
-                            code = arguments["code"]
+                if tool_call.id not in tool_calls_data:
+                    tool_calls_data[tool_call.id] = ToolCallStatus(id=tool_call.id)
+                    await UpdateToolCallWSMessage(
+                        stage=SequenceStage.START,
+                        id=tool_call.id,
+                    ).send_to_chat(context.chat.id)
 
-                            if code_delta:
-                                yield code_delta
+                tool_call_data = tool_calls_data[tool_call.id]
 
-    if language:
-        yield "<<<< END CODE >>>>"
-        language = None
+                if tool_call.type == "function":
+                    function_call = tool_call.function
 
-    tool_calls = executor.response.choices[0].message.tool_calls
-    for tool_call in tool_calls:
-        if tool_call.type == "function":
-            function_call = tool_call.function
+                    async def send_language_if_needed(lang: str):
+                        if tool_call_data.language is None:
+                            tool_call_data.language = lang
 
-            if function_call and function_call.name not in [python.__name__, shell.__name__, applescript.__name__]:
-                _log.info(f"function_call: {function_call}")
-                _log.info(f"function_call.arguments: {function_call.arguments}")
+                            await UpdateToolCallWSMessage(
+                                stage=SequenceStage.MIDDLE,
+                                id=tool_call.id,
+                                language=tool_call_data.language,
+                            ).send_to_chat(context.chat.id)
 
-                yield f"<<<< START CODE (python) >>>>{function_call.name}()<<<< END CODE >>>>"
+                    async def send_code_delta(code_delta: str = "", headline_delta: str = ""):
+                        if code_delta or headline_delta:
+                            await UpdateToolCallWSMessage(
+                                stage=SequenceStage.MIDDLE,
+                                id=tool_call.id,
+                                code_delta=code_delta,
+                                headline_delta=headline_delta,
+                            ).send_to_chat(context.chat.id)
+
+                    if function_call.arguments:
+                        if function_call.name not in [python.__name__, shell.__name__, applescript.__name__]:
+                            if tool_call_data.language is None:
+                                await send_language_if_needed("python")
+
+                                _log.info(f"function_call: {function_call}")
+                                _log.info(f"function_call.arguments: {function_call.arguments}")
+
+                                code_delta = f"{function_call.name}("  # TODO: This won't work
+                                await send_code_delta(code_delta)
+                                tool_call_data.end_with_code = ")"
+                            else:
+                                if isinstance(function_call.arguments, str):
+                                    code_delta = function_call.arguments[len(tool_call_data.code) :]
+                                    tool_call_data.code = function_call.arguments
+                                    await send_code_delta(code_delta)
+                        else:
+                            arguments = function_call.arguments
+                            languages = language_map.keys()
+
+                            if tool_call_data.language is None and function_call.name in languages:
+                                # Languge is in the name of the function call
+                                await send_language_if_needed(function_call.name)
+
+                            # This can now be both a string and a json object
+                            if isinstance(arguments, str):
+                                # We need to handle incorrect OpenAI responses, sometmes arguments is a string containing the code
+                                if arguments and not arguments.startswith("{"):
+                                    await send_language_if_needed("python")
+
+                                    code_delta = arguments[len(tool_call_data.code) :]
+                                    tool_call_data.code = arguments
+
+                                    await send_code_delta(code_delta)
+                            else:
+                                code_delta = ""
+                                headline_delta = ""
+
+                                if arguments and "code" in arguments:
+                                    await send_language_if_needed("python")
+
+                                    code_delta = arguments["code"][len(tool_call_data.code) :]
+                                    tool_call_data.code = arguments["code"]
+
+                                if arguments and "headline" in arguments:
+                                    headline_delta = arguments["headline"][len(tool_call_data.headline) :]
+                                    tool_call_data.headline = arguments["headline"]
+
+                                if code_delta or headline_delta:
+                                    await send_code_delta(code_delta, headline_delta)
+    finally:
+        for tool_call_data in tool_calls_data.values():
+            if tool_call_data.finished == False:
+                tool_call_data.finished = True
+
+        await finish_finished()
+
+        await UpdateMessageWSMessage(
+            stage=SequenceStage.END,
+            id=message_id,
+        ).send_to_chat(context.chat.id)

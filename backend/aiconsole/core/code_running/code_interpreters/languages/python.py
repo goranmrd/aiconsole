@@ -43,6 +43,7 @@ import logging
 
 _log = logging.getLogger(__name__)
 
+
 class Python(SubprocessCodeInterpreter):
     file_extension = "py"
     proper_name = "Python"
@@ -55,7 +56,7 @@ class Python(SubprocessCodeInterpreter):
         return preprocess_python(code, materials)
 
     def line_postprocessor(self, line):
-        if re.match(r'^(\s*>>>\s*|\s*\.\.\.\s*)', line):
+        if re.match(r"^(\s*>>>\s*|\s*\.\.\.\s*)", line):
             return None
         return line
 
@@ -75,26 +76,27 @@ def preprocess_python(code: str, materials: List[Material]):
         ast.parse(code)
     except SyntaxError as e:
         # If there's a syntax error, return the error message directly
-        newline = '\n'
+        newline = "\n"
         # msg_for_user = f"SyntaxError on line {e.lineno}, column {e.offset}: {e.msg} ({e.text})"
-        
-        msg_for_user = f"" \
-                       f'File "{e.filename}", line {e.lineno}, column {e.offset}\n '\
-                       f"  {(e.text or '').replace(newline, '')}\n" \
-                       f"  {(e.offset or 0) * ' '}^\n" \
-                       f"SyntaxError: {e.msg}\n" 
-        
-        return f"print(f'''{msg_for_user}''')\nprint('## end_of_execution ##')"
 
+        msg_for_user = (
+            f""
+            f'File "{e.filename}", line {e.lineno}, column {e.offset}\n '
+            f"  {(e.text or '').replace(newline, '')}\n"
+            f"  {(e.offset or 0) * ' '}^\n"
+            f"SyntaxError: {e.msg}\n"
+        )
+
+        return f"print(f'''{msg_for_user}''')\nprint('## end_of_execution ##')"
 
     api_materials = [material for material in materials if material.content_type == "api"]
     apis = [material.content_api for material in api_materials]
 
-    parsed_code = ast.parse('\n\n\n'.join(apis))
+    parsed_code = ast.parse("\n\n\n".join(apis))
     parsed_code.body = [b for b in parsed_code.body if not isinstance(b, ast.Expr) or not isinstance(b.value, ast.Str)]
     apis = ast.unparse(parsed_code)
 
-    newline = '\n'
+    newline = "\n"
     code = f"""
 {apis}
 
@@ -115,5 +117,3 @@ print("## end_of_execution ##")
 """.strip()
 
     return code
-
-
