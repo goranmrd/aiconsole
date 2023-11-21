@@ -93,8 +93,27 @@ async def execution_mode_interpreter(
         code: str = ""
         headline: str = ""
         end_with_code: str = ""
+        finished: bool | None = (
+            False  # None is for marking that the finished status has been consumed and final message is sent
+        )
 
     tool_calls_data: dict[str, ToolCallStatus] = {}
+
+    async def finish_finished():
+        for tool_call_id in tool_calls_data:
+            tool_call_data = tool_calls_data[tool_call_id]
+            if tool_call_data.finished:
+                if tool_call_data.end_with_code:
+                    await UpdateToolCallWSMessage(
+                        stage=SequenceStage.MIDDLE,
+                        id=tool_call_id,
+                        code_delta=tool_call_data.end_with_code,
+                    ).send_to_chat(context.chat.id)
+                await UpdateToolCallWSMessage(
+                    stage=SequenceStage.END,
+                    id=tool_call_id,
+                ).send_to_chat(context.chat.id)
+                tool_call_data.finished = None
 
     message_id = str(uuid4())
     await UpdateMessageWSMessage(
@@ -138,7 +157,13 @@ async def execution_mode_interpreter(
 
             tool_calls = executor.partial_response.choices[0].message.tool_calls
 
-            for tool_call in tool_calls:
+            for index, tool_call in enumerate(tool_calls):
+                # All tool calls with lower indexes are finished
+                if index > 0 and tool_calls_data[tool_calls[index - 1].id].finished == False:
+                    tool_calls_data[tool_calls[index - 1].id].finished = True
+
+                await finish_finished()
+
                 if tool_call.id not in tool_calls_data:
                     tool_calls_data[tool_call.id] = ToolCallStatus(id=tool_call.id)
                     await UpdateToolCallWSMessage(
@@ -221,18 +246,11 @@ async def execution_mode_interpreter(
                                 if code_delta or headline_delta:
                                     await send_code_delta(code_delta, headline_delta)
     finally:
-        for tool_call_id in tool_calls_data:
-            tool_call_data = tool_calls_data[tool_call_id]
-            if tool_call_data.end_with_code:
-                await UpdateToolCallWSMessage(
-                    stage=SequenceStage.MIDDLE,
-                    id=tool_call_id,
-                    code_delta=tool_call_data.end_with_code,
-                ).send_to_chat(context.chat.id)
-            await UpdateToolCallWSMessage(
-                stage=SequenceStage.END,
-                id=tool_call_id,
-            ).send_to_chat(context.chat.id)
+        for tool_call_data in tool_calls_data.values():
+            if tool_call_data.finished == False:
+                tool_call_data.finished = True
+
+        await finish_finished()
 
         await UpdateMessageWSMessage(
             stage=SequenceStage.END,

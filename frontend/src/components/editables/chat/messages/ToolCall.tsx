@@ -18,15 +18,23 @@ import { useCallback, useState } from 'react';
 
 import { Spinner } from '@/components/editables/chat/Spinner';
 import { useChatStore } from '@/store/editables/chat/useChatStore';
-import { ChevronDown, ChevronUp, Play, Infinity, CheckIcon, AlertCircleIcon, CheckCircle2Icon } from 'lucide-react';
-import { AICToolCall, AICMessage, AICMessageGroup } from '@/types/editables/chatTypes';
-import SyntaxHighlighter from 'react-syntax-highlighter';
-import { Button } from '../../../common/Button';
-import { duotoneDark as vs2015 } from 'react-syntax-highlighter/dist/cjs/styles/prism';
-import { ToolOutput } from './ToolOutput';
-import { EditableContentMessage } from './EditableContentMessage';
 import { useSettingsStore } from '@/store/settings/useSettingsStore';
+import { AICMessage, AICMessageGroup, AICToolCall } from '@/types/editables/chatTypes';
 import { upperFirst } from '@mantine/hooks';
+import {
+  AlertCircleIcon,
+  CheckCircle2Icon,
+  ChevronDown,
+  ChevronUp,
+  CircleDashedIcon,
+  Infinity,
+  Play,
+} from 'lucide-react';
+import SyntaxHighlighter from 'react-syntax-highlighter';
+import { duotoneDark as vs2015 } from 'react-syntax-highlighter/dist/cjs/styles/prism';
+import { Button } from '../../../common/Button';
+import { EditableContentMessage } from './EditableContentMessage';
+import { ToolOutput } from './ToolOutput';
 
 interface MessageProps {
   group: AICMessageGroup;
@@ -81,7 +89,12 @@ export function ToolCall({ group, tool_call }: MessageProps) {
         <div className="flex flex-row gap-2 items-center">
           <div className="flex-grow flex flex-row gap-3 items-center">
             {shouldDisplaySpinner && <Spinner />}
-            {!shouldDisplaySpinner && !isError && <CheckCircle2Icon className="h-5 w-5 text-green-500" />}
+            {!shouldDisplaySpinner && !isError && !tool_call.output && (
+              <CircleDashedIcon className="h-5 w-5 text-green-500" />
+            )}
+            {!shouldDisplaySpinner && !isError && tool_call.output && (
+              <CheckCircle2Icon className="h-5 w-5 text-green-500" />
+            )}
             {!shouldDisplaySpinner && isError && <AlertCircleIcon className="h-5 w-5 text-red-500" />}
             {tool_call.headline ? `${tool_call.headline}` : `${upperFirst(tool_call.language)} task`}
           </div>
