@@ -33,39 +33,36 @@ export const createChatSlice: StateCreator<ChatStore, [], [], ChatSlice> = (set,
   agent: undefined,
   materials: [],
   saveCurrentChatHistory: async () => {
-    const c = get().chat;
-    if (!c) {
-      throw new Error('Chat is not initialized');
+    const chat = deepCopyChat(get().chat);
+
+    if (chat) {
+      // update title
+      if (!chat.title_edited && chat.message_groups.length > 0 && chat.message_groups[0].messages.length > 0) {
+        chat.name = chat.message_groups[0].messages[0].content;
+      }
+
+      //remove empty groups
+      chat.message_groups = chat.message_groups.filter((group) => {
+        return group.messages.length > 0;
+      });
+
+      set({
+        chat: chat,
+      });
+
+      useEditablesStore.setState({
+        chats: [
+          {
+            id: chat.id,
+            name: chat.name,
+            last_modified: new Date().toISOString(),
+          },
+          ...useEditablesStore.getState().chats.filter((c) => c.id !== chat.id),
+        ],
+      });
+
+      await EditablesAPI.updateEditableObject('chat', chat);
     }
-
-    const chat = deepCopyChat(c);
-
-    // update title
-    if (!chat.title_edited && chat.message_groups.length > 0 && chat.message_groups[0].messages.length > 0) {
-      chat.name = chat.message_groups[0].messages[0].content;
-    }
-
-    //remove empty groups
-    chat.message_groups = chat.message_groups.filter((group) => {
-      return group.messages.length > 0;
-    });
-
-    set({
-      chat: chat,
-    });
-
-    useEditablesStore.setState({
-      chats: [
-        {
-          id: chat.id,
-          name: chat.name,
-          last_modified: new Date().toISOString(),
-        },
-        ...useEditablesStore.getState().chats.filter((c) => c.id !== chat.id),
-      ],
-    });
-
-    await EditablesAPI.updateEditableObject('chat', chat);
   },
   updateSelectedChat: (name: string, newId: string) => {
     set(({ chat }) => {

@@ -64,14 +64,10 @@ export const createMessageSlice: StateCreator<ChatStore, [], [], MessageSlice> =
   loadingMessages: false,
   removeMessageFromGroup: (messageId: string) => {
     set((state) => {
-      if (!state.chat) {
-        throw new Error('Chat is not initialized');
-      }
-
       const chat = deepCopyChat(state.chat);
       const messageLocation = getMessage(chat, messageId);
 
-      if (!messageLocation) {
+      if (!messageLocation || !chat) {
         throw new Error('Message not found');
       }
 
@@ -89,10 +85,6 @@ export const createMessageSlice: StateCreator<ChatStore, [], [], MessageSlice> =
   },
   removeToolCallFromMessage: (toolCallId: string) => {
     set((state) => {
-      if (!state.chat) {
-        throw new Error('Chat is not initialized');
-      }
-
       const chat = deepCopyChat(state.chat);
       const toolCallLocation = getToolCall(chat, toolCallId);
 
@@ -116,10 +108,6 @@ export const createMessageSlice: StateCreator<ChatStore, [], [], MessageSlice> =
   },
   editMessage: (change: (message: AICMessage) => void, messageId: string) => {
     set((state) => {
-      if (!state.chat) {
-        throw new Error('Chat is not initialized');
-      }
-
       const chat = deepCopyChat(state.chat);
       const messageLocation = getMessage(chat, messageId);
       if (!messageLocation) {
@@ -143,10 +131,6 @@ export const createMessageSlice: StateCreator<ChatStore, [], [], MessageSlice> =
   },
   editToolCall: (change: (toolCall: AICToolCall) => void, toolCallId: string) => {
     set((state) => {
-      if (!state.chat) {
-        throw new Error('Chat is not initialized');
-      }
-
       const chat = deepCopyChat(state.chat);
       const outputLocation = getToolCall(chat, toolCallId);
 
@@ -165,10 +149,6 @@ export const createMessageSlice: StateCreator<ChatStore, [], [], MessageSlice> =
   },
   appendToolCall: (toolCall: AICToolCall, messageId?: string) => {
     set((state) => {
-      if (!state.chat) {
-        throw new Error('Chat is not initialized');
-      }
-
       const chat = deepCopyChat(state.chat);
       const messageLocation = messageId === undefined ? getLastMessage(chat) : getMessage(chat, messageId);
 
@@ -187,11 +167,11 @@ export const createMessageSlice: StateCreator<ChatStore, [], [], MessageSlice> =
   },
   appendGroup: (group: Omit<AICMessageGroup, 'id'>) => {
     set((state) => {
-      if (!state.chat) {
+      const chat = deepCopyChat(state.chat);
+
+      if (!chat) {
         throw new Error('Chat is not initialized');
       }
-
-      const chat = deepCopyChat(state.chat);
 
       chat.message_groups.push({
         id: uuidv4(),
@@ -205,10 +185,6 @@ export const createMessageSlice: StateCreator<ChatStore, [], [], MessageSlice> =
   },
   appendMessage: (message: Omit<AICMessage, 'timestamp'>, groupId?: string) => {
     set((state) => {
-      if (!state.chat) {
-        throw new Error('Chat is not initialized');
-      }
-
       const chat = deepCopyChat(state.chat);
 
       const groupLocation = groupId === undefined ? getLastGroup(chat) : getGroup(chat, groupId);

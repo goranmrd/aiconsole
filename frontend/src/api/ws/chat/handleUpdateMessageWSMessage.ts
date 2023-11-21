@@ -50,13 +50,7 @@ export async function handleUpdateMessageWSMessage(data: UpdateMessageWSMessage)
         let ranCode = false;
 
         if (chat && chat.message_groups.length > 0) {
-          const lastMessage = getLastMessage(chat).message;
-
-          //run all in this group
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          for (const _toolCall of lastMessage.tool_calls) {
-            ranCode = true;
-          }
+          ranCode = getLastMessage(chat)?.message.tool_calls.length !== 0;
         }
 
         if (!ranCode) {

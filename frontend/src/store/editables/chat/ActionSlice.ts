@@ -107,11 +107,12 @@ export const createActionSlice: StateCreator<ChatStore, [], [], ActionSlice> = (
 
     const chat = get().chat;
 
-    if (!chat) {
-      throw new Error('Chat is not initialized');
+    const lastGroupLocation = getLastGroup(chat);
+
+    if (!lastGroupLocation || !chat) {
+      throw new Error('No group or chat found');
     }
 
-    const lastGroupLocation = getLastGroup(chat);
     const lastGroup = lastGroupLocation.group;
 
     ChatAPI.execute(

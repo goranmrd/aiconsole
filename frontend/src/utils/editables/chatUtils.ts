@@ -20,11 +20,15 @@ export type AICGroupLocation = { groupIndex: number; group: AICMessageGroup };
 export type AICMessageLocation = AICGroupLocation & { messageIndex: number; message: AICMessage };
 export type AICOutputLocaion = AICMessageLocation & { toolCallIndex: number; toolCall: AICToolCall };
 
-export function getLastGroup(chat: Chat): AICGroupLocation {
+export function getLastGroup(chat?: Chat): AICGroupLocation | undefined {
+  if (!chat) {
+    return undefined;
+  }
+
   const group = chat.message_groups[chat.message_groups.length - 1];
 
   if (!group) {
-    throw new Error('No groups found');
+    return undefined;
   }
 
   return {
@@ -33,13 +37,17 @@ export function getLastGroup(chat: Chat): AICGroupLocation {
   };
 }
 
-export function getGroup(chat: Chat, groupId: string): AICGroupLocation {
+export function getGroup(chat: Chat | undefined, groupId: string): AICGroupLocation | undefined {
+  if (!chat) {
+    return undefined;
+  }
+
   const groupIndex = groupId
     ? chat.message_groups.findIndex((group) => group.id === groupId)
     : chat.message_groups.length - 1;
 
   if (groupIndex === -1) {
-    throw new Error('No groups found');
+    return undefined;
   }
 
   const group = chat.message_groups[groupIndex];
@@ -50,12 +58,16 @@ export function getGroup(chat: Chat, groupId: string): AICGroupLocation {
   };
 }
 
-export function getLastMessage(chat: Chat): AICMessageLocation {
+export function getLastMessage(chat?: Chat): AICMessageLocation | undefined {
+  if (!chat) {
+    return undefined;
+  }
+
   const group = chat.message_groups[chat.message_groups.length - 1];
   const message = group.messages[group.messages.length - 1];
 
   if (!message) {
-    throw new Error('No messages found');
+    return undefined;
   }
 
   return {
@@ -66,7 +78,11 @@ export function getLastMessage(chat: Chat): AICMessageLocation {
   };
 }
 
-export function getMessage(chat: Chat, messageId: string): AICMessageLocation | undefined {
+export function getMessage(chat: Chat | undefined, messageId: string): AICMessageLocation | undefined {
+  if (!chat) {
+    return undefined;
+  }
+
   let groupIndex = 0;
   for (const group of chat.message_groups) {
     let messageIndex = 0;
@@ -110,9 +126,9 @@ export function getLastToolCall(chat: Chat): AICOutputLocaion {
   };
 }
 
-export function getToolCall(chat: Chat, outputId: string): AICOutputLocaion | undefined {
+export function getToolCall(chat: Chat | undefined, outputId: string): AICOutputLocaion | undefined {
   let groupIndex = 0;
-  for (const group of chat.message_groups) {
+  for (const group of chat?.message_groups || []) {
     let messageIndex = 0;
     for (const message of group.messages) {
       let outputIndex = 0;
@@ -164,7 +180,10 @@ export function deepCopyGroups(groups: AICMessageGroup[]): AICMessageGroup[] {
   }));
 }
 
-export function deepCopyChat(chat: Chat): Chat {
+export function deepCopyChat(chat?: Chat): Chat | undefined {
+  if (!chat) {
+    return undefined;
+  }
   return {
     ...chat,
     message_groups: deepCopyGroups(chat.message_groups),
