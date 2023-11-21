@@ -71,7 +71,6 @@ export const createActionSlice: StateCreator<ChatStore, [], [], ActionSlice> = (
    * doExecute expects that the last message is the one it should be filling in.
    */
   doExecute: async () => {
-    console.log('Executing');
     set(() => ({
       executeAbortSignal: new AbortController(),
       isExecuteRunning: true,

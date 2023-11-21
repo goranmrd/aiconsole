@@ -81,8 +81,8 @@ export function ToolCall({ group, tool_call }: MessageProps) {
         <div className="flex flex-row gap-2 items-center">
           <div className="flex-grow flex flex-row gap-3 items-center">
             {shouldDisplaySpinner && <Spinner />}
-            {!shouldDisplaySpinner && <CheckCircle2Icon className="h-5 w-5 text-green-500" />}
-            {isError && <AlertCircleIcon className="h-5 w-5 text-red-500" />}
+            {!shouldDisplaySpinner && !isError && <CheckCircle2Icon className="h-5 w-5 text-green-500" />}
+            {!shouldDisplaySpinner && isError && <AlertCircleIcon className="h-5 w-5 text-red-500" />}
             {tool_call.headline ? `${tool_call.headline}` : `${upperFirst(tool_call.language)} task`}
           </div>
 
