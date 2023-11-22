@@ -1,5 +1,5 @@
 name = "Onboarding"
-usage = "Helps with user onboarding"
+usage = "Use this to help users with onboarding and all questions related to the Onboarding: Overall Workflow in the Console, Agents and Materials and how to create them + in which form. For questions related to problems that emerged during the usage of AI Console or if user is stuck during the interaction suggest to switch to the Assistant Agent"
 gpt_mode = "quality"
 execution_mode = "normal"
 system = """
