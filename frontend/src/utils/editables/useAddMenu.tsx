@@ -36,31 +36,31 @@ export function useAddMenu() {
     return showContextMenu([
       {
         key: 'chat',
-        icon: <ChatIcon className="w-6 h-6 text-chat" />,
+        icon: <ChatIcon className="w-5 h-5 !text-chat" />,
         title: 'New Chat ...',
         onClick: handleClick(`/chats/${uuidv4()}`),
       },
       {
         key: 'note',
-        icon: <MaterialNoteIcon className="w-6 h-6 text-material" />,
+        icon: <MaterialNoteIcon className="w-5 h-5 !text-material" />,
         title: 'New Note ...',
         onClick: handleClick(`/materials/new?type=static_text`),
       },
       {
         key: 'dynamic_note',
-        icon: <MaterialDynamicNoteIcon className="w-6 h-6 text-material" />,
+        icon: <MaterialDynamicNoteIcon className="w-5 h-5 !text-material" />,
         title: 'New Dynamic Note ...',
         onClick: handleClick(`/materials/new?type=dynamic_text`),
       },
       {
         key: 'python_api',
-        icon: <MaterialPythonAPIIcon className="w-6 h-6 text-material" />,
+        icon: <MaterialPythonAPIIcon className="w-5 h-5 !text-material" />,
         title: 'New Python API ...',
         onClick: handleClick(`/materials/new?type=api`),
       },
       {
         key: 'agent',
-        icon: <AgentIcon className="w-6 h-6 text-agent" />,
+        icon: <AgentIcon className="w-5 h-5 !text-agent" />,
         title: 'New Agent ...',
         onClick: handleClick(`/agents/new`),
       },

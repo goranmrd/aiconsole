@@ -17,10 +17,10 @@
 import { useContextMenu as useMantineContextMenu, ContextMenuContent, ContextMenuOptions } from 'mantine-contextmenu';
 
 export const CONTEXT_MENU_ITEM_CLASSES =
-  'text-white bg-gray-600 hover:bg-gray-600 py-[7px] px-[15px] rounded-none my-[3px] hover:!text-white !text-[16px] context-menu-icon';
+  'text-white bg-gray-700 hover:bg-gray-600 py-[7px] px-[15px] rounded-none my-[3px] hover:!text-white !text-[16px] context-menu-icon';
 
 const CLASSNAMES = {
-  root: '!bg-gray-600 border !border-gray-800 !px-0 !py-[6px] rounded-[4px] text-gray-400',
+  root: '!bg-gray-700 border !border-gray-800 !px-0 !py-[6px] rounded-[4px] text-gray-400',
   item: CONTEXT_MENU_ITEM_CLASSES,
   divider: 'bg-gray-800',
 };
