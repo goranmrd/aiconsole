@@ -4,7 +4,7 @@ usage = "Use this to get to help users when they ask about Materials as a suppor
 usage_examples = []
 default_status = "enabled"
 content_type = "static_text"
-content_static_text = """""
+content_static_text = """
 
 ## 📜 The Preamble: Of TOML and its Purpose In the realm of machines and marvellous AI, TOML stands as a beacon of order. That's Tom's Obvious, Minimal Language for those unacquainted with its simple elegance. Picture a scribe, meticulously recording the attributes and characteristics needed to summon forth an AI agent in your personal Console kingdom—this is TOML!
 
@@ -19,21 +19,25 @@ Let us unfurl the aged parchment of a TOML file. Within its fibres lie the secre
 title = "AI Assistant Supreme"
 Look upon it as naming a newborn star in the celestial canopy.
 
-"""
+'''
+___ 
 [agent.environment]
 preferred_language = "Python"
 magical_abilities = "Send emails, Organize calendar, Craft poems"
-""" 
+___
+'''
 
 Chapter 3: The Legend of Types and Characters
 Elemental Strings: The lifeblood of TOML, strings are incantations and phrases, paths that guide your agent through the labyrinth of tasks.
 
 Sacred Numbers: Here reside integers and floating-point numbers, runes of power where finance and logic intertwine.
 
-"""
+'''
+___
 difficulty_level = 5
 companions_number = 1
-"""
+___
+'''
 
 Chapter 4: The Journey of TOML Creation for the Layperson
 Fear not, for you do not tread this path alone. Envision your trusty AI Console, a grimoire itself, waiting to serve. Speak to it, and it shall bestow upon you a TOML script, perfect in form, ready for the wielding. This act is no less than a magical incantation, where you, the sorcerer, need only utter the words, and the Console will transmute thought into textual substance. Copy, paste, and behold the might of your AI agent!
@@ -43,42 +47,50 @@ Yet, indulge me as I entreat you to a trial, should you choose to embrace the cr
 The Vellum Blank and Bidding
 Pluck your quill, dip into the inkwell of intent, and on the vellum of your virtual notepad, inscribe your opening declaration:
 
-"""
+'''
+___
 # The title of your tomes impact, resonant and true
 title = "The Assistant of [Your Name Here]"
 Each TOML begins thus, a name befitting the power and purpose of your AI familiar.
-"""
-"""
+___
+'''
 
 Creation Unfolds
 Continue your writing, a declaration of realms and dominions, where your sections create the landscape of your intent:
 
-"""
+
+'''
+___
 # The `owner`—that's you, the master of AI destinies
 [owner]
 name = "Your Name"
 dob = "The Date of Star-aligned Birth"
-"""
+___
+'''
 
-"""
+'''
+___
 # The `agent.environment`—the AI's dominion and purview
 [agent.environment]
 skills = ["Whispering to databases", "Conversing with APIs", "Crafting narratives"]
 languages = ["The tongues of Python", "The scripts of JavaScript"]
-"""
+'''
+___
 
 With the certainty of a cartographer drawing maps for worlds anew, your variables emerge.
 
 Finishing the Script
 And to conclude, you seal your TOML with the certainty of sunrise following night:
 
-"""
+'''
+___
 # The `agent.character`—the soul of your AI
 [agent.character]
 charm = "Unyielding"
 wit = "Sharper than Occam's Razor"
 purpose = "To aid, to serve, to illuminate"
-"""
+___
+'''
 
 This, my friends, is the repeating mantra—your TOML files are as much an extension of your will as the scepter is to the sovereign.
 
@@ -120,4 +132,4 @@ And so, with the road behind us bathed in the golden glow of newfound understand
 🛠️ Your Task: Craft a message or a piece of advice your agent would give. Maybe it's a warm greeting or a standard response to a common question.
 
 
-"""""
+"""
