@@ -29,10 +29,14 @@ export const BlinkingCursor = () => {
   }, []);
 
   return (
-    <div
-      className={`bg-slate-400 inline-block h-3 w-2 ${
-        visible ? '' : 'invisible'
-      }`}
-    />
+    <svg
+      className={`inline-block ${visible ? '' : 'invisible'}`}
+      width="8" // This can be adjusted to match the width of your cursor
+      height="12" // This can be adjusted to match the height of your cursor
+      viewBox="0 0 8 16"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect fill="currentColor" x="0" y="0" width="100%" height="100%" />
+    </svg>
   );
 };

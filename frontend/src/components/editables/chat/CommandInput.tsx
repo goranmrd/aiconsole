@@ -104,17 +104,6 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
           rows={1}
           style={{ boxSizing: 'border-box', transition: 'height 0.2s' }}
         />
-        {isWorking && (
-          <button
-            className={cn(
-              'focus:ring-secondary ml-4 rounded-full p-2 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 border border-secondary text-secondary',
-            )}
-            type="button"
-            onClick={stopWork}
-          >
-            <Square className="h-6 w-6" />
-          </button>
-        )}
         <button
           className={cn(
             'focus:ring-secondary ml-4 rounded-full p-2 text-gray-800 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-4',

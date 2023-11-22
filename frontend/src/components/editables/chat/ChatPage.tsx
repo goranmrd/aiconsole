@@ -30,8 +30,9 @@ import ScrollToBottom, { useScrollToBottom } from 'react-scroll-to-bottom';
 import { v4 as uuidv4 } from 'uuid';
 import { Button } from '../../common/Button';
 import { EditorHeader } from '../EditorHeader';
-import { Analysis } from './Analysis';
 import { CommandInput } from './CommandInput';
+import { Tooltip } from '@/components/common/Tooltip';
+import { BlinkingCursor } from './BlinkingCursor';
 
 export function ChatWindowScrollToBottomSave() {
   const scrollToBottom = useScrollToBottom();
@@ -62,6 +63,9 @@ export function ChatPage() {
   const isProjectOpen = useProjectStore((state) => state.isProjectOpen);
   const isProjectLoading = useProjectStore((state) => state.isProjectLoading);
   const { showContextMenu } = useEditableObjectContextMenu({ editable: chat, editableObjectType: 'chat' });
+
+  const thinkingProcess = useChatStore((store) => store.thinking_process);
+  const nextStep = useChatStore((store) => store.next_step);
 
   const setChat = useMemo(
     () => (chat: Chat) => {
@@ -135,6 +139,86 @@ export function ChatPage() {
     }
   };
 
+  let greatButton;
+
+  if (!isExecutionRunning && !isAnalysisRunning && !isLastMessageFromUser) {
+    greatButton = (
+      <Button
+        variant="secondary"
+        onClick={() =>
+          submitCommand(
+            `I'm stuck at using AIConsole, can you suggest what can I do from this point in the conversation?`,
+          )
+        }
+      >
+        Guide me
+      </Button>
+    );
+  } else if (!isExecutionRunning && !isAnalysisRunning && isLastMessageFromUser) {
+    greatButton = (
+      <Button variant="secondary" onClick={() => submitCommand(``)}>
+        Answer
+      </Button>
+    );
+  } else if (isExecutionRunning) {
+    greatButton = (
+      <div>
+        <Button
+          variant="secondary"
+          classNames="animate-pulse relative group"
+          onClick={() => {
+            stopWork();
+          }}
+        >
+          <span className="inset-0 flex items-center justify-center opacity-100 group-hover:opacity-0 transition-opacity">
+            Working ...
+          </span>
+          <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            Stop
+          </span>
+        </Button>
+      </div>
+    );
+  } else {
+    greatButton = (
+      <Tooltip
+        w={400}
+        opened={true}
+        offset={10}
+        withArrow
+        label={
+          <>
+            {` ${thinkingProcess || ''}`}{' '}
+            {nextStep && (
+              <>
+                <br /> Next step: <span className="text-secondary/50 leading-[24px]">{nextStep}</span>
+              </>
+            )}{' '}
+            <BlinkingCursor />
+          </>
+        }
+        multiline={true}
+      >
+        <div>
+          <Button
+            variant="secondary"
+            classNames="animate-pulse relative group"
+            onClick={() => {
+              stopWork();
+            }}
+          >
+            <span className="inset-0 flex items-center justify-center opacity-100 group-hover:opacity-0 transition-opacity">
+              Analysing ...
+            </span>
+            <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              Stop
+            </span>
+          </Button>
+        </div>
+      </Tooltip>
+    );
+  }
+
   return (
     <div className="flex flex-col w-full h-full max-h-full overflow-auto">
       <EditorHeader editable={chat} onRename={handleRename} isChanged={false} onContextMenu={showContextMenu} />
@@ -153,22 +237,8 @@ export function ChatPage() {
               {chat.message_groups.map((group) => (
                 <MessageGroup group={group} key={group.id} />
               ))}
-              <Analysis />
 
-              <div className="flex items-center justify-center m-5">
-                {!isExecutionRunning && !isAnalysisRunning && !isLastMessageFromUser && (
-                  <Button
-                    variant="secondary"
-                    onClick={() =>
-                      submitCommand(
-                        `I'm stuck at using AIConsole, can you suggest what can I do from this point in the conversation?`,
-                      )
-                    }
-                  >
-                    Guide me
-                  </Button>
-                )}
-              </div>
+              <div className="flex items-center justify-center m-5">{greatButton}</div>
             </ScrollToBottom>
           ) : (
             <div className="h-full overflow-y-auto flex flex-col"></div>
