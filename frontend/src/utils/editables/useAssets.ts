@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+
 import { EditablesAPI } from '@/api/api/EditablesAPI';
 import { useAssetStore } from '@/store/editables/asset/useAssetStore';
 import { Asset, EditableObjectType } from '@/types/editables/assetTypes';
@@ -6,12 +8,13 @@ import { showNotification } from '@mantine/notifications';
 export const useAssets = (assetType: EditableObjectType) => {
   const asset = useAssetStore((state) => state.selectedAsset);
   const lastSavedAsset = useAssetStore((state) => state.lastSavedSelectedAsset);
-  const isAssetStatusChanged = (() => {
+
+  const isAssetStatusChanged = useMemo(() => {
     if (!asset || !lastSavedAsset) {
       return false;
     }
     return asset.status !== lastSavedAsset.status;
-  })();
+  }, [asset, lastSavedAsset]);
 
   const updateStatusIfNecessary = async () => {
     if (assetType === 'chat') return;
