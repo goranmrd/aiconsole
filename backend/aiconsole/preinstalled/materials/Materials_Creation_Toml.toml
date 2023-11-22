@@ -4,9 +4,9 @@ usage = "Use this to get to help users when they ask about Materials as a suppor
 usage_examples = []
 default_status = "enabled"
 content_type = "static_text"
-content_static_text = """
+content_static_text = """""
 
-📜 The Preamble: Of TOML and its Purpose In the realm of machines and marvellous AI, TOML stands as a beacon of order. That's Tom's Obvious, Minimal Language for those unacquainted with its simple elegance. Picture a scribe, meticulously recording the attributes and characteristics needed to summon forth an AI agent in your personal Console kingdom—this is TOML!
+## 📜 The Preamble: Of TOML and its Purpose In the realm of machines and marvellous AI, TOML stands as a beacon of order. That's Tom's Obvious, Minimal Language for those unacquainted with its simple elegance. Picture a scribe, meticulously recording the attributes and characteristics needed to summon forth an AI agent in your personal Console kingdom—this is TOML!
 
 Now, lean in closer, for I tell you this: you need not be a scholar of esoteric technomancy to master it. If the very thought of scripting such a file sends shivers down your spine, fear not! The wise AI Console can craft these files on your command, ready for you to simply copy, paste, and engage!
 
@@ -19,20 +19,21 @@ Let us unfurl the aged parchment of a TOML file. Within its fibres lie the secre
 title = "AI Assistant Supreme"
 Look upon it as naming a newborn star in the celestial canopy.
 
-Beneath, you craft sections as a blacksmith forges armor, each piece befitting an aspect of your agent's nature:
-
-[owner]
-name = "The Enchanter"
-date_of_birth = 1989-12-17T16:33:00Z
-Next, to address the agent's environment—what dark forests and high castles might your AI Console's inhabitant traverse:
-
+"""
 [agent.environment]
 preferred_language = "Python"
 magical_abilities = "Send emails, Organize calendar, Craft poems"
+""" 
+
 Chapter 3: The Legend of Types and Characters
 Elemental Strings: The lifeblood of TOML, strings are incantations and phrases, paths that guide your agent through the labyrinth of tasks.
 
 Sacred Numbers: Here reside integers and floating-point numbers, runes of power where finance and logic intertwine.
+
+"""
+difficulty_level = 5
+companions_number = 1
+"""
 
 Chapter 4: The Journey of TOML Creation for the Layperson
 Fear not, for you do not tread this path alone. Envision your trusty AI Console, a grimoire itself, waiting to serve. Speak to it, and it shall bestow upon you a TOML script, perfect in form, ready for the wielding. This act is no less than a magical incantation, where you, the sorcerer, need only utter the words, and the Console will transmute thought into textual substance. Copy, paste, and behold the might of your AI agent!
@@ -42,32 +43,43 @@ Yet, indulge me as I entreat you to a trial, should you choose to embrace the cr
 The Vellum Blank and Bidding
 Pluck your quill, dip into the inkwell of intent, and on the vellum of your virtual notepad, inscribe your opening declaration:
 
+"""
 # The title of your tomes impact, resonant and true
 title = "The Assistant of [Your Name Here]"
 Each TOML begins thus, a name befitting the power and purpose of your AI familiar.
+"""
+"""
 
 Creation Unfolds
 Continue your writing, a declaration of realms and dominions, where your sections create the landscape of your intent:
 
+"""
 # The `owner`—that's you, the master of AI destinies
 [owner]
 name = "Your Name"
 dob = "The Date of Star-aligned Birth"
+"""
 
+"""
 # The `agent.environment`—the AI's dominion and purview
 [agent.environment]
 skills = ["Whispering to databases", "Conversing with APIs", "Crafting narratives"]
 languages = ["The tongues of Python", "The scripts of JavaScript"]
+"""
+
 With the certainty of a cartographer drawing maps for worlds anew, your variables emerge.
 
 Finishing the Script
 And to conclude, you seal your TOML with the certainty of sunrise following night:
 
+"""
 # The `agent.character`—the soul of your AI
 [agent.character]
 charm = "Unyielding"
 wit = "Sharper than Occam's Razor"
 purpose = "To aid, to serve, to illuminate"
+"""
+
 This, my friends, is the repeating mantra—your TOML files are as much an extension of your will as the scepter is to the sovereign.
 
 Chapter 5: The Closing Seals
@@ -77,7 +89,8 @@ And so, with the road behind us bathed in the golden glow of newfound understand
 
 📜 Note: Should the arcane symbols and runes of TOML elude you, always remember that your AI Console holds the power to conjure the proper configurations on its own. A simple request is all it needs to draft the TOML you require. From there, sheer simplicity: copy and paste, and your AI familiar is summoned, ready to serve! 📜
 
-Mini-Quest: Understanding the TOML Configuration
+
+## Mini-Quest: Understanding the TOML Configuration
 📜 Field: name The name field is like giving a title to a book. It's the identifier for this particular agent. In your case, "Understanding Materials Creation: Meet TOML" is the name given to the agent that helps users with Materials creation.
 
 🛠️ Your Task: If you were to name your own agent, what would it be? Create a fun and descriptive name for an agent that you would like to use. For instance, "Calendar Conqueror" if you'd want help managing your schedule.
@@ -107,4 +120,4 @@ Mini-Quest: Understanding the TOML Configuration
 🛠️ Your Task: Craft a message or a piece of advice your agent would give. Maybe it's a warm greeting or a standard response to a common question.
 
 
-"""
+"""""
