@@ -23,7 +23,6 @@ import { EditablesStore } from './useEditablesStore';
 export type AgentsSlice = {
   agents: Agent[];
   initAgents: () => Promise<void>;
-  updateAgentsItem: (updatedAgent: Agent) => void;
 };
 
 export const createAgentsSlice: StateCreator<EditablesStore, [], [], AgentsSlice> = (set) => ({
@@ -39,12 +38,5 @@ export const createAgentsSlice: StateCreator<EditablesStore, [], [], AgentsSlice
       set({ agents: [] });
     }
     if (!useProjectStore.getState().isProjectOpen) return;
-  },
-  updateAgentsItem: (updatedAgent: Agent) => {
-    set(({ agents }) => {
-      const updatedAgents = agents?.map((agent) => (agent.id === updatedAgent.id ? updatedAgent : agent));
-
-      return { agents: updatedAgents };
-    });
   },
 });

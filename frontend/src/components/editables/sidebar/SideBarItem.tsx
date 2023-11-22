@@ -15,18 +15,19 @@
 // limitations under the License.
 
 import { cn } from '@/utils/common/cn';
-import { Agent, Asset, EditableObject, EditableObjectType, Material } from '@/types/editables/assetTypes';
+import { Asset, EditableObject, EditableObjectType } from '@/types/editables/assetTypes';
 import { getEditableObjectIcon } from '@/utils/editables/getEditableObjectIcon';
 import { useEditableObjectContextMenu } from '@/utils/editables/useContextMenuForEditable';
-import { useEditablesStore } from '@/store/editables/useEditablesStore';
 import { KeyboardEvent, MouseEvent, useEffect, useRef, useState } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { EditablesAPI } from '@/api/api/EditablesAPI';
-import { Chat, ChatHeadline } from '@/types/editables/chatTypes';
-import { useAssetStore } from '@/store/editables/asset/useAssetStore';
-import { useChatStore } from '@/store/editables/chat/useChatStore';
+import { Chat } from '@/types/editables/chatTypes';
 import { PinIconRotated } from '@/utils/editables/PinIconRotated';
 import { MoreVertical } from 'lucide-react';
+import { useAssets } from '@/utils/editables/useAssets';
+import { convertNameToId } from '@/utils/editables/convertNameToId';
+import { useChat } from '@/utils/editables/useChat';
+import showNotification from '@/utils/common/showNotification';
 
 const SideBarItem = ({
   editableObjectType,
@@ -38,16 +39,11 @@ const SideBarItem = ({
   const location = useLocation();
   const navigate = useNavigate();
 
-  const renameEditableObject = useEditablesStore((state) => state.renameEditableObject);
-  const updateSelectedChat = useChatStore((state) => state.updateSelectedChat);
-  const updateSelectedAsset = useAssetStore((state) => state.updateSelectedAsset);
-  const updateChatItem = useEditablesStore((state) => state.updateChatItem);
-  const updateMaterialsItem = useEditablesStore((state) => state.updateMaterialsItem);
-  const updateAgentsItem = useEditablesStore((state) => state.updateAgentsItem);
-
   const [isEditing, setIsEditing] = useState(false);
   const [isShowingContext, setIsShowingContext] = useState(false);
+  const [blockBlur, setBlockBlur] = useState(false);
 
+  const { renameAsset } = useAssets(editableObjectType);
   const { showContextMenu, isContextMenuVisible } = useEditableObjectContextMenu({
     editableObjectType: editableObjectType,
     editable: editableObject,
@@ -82,48 +78,64 @@ const SideBarItem = ({
     setIsEditing(false);
   };
 
+  const { renameChat } = useChat();
+
   const handleRename = async () => {
-    if (inputText === '') {
+    const previousObjectId = editableObject.id;
+    if (inputText === '' || editableObject.name === inputText) {
       setInputText(editableObject.name);
     } else {
+      const newId = convertNameToId(inputText);
       editableObject = {
         ...editableObject,
+        id: newId,
         name: inputText,
       };
-      if (editableObjectType === 'chat') {
-        const chat = await EditablesAPI.fetchEditableObject<ChatHeadline>({
-          editableObjectType,
-          id: editableObject.id,
-        });
-        editableObject = chat;
-        updateChatItem(editableObject as Chat);
-      }
 
-      const newId = await renameEditableObject(editableObject, inputText, false);
-      if (editableObjectType !== 'chat') {
-        if (location.pathname === `/${editableObjectType}s/${editableObject.id}`) {
-          navigate(`/${editableObjectType}s/${newId}`);
-        }
-        updateSelectedAsset(editableObject.name, newId);
-        if (editableObjectType === 'material') {
-          updateMaterialsItem(editableObject as Material);
-        } else {
-          updateAgentsItem(editableObject as Agent);
+      if (editableObjectType === 'chat') {
+        const chat = await EditablesAPI.fetchEditableObject<Chat>({
+          editableObjectType,
+          id: previousObjectId,
+        });
+        editableObject = { ...chat, name: inputText, title_edited: true } as Chat;
+        await renameChat(editableObject as Chat);
+        if (location.pathname !== `/${editableObjectType}s/${chat.id}`) {
+          navigate(`/${editableObjectType}s/${chat.id}`);
         }
       } else {
-        updateSelectedChat(editableObject.name, newId);
+        await renameAsset(previousObjectId, editableObject as Asset);
+        if (location.pathname === `/${editableObjectType}s/${previousObjectId}`) {
+          navigate(`/${editableObjectType}s/${newId}`);
+        }
       }
+      showNotification({
+        title: 'Renamed',
+        message: 'renamed',
+        variant: 'success',
+      });
     }
     hideInput();
+  };
+
+  const handleBlur = () => {
+    // when onKeyDown event was emitted input was losing focus and blur event was fired to - this blocker prevent this situation
+    if (blockBlur) {
+      setBlockBlur(false);
+      return;
+    }
+
+    handleRename();
   };
 
   const handleKeyDown = (event: KeyboardEvent) => {
     if (event.code === 'Escape') {
       setInputText(editableObject.name);
       hideInput();
+      setBlockBlur(true);
     }
 
     if (event.code === 'Enter') {
+      setBlockBlur(true);
       handleRename();
     }
   };
@@ -183,7 +195,7 @@ const SideBarItem = ({
                   className="font-normal outline-none border h-[24px] border-gray-400 text-[14px] p-[5px] w-full text-white bg-gray-600 focus:border-primary resize-none overflow-hidden rounded-[4px]  focus:outline-none"
                   value={inputText}
                   ref={inputRef}
-                  onBlur={handleRename}
+                  onBlur={handleBlur}
                   onKeyDown={handleKeyDown}
                   onChange={(e) => setInputText(e.target.value)}
                 />

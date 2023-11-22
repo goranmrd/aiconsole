@@ -27,7 +27,6 @@ export type AssetStore = {
   setSelectedAsset: (asset?: Asset) => void;
   setLastSavedSelectedAsset: (asset?: Asset) => void;
   setAssetStatus: (assetType: AssetType, id: string, status: AssetStatus) => Promise<void>;
-  updateSelectedAsset: (name: string, newId: string) => void;
 };
 
 export const useAssetStore = create<AssetStore>((set) => ({
@@ -130,14 +129,5 @@ export const useAssetStore = create<AssetStore>((set) => ({
     }));
 
     await EditablesAPI.setAssetStatus(assetType, id, status);
-  },
-  updateSelectedAsset: (name: string, newId: string) => {
-    set(({ selectedAsset }) => {
-      const updatedAsset = selectedAsset ? { ...selectedAsset, name, id: newId } : undefined;
-
-      return {
-        selectedAsset: updatedAsset,
-      };
-    });
   },
 }));

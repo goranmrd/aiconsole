@@ -25,7 +25,6 @@ import { ChatStore } from './useChatStore';
 export type ChatSlice = {
   chat?: Chat;
   saveCurrentChatHistory: () => Promise<void>;
-  updateSelectedChat: (name: string, newId: string) => void;
 };
 
 export const createChatSlice: StateCreator<ChatStore, [], [], ChatSlice> = (set, get) => ({
@@ -63,14 +62,5 @@ export const createChatSlice: StateCreator<ChatStore, [], [], ChatSlice> = (set,
 
       await EditablesAPI.updateEditableObject('chat', chat);
     }
-  },
-  updateSelectedChat: (name: string, newId: string) => {
-    set(({ chat }) => {
-      const updatedChat = chat ? { ...chat, name, id: newId } : undefined;
-
-      return {
-        chat: updatedChat,
-      };
-    });
   },
 });
