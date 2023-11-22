@@ -15,16 +15,14 @@
 // limitations under the License.
 
 import { EditablesAPI } from '@/api/api/EditablesAPI';
-import { useWebSocketStore } from '@/api/ws/useWebSocketStore';
 import { EmptyChat } from '@/components/editables/chat/EmptyChat';
 import { MessageGroup } from '@/components/editables/chat/MessageGroup';
 import { useChatStore } from '@/store/editables/chat/useChatStore';
-import { useEditablesStore } from '@/store/editables/useEditablesStore';
 import { useProjectStore } from '@/store/projects/useProjectStore';
 import { Chat } from '@/types/editables/chatTypes';
 import showNotification from '@/utils/common/showNotification';
 import { useEditableObjectContextMenu } from '@/utils/editables/useContextMenuForEditable';
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import ScrollToBottom, { useScrollToBottom } from 'react-scroll-to-bottom';
 import { v4 as uuidv4 } from 'uuid';
@@ -33,6 +31,7 @@ import { EditorHeader } from '../EditorHeader';
 import { CommandInput } from './CommandInput';
 import { Tooltip } from '@/components/common/Tooltip';
 import { BlinkingCursor } from './BlinkingCursor';
+import { useChat } from '@/utils/editables/useChat';
 
 export function ChatWindowScrollToBottomSave() {
   const scrollToBottom = useScrollToBottom();
@@ -63,23 +62,10 @@ export function ChatPage() {
   const isProjectOpen = useProjectStore((state) => state.isProjectOpen);
   const isProjectLoading = useProjectStore((state) => state.isProjectLoading);
   const { showContextMenu } = useEditableObjectContextMenu({ editable: chat, editableObjectType: 'chat' });
+  const { setChat, renameChat } = useChat();
 
   const thinkingProcess = useChatStore((store) => store.thinking_process);
   const nextStep = useChatStore((store) => store.next_step);
-
-  const setChat = useMemo(
-    () => (chat: Chat) => {
-      useWebSocketStore.getState().sendMessage({
-        type: 'SetChatIdWSMessage',
-        chat_id: chat.id,
-      });
-
-      useChatStore.setState(() => {
-        return { chat };
-      });
-    },
-    [],
-  );
 
   // Acquire the initial object
   useEffect(() => {
@@ -124,18 +110,14 @@ export function ChatPage() {
   const handleRename = async (newName: string) => {
     if (newName !== chat.name) {
       const newChat = { ...chat, name: newName, title_edited: true } as Chat;
-      await EditablesAPI.updateEditableObject('chat', newChat, chat.id);
 
-      setChat(newChat);
+      await renameChat(newChat);
 
       showNotification({
         title: 'Renamed',
         message: 'renamed',
         variant: 'success',
       });
-
-      //If it's chat we need to reload chat history because there is no autoreload on change for chats
-      useEditablesStore.getState().initChatHistory();
     }
   };
 

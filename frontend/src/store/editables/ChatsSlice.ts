@@ -7,22 +7,15 @@ import { useProjectStore } from '@/store/projects/useProjectStore';
 export type ChatsSlice = {
   chats: ChatHeadline[];
   initChatHistory: () => Promise<void>;
-  updateChatItem: (chat: Chat) => void;
 };
 
-export const createChatsSlice: StateCreator<
-  EditablesStore,
-  [],
-  [],
-  ChatsSlice
-> = (set) => ({
+export const createChatsSlice: StateCreator<EditablesStore, [], [], ChatsSlice> = (set) => ({
   chats: [],
   initChatHistory: async () => {
     set({ chats: [] });
     if (!useProjectStore.getState().isProjectOpen) return;
     try {
-      const chats: ChatHeadline[] =
-        await EditablesAPI.fetchEditableObjects<ChatHeadline>('chat');
+      const chats: ChatHeadline[] = await EditablesAPI.fetchEditableObjects<ChatHeadline>('chat');
       set(() => ({
         chats: chats,
       }));
@@ -32,14 +25,5 @@ export const createChatsSlice: StateCreator<
       }));
       console.log(e);
     }
-  },
-  updateChatItem: (updatedChat: Chat) => {
-    set(({ chats }) => {
-      const updatedChats = chats.map((chat) =>
-        chat.id === updatedChat.id ? updatedChat : chat,
-      );
-
-      return { chats: updatedChats };
-    });
   },
 });

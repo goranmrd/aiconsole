@@ -40,6 +40,7 @@ import { useAssetChanged } from '../../../utils/editables/useAssetChanged';
 import { EditorHeader } from '../EditorHeader';
 import { localStorageTyped } from '@/utils/common/localStorage';
 import { usePrevious } from '@mantine/hooks';
+import { useAssets } from '@/utils/editables/useAssets';
 
 const { setItem } = localStorageTyped<boolean>('isAssetChanged');
 
@@ -122,6 +123,8 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
   const isPrevAssetChanged = usePrevious(isAssetChanged);
   const [newPath, setNewPath] = useState<string>('');
 
+  const { updateStatusIfNecessary, isAssetStatusChanged, renameAsset } = useAssets(assetType);
+
   const wasAssetChangedInitially = !isPrevAssetChanged && isAssetChanged;
   const wasAssetUpdate = isPrevAssetChanged && !isAssetChanged;
 
@@ -178,25 +181,6 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
     };
   }, [getInitialAsset, setLastSavedSelectedAsset, setSelectedAsset]);
 
-  const isAssetStatusChanged = (() => {
-    if (!asset || !lastSavedAsset) {
-      return false;
-    }
-    return asset.status !== lastSavedAsset.status;
-  })();
-
-  const updateStatusIfNecessary = useCallback(async () => {
-    if (isAssetStatusChanged && asset) {
-      await EditablesAPI.setAssetStatus(assetType, asset.id, asset.status);
-
-      showNotification({
-        title: 'Status changed',
-        message: `Status changed to ${asset.status}`,
-        variant: 'success',
-      });
-    }
-  }, [asset, assetType, isAssetStatusChanged]);
-
   const enableSubmit = (isAssetChanged || isAssetStatusChanged) && asset?.id && asset?.name;
   const disableSubmit = !enableSubmit;
 
@@ -207,6 +191,7 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
 
     if (lastSavedAsset === undefined) {
       await EditablesAPI.saveNewEditableObject(assetType, asset.id, asset);
+
       await updateStatusIfNecessary();
 
       showNotification({
@@ -215,9 +200,7 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
         variant: 'success',
       });
     } else if (lastSavedAsset && lastSavedAsset.id !== asset.id) {
-      await EditablesAPI.saveNewEditableObject(assetType, lastSavedAsset.id, asset);
-      await updateStatusIfNecessary();
-
+      await renameAsset(lastSavedAsset.id, asset);
       showNotification({
         title: 'Renamed',
         message: 'renamed',

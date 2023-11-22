@@ -24,7 +24,6 @@ import { useProjectStore } from '@/store/projects/useProjectStore';
 export type MaterialSlice = {
   materials?: Material[];
   initMaterials: () => Promise<void>;
-  updateMaterialsItem: (updatedMaterial: Material) => void;
 };
 
 export const createMaterialSlice: StateCreator<EditablesStore, [], [], MaterialSlice> = (set) => ({
@@ -55,14 +54,5 @@ export const createMaterialSlice: StateCreator<EditablesStore, [], [], MaterialS
     } else {
       set({ materials: [] });
     }
-  },
-  updateMaterialsItem: (updatedMaterial: Material) => {
-    set(({ materials }) => {
-      const updatedMaterials = materials?.map((material) =>
-        material.id === updatedMaterial.id ? updatedMaterial : material,
-      );
-
-      return { materials: updatedMaterials };
-    });
   },
 });
