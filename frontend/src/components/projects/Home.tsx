@@ -26,51 +26,35 @@ export function Home() {
   const openAiApiKey = useSettingsStore((state) => state.openAiApiKey);
   const isApiKeyValid = useSettingsStore((state) => state.isApiKeyValid);
   const isProjectLoading = useProjectStore((state) => state.isProjectLoading);
-  const recentProjects = useRecentProjectsStore(
-    (state) => state.recentProjects,
-  );
+  const recentProjects = useRecentProjectsStore((state) => state.recentProjects);
   return (
     <div className="min-h-[100vh] bg-recent-bg bg-cover bg-top">
       <div>
         {openAiApiKey === undefined || isProjectLoading ? (
-          <>
-            {/* the request is in progress - don't render anything to avoid flickering */}
-          </>
+          <>{/* the request is in progress - don't render anything to avoid flickering */}</>
         ) : (
           <>
             {recentProjects.length > 0 && openAiApiKey && isApiKeyValid ? (
               <>
-               <TopBar><HomeTopBarElements /></TopBar>
+                <TopBar>
+                  <HomeTopBarElements />
+                </TopBar>
                 <div className="px-[60px] py-[40px] text-white ">
-                  <img
-                    src="favicon.svg"
-                    className="shadows-lg w-[60px] h-[60px] mx-auto m-4"
-                    alt="Logo"
-                  />
+                  <img src="favicon.png" className="shadows-lg w-[60px] h-[60px] mx-auto m-4" alt="Logo" />
                   <h1 className="text-[56px] mb-[60px] font-black text-center">
                     Welcome to <span className=" text-primary">AIConsole!</span>
                   </h1>
-                  <div className="p-4 pb-8 text-center opacity-75">
-                    Recent projects:
-                  </div>
+                  <div className="p-4 pb-8 text-center opacity-75">Recent projects:</div>
                   <div className="grid grid-flow-row-dense grid-cols-[repeat(auto-fit,minmax(355px,_435px))] justify-center gap-[20px] mx-auto">
                     {recentProjects.map(({ name, path, recent_chats }) => (
-                      <ProjectCard
-                        key={path}
-                        name={name}
-                        path={path}
-                        chatHistory={recent_chats}
-                      />
+                      <ProjectCard key={path} name={name} path={path} chatHistory={recent_chats} />
                     ))}
                   </div>
                 </div>
               </>
             ) : null}
             {!recentProjects.length || !openAiApiKey || !isApiKeyValid ? (
-              <RecentProjectsEmpty
-                openAiApiKey={openAiApiKey}
-                isApiKeyValid={isApiKeyValid}
-              />
+              <RecentProjectsEmpty openAiApiKey={openAiApiKey} isApiKeyValid={isApiKeyValid} />
             ) : null}
           </>
         )}
