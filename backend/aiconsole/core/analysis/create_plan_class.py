@@ -67,10 +67,4 @@ def create_plan_class(available_agents):
             },
         )
 
-        already_happened: bool = Field(
-            ...,
-            description="True if what is described in the 'next_step' have already happened during this conversation.",
-            json_schema_extra={"type": "boolean"},
-        )
-
     return Plan

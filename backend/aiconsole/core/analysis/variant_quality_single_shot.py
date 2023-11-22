@@ -55,12 +55,14 @@ A list of ids of materials that are needed to execute the task, make sure that t
 
 """.strip(),
         last_system_prompt=f"""
-Your job is to prepare a plan.
+Your job is analyse the situation in the chat.
 
-1. Assess the current situation in the conversation, and who should now respond, the user or an agent?
-2. Establish a full plan to bring value to the user
-3. Briefly describe what the next, atomic, simple step of this conversation is, it can be both an action by a single agent or waiting for user response.
+1. As part of the thinking_process:
+What happened in the last few messages in the conversation? who wrote last? and who should now respond, the user or an agent? If an agent: establish a full plan to bring value to the user.
+2. Establish next_action:
+If it's agent's turn: briefly describe what the next, atomic, simple step of this conversation is, it can be both an action by a single agent or waiting for user response.
 4. Establish who should handle the next step, it can be one of the following ids:
+* user - if the next step is for the user to respond
 {create_agents_str()}
 
 5. Figure out and provide a list of ids of materials that are needed to execute the task, choose among the following ids:
@@ -72,7 +74,7 @@ Questions to ask yourself:
 - Are there any missing materials that could be useful for this task, that this solution does not have?
 - Are there any materials that are not needed for this task, that this solution has?
 - Are the materials sorted in an order of importance?
-- Are you not repeating previous tasks and activity and delegating it to the same agent? Don't expect to get different results if you do the same thing again.
+- Have your agent already tried to do this task? If so, maybe the user needs to respond?
 - Is there a better agent for this task?
 - Is there a better way to describe the task?
 - Is there anything that that might be a next task do that the user might find valuable? Are you trying to figure out how to help without troubling the user.
@@ -85,7 +87,7 @@ Questions to ask yourself:
 - Is the next step the next logical step in this conversation?
 - The next step should be either a single action for a single agent or a waiting for user response. If it's the latter, the agent selected should be the 'user'.
 
-Now make the plan
+Now analyse the chat.
 """.strip(),
         force_call=True,
     )
