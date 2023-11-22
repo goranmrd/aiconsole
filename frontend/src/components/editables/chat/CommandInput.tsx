@@ -14,11 +14,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import TextareaAutosize from 'react-textarea-autosize';
-import { useEffect, useRef } from 'react';
-import { SendHorizonal, Square } from 'lucide-react';
-import { cn } from '@/utils/common/cn';
 import { useChatStore } from '@/store/editables/chat/useChatStore';
+import { cn } from '@/utils/common/cn';
+import { SendHorizonal } from 'lucide-react';
+import { useEffect, useRef } from 'react';
+import TextareaAutosize from 'react-textarea-autosize';
 
 interface MessageInputProps {
   className?: string;
@@ -33,10 +33,6 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
   const submitCommand = useChatStore((state) => state.submitCommand);
   const promptUp = useChatStore((state) => state.historyUp);
   const promptDown = useChatStore((state) => state.historyDown);
-  const stopWork = useChatStore((state) => state.stopWork);
-  const isAnalysisRunning = useChatStore((state) => !!state.currentAnalysisRequestId);
-  const isExecutionRunning = useChatStore((state) => state.isExecutionRunning());
-  const isWorking = isAnalysisRunning || isExecutionRunning;
   const chat = useChatStore((state) => state.chat);
 
   const sendingMessagesBlocked = command === '' && chat?.message_groups?.length == 0;
