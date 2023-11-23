@@ -18,16 +18,23 @@ import { useState } from 'react';
 
 import { Button } from '../common/Button';
 import { useApiKey } from '@/utils/settings/useApiKey';
+import showNotification from '@/utils/common/showNotification';
 
 const OpenAiApiKeyForm = () => {
   const [inputText, setInputText] = useState('');
-  const { validating, setApiKey } = useApiKey();
+  const { validating, setApiKey, saveOpenAiApiKey } = useApiKey();
 
   const onFormSubmit = async () => {
     const successfulySet = await setApiKey(inputText);
 
     if (successfulySet) {
       setInputText('');
+      saveOpenAiApiKey(inputText);
+      showNotification({
+        title: 'Success',
+        message: 'Open AI API key was successfully set.',
+        variant: 'success',
+      });
     }
   };
 

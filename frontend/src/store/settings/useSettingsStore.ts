@@ -14,7 +14,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import showNotification from '@/utils/common/showNotification';
 import { ProjectsAPI } from '@/api/api/ProjectsAPI';
 import { create } from 'zustand';
 import { SettingsAPI } from '../../api/api/SettingsAPI';
@@ -65,14 +64,11 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
     const { key_ok } = (await SettingsAPI.checkKey(key).json()) as {
       key_ok: boolean;
     };
+
     if (!key_ok && useProjectStore.getState().isProjectOpen) {
       ProjectsAPI.closeProject();
-      showNotification({
-        title: 'Error',
-        message: 'Invalid Open AI API key.',
-        variant: 'error',
-      });
     }
+
     return key_ok;
   },
 }));

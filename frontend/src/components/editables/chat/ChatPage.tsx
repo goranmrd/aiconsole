@@ -168,6 +168,7 @@ export function ChatPage() {
         opened={true}
         offset={10}
         withArrow
+        zIndex={5}
         label={
           <>
             {` ${thinkingProcess || ''}`}{' '}

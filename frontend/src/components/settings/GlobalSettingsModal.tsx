@@ -18,19 +18,20 @@ import { useApiKey } from '@/utils/settings/useApiKey';
 import { useSettingsStore } from '@/store/settings/useSettingsStore';
 import { Modal } from '@mantine/core';
 import { Ban, Check, X } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '../common/Button';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useDisclosure } from '@mantine/hooks';
 
 // TODO: implement other features from figma like api for azure, user profile and tutorial
 export const GlobalSettingsModal = () => {
   const openAiApiKey = useSettingsStore((state) => state.openAiApiKey);
 
   const alwaysExecuteCode = useSettingsStore((state) => state.alwaysExecuteCode);
-  const [inputText, setInputText] = useState(openAiApiKey ?? '');
+  const [inputText, setInputText] = useState(openAiApiKey || '');
   const [isAutoRun, setIsAutoRun] = useState(alwaysExecuteCode);
-  const { validating, setApiKey } = useApiKey();
 
+  const { validating, setApiKey, saveOpenAiApiKey } = useApiKey();
   const location = useLocation();
   const isSettingsModalVisible = location.state?.isSettingsModalVisible;
   const navigate = useNavigate();
@@ -41,28 +42,41 @@ export const GlobalSettingsModal = () => {
     });
   };
 
+  const handleOpen = () => {
+    if (openAiApiKey) {
+      setInputText(openAiApiKey);
+    }
+  };
+
+  const [opened, { close, open }] = useDisclosure(isSettingsModalVisible, { onClose, onOpen: handleOpen });
+
+  useEffect(() => {
+    if (isSettingsModalVisible) {
+      open();
+    } else {
+      close();
+    }
+  }, [close, isSettingsModalVisible, open]);
+
   const setAutoCodeExecution = useSettingsStore((state) => state.setAutoCodeExecution);
 
   const save = async () => {
     if (isAutoRun !== alwaysExecuteCode) {
       setAutoCodeExecution(isAutoRun);
     }
-
     if (inputText !== openAiApiKey) {
-      const successfulySet = await setApiKey(inputText);
+      await setApiKey(inputText);
 
-      if (!successfulySet) {
-        return;
-      }
+      saveOpenAiApiKey(inputText);
     }
 
-    onClose();
+    close();
   };
 
   return (
     <Modal
-      opened={isSettingsModalVisible}
-      onClose={onClose}
+      opened={opened}
+      onClose={close}
       centered
       className="mantine-Modal-root"
       withCloseButton={false}
@@ -81,7 +95,7 @@ export const GlobalSettingsModal = () => {
     >
       <div className="flex justify-between items-center px-[5px] pb-[26px] pt-[1px] ">
         <img src={`favicon.svg`} className="h-[48px] w-[48px] cursor-pointer filter" />
-        <Button variant="secondary" onClick={onClose} small>
+        <Button variant="secondary" onClick={close} small>
           <X />
           Close
         </Button>
@@ -123,7 +137,7 @@ export const GlobalSettingsModal = () => {
           </div>
         </div>
         <div className="flex items-center justify-end gap-[10px] py-[60px] mt-[40px]">
-          <Button variant="secondary" bold onClick={onClose}>
+          <Button variant="secondary" bold onClick={close}>
             Cancel
           </Button>
           <Button onClick={save}>{validating ? 'Validating...' : 'Save'}</Button>

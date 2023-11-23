@@ -16,26 +16,44 @@
 
 import { useSettingsStore } from '@/store/settings/useSettingsStore';
 import { useState } from 'react';
+import showNotification from '../common/showNotification';
 
 export const useApiKey = () => {
   const [validating, setValidating] = useState(false);
-  const saveOpenAiApiKey = useSettingsStore((state) => state.saveOpenAiApiKey);
   const isApiKeyValid = useSettingsStore((state) => state.isApiKeyValid);
   const validateApiKey = useSettingsStore((state) => state.validateApiKey);
+  const saveOpenAiApiKey = useSettingsStore((state) => state.saveOpenAiApiKey);
+
   const setApiKey = async (key: string) => {
     if (validating) return false;
     if (key) {
       setValidating(true);
       const isValidNow = await validateApiKey(key);
       setValidating(false);
-      if (!isValidNow) return false;
+      if (!isValidNow) {
+        showApiError();
+
+        return false;
+      }
+    } else {
+      showApiError();
     }
-    saveOpenAiApiKey(key);
+
     return true;
+  };
+
+  const showApiError = () => {
+    showNotification({
+      title: 'Error',
+      message: 'Invalid Open AI API key.',
+      variant: 'error',
+    });
   };
 
   return {
     setApiKey,
+    saveOpenAiApiKey,
+    showApiError,
     validating,
     isApiKeyValid,
   };
