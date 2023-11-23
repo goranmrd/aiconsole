@@ -55,7 +55,6 @@ export type ActionSlice = {
     thinking_process?: string;
   };
   doAnalysis: () => Promise<void>;
-  initAnalytics(): void;
 };
 
 export const createActionSlice: StateCreator<ChatStore, [], [], ActionSlice> = (set, get) => ({
@@ -217,17 +216,6 @@ export const createActionSlice: StateCreator<ChatStore, [], [], ActionSlice> = (
     for (const process of get().runningProcesses.slice()) {
       get().finishProcess(process.requestId, true);
     }
-  },
-  initAnalytics: () => {
-    useChatStore.subscribe((state, prevState) => {
-      if (
-        prevState.chat?.id !== state.chat?.id ||
-        prevState.chat?.message_groups.length !== state.chat?.message_groups.length ||
-        (state.isExecutionRunning() && !prevState.isExecutionRunning())
-      ) {
-        //get().resetAnalysis();
-      }
-    });
   },
   analysis: {
     agent_id: undefined,
