@@ -17,7 +17,7 @@
 import { StateCreator } from 'zustand';
 
 import { AICToolCall } from '@/types/editables/chatTypes';
-import { getLastGroup, getMessage, getToolCall } from '@/utils/editables/chatUtils';
+import { getLastGroup, getLastMessage, getMessage, getToolCall } from '@/utils/editables/chatUtils';
 import { ChatAPI } from '../../../api/api/ChatAPI';
 import { ChatStore, useChatStore } from './useChatStore';
 
@@ -186,9 +186,8 @@ export const createActionSlice: StateCreator<ChatStore, [], [], ActionSlice> = (
       'execute',
       lastGroup.id,
       async (process) => {
-        const messageId = process.entityId;
         const chat = useChatStore.getState().chat;
-        const messageLocation = getMessage(chat, messageId);
+        const messageLocation = getLastMessage(chat);
 
         //If the message is still empty, remove it
 
@@ -202,12 +201,12 @@ export const createActionSlice: StateCreator<ChatStore, [], [], ActionSlice> = (
               for (const toolCall of message.tool_calls) {
                 toolCall.is_streaming = false;
               }
-            }, messageId);
+            }, messageLocation.message.id);
           }
 
           await useChatStore.getState().saveCurrentChatHistory();
         } else {
-          console.warn(`Message ${messageId} not found`);
+          console.warn(`Last Message not found`, chat);
         }
       },
     );
