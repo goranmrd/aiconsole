@@ -27,6 +27,7 @@ interface ConfirmationModalProps {
   title: string;
   openModalButton?: React.ReactElement;
   opened?: boolean;
+  children?: string;
 }
 
 export function ConfirmationModal({
@@ -35,6 +36,7 @@ export function ConfirmationModal({
   confirmButtonText = 'Submit',
   cancelButtonText = 'Cancel',
   title,
+  children,
   openModalButton,
   opened: isOpened,
 }: ConfirmationModalProps) {
@@ -64,30 +66,48 @@ export function ConfirmationModal({
         centered
         className="mantine-Modal-root"
         withCloseButton={false}
-        padding={25}
         styles={{
+          root: {
+            backgroundColor: '#1a1a1a'
+          },
           header: {
-            backgroundColor: '#1a1a1a',
             textAlign: 'center',
+            padding: '0 0 10px',
+            backgroundColor: 'transparent',
           },
           title: {
-            lineHeight: '24px',
+            lineHeight: 'normal',
+            fontSize: '22px',
+            fontWeight: '900',
             textAlign: 'center',
             width: '100%',
           },
           content: {
-            backgroundColor: '#1a1a1a',
             color: '#fff',
+            padding: '40px',
+            borderRadius: '12px',
+            boxShadow: '0px 20px 40px 0px rgba(0, 0, 0, 0.25)',
+            background: 'radial-gradient(circle at 50% -40%, rgba(173,122,255,1) -150%, rgba(26,26,26,1) 60%)'
+          },
+          body: {
+            color: '#a6a6a6',
+            padding: 0,
+            fontSize: '14px',
+            fontWeight: 400,
+            lineHeight: '150%'
           },
         }}
       >
-        <div className="flex justify-center items-center gap-4">
-          <Button variant="secondary" bold small onClick={close}>
-            {cancelButtonText}
-          </Button>
-          <Button variant="primary" small onClick={handleConfirm} dataAutofocus>
-            {confirmButtonText}
-          </Button>
+        <div>
+          <Modal.Body className="w-full mb-8 text-center">{children}</Modal.Body>
+          <div className="flex justify-center items-center gap-4">
+            <Button variant="secondary" bold small onClick={close}>
+              {cancelButtonText}
+            </Button>
+            <Button variant="primary" small onClick={handleConfirm} dataAutofocus>
+              {confirmButtonText}
+            </Button>
+          </div>
         </div>
       </Modal>
 
