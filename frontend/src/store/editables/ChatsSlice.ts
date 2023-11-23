@@ -1,6 +1,6 @@
 import { StateCreator } from 'zustand';
 import { EditablesAPI } from '../../api/api/EditablesAPI';
-import { Chat, ChatHeadline } from '@/types/editables/chatTypes';
+import { ChatHeadline } from '@/types/editables/chatTypes';
 import { EditablesStore } from './useEditablesStore';
 import { useProjectStore } from '@/store/projects/useProjectStore';
 

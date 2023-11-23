@@ -89,7 +89,7 @@ def _get_relevant_materials(relevant_material_ids: List[str]) -> List[Material]:
 
 async def gpt_analysis_function_step(
     chat: Chat,
-    analysis_request_id: str,
+    request_id: str,
     gpt_mode: GPTMode,
     initial_system_prompt: str,
     last_system_prompt: str,
@@ -133,9 +133,7 @@ async def gpt_analysis_function_step(
             type="function", function=EnforcedFunctionCallFuncSpec(name=plan_class.__name__)
         )
 
-    await UpdateAnalysisWSMessage(analysis_request_id=analysis_request_id, stage=SequenceStage.START).send_to_chat(
-        chat.id
-    )
+    await UpdateAnalysisWSMessage(request_id=request_id, stage=SequenceStage.START).send_to_chat(chat.id)
 
     try:
         async for chunk in gpt_executor.execute(request):
@@ -147,7 +145,7 @@ async def gpt_analysis_function_step(
                     if not isinstance(arguments, str):
                         await UpdateAnalysisWSMessage(
                             stage=SequenceStage.MIDDLE,
-                            analysis_request_id=analysis_request_id,
+                            request_id=request_id,
                             agent_id=arguments.get("agent_id", None),
                             relevant_material_ids=arguments.get("relevant_material_ids", None),
                             next_step=arguments.get("next_step", None),
@@ -156,7 +154,7 @@ async def gpt_analysis_function_step(
                 if not tool_calls:
                     await UpdateAnalysisWSMessage(
                         stage=SequenceStage.MIDDLE,
-                        analysis_request_id=analysis_request_id,
+                        request_id=request_id,
                         agent_id=None,
                         relevant_material_ids=None,
                         next_step=None,
@@ -170,7 +168,7 @@ async def gpt_analysis_function_step(
 
         if len(result.tool_calls) == 0:
             await UpdateAnalysisWSMessage(
-                analysis_request_id=analysis_request_id,
+                request_id=request_id,
                 next_step=result.content or "",
                 stage=SequenceStage.MIDDLE,
             ).send_to_chat(chat.id)
@@ -191,7 +189,7 @@ async def gpt_analysis_function_step(
         relevant_materials = _get_relevant_materials(arguments.relevant_material_ids)
 
         await UpdateAnalysisWSMessage(
-            analysis_request_id=analysis_request_id,
+            request_id=request_id,
             next_step=arguments.next_step,
             agent_id=picked_agent.id,
             relevant_material_ids=[material.id for material in relevant_materials],
@@ -199,6 +197,6 @@ async def gpt_analysis_function_step(
         ).send_to_chat(chat.id)
     finally:
         await UpdateAnalysisWSMessage(
-            analysis_request_id=analysis_request_id,
+            request_id=request_id,
             stage=SequenceStage.END,
         ).send_to_chat(chat.id)

@@ -105,11 +105,13 @@ async def execution_mode_interpreter(
             if tool_call_data.finished:
                 if tool_call_data.end_with_code:
                     await UpdateToolCallWSMessage(
+                        request_id=context.request_id,
                         stage=SequenceStage.MIDDLE,
                         id=tool_call_id,
                         code_delta=tool_call_data.end_with_code,
                     ).send_to_chat(context.chat.id)
                 await UpdateToolCallWSMessage(
+                    request_id=context.request_id,
                     stage=SequenceStage.END,
                     id=tool_call_id,
                 ).send_to_chat(context.chat.id)
@@ -117,6 +119,7 @@ async def execution_mode_interpreter(
 
     message_id = str(uuid4())
     await UpdateMessageWSMessage(
+        request_id=context.request_id,
         stage=SequenceStage.START,
         id=message_id,
     ).send_to_chat(context.chat.id)
@@ -139,6 +142,7 @@ async def execution_mode_interpreter(
             if chunk == CLEAR_STR:
                 if message_id:
                     await ResetMessageWSMessage(
+                        request_id=context.request_id,
                         id=message_id,
                     ).send_to_chat(context.chat.id)
                 continue
@@ -150,6 +154,7 @@ async def execution_mode_interpreter(
 
             if "content" in delta and delta["content"]:
                 await UpdateMessageWSMessage(
+                    request_id=context.request_id,
                     stage=SequenceStage.MIDDLE,
                     id=message_id,
                     text_delta=delta["content"],
@@ -167,6 +172,7 @@ async def execution_mode_interpreter(
                 if tool_call.id not in tool_calls_data:
                     tool_calls_data[tool_call.id] = ToolCallStatus(id=tool_call.id)
                     await UpdateToolCallWSMessage(
+                        request_id=context.request_id,
                         stage=SequenceStage.START,
                         id=tool_call.id,
                     ).send_to_chat(context.chat.id)
@@ -181,6 +187,7 @@ async def execution_mode_interpreter(
                             tool_call_data.language = lang
 
                             await UpdateToolCallWSMessage(
+                                request_id=context.request_id,
                                 stage=SequenceStage.MIDDLE,
                                 id=tool_call.id,
                                 language=tool_call_data.language,
@@ -189,6 +196,7 @@ async def execution_mode_interpreter(
                     async def send_code_delta(code_delta: str = "", headline_delta: str = ""):
                         if code_delta or headline_delta:
                             await UpdateToolCallWSMessage(
+                                request_id=context.request_id,
                                 stage=SequenceStage.MIDDLE,
                                 id=tool_call.id,
                                 code_delta=code_delta,
@@ -253,6 +261,7 @@ async def execution_mode_interpreter(
         await finish_finished()
 
         await UpdateMessageWSMessage(
+            request_id=context.request_id,
             stage=SequenceStage.END,
             id=message_id,
         ).send_to_chat(context.chat.id)

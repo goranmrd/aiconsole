@@ -85,7 +85,7 @@ export const createCommandSlice: StateCreator<ChatStore, [], [], CommandSlice> =
     get().saveCurrentChatHistory();
   },
   submitCommand: async (command: string) => {
-    if (get().isExecutionRunning() || get().currentAnalysisRequestId) {
+    if (get().isExecutionRunning() || get().isAnalysisRunning()) {
       await get().stopWork();
     }
 

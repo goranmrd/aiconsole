@@ -17,19 +17,15 @@
 import { create } from 'zustand';
 
 import { ActionSlice, createActionSlice } from './ActionSlice';
-import { AnalysisSlice, createAnalysisSlice } from './AnalysisSlice';
 import { ChatSlice, createChatSlice } from './ChatSlice';
 import { CommandSlice, createCommandSlice } from './CommandSlice';
 import { MessageSlice, createMessageSlice } from './MessageSlice';
 
-export type ChatStore = MessageSlice & CommandSlice & ChatSlice & ActionSlice & AnalysisSlice 
+export type ChatStore = MessageSlice & CommandSlice & ChatSlice & ActionSlice;
 
 export const useChatStore = create<ChatStore>()((...a) => ({
   ...createMessageSlice(...a),
   ...createCommandSlice(...a),
   ...createChatSlice(...a),
   ...createActionSlice(...a),
-  ...createAnalysisSlice(...a),
 }));
-
-

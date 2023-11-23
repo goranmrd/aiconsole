@@ -21,13 +21,13 @@ from aiconsole.core.chat.types import Chat
 from aiconsole.core.gpt.consts import GPTMode
 
 
-async def variant_quality_single_shot(chat: Chat, analysis_request_id: str):
+async def variant_quality_single_shot(chat: Chat, request_id: str):
     """
     FIRST SPEED, THEN QUALITY
     """
 
     await gpt_analysis_function_step(
-        analysis_request_id=analysis_request_id,
+        request_id=request_id,
         chat=chat,
         gpt_mode=GPTMode.QUALITY,
         initial_system_prompt=f"""

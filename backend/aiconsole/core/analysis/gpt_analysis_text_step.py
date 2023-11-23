@@ -26,7 +26,7 @@ from aiconsole.utils.convert_messages import convert_messages
 
 async def gpt_analysis_text_step(
     chat: Chat,
-    analysis_request_id: str,
+    request_id: str,
     gpt_mode: GPTMode,
     initial_system_prompt: str,
     last_system_prompt: str,
@@ -43,7 +43,7 @@ async def gpt_analysis_text_step(
     )
 
     await UpdateAnalysisWSMessage(
-        analysis_request_id=analysis_request_id,
+        request_id=request_id,
         stage=SequenceStage.START,
     ).send_to_chat(chat.id)
 
@@ -51,7 +51,7 @@ async def gpt_analysis_text_step(
         async for chunk in gpt_executor.execute(request):
             await UpdateAnalysisWSMessage(
                 stage=SequenceStage.MIDDLE,
-                analysis_request_id=analysis_request_id,
+                request_id=request_id,
                 agent_id=None,
                 relevant_material_ids=None,
                 next_step=None,
@@ -59,7 +59,7 @@ async def gpt_analysis_text_step(
             ).send_to_chat(chat.id)
     finally:
         await UpdateAnalysisWSMessage(
-            analysis_request_id=analysis_request_id,
+            request_id=request_id,
             stage=SequenceStage.END,
         ).send_to_chat(chat.id)
 

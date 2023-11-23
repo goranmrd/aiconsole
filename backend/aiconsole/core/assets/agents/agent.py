@@ -35,6 +35,7 @@ class AgentWithStatus(Agent):
 
 
 class ExecutionModeContext(BaseModel):
+    request_id: str
     chat: Chat
     agent: Agent
     gpt_mode: GPTMode

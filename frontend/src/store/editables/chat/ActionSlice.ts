@@ -16,53 +16,91 @@
 
 import { StateCreator } from 'zustand';
 
-import { getLastGroup, getToolCall } from '@/utils/editables/chatUtils';
+import { AICToolCall } from '@/types/editables/chatTypes';
+import { getLastGroup, getMessage, getToolCall } from '@/utils/editables/chatUtils';
 import { ChatAPI } from '../../../api/api/ChatAPI';
 import { ChatStore, useChatStore } from './useChatStore';
-import { AICToolCall } from '@/types/editables/chatTypes';
+
+import { v4 as uuidv4 } from 'uuid';
+
+export type RunninngProcess = {
+  requestId: string;
+  type: 'execute' | 'run' | 'analyse';
+  entityId: string;
+  abortController: AbortController;
+  cleanup: (process: RunninngProcess, aborted: boolean) => void;
+};
 
 export type ActionSlice = {
   doExecute: () => Promise<void>;
   doRun: (toolCallId: string) => Promise<void>;
+  isAnalysisRunning: () => boolean;
   isExecutionRunning: () => boolean;
+  isOngoing(requestId: string): boolean;
+  finishProcess: (requestId: string, aborted: boolean) => void;
   stopWork: () => Promise<void>;
-  executeAbortSignal: AbortController;
+  runningProcesses: RunninngProcess[];
+  runApiWithProcess: <T>(
+    data: T,
+    api: (param: T & { request_id: string; signal: AbortSignal }) => Promise<void>,
+    type: 'execute' | 'run' | 'analyse',
+    id: string,
+    cleanup: (process: RunninngProcess, aborted: boolean) => void,
+  ) => Promise<void>;
+  analysis: {
+    agent_id?: string;
+    relevant_material_ids?: string[];
+
+    next_step?: string;
+    thinking_process?: string;
+  };
+  doAnalysis: () => Promise<void>;
 };
 
 export const createActionSlice: StateCreator<ChatStore, [], [], ActionSlice> = (set, get) => ({
+  isOngoing: (requestId: string) => {
+    return get().runningProcesses.some((process) => process.requestId === requestId);
+  },
+  isAnalysisRunning: () => {
+    return get().runningProcesses.some((process) => process.type === 'analyse');
+  },
   isExecutionRunning: () => {
-    //if any message is streamed, return true
-
-    const chat = get().chat;
-
-    if (!chat) {
-      return false;
-    }
-
-    for (const group of chat.message_groups) {
-      for (const message of group.messages) {
-        if (message.is_streaming) {
-          return true;
-        }
-
-        for (const toolCall of message.tool_calls) {
-          if (toolCall.is_streaming || toolCall.is_code_executing) {
-            return true;
-          }
-        }
-      }
-    }
-
-    return false;
+    return get().runningProcesses.some((process) => process.type === 'execute' || process.type === 'run');
   },
 
-  executeAbortSignal: new AbortController(),
+  runApiWithProcess: async <T>(
+    data: T,
+    api: (param: T & { request_id: string; signal: AbortSignal }) => Promise<void>,
+    type: 'execute' | 'run' | 'analyse',
+    id: string,
+    cleanup: (process: RunninngProcess, aborted: boolean) => void,
+  ) => {
+    const abortController = new AbortController();
+    const requestId = uuidv4();
+
+    set((state) => {
+      return {
+        runningProcesses: [
+          ...state.runningProcesses,
+          {
+            requestId,
+            entityId: id,
+            type: type,
+            abortController,
+            cleanup,
+          },
+        ],
+      };
+    });
+
+    api({ ...data, request_id: requestId, signal: abortController.signal });
+
+    //We can not remove the process from is running here, we need to do it in final websocket message or user cancelaton
+  },
+
+  runningProcesses: [],
 
   doRun: async (toolCallId: string) => {
-    set(() => ({
-      executeAbortSignal: new AbortController(),
-    }));
-
     const chat = get().chat;
 
     if (!chat) {
@@ -86,14 +124,41 @@ export const createActionSlice: StateCreator<ChatStore, [], [], ActionSlice> = (
       toolCall.is_code_executing = true;
     }, toolCallId);
 
-    // We can not meaningfully await the result of the execution, bacause the processing may take more than just the time of this request
-    ChatAPI.runCode({
-      chatId: get().chat?.id || '',
-      tool_call_id: toolCallId,
-      language,
-      code,
-      materials_ids,
-      signal: get().executeAbortSignal.signal,
+    get().runApiWithProcess(
+      {
+        chatId: chat.id,
+        tool_call_id: toolCallId,
+        language,
+        code,
+        materials_ids,
+      },
+      ChatAPI.runCode,
+      'run',
+      toolCallId,
+      (process) => {
+        useChatStore.getState().editToolCall((toolCall) => {
+          toolCall.is_code_executing = false;
+        }, process.entityId);
+
+        useChatStore.getState().saveCurrentChatHistory();
+      },
+    );
+  },
+
+  finishProcess(requestId: string, aborted: boolean) {
+    set((state) => {
+      const finishedProcess = state.runningProcesses.filter((process) => process.requestId === requestId);
+
+      for (const process of finishedProcess) {
+        if (aborted) {
+          process.abortController.abort();
+        }
+        process.cleanup(process, aborted);
+      }
+
+      return {
+        runningProcesses: state.runningProcesses.filter((process) => process.requestId !== requestId),
+      };
     });
   },
 
@@ -101,10 +166,6 @@ export const createActionSlice: StateCreator<ChatStore, [], [], ActionSlice> = (
    * doExecute expects that the last message is the one it should be filling in.
    */
   doExecute: async () => {
-    set(() => ({
-      executeAbortSignal: new AbortController(),
-    }));
-
     const chat = get().chat;
 
     const lastGroupLocation = getLastGroup(chat);
@@ -115,17 +176,84 @@ export const createActionSlice: StateCreator<ChatStore, [], [], ActionSlice> = (
 
     const lastGroup = lastGroupLocation.group;
 
-    ChatAPI.execute(
+    get().runApiWithProcess(
       {
-        ...chat,
+        chat,
         relevant_materials_ids: lastGroup.materials_ids,
         agent_id: lastGroup.agent_id,
       },
-      get().executeAbortSignal.signal,
+      ChatAPI.execute,
+      'execute',
+      lastGroup.id,
+      async (process) => {
+        const messageId = process.entityId;
+        const chat = useChatStore.getState().chat;
+        const messageLocation = getMessage(chat, messageId);
+
+        //If the message is still empty, remove it
+
+        if (messageLocation) {
+          if (messageLocation.message.content === '' && messageLocation.message.tool_calls.length === 0) {
+            useChatStore.getState().removeMessageFromGroup(messageLocation.message.id);
+          } else {
+            useChatStore.getState().editMessage((message) => {
+              message.is_streaming = false;
+
+              for (const toolCall of message.tool_calls) {
+                toolCall.is_streaming = false;
+              }
+            }, messageId);
+          }
+
+          await useChatStore.getState().saveCurrentChatHistory();
+        } else {
+          console.warn(`Message ${messageId} not found`);
+        }
+      },
     );
   },
   stopWork: async () => {
-    get().executeAbortSignal.abort();
-    get().resetAnalysis();
+    for (const process of get().runningProcesses.slice()) {
+      get().finishProcess(process.requestId, true);
+    }
+  },
+  analysis: {
+    agent_id: undefined,
+    relevant_material_ids: undefined,
+    next_step: undefined,
+    thinking_process: undefined,
+  },
+  doAnalysis: async () => {
+    try {
+      const chat = get().chat;
+      if (!chat) {
+        throw new Error('Chat is not initialized');
+      }
+
+      get().runApiWithProcess(
+        {
+          chat: chat,
+        },
+        ChatAPI.analyse,
+        'analyse',
+        chat.id,
+        () => {
+          useChatStore.setState(() => ({
+            analysis: {
+              agent_id: undefined,
+              relevant_material_ids: undefined,
+              next_step: undefined,
+              thinking_process: undefined,
+            },
+          }));
+        },
+      );
+    } catch (err) {
+      if ((err as Error).name === 'AbortError') {
+        return;
+      } else {
+        throw err;
+      }
+    }
   },
 });

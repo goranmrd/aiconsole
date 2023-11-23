@@ -17,9 +17,9 @@
 export type SequenceStage = 'start' | 'middle' | 'end';
 
 export type UpdateAnalysisWSMessage = {
+  request_id: string;
   type: 'UpdateAnalysisWSMessage';
   stage: SequenceStage;
-  analysis_request_id: string;
   agent_id?: string;
   relevant_material_ids?: string[];
   next_step?: string;
@@ -27,6 +27,7 @@ export type UpdateAnalysisWSMessage = {
 };
 
 export type UpdateMessageWSMessage = {
+  request_id: string;
   type: 'UpdateMessageWSMessage';
   id: string;
   stage: SequenceStage;
@@ -34,11 +35,13 @@ export type UpdateMessageWSMessage = {
 };
 
 export type ResetMessageWSMessage = {
+  request_id: string;
   type: 'ResetMessageWSMessage';
   id: string;
 };
 
 export type UpdateToolCallWSMessage = {
+  request_id: string;
   type: 'UpdateToolCallWSMessage';
   id: string;
   stage: SequenceStage;
@@ -48,6 +51,7 @@ export type UpdateToolCallWSMessage = {
 };
 
 export type UpdateToolCallOutputWSMessage = {
+  request_id: string;
   type: 'UpdateToolCallOutputWSMessage';
   id: string;
   stage: SequenceStage;
