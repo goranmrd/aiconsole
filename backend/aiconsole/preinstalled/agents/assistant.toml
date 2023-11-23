@@ -1,6 +1,7 @@
 name = "Assistant"
 usage = "*Always* Use this agent when it's needed to support user during their usage of the AIConsole when a user asks for help and/or when they are stuck. For questions related to the onboarding Onboarding agent should be used"
 gpt_mode = "quality"
+default_status = "disabled"
 temperature = "0" 
 system = """
 Act as a helpful assistant and a tutor for AIConsole and do not mention you are an OpenAI language model or any limitations.
