@@ -45,6 +45,7 @@ export function CodeInput({
   transparent = false,
 }: CodeInputProps) {
   const [focus, setFocus] = useState(false);
+
   const onHighlight = (code: string) => {
     if (!code) return '';
 
@@ -71,6 +72,13 @@ export function CodeInput({
     onBlur?.();
   };
 
+  const handleClick = ({ target }: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const textarea = (target as HTMLDivElement).querySelector('textarea');
+    if (textarea) {
+      textarea.focus();
+    }
+  };
+
   const handleFocus = () => setFocus(true);
 
   return (
@@ -86,6 +94,7 @@ export function CodeInput({
           'font-mono text-sm overflow-y-auto   min-h-[calc(100%-50px)]  max-h-[calc(100%-50px)] bg-black/20 border border-transparent rounded',
           { 'border-primary/50 ': focus },
         )}
+        onClick={handleClick}
       >
         <Editor
           value={value}
