@@ -31,14 +31,12 @@
 # This file has been taken and slighly modified from the wonderful project
 # "open-interpreter" by Killian Lucas https://github.com/KillianLucas/open-interpreter
 #
-import os
+
 import subprocess
-import sys
 import threading
 import queue
 import time
 import traceback
-from pathlib import Path
 from typing import AsyncGenerator, Generator, List
 
 from aiconsole.core.assets.materials.material import Material
@@ -86,7 +84,6 @@ class SubprocessCodeInterpreter(BaseCodeInterpreter):
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            env=self._prepare_env(),
             text=True,
             bufsize=0,
             universal_newlines=True,
@@ -175,25 +172,3 @@ class SubprocessCodeInterpreter(BaseCodeInterpreter):
                 self.done.set()
             else:
                 self.output_queue.put(line)
-
-    def _prepare_env(self):
-        # Get the current working directory
-        cwd = Path.cwd()
-        venv_path = cwd / ".venv"
-
-        # we can't relay on the VIRUTAL_ENV variable to check if the venv is activated - it might be an external one
-        if not venv_path.exists():
-            # should create the .venv for the first time in the current project directory
-            subprocess.Popen([sys.executable, "-m", "venv", venv_path], stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE).communicate()
-
-        # replace the first element in the PATH with the venv bin path
-        # this is the one we've added to get the correct embedded interpreter when the app is starting
-        _path = os.pathsep.join([str(venv_path / "bin")] + os.environ.get("PATH").split(os.pathsep)[1:])
-
-        return {
-            **os.environ,
-            "PATH": _path,
-            # just in case for correct questions about the venv locations and similar
-            "VIRTUAL_ENV": str(venv_path),
-        }
