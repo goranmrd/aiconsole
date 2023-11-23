@@ -8,7 +8,7 @@
 | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Run Code Locally                    | Run it locally; the console can perform all the tasks that your machine is capable of executing.                                                                                 |
 | Improves with Use                   | Describe in plain text how to perform a given task once, and thereafter AIConsole will know how to execute it indefinitely.                                                      |
-| Use your notes to teach AI  | Employ your notes to instruct the AI in completing and automating tasks.                                                                                                         |
+| Use your notes to teach AI          | Employ your notes to instruct the AI in completing and automating tasks.                                                                                                         |
 | Better than Vector Databases        | For each step of your tasks, leverage a precise, efficient, and automated multi-agent Retrieval-Augmented Generation (RAG) system that is on par with expert prompt engineering. |
 | Completely Open Sourced             | This software does not transmit any data to any parties other than the LLM APIs – and you can confirm this for yourself.                                                         |
 | Share Your Tools with the Community | Develop and share your domain-specific AI tools, for instance, on platforms like GitHub or Discord.                                                                              |
@@ -93,7 +93,7 @@ In order to run the non electron development version of AIConsole:
 1. To run the standalone backend: `cd backend && poetry install && poetry run dev`
 2. To run the standalone frontend: `cd frontend && yarn && yarn dev`
 
-# Buiding the Desktop App
+# Building the Desktop App
 
 1. To run the development version of electron bundle: `cd electron && yarn dev`
 2. To bundle the desktop app: `cd electron && yarn && yarn make`
