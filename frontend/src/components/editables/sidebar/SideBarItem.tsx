@@ -22,7 +22,6 @@ import { KeyboardEvent, MouseEvent, useEffect, useRef, useState } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { EditablesAPI } from '@/api/api/EditablesAPI';
 import { Chat } from '@/types/editables/chatTypes';
-import { PinIconRotated } from '@/utils/editables/PinIconRotated';
 import { MoreVertical } from 'lucide-react';
 import { useAssets } from '@/utils/editables/useAssets';
 import { convertNameToId } from '@/utils/editables/convertNameToId';

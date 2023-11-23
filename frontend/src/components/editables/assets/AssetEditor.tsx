@@ -41,6 +41,7 @@ import { EditorHeader } from '../EditorHeader';
 import { localStorageTyped } from '@/utils/common/localStorage';
 import { usePrevious } from '@mantine/hooks';
 import { useAssets } from '@/utils/editables/useAssets';
+import { CheckCheck } from 'lucide-react';
 
 const { setItem } = localStorageTyped<boolean>('isAssetChanged');
 
@@ -102,6 +103,14 @@ const AgentContent = ({ agent }: { agent: Agent }) => {
     />
   );
 };
+
+enum SubmitButtonLabels {
+  Override = 'Override',
+  Create = 'Create',
+  RenameAndSave = 'Rename and Save Changes',
+  SaveChanges = 'Save Changes',
+  Saved = 'Saved',
+}
 
 export function AssetEditor({ assetType }: { assetType: AssetType }) {
   const params = useParams();
@@ -180,9 +189,6 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
       setLastSavedSelectedAsset(undefined);
     };
   }, [getInitialAsset, setLastSavedSelectedAsset, setSelectedAsset]);
-
-  const enableSubmit = (isAssetChanged || isAssetStatusChanged) && asset?.id && asset?.name;
-  const disableSubmit = !enableSubmit;
 
   const handleSaveClick = useCallback(async () => {
     if (asset === undefined) {
@@ -313,6 +319,21 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
 
   const { showContextMenu } = useEditableObjectContextMenu({ editable: asset, editableObjectType: assetType });
 
+  const getSubmitButtonLabel = (): SubmitButtonLabels => {
+    if (lastSavedAsset === undefined) {
+      return hasCore ? SubmitButtonLabels.Override : SubmitButtonLabels.Create;
+    } else if (lastSavedAsset && lastSavedAsset.id !== asset?.id) {
+      return isAssetChanged ? SubmitButtonLabels.RenameAndSave : SubmitButtonLabels.Saved;
+    } else {
+      return isAssetChanged ? SubmitButtonLabels.SaveChanges : SubmitButtonLabels.Saved;
+    }
+  };
+  const submitButtonLabel = getSubmitButtonLabel();
+  const isSavedButtonLabel = submitButtonLabel === SubmitButtonLabels.Saved;
+
+  const enableSubmit = (isAssetChanged || isAssetStatusChanged) && asset?.id && asset?.name;
+  const disableSubmit = !enableSubmit && !isSavedButtonLabel;
+
   return (
     <div className="flex flex-col w-full h-full max-h-full overflow-auto">
       <EditorHeader
@@ -380,18 +401,8 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
                     )}
                   </div>
                   <div className="flex items-center gap-[10px] ml-auto">
-                    <Button disabled={disableSubmit} onClick={handleSaveClick}>
-                      {lastSavedAsset === undefined
-                        ? hasCore
-                          ? 'Override'
-                          : 'Create'
-                        : lastSavedAsset && lastSavedAsset.id !== asset.id
-                        ? isAssetChanged
-                          ? 'Rename and Save Changes'
-                          : 'Saved'
-                        : isAssetChanged
-                        ? 'Save Changes'
-                        : 'Saved'}
+                    <Button disabled={disableSubmit} onClick={handleSaveClick} active={isSavedButtonLabel}>
+                      {submitButtonLabel} {isSavedButtonLabel ? <CheckCheck /> : null}
                     </Button>
                   </div>
                 </>
