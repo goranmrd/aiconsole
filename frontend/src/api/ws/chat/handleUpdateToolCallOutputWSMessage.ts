@@ -14,12 +14,7 @@ export async function handleUpdateToolCallOutputWSMessage(data: UpdateToolCallOu
     }, data.id);
 
     if (data.stage === 'end') {
-      useChatStore.getState().editToolCall((toolCall: AICToolCall) => {
-        if (data.output_delta) toolCall.output += data.output_delta;
-        toolCall.is_code_executing = false;
-      }, data.id);
-
-      useChatStore.getState().saveCurrentChatHistory();
+      useChatStore.getState().finishProcess(data.request_id, false);
       const chat = useChatStore.getState().chat;
 
       //if all code in the current message is ran, continue operation with the same agent

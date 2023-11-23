@@ -17,12 +17,11 @@
 import { StateCreator } from 'zustand';
 
 import { AICToolCall } from '@/types/editables/chatTypes';
-import { getLastGroup, getToolCall } from '@/utils/editables/chatUtils';
+import { getLastGroup, getMessage, getToolCall } from '@/utils/editables/chatUtils';
 import { ChatAPI } from '../../../api/api/ChatAPI';
 import { ChatStore, useChatStore } from './useChatStore';
 
 import { v4 as uuidv4 } from 'uuid';
-import { cleanupUnfinishedMessage } from '@/api/ws/chat/handleUpdateMessageWSMessage';
 
 export type RunninngProcess = {
   requestId: string;
@@ -141,6 +140,8 @@ export const createActionSlice: StateCreator<ChatStore, [], [], ActionSlice> = (
         useChatStore.getState().editToolCall((toolCall) => {
           toolCall.is_code_executing = false;
         }, process.entityId);
+
+        useChatStore.getState().saveCurrentChatHistory();
       },
     );
   },
@@ -150,7 +151,9 @@ export const createActionSlice: StateCreator<ChatStore, [], [], ActionSlice> = (
       const finishedProcess = state.runningProcesses.filter((process) => process.requestId === requestId);
 
       for (const process of finishedProcess) {
-        process.abortController.abort();
+        if (aborted) {
+          process.abortController.abort();
+        }
         process.cleanup(process, aborted);
       }
 
@@ -183,8 +186,30 @@ export const createActionSlice: StateCreator<ChatStore, [], [], ActionSlice> = (
       ChatAPI.execute,
       'execute',
       lastGroup.id,
-      (process) => {
-        cleanupUnfinishedMessage(process.entityId);
+      async (process) => {
+        const messageId = process.entityId;
+        const chat = useChatStore.getState().chat;
+        const messageLocation = getMessage(chat, messageId);
+
+        //If the message is still empty, remove it
+
+        if (messageLocation) {
+          if (messageLocation.message.content === '' && messageLocation.message.tool_calls.length === 0) {
+            useChatStore.getState().removeMessageFromGroup(messageLocation.message.id);
+          } else {
+            useChatStore.getState().editMessage((message) => {
+              message.is_streaming = false;
+
+              for (const toolCall of message.tool_calls) {
+                toolCall.is_streaming = false;
+              }
+            }, messageId);
+          }
+
+          await useChatStore.getState().saveCurrentChatHistory();
+        } else {
+          console.warn(`Message ${messageId} not found`);
+        }
       },
     );
   },
