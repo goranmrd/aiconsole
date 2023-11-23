@@ -62,11 +62,6 @@ class Chat(ChatHeadline):
     message_groups: List[AICMessageGroup]
 
 
-class ChatWithAgentAndMaterials(Chat):
-    agent_id: str
-    relevant_materials_ids: List[str]
-
-
 class Command(BaseModel):
     command: str
 

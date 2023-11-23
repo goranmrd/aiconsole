@@ -232,7 +232,7 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
       setSelectedAsset(newAsset);
       useAssetStore.setState({ lastSavedSelectedAsset: newAsset });
     }
-  }, [asset, assetType, isAssetChanged, lastSavedAsset, setSelectedAsset, updateStatusIfNecessary]);
+  }, [asset, assetType, isAssetChanged, lastSavedAsset, setSelectedAsset, updateStatusIfNecessary, renameAsset]);
 
   const handleDiscardChanges = () => {
     //set last selected asset to the same as selected asset

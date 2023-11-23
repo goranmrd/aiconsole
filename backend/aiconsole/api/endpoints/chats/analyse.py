@@ -30,7 +30,7 @@ _log = logging.getLogger(__name__)
 
 
 class AnalysisRequestData(BaseModel):
-    analysis_request_id: str
+    request_id: str
     chat: Chat
 
 
@@ -41,7 +41,7 @@ async def analyse(request: Request, data: AnalysisRequestData, chat_id):
         raise ValidationError("Chat ID does not match")
 
     try:
-        return await director_analyse(data.chat, data.analysis_request_id)
+        return await director_analyse(data.chat, data.request_id)
     except asyncio.CancelledError:
         _log.info("Analysis cancelled")
     except Exception as e:

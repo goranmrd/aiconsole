@@ -11,7 +11,7 @@ class SequenceStage(str, Enum):
 
 class UpdateAnalysisWSMessage(BaseWSMessage):
     stage: SequenceStage
-    analysis_request_id: str
+    request_id: str
     agent_id: str | None = None
     relevant_material_ids: list[str] | None = None
     next_step: str | None = None
@@ -19,6 +19,7 @@ class UpdateAnalysisWSMessage(BaseWSMessage):
 
 
 class UpdateMessageWSMessage(BaseWSMessage):
+    request_id: str
     id: str
     stage: SequenceStage
 
@@ -26,10 +27,12 @@ class UpdateMessageWSMessage(BaseWSMessage):
 
 
 class ResetMessageWSMessage(BaseWSMessage):
+    request_id: str
     id: str
 
 
 class UpdateToolCallWSMessage(BaseWSMessage):
+    request_id: str
     id: str
     stage: SequenceStage
 
@@ -40,6 +43,7 @@ class UpdateToolCallWSMessage(BaseWSMessage):
 
 
 class UpdateToolCallOutputWSMessage(BaseWSMessage):
+    request_id: str
     id: str
     stage: SequenceStage
     output_delta: str | None = None

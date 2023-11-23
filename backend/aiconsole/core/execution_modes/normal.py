@@ -38,6 +38,7 @@ async def execution_mode_normal(
 
     message_id = str(uuid4())
     await UpdateMessageWSMessage(
+        request_id=context.request_id,
         stage=SequenceStage.START,
         id=message_id,
     ).send_to_chat(context.chat.id)
@@ -58,11 +59,13 @@ async def execution_mode_normal(
             if chunk == CLEAR_STR:
                 if message_id:
                     await ResetMessageWSMessage(
+                        request_id=context.request_id,
                         id=message_id,
                     ).send_to_chat(context.chat.id)
                 continue
 
             await UpdateMessageWSMessage(
+                request_id=context.request_id,
                 stage=SequenceStage.MIDDLE,
                 id=message_id,
                 text_delta=chunk["choices"][0]["delta"].get("content", ""),
@@ -72,6 +75,7 @@ async def execution_mode_normal(
         _log.warning("Cancelled execution_mode_normal")
     finally:
         await UpdateMessageWSMessage(
+            request_id=context.request_id,
             stage=SequenceStage.END,
             id=message_id,
         ).send_to_chat(context.chat.id)

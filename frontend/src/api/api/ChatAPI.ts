@@ -20,35 +20,45 @@ import ky from 'ky';
 import { API_HOOKS, getBaseURL } from '../../store/useAPIStore';
 import { Chat } from '@/types/editables/chatTypes';
 
-const execute = (
-  chatWithAnalysis: Chat & { relevant_materials_ids: string[]; agent_id: string },
-  signal?: AbortSignal,
-) =>
-  ky.post(`${getBaseURL()}/api/chats/${chatWithAnalysis.id}/execute`, {
-    json: { ...chatWithAnalysis },
+const execute = async ({
+  chat,
+  signal,
+  ...rest
+}: {
+  request_id: string;
+  chat: Chat;
+  relevant_materials_ids: string[];
+  agent_id: string;
+  signal?: AbortSignal;
+}) => {
+  await ky.post(`${getBaseURL()}/api/chats/${chat.id}/execute`, {
+    json: { chat, ...rest },
     signal,
     timeout: 60000,
     hooks: API_HOOKS,
   });
+};
 
-const runCode = ({
+const runCode = async ({
   chatId,
   signal,
   ...rest
 }: {
+  request_id: string;
   chatId: string;
   language: string;
   code: string;
   materials_ids: string[];
   signal?: AbortSignal;
   tool_call_id: string;
-}) =>
-  ky.post(`${getBaseURL()}/chats/${chatId}/run_code`, {
+}) => {
+  await ky.post(`${getBaseURL()}/chats/${chatId}/run_code`, {
     json: rest,
     signal,
     timeout: 60000,
     hooks: API_HOOKS,
   });
+};
 
 // Commands
 
@@ -61,13 +71,14 @@ const saveCommandToHistory = (body: object) =>
     hooks: API_HOOKS,
   });
 
-const analyse = (chat: Chat, analysis_request_id: string, signal?: AbortSignal) =>
-  ky.post(`${getBaseURL()}/api/chats/${chat.id}/analyse`, {
-    json: { chat: chat, analysis_request_id: analysis_request_id },
+const analyse = async ({ chat, request_id, signal }: { chat: Chat; request_id: string; signal?: AbortSignal }) => {
+  await ky.post(`${getBaseURL()}/api/chats/${chat.id}/analyse`, {
+    json: { chat: chat, request_id: request_id },
     signal,
     timeout: 60000,
     hooks: API_HOOKS,
   });
+};
 
 export const ChatAPI = {
   execute,

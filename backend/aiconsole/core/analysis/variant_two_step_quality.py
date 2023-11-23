@@ -22,13 +22,13 @@ from aiconsole.core.chat.types import Chat
 from aiconsole.core.gpt.consts import GPTMode
 
 
-async def variant_two_step_quality(chat: Chat, analysis_request_id: str):
+async def variant_two_step_quality(chat: Chat, request_id: str):
     """
     ALL QUALITY
     """
 
     proposed_solution = await gpt_analysis_text_step(
-        analysis_request_id=analysis_request_id,
+        request_id=request_id,
         chat=chat,
         gpt_mode=GPTMode.QUALITY,
         initial_system_prompt="""
@@ -60,7 +60,7 @@ Your job:
     )
 
     await gpt_analysis_function_step(
-        analysis_request_id=analysis_request_id,
+        request_id=request_id,
         chat=chat,
         gpt_mode=GPTMode.QUALITY,
         initial_system_prompt=f"""

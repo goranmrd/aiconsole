@@ -55,7 +55,7 @@ export function ChatPage() {
 
   const chat = useChatStore((state) => state.chat);
   const loadingMessages = useChatStore((state) => state.loadingMessages);
-  const isAnalysisRunning = useChatStore((state) => !!state.currentAnalysisRequestId);
+  const isAnalysisRunning = useChatStore((state) => state.isAnalysisRunning());
   const isExecutionRunning = useChatStore((state) => state.isExecutionRunning());
   const stopWork = useChatStore((state) => state.stopWork);
   const submitCommand = useChatStore((state) => state.submitCommand);
@@ -64,8 +64,8 @@ export function ChatPage() {
   const { showContextMenu } = useEditableObjectContextMenu({ editable: chat, editableObjectType: 'chat' });
   const { setChat, renameChat } = useChat();
 
-  const thinkingProcess = useChatStore((store) => store.thinking_process);
-  const nextStep = useChatStore((store) => store.next_step);
+  const thinkingProcess = useChatStore((store) => store.analysis.thinking_process);
+  const nextStep = useChatStore((store) => store.analysis.next_step);
 
   // Acquire the initial object
   useEffect(() => {
