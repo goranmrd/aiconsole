@@ -203,8 +203,15 @@ const SideBarItem = ({
                 <p className="text-[14px] leading-[18.2px] group-hover:text-white truncate">{editableObject.name}</p>
               )}
               <div className="flex gap-[10px] ml-auto items-center">
-                {!isEditing && forced ? <PinIconRotated className={cn('w-[15px] h-[15px]')} /> : null}
-                <MoreVertical className="w-4 h-4 min-h-[16px] min-w-[16px] ml-auto" onClick={handleMoreIconClick} />
+                <MoreVertical
+                  className={cn(
+                    'w-4 h-4 min-h-[16px] min-w-[16px] ml-auto hidden group-hover:text-white group-hover:block',
+                    {
+                      block: isShowingContext,
+                    },
+                  )}
+                  onClick={handleMoreIconClick}
+                />
               </div>
               <div
                 className={cn(
