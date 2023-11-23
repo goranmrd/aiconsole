@@ -82,10 +82,10 @@ Let's create your first agent =
 
 📜 Your Task: Let's create a scroll with the title "My Vegan Magic". Inscribe the following spell (you can edit it before pasting if you'd like):
 
-```toml
+-> toml format 
 title = "My Vegan Magic"
 content_type = "static_text"
-content_static_text = """
+content_static_text = "
 My favorite ingredients are:
 - Kale
 - Chickpeas
@@ -93,10 +93,9 @@ My favorite ingredients are:
 - Avocado
 - Quinoa
 - Sweet potatoes
-"""
+"
 default_status = "enabled"
 
-```
 
 Once you have filled the form with this incantation, press the “Create” or "Save" button and silently await the materialization of your will.
 
@@ -153,16 +152,14 @@ So, here's how we'll manifest your materials from the digital ether! Let’s dre
 3. Now, it's time to **create a new material**. Click on 'Add Material', which is akin to starting a fresh page in your recipe book.
 4. Let's start with something simple—a text material with your name. You'll need to write the content in TOML format, which is very straightforward. Here is the draft you can directly copy and paste (make sure to replace **`[your name]`** with your actual name):
 
-```toml
+- > toml format 
 title = "Personal Introduction"
 type = "text"
 
 # This is where you describe yourself to the AI!
-content = """
+content = "
 My name is [your name], and I'm exploring the wonders of AIConsole to make my digital life easier and more fun!
-"""
-
-```
+"
 
 1. With the recipe in place, **save the material**. And there we have it! Your own personal introduction material.
 

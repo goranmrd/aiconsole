@@ -7,7 +7,7 @@
     "url": "https://github.com/10clouds/aiconsole.git"
   },
   "author": "10Clouds",
-  "description": "AIConsole is an editor that allows you to use your notes to teach AI how tocomplete and automate tasks.",
+  "description": "AIConsole is an editor that allows you to use your notes to teach AI how to complete and automate tasks.",
   "scripts": {
     "prepare-python": "python3 ./scripts/bundle_python.py || python ./scripts/bundle_python.py",
     "prepare-frontend": "cd .. && cd frontend && yarn",
