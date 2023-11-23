@@ -30,11 +30,10 @@ export function RecentProjectsEmpty({ openAiApiKey, isApiKeyValid }: RecentProje
         <h1 className="text-[56px] text-center font-black text-white ">
           Welcome to <span className=" text-primary">AIConsole!</span>
         </h1>
-        Ł
         {openAiApiKey && isApiKeyValid ? (
           <ProjectButtons className="relative flex justify-center gap-[20px] mt-[36px] z-10" />
         ) : (
-          <div className="mb-[-40px]">
+          <div className="mb-[-40px] relative z-10">
             <OpenAiApiKeyForm />
           </div>
         )}
