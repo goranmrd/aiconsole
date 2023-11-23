@@ -28,10 +28,10 @@ async def load_all_assets(asset_type: AssetType) -> Dict[str, list[Asset]]:
 
         for id in ids:
             try:
+                asset = await load_asset_from_fs(asset_type, id, location)
                 if id not in _assets:
                     _assets[id] = []
-
-                _assets[id].append(await load_asset_from_fs(asset_type, id, location))
+                _assets[id].append(asset)
             except Exception as e:
                 await ErrorWSMessage(
                     error=f"Invalid {asset_type} {id} {e}",
