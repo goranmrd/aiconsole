@@ -31,7 +31,6 @@ from aiconsole.core.gpt.request import GPTRequest, ToolDefinition, ToolFunctionD
 from aiconsole.core.gpt.types import EnforcedFunctionCall, EnforcedFunctionCallFuncSpec, GPTRequestTextMessage
 from aiconsole.core.project import project
 from aiconsole.utils.convert_messages import convert_messages
-from pydantic import BaseModel
 
 _log = logging.getLogger(__name__)
 
@@ -44,8 +43,7 @@ def pick_agent(arguments, chat: Chat, available_agents: list[Agent]) -> Agent:
     if not default_agent:
         default_agent = available_agents[0]
 
-    already_happened = arguments.already_happened
-    is_users_turn = arguments.is_users_turn or already_happened
+    is_users_turn = arguments.is_users_turn
 
     if is_users_turn:
         picked_agent = Agent(
@@ -105,7 +103,20 @@ async def gpt_analysis_function_step(
     if len(possible_agent_choices) == 0:
         raise ValueError("No active agents")
 
-    plan_class = create_plan_class(possible_agent_choices)
+    plan_class = create_plan_class(
+        [
+            Agent(
+                id="user",
+                name="User",
+                usage="When a human user needs to respond",
+                usage_examples=[],
+                system="",
+                defined_in=AssetLocation.AICONSOLE_CORE,
+                override=False,
+            ),
+            *possible_agent_choices,
+        ]
+    )
 
     request = GPTRequest(
         system_message=initial_system_prompt,
