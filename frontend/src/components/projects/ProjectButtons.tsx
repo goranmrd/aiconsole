@@ -44,16 +44,20 @@ export function ProjectButtons({ className }: ProjectButtonsProps): JSX.Element 
         opened={isProjectDirectory === true && isNewProjectModalOpen && Boolean(tempPath)}
         onClose={handleReset}
         onConfirm={openProjectConfirmation}
-        title={`This folder already contains an AIConsole project, do you want to open it instead?`}
-      />
+        title={`This folder already contains an AIConsole project`}
+      >
+        Do you want to open it instead?
+      </ConfirmationModal>
       <ConfirmationModal
         confirmButtonText="Yes"
         cancelButtonText="No"
         opened={isProjectDirectory === false && isOpenProjectModalOpen && Boolean(tempPath)}
         onClose={handleReset}
         onConfirm={openProjectConfirmation}
-        title={`There is no project in this directory, do you want to create one there instead?`}
-      />
+        title={`There is no project in this directory`}
+      >
+        Do you want to create one there instead?
+      </ConfirmationModal>
 
       <Button small onClick={newProject}>
         <FolderPlus /> New Project ...

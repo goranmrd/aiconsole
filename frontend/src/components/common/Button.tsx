@@ -41,6 +41,7 @@ interface ButtonProps {
   iconOnly?: boolean;
   small?: boolean;
   bold?: boolean;
+  active?: boolean;
   classNames?: string;
   dataAutofocus?: boolean;
   onClick?: MouseEventHandler<HTMLButtonElement>;
@@ -61,6 +62,7 @@ export function Button({
   small,
   statusColor,
   bold,
+  active,
   classNames,
   dataAutofocus,
   onContextMenu,
@@ -99,6 +101,7 @@ export function Button({
           'bg-gray-700 border-gray-500  text-gray-500 cursor-not-allowed hover:border-gray-500 hover:bg-gray-700 hover:text-gray-500 focus:bg-gray-700 focus:border-gray-500 focus:text-gray-500 [&>svg]:text-gray-500 [&>svg]:hover:text-gray-500 [&>svg]focus:text-white pointer-events-none':
             disabled,
           'font-semibold': bold,
+          'opacity-30 pointer-events-none focus:bg-yellow focus:text-gray-900': active,
         },
         classNames,
       )}
