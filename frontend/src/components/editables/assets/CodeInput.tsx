@@ -65,6 +65,14 @@ export function CodeInput({
     }
   };
 
+  // When using styles and different HTML structure there was always confilct
+  // with streching textarea to full container height (when content is smaller
+  // than editor window) and preserving scrolling when content it longer. Current
+  // solution is a workaround to focus textarea even if textarea does not fills
+  // whole editor space. To not cause border flashing and losing focus on button
+  // click we use useOutsideClick hook instead of onBlur. Textarea elemet is set
+  // as ref on first click/focus event as we can't pass ref to editor's textarea.
+
   const handleEditorBoxClick = useCallback(({ target }: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (!textareaRef.current) {
       const textarea = (target as HTMLDivElement).querySelector('textarea');
