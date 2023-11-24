@@ -19,7 +19,8 @@ import hljs from 'highlight.js';
 import 'highlight.js/styles/vs2015.css';
 
 import { cn } from '@/utils/common/cn';
-import { FocusEvent, useState } from 'react';
+import { FocusEvent, useCallback, useRef, useState } from 'react';
+import { useClickOutside } from '@/hooks/useClickOutside';
 
 interface CodeInputProps {
   label?: string;
@@ -45,6 +46,8 @@ export function CodeInput({
   transparent = false,
 }: CodeInputProps) {
   const [focus, setFocus] = useState(false);
+  const editorBoxRef = useRef<HTMLDivElement | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const onHighlight = (code: string) => {
     if (!code) return '';
 
@@ -62,16 +65,54 @@ export function CodeInput({
     }
   };
 
-  const handleBlur = (e: FocusEvent<HTMLDivElement> & FocusEvent<HTMLTextAreaElement>) => {
-    if (e.relatedTarget?.tagName.toUpperCase() === 'BUTTON') {
-      return;
+  // When using styles and different HTML structure there was always confilct
+  // with streching textarea to full container height (when content is smaller
+  // than editor window) and preserving scrolling when content it longer. Current
+  // solution is a workaround to focus textarea even if textarea does not fills
+  // whole editor space. To not cause border flashing and losing focus on button
+  // click we use useOutsideClick hook instead of onBlur. Textarea elemet is set
+  // as ref on first click/focus event as we can't pass ref to editor's textarea.
+
+  const handleEditorBoxClick = useCallback(({ target }: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (!textareaRef.current) {
+      const textarea = (target as HTMLDivElement).querySelector('textarea');
+
+      if (textarea) {
+        textareaRef.current = textarea;
+        textarea.focus();
+      }
+    } else {
+      textareaRef.current.focus();
+    }
+  }, []);
+
+  const handleFocus = useCallback(({ target }: FocusEvent<HTMLDivElement> & FocusEvent<HTMLTextAreaElement>) => {
+    if (!textareaRef.current) {
+      if (target) {
+        textareaRef.current = target;
+      }
     }
 
-    setFocus(false);
-    onBlur?.();
-  };
+    setFocus(true);
+  }, []);
 
-  const handleFocus = () => setFocus(true);
+  const handleClickOutside = useCallback(
+    (event: MouseEvent) => {
+      if ((event.target as HTMLElement)?.tagName.toUpperCase() === 'BUTTON') {
+        if (textareaRef.current) {
+          textareaRef.current.focus();
+        }
+
+        return;
+      }
+
+      setFocus(false);
+      onBlur?.();
+    },
+    [onBlur],
+  );
+
+  useClickOutside(editorBoxRef, handleClickOutside);
 
   return (
     <div className="h-full">
@@ -81,18 +122,19 @@ export function CodeInput({
         </label>
       )}
       <div
+        ref={editorBoxRef}
         className={cn(
           className,
           'font-mono text-sm overflow-y-auto   min-h-[calc(100%-50px)]  max-h-[calc(100%-50px)] bg-black/20 border border-transparent rounded',
           { 'border-primary/50 ': focus },
         )}
+        onClick={focus ? undefined : handleEditorBoxClick}
       >
         <Editor
           value={value}
           disabled={disabled || readOnly}
           textareaId={label}
           onValueChange={handleValueChange}
-          onBlur={handleBlur}
           onFocus={handleFocus}
           highlight={(code) => onHighlight(code)}
           padding={10}
