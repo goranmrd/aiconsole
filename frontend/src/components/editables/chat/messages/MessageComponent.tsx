@@ -52,7 +52,7 @@ export function MessageComponent({ message, group }: MessageProps) {
             <>
               {group.role !== 'user' && (
                 <div className="flex-grow">
-                  <div className="prose prose-stone dark:prose-invert ">
+                  <div className="prose prose-stone dark:prose-invert sidebar-typography">
                     <ReactMarkdown
                       components={{
                         // eslint-disable-next-line @typescript-eslint/no-unused-vars

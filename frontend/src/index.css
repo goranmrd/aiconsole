@@ -128,3 +128,34 @@ body {
 .context-menu-icon:hover svg {
   color: #ffffff;
 }
+
+.sidebar-typography h1 {
+  font-size: 28px;
+  color: theme('colors.white');
+  font-weight: 900;
+  line-height: 34px;
+}
+
+.sidebar-typography h2 {
+  font-size: 24px;
+  color: theme('colors.white');
+  font-weight: 900;
+  line-height: 29px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+
+.sidebar-typography h3 {
+  font-size: 18px;
+  color: theme('colors.white');
+  font-weight: 900;
+  line-height: 22px;
+}
+
+.sidebar-typography h4 {
+  font-size: 15px;
+  color: theme('colors.white');
+  font-weight: 900;
+  line-height: 18px;
+}
