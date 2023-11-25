@@ -33,7 +33,7 @@
 #
 
 
-from typing import AsyncGenerator, Generator
+from typing import AsyncGenerator
 from aiconsole.core.assets.materials.material import Material
 
 
@@ -41,9 +41,6 @@ class BaseCodeInterpreter:
     """
     .run is a generator that yields a dict with attributes: active_line, output
     """
-
-    def __init__(self):
-        pass
 
     async def run(
         self, code: str, chat_id: str, tool_call_id: str, materials: list[Material]

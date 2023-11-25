@@ -14,15 +14,6 @@ import os
 import platform
 import subprocess
 import datetime
-    
-def collect_python_packages():
-    try:
-        output = subprocess.check_output(['pip', 'freeze']).decode('utf-8')
-        package_lines = output.split('\\n')
-        package_names = [line.split("==")[0] for line in package_lines]
-        return ' '.join(package_names)
-    except subprocess.CalledProcessError:
-        return ''
 
 async def content(context):
     return f""\"
@@ -36,6 +27,6 @@ python_version: {platform.python_version()}
 default_shell: {os.environ.get('SHELL')}
 
 ## Python Packages
-{collect_python_packages()}
+{available_packages}
 ""\"
 """

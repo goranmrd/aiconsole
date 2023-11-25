@@ -13,14 +13,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import os
+import subprocess
 from enum import Enum
 import traceback
+from pathlib import Path
+
 from aiconsole.core.assets.asset import Asset, AssetLocation, AssetType
 from aiconsole.core.assets.asset import AssetStatus
 from aiconsole.core.assets.materials.documentation_from_code import documentation_from_code
 from aiconsole.core.assets.materials.rendered_material import RenderedMaterial
 from typing import TYPE_CHECKING
+
+from aiconsole.core.project.interpreter import create_dedicated_venv, get_current_project_venv_available_packages, \
+    get_current_project_venv_python_path
 
 if TYPE_CHECKING:
     from aiconsole.core.assets.materials.content_evaluation_context import ContentEvaluationContext
@@ -118,8 +124,19 @@ def fibonacci(n):
             if self.content_type == MaterialContentType.DYNAMIC_TEXT:
                 # Try compiling the python code and run it
                 source_code = compile(self.content_dynamic_text, "<string>", "exec")
-                local_vars = {}
+                # local vars should provide all the virtualenv specific stuff like:
+                # - interpreter path
+                # - installed packages
+                local_vars = {
+                    # this list should be updated with all needed variables from venv
+                    "available_packages": get_current_project_venv_available_packages(),
+                    "python_path": get_current_project_venv_python_path(),
+                }
+                # TODO add try/cache to catch potential plain text execution errors
                 exec(source_code, local_vars)
+                # currently, getting the python object from another interpreter is quite limited, and
+                # using the dedicated local_vars is the easiest way (otherwise we would need to pickle
+                # the object and send it to the other interpreter or use stdin/stdout)
                 content_func = local_vars.get("content")
                 if callable(content_func):
                     return RenderedMaterial(id=self.id, content=header + await content_func(context), error="")
