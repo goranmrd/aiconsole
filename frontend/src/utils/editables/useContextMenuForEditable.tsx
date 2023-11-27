@@ -15,7 +15,7 @@
 // limitations under the License.
 
 import { useAssetStore } from '@/store/editables/asset/useAssetStore';
-import { Asset, AssetStatus, EditableObject, EditableObjectType } from '@/types/editables/assetTypes';
+import { Asset, AssetStatus, AssetType, EditableObject, EditableObjectType } from '@/types/editables/assetTypes';
 import { Circle, Copy, Edit, File, Trash, Undo2 } from 'lucide-react';
 import { ContextMenuContent } from 'mantine-contextmenu';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -28,10 +28,27 @@ import { noop } from '../common/noop';
 
 export const DISABLED_CSS_CLASSES = 'max-w-[400px] truncate !text-gray-400 pointer-events-none !cursor-default ';
 
-const helper = (active: boolean, editableObject: Asset) => ({
-  className: active ? '!text-white' : '!text-gray-400',
-  hidden: !editableObject && active,
-});
+const statusHelper = (status: AssetStatus, editableObject: Asset, editableObjectType: AssetType) => {
+  const handleClick = (status: AssetStatus) => () => {
+    useAssetStore.getState().setAssetStatus(editableObjectType, editableObject.id, status);
+  };
+
+  const assetStatusIcon = (itemStatus: AssetStatus) => {
+    if ((editableObject as Asset)?.status === itemStatus) {
+      return <RadioCheckedIcon classNames="w-4 h-4" />;
+    }
+
+    return <Circle className="w-4 h-4" />;
+  };
+
+  return {
+    className: editableObject.status === status ? DISABLED_CSS_CLASSES : '!text-white',
+    disabled: editableObject.status === status,
+    icon: assetStatusIcon(status),
+    hidden: !editableObject,
+    onClick: editableObject.status === status ? noop : handleClick(status),
+  };
+};
 
 export function useEditableObjectContextMenu({
   editableObjectType,
@@ -55,14 +72,6 @@ export function useEditableObjectContextMenu({
   const location = useLocation();
   const handleDelete = useDeleteEditableObjectWithUserInteraction(editableObjectType);
 
-  const assetStatusIcon = (itemStatus: AssetStatus) => {
-    if ((editableObject as Asset)?.status === itemStatus) {
-      return <RadioCheckedIcon classNames="w-4 h-4" />;
-    }
-
-    return <Circle className="w-[14px] h-[14px] text-gray-400" />;
-  };
-
   function showContextMenuReplacement() {
     if (!editableObject) {
       return noop;
@@ -71,9 +80,6 @@ export function useEditableObjectContextMenu({
     const assetItems = () => {
       if (editableObjectType === 'chat') return [];
       const asset = editableObject as Asset;
-      const handleClick = (status: AssetStatus) => () => {
-        useAssetStore.getState().setAssetStatus(editableObjectType, editableObject.id, status);
-      };
 
       return [
         { key: 'divider' },
@@ -86,27 +92,21 @@ export function useEditableObjectContextMenu({
         },
 
         {
-          key: 'Enforced',
-          icon: assetStatusIcon('forced'),
+          key: 'enforced',
           title: 'Enforced',
-          ...helper(asset?.status === 'forced', asset),
-          onClick: handleClick('forced'),
+          ...statusHelper('forced', asset, editableObjectType),
         },
 
         {
-          key: 'AI Choice',
-          icon: assetStatusIcon('enabled'),
+          key: 'ai choice',
           title: 'AI Choice',
-          ...helper(asset?.status === 'enabled', asset),
-          onClick: handleClick('enabled'),
+          ...statusHelper('enabled', asset, editableObjectType),
         },
 
         {
           key: 'Disabled',
-          icon: assetStatusIcon('disabled'),
           title: 'Disabled',
-          ...helper(asset?.status === 'disabled', asset),
-          onClick: handleClick('disabled'),
+          ...statusHelper('disabled', asset, editableObjectType),
         },
       ];
     };
