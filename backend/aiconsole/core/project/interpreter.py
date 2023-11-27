@@ -1,9 +1,10 @@
 import logging
+import os
 import subprocess
 import sys
 from pathlib import Path
 
-from aiconsole.consts import AICONSOLE_PATH, AICONSOLE_ROOT_PACKAGE_PATH
+from aiconsole.consts import AICONSOLE_ROOT_PACKAGE_PATH
 
 logger = logging.getLogger(__name__)
 
@@ -15,8 +16,11 @@ async def create_dedicated_venv():
         subprocess.Popen([sys.executable, "-m", "venv", venv_path], stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE).communicate()
 
+    is_packaged = os.environ.get('IS_PACKAGED', False)
+
     try:
-        subprocess.check_call([str(venv_path / "bin" / "pip"), "install", AICONSOLE_ROOT_PACKAGE_PATH])
+        subprocess.check_call(
+            [str(venv_path / "bin" / "pip"), "install", "aiconsole" if is_packaged else AICONSOLE_ROOT_PACKAGE_PATH])
     except subprocess.CalledProcessError as e:
         logger.error(f"Could not install aiconsole in venv {e}")
 

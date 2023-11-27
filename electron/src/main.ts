@@ -205,6 +205,13 @@ ipcMain.on('request-backend-port', async (event) => {
     if (event.sender === window.browserWindow.webContents) {
       window.port = await findEmptyPort();
 
+      const extraEnv: Record<string, string> = {}
+      if (app.isPackaged) {
+        extraEnv['IS_PACKAGED'] = '1'
+      } else {
+        extraEnv['AICONSOLE_ROOT_PACKAGE_PATH'] = path.join(process.env.INIT_CWD, '../backend')
+      }
+
       window.backendProcess = spawn(findPathToPython(), [
         '-m',
         'aiconsole.electron',
@@ -213,7 +220,7 @@ ipcMain.on('request-backend-port', async (event) => {
       ], {
         env: {
           ...process.env,
-          AICONSOLE_ROOT_PACKAGE_PATH: path.join(process.env.INIT_CWD, '../backend'),
+          ...extraEnv
         }
       });
 
