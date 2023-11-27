@@ -11,7 +11,7 @@ export const RadioCheckedIcon = ({ classNames }: IconProps) => (
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
-    <rect x="0.65957" y="0.6" width="14.8" height="14.8" rx="7.4" stroke="#737373" strokeWidth="1.2" />
-    <circle cx="8" cy="7.84766" r="3" fill="white" />
+    <rect x="0.65957" y="0.6" width="14.8" height="14.8" rx="7.4" stroke="currentColor" strokeWidth="1.2" />
+    <circle cx="8" cy="7.84766" r="3" fill="currentColor" />
   </svg>
 );

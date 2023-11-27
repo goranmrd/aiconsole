@@ -79,8 +79,8 @@ body {
 
 ::-webkit-scrollbar {
   /* Set the scrollbar width and height to 10px. */
-  width: 10px;
-  height: 10px;
+  width: 7px;
+  height: 7px;
 }
 
 ::-webkit-scrollbar-track {
@@ -93,7 +93,7 @@ body {
   border-radius: 5px;
 
   /* Make the thumb of the scrollbar transparent. */
-  background-color: transparent;
+  background-color: #ffffff10;
 }
 
 ::-webkit-scrollbar-corner {
@@ -103,22 +103,22 @@ body {
 
 :hover::-webkit-scrollbar-thumb:hover {
   /* Change the color of the thumb on hover to a visible color, with 87% opacity. */
-  background-color: #ffffffdd;
+  background-color: #ffffff99;
 }
 
 :hover::-webkit-scrollbar-thumb {
   /* Change the color of the thumb on general hover to a visible color, with 60% opacity. */
-  background-color: #ffffff99;
+  background-color: #ffffff66;
 }
 
 /* A small hack to prevent scrollbar disappearing on hover in some scenarios */
 :not(:hover)::-webkit-scrollbar-thumb:hover {
-  background-color: #ffffffdd;
+  background-color: #ffffff99;
 }
 
 .tab-hover:hover {
-  border-color: #A6A6A6;
-  transition: .3s all ease;
+  border-color: #a6a6a6;
+  transition: 0.3s all ease;
 }
 
 .context-menu-icon svg {
@@ -144,7 +144,6 @@ body {
   margin-top: 20px;
   margin-bottom: 10px;
 }
-
 
 .sidebar-typography h3 {
   font-size: 18px;
