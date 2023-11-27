@@ -23,6 +23,7 @@ import os
 
 python_dir = Path(".") / "python"
 
+
 def check_installation():
     if python_dir.is_dir():
         print("Python already installed.")
@@ -77,18 +78,21 @@ def download_python():
 
     os.remove(file_name)
 
+
 def install_dependencies():
     if platform.system() == "Windows":
         python_path = python_dir / "python.exe"
         print(f"Installing aiconsole and dependencies  ({python_path} -m pip) ...")
-        subprocess.run([python_path, "-m", "pip", "install" , Path("..") / "backend"], check=True)
+        subprocess.run([python_path, "-m", "pip", "install", Path("..") / "backend"], check=True)
     else:
         pip_path = python_dir / "bin" / "pip"
         print(f"Installing aiconsole and dependencies  ({pip_path}) ...")
         subprocess.run([pip_path, "install", Path("..") / "backend"], check=True)
 
+
 def main():
     check_installation()
+
 
 if __name__ == "__main__":
     main()

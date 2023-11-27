@@ -31,17 +31,19 @@
 # This file has been taken and slighly modified from the wonderful project
 # "open-interpreter" by Killian Lucas https://github.com/KillianLucas/open-interpreter
 #
-
+import os
 import subprocess
 import threading
 import queue
 import time
 import traceback
-from typing import AsyncGenerator, Generator, List
+from typing import AsyncGenerator, List
 
 from aiconsole.core.assets.materials.material import Material
 from .base_code_interpreter import BaseCodeInterpreter
 import logging
+
+from ...project.interpreter import get_current_project_venv_path
 
 _log = logging.getLogger(__name__)
 
@@ -84,6 +86,7 @@ class SubprocessCodeInterpreter(BaseCodeInterpreter):
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
+            env=self._patched_env(),
             text=True,
             bufsize=0,
             universal_newlines=True,
@@ -92,7 +95,7 @@ class SubprocessCodeInterpreter(BaseCodeInterpreter):
         threading.Thread(target=self.handle_stream_output, args=(self.process.stderr, True), daemon=True).start()
 
     async def run(
-        self, code: str, chat_id: str, tool_call_id: str, materials: List[Material]
+            self, code: str, chat_id: str, tool_call_id: str, materials: List[Material]
     ) -> AsyncGenerator[str, None]:
         retry_count = 0
         max_retries = 3
@@ -172,3 +175,17 @@ class SubprocessCodeInterpreter(BaseCodeInterpreter):
                 self.done.set()
             else:
                 self.output_queue.put(line)
+
+    def _patched_env(self):
+        venv_path = get_current_project_venv_path()
+
+        # replace the first element in the PATH with the venv bin path
+        # this is the one we've added to get the correct embedded interpreter when the app is starting
+        _path = os.pathsep.join([str(venv_path / "bin")] + os.environ.get("PATH").split(os.pathsep)[1:])
+
+        return {
+            **os.environ,
+            "PATH": _path,
+            # just in case for correct questions about the venv locations and similar
+            "VIRTUAL_ENV": str(venv_path),
+        }

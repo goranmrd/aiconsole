@@ -50,7 +50,7 @@ class Python(SubprocessCodeInterpreter):
 
     def __init__(self):
         super().__init__()
-        self.start_cmd = sys.executable + " -i -q -u"
+        self.start_cmd = "python3 -i -q -u"
 
     def preprocess_code(self, code: str, materials: List[Material]):
         return preprocess_python(code, materials)
