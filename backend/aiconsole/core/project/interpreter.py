@@ -3,23 +3,20 @@ import subprocess
 import sys
 from pathlib import Path
 
-from aiconsole.consts import AICONSOLE_PATH
+from aiconsole.consts import AICONSOLE_PATH, AICONSOLE_ROOT_PACKAGE_PATH
 
 logger = logging.getLogger(__name__)
 
 
 async def create_dedicated_venv():
     venv_path = get_current_project_venv_path()
-
     if not venv_path.exists():
         # should create the .venv for the first time in the current project directory
         subprocess.Popen([sys.executable, "-m", "venv", venv_path], stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE).communicate()
 
     try:
-        # here should be access to the root of the aiconsole package (not the installed one)
-        # currently it's hardcoded based on the AICONSOLE_PATH that is the installation path
-        subprocess.check_call([str(venv_path / "bin" / "pip"), "install", AICONSOLE_PATH.parents[5] / "backend"])
+        subprocess.check_call([str(venv_path / "bin" / "pip"), "install", AICONSOLE_ROOT_PACKAGE_PATH])
     except subprocess.CalledProcessError as e:
         logger.error(f"Could not install aiconsole in venv {e}")
 

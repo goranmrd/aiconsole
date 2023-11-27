@@ -13,7 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import os
 from pathlib import Path
 
 from aiconsole.core.gpt.consts import GPTMode
@@ -27,7 +27,15 @@ MAX_BUDGET = None
 if MAX_BUDGET:
     litellm.max_budget = MAX_BUDGET
 
+# this is a path to the root of the project - usually the installed one
+# this is pointing to the backend/aiconsole directory
 AICONSOLE_PATH = Path(__file__).parent
+
+# this is a path to the root of the project - source code for the installation
+# for the dev version it's the same as AICONSOLE_PATH.
+# for the production one it should be set by the installation executor
+AICONSOLE_ROOT_PACKAGE_PATH = Path(os.environ.get("AICONSOLE_ROOT_PACKAGE_PATH", AICONSOLE_PATH.parent))
+
 
 ORIGINS: list[str] = [
     "http://localhost:3000",

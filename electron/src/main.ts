@@ -210,7 +210,12 @@ ipcMain.on('request-backend-port', async (event) => {
         'aiconsole.electron',
         `--port=${window.port}`,
         `--origin=${MAIN_WINDOW_VITE_DEV_SERVER_URL}`,
-      ]);
+      ], {
+        env: {
+          ...process.env,
+          AICONSOLE_ROOT_PACKAGE_PATH: path.join(process.env.INIT_CWD, '../backend'),
+        }
+      });
 
       //close the app when backend process exits
       window.backendProcess.on('exit', () => {

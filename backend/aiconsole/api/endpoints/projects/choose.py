@@ -76,5 +76,5 @@ async def choose_project(params: ChooseParams, background_tasks: BackgroundTasks
 
     if directory:
         await change_project_directory(directory)
-        # this will speed up the project creating process
+        # this will speed up the project creating a process
         background_tasks.add_task(create_dedicated_venv)
