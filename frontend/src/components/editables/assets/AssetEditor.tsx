@@ -388,7 +388,7 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
                         <MaterialContent material={asset as Material} />
                       )}
                     </div>
-                    {showPreview && preview && (
+                    {showPreview && (
                       <div className="flex-1 w-1/2">
                         <CodeInput
                           label="Preview of text to be injected into AI context"
