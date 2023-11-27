@@ -93,7 +93,7 @@ export const createActionSlice: StateCreator<ChatStore, [], [], ActionSlice> = (
       };
     });
 
-    api({ ...data, request_id: requestId, signal: abortController.signal });
+    return api({ ...data, request_id: requestId, signal: abortController.signal });
 
     //We can not remove the process from is running here, we need to do it in final websocket message or user cancelaton
   },
@@ -185,7 +185,7 @@ export const createActionSlice: StateCreator<ChatStore, [], [], ActionSlice> = (
       ChatAPI.execute,
       'execute',
       lastGroup.id,
-      async (process) => {
+      async () => {
         const chat = useChatStore.getState().chat;
         const messageLocation = getLastMessage(chat);
 
@@ -229,7 +229,7 @@ export const createActionSlice: StateCreator<ChatStore, [], [], ActionSlice> = (
         throw new Error('Chat is not initialized');
       }
 
-      get().runApiWithProcess(
+      await get().runApiWithProcess(
         {
           chat: chat,
         },
@@ -251,6 +251,7 @@ export const createActionSlice: StateCreator<ChatStore, [], [], ActionSlice> = (
       if ((err as Error).name === 'AbortError') {
         return;
       } else {
+        get().stopWork();
         throw err;
       }
     }
