@@ -44,8 +44,8 @@ export function MessageControls({
       ) : (
         <>
           {onSaveClick && onEditClick && onCancelClick ? (
-            <button>
-              <Pencil onClick={onEditClick} className="h-5 w-5" />{' '}
+            <button onClick={onEditClick}>
+              <Pencil className="h-5 w-5 pointer-events-none" />{' '}
             </button>
           ) : (
             <div className="h-5 w-5"></div>
