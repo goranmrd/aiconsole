@@ -14,10 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
 from pathlib import Path
 
 from aiconsole.consts import AICONSOLE_PATH
+from aiconsole.core.assets.asset import AssetType
+from aiconsole.core.project.paths import get_core_assets_directory
 from fastapi import APIRouter
 from fastapi.responses import FileResponse
 
@@ -31,5 +32,10 @@ async def image(path: str):
     if abs_path.exists():
         return FileResponse(str(abs_path))
 
-    static_path = AICONSOLE_PATH / "preinstalled" / "agents" / "default.jpg"
-    return FileResponse(str(static_path))
+    preinstalled_path = AICONSOLE_PATH / "preinstalled" / path
+
+    if preinstalled_path.exists():
+        return FileResponse(str(preinstalled_path))
+
+    fallback_image_path = get_core_assets_directory(AssetType.AGENT) / "default.jpg"
+    return FileResponse(str(fallback_image_path))

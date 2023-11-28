@@ -21,32 +21,34 @@ AIConsole
 ---smth like Elon Musk is [funny explanation]
 ---explicit prompt so user will add it by themselves
 
-–––––––––––––––––––––––––––––––––––––––––– 
+--------------------------------------------------
 
 Imagine you have a magic notebook on your computer. In this notebook, you can tell it to do all sorts of tasks for you, like writing a letter or figuring out math problems. And the more you use it, the smarter it gets, learning how to help you better over time. It's like having a robot friend who's really good at following instructions and doing tasks, and it's all yours to command!
 
-# path to photo from the image folder !!! Tom_Riddle_Image PATH 
+![image info](./tutorial/riddle_image.png)
+
 
 AIConsole is your personal AI assistant powered by advanced tech like GPT-4. It learns to handle tasks on your computer, from managing schedules to crafting emails — efficiently and privately. Just tell it what to do, and it adapts, improving with each use, all without sharing your data. It can also help you with everyday chores, from creating a recipe from the ingredients in your fridge to [missing example]. It's like having a super-smart helper that keeps everything you care about secure and close at hand.
 
-# path to photo from the image folder !!! Chat_window.png Path
+![image info](./tutorial/chat_window.png)
+
 
 Now let's imagine our magic notebook has three special parts:
 1. Input - This is like the questions or commands you tell your robot friend. You can type things like "Write my homework essay" or "Find a funny cat picture," and it listens carefully.
 2. Agents - These are like the robot's little helpers, each good at something different. One might be great at writing stories, another might be super good at searching for information, and another might know how to send messages for you. They all work together to ensure your request is done just right.
 3. Materials - Think of these like the robot's notebooks and tools. It has notes on how to do things and information that helps the agents understand what you want. You can give it new notes or update old ones so it gets better at helping you.
 
-# path to photo from the image folder !!! materials_image Path 
+![image info](./tutorial/materials_image.png)
 
-Now, let’s practice!
-ACTION: Here’s the input. This is where you ask the robot to do things for you. Ask the console to do something for you, for example, create a vegan recipe for today’s dinner based on what you have in the fridge. Try it yourself.
+Now, let's practice!
+ACTION: Here's the input. This is where you ask the robot to do things for you. Ask the console to do something for you, for example, create a vegan recipe for today's dinner based on what you have in the fridge. Try it yourself.
 
 
 You should see the results of your request above the input.
 
 [the user puts the first thing in the input]
 
-Congratulations! That’s your first [...]
+Congratulations! That's your first [...]
 
 
 HINT: If you ever get stuck on any of the tasks click “Guide me” and the console will help you with the next steps.
@@ -61,37 +63,38 @@ Materials in AIConsole are essential because they act as a knowledge base that i
 
 To add the material click 
 
-# path to photo from the image folder !!! Material_add_Image PATH
-
+![image info](./tutorial/material_add_image.png)
 
 When it comes to materials, "enabled" material is information that the AI can use if it needs to, like a cookbook on hand for recipes. "Forced" material is information the AI must use in every task, like a mandatory ingredient in every dish.
 
 "Text" is a fixed set of instructions or information, "dynamic text" can change based on the situation, like a recipe that adjusts for more guests, and an "API" lets the AI use tools and data from the internet, like getting the latest weather report for your area.
 
 
-Now let’s create your first material.
+Now let's create your first material.
 
-# path to photo from the image folder !!! Add_agent_material Path
+![image info](./tutorial/add_agent_material.png)
 
-ACTION: Create a new material. Remember that vegan recipe? Let’s create a list of your favourite ingredients. This way the communication with the console will become more personalized. If you are concerned about safety you can create a fake character.
+ACTION: Create a new material. Remember that vegan recipe? Let's create a list of your favourite ingredients. This way the communication with the console will become more personalized. If you are concerned about safety you can create a fake character.
 
 3. Agents
 
 
 Agents are like specialized helpers, each trained in different tasks. They collaborate to complete complex jobs by handling the parts they're best at. Like a team in an office—some write reports, others crunch numbers—these agents work together seamlessly. We need them because no single helper can do everything perfectly, but a team with different strengths can tackle anything you throw at them! You can create your own or use the existing ones.
 
-# path to photo from the image folder !!! agets_1_image Path
+![image info](./tutorial/agents_1_image.png)
 
 To select specific agents you want to include in your inputs click on the agent avatar and then select the agent from the list on the side bar.
 
-# path to photo from the image folder !!! agents_2_image Path
+![image info](./tutorial/agents_2_image.png)
 
-Ok, time to create your own agent. Going back to cooking. We have the recipe, we have the ingredients, we miss a chef. Let’s create one!
+Ok, time to create your own agent. Going back to cooking. We have the recipe, we have the ingredients, we miss a chef. Let's create one!
 ACTION: Click on the +NEW button and select “New agent…”. First give it a name, describe what it will be used for, and all the chcracteristic of the chef. When you are done save the agent. If you need help with creating an agent have a look at the example below.
 
-# path to photo from the image folder !!! Add_agent_material Path
+![image info](./tutorial/add_agent_material.png)
 
 When your agent is ready, write click on it in the agents list and select Always or Auto.
 
-# path to photo from the image folder !!! Agent_4_image PAth !!! Agent_5_image PAth 
+![image info](./tutorial/agent_4_image.png)
+![image info](./tutorial/agent_5_image.png)
+
 """
