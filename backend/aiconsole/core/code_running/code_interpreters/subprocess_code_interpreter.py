@@ -43,7 +43,7 @@ from aiconsole.core.assets.materials.material import Material
 from .base_code_interpreter import BaseCodeInterpreter
 import logging
 
-from ...project.venv import get_current_project_venv_path
+from ...project.venv import get_current_project_venv_bin_path, get_current_project_venv_path
 
 _log = logging.getLogger(__name__)
 
@@ -175,17 +175,15 @@ class SubprocessCodeInterpreter(BaseCodeInterpreter):
                 self.output_queue.put(line)
 
     def _patched_env(self):
-        venv_path = get_current_project_venv_path()
-
         path = os.environ.get("PATH") or ""
 
         # replace the first element in the PATH with the venv bin path
         # this is the one we've added to get the correct embedded interpreter when the app is starting
-        _path = os.pathsep.join([str(venv_path / "bin")] + path.split(os.pathsep)[1:])
+        _path = os.pathsep.join([str(get_current_project_venv_bin_path())] + path.split(os.pathsep)[1:])
 
         return {
             **os.environ,
             "PATH": _path,
             # just in case for correct questions about the venv locations and similar
-            "VIRTUAL_ENV": str(venv_path),
+            "VIRTUAL_ENV": str(get_current_project_venv_path()),
         }
