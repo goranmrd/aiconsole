@@ -15,16 +15,14 @@
 # limitations under the License.
 
 import asyncio
+import importlib
 import logging
 from typing import cast
-from urllib import request
 
 from aiconsole.api.websockets.outgoing_messages import ErrorWSMessage
 from aiconsole.core.assets.agents.agent import Agent, ExecutionModeContext
 from aiconsole.core.assets.materials.material import Material
 from aiconsole.core.chat.types import Chat
-from aiconsole.core.execution_modes.interpreter import execution_mode_interpreter
-from aiconsole.core.execution_modes.normal import execution_mode_normal
 from aiconsole.core.assets.materials.content_evaluation_context import ContentEvaluationContext
 from aiconsole.core.project import project
 from aiconsole.utils.cancel_on_disconnect import cancelable_endpoint
@@ -40,6 +38,34 @@ class ExecuteRequestData(BaseModel):
     chat: Chat
     agent_id: str
     relevant_materials_ids: list[str]
+
+
+async def dynamic_import_and_call_execution_mode(agent: Agent, context):
+    execution_mode = agent.execution_mode
+
+    split = execution_mode.split(":")
+
+    if len(split) != 2:
+        raise ValueError(
+            f"Invalid execution_mode in agent {agent.name}: {execution_mode} - should be module_name:object_name"
+        )
+
+    module_name, object_name = execution_mode.split(":")
+    module = importlib.import_module(module_name)
+    obj = getattr(module, object_name, None)
+
+    if obj is None:
+        raise ValueError(f"Could not find {object_name} in {module_name} module in agent {agent.name}")
+
+    if not callable(obj):
+        raise ValueError(f"{object_name} in {module_name} is not callable (in agent {agent.name})")
+
+    ret_val = obj(context)
+
+    if not asyncio.iscoroutine(ret_val):
+        raise ValueError(f"{object_name} in {module_name} is not a coroutine (in agent {agent.name})")
+
+    await ret_val
 
 
 @router.post("/{chat_id}/execute")
@@ -70,13 +96,7 @@ async def execute(request: Request, data: ExecuteRequestData, chat_id):
     )
 
     try:
-        execution_modes = {
-            "interpreter": execution_mode_interpreter,
-            "normal": execution_mode_normal,
-        }
-        execution_mode = execution_modes[agent.execution_mode]
-
-        await execution_mode(context)
+        await dynamic_import_and_call_execution_mode(agent, context)
     except asyncio.CancelledError:
         _log.warning("Cancelled execution_mode_interpreter")
     except Exception as e:

@@ -27,7 +27,7 @@ class Agent(Asset):
     type: AssetType = AssetType.AGENT
     system: str
     gpt_mode: GPTMode = GPTMode.QUALITY
-    execution_mode: str = "normal"
+    execution_mode: str = "aiconsole.core.execution_modes.normal:execution_mode_normal"
 
 
 class AgentWithStatus(Agent):
