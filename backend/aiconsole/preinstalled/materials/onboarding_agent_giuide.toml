@@ -1,4 +1,4 @@
-name = "How to onboard user"
+name = "Onboarding Agent Guide"
 version = "0.0.2"
 usage = "Use this to help users with onboarding and all questions related to the Onboarding: Overall Workflow in the Console, Agents and Materials and how to create them + in which form"
 usage_examples = []
@@ -7,25 +7,23 @@ content_type = "static_text"
 content_static_text = """
 AIConsole
 
-- What is Console : a quick explanation for non-tech users. Why do they need it as a perfect vision. (full-time personal AI-powered by LLMs like GPT-4, trained and automated to execute all tasks on their laptop directly, while keeping all the information privately)
-- What are Materials
+- What is Console: a quick explanation for non-tech users. Why do they need it as a perfect vision? (full-time personal AI-powered by LLMs like GPT-4, trained and automated to execute all tasks on their laptop directly, while keeping all the information privately)
+- What are the Materials
 -- Why do you need them
 -- How to add them
 -- What is the difference between "enabled" and "forced"
--- Difference between text, dynamic text and api
---- Create your first material is smth like text file with info about Name and personal onfo to make the communication personilized across all the chats"
+-- Difference between text, dynamic text, and API
+--- Create your first material as a text file with info about your Name and personal information to make the communication personalized across all the chats"
 - What are Agents
 --Why do you need them
 --How to add them
 --Let's create your first agent is
 ---smth like Elon Musk is [funny explanation]
----explicit prompt so user will add it by themselves
+---explicit prompt so users will add it by themselves
 
 --------------------------------------------------
 
 Imagine you have a magic notebook on your computer. In this notebook, you can tell it to do all sorts of tasks for you, like writing a letter or figuring out math problems. And the more you use it, the smarter it gets, learning how to help you better over time. It's like having a robot friend who's really good at following instructions and doing tasks, and it's all yours to command!
-
-![image info](./tutorial/riddle_image.png)
 
 
 AIConsole is your personal AI assistant powered by advanced tech like GPT-4. It learns to handle tasks on your computer, from managing schedules to crafting emails — efficiently and privately. Just tell it what to do, and it adapts, improving with each use, all without sharing your data. It can also help you with everyday chores, from creating a recipe from the ingredients in your fridge to [missing example]. It's like having a super-smart helper that keeps everything you care about secure and close at hand.
@@ -74,7 +72,7 @@ Now let's create your first material.
 
 ![image info](./tutorial/add_agent_material.png)
 
-ACTION: Create a new material. Remember that vegan recipe? Let's create a list of your favourite ingredients. This way the communication with the console will become more personalized. If you are concerned about safety you can create a fake character.
+ACTION: Create a new material. Remember that vegan recipe? Let's create a list of your favorite ingredients. This way the communication with the console will become more personalized. If you are concerned about safety you can create a fake character.
 
 3. Agents
 
@@ -83,16 +81,16 @@ Agents are like specialized helpers, each trained in different tasks. They colla
 
 ![image info](./tutorial/agents_1_image.png)
 
-To select specific agents you want to include in your inputs click on the agent avatar and then select the agent from the list on the side bar.
+To select specific agents you want to include in your inputs click on the agent avatar and then select the agent from the list on the sidebar.
 
 ![image info](./tutorial/agents_2_image.png)
 
 Ok, time to create your own agent. Going back to cooking. We have the recipe, we have the ingredients, we miss a chef. Let's create one!
-ACTION: Click on the +NEW button and select “New agent…”. First give it a name, describe what it will be used for, and all the chcracteristic of the chef. When you are done save the agent. If you need help with creating an agent have a look at the example below.
+ACTION: Click on the +NEW button and select “New agent…”. First, give it a name, describe what it will be used for, and all the characteristics of the chef. When you are done save the agent. If you need help with creating an agent have a look at the example below.
 
 ![image info](./tutorial/add_agent_material.png)
 
-When your agent is ready, write click on it in the agents list and select Always or Auto.
+When your agent is ready, right-click on it in the agents' list and select Always or Auto.
 
 ![image info](./tutorial/agent_4_image.png)
 ![image info](./tutorial/agent_5_image.png)
