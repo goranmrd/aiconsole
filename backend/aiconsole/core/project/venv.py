@@ -9,7 +9,7 @@ _log = logging.getLogger(__name__)
 async def create_dedicated_venv():
     venv_path = get_current_project_venv_path()
     if not venv_path.exists():
-        # should create the .venv for the first time in the current project directory
+        # should create the venv for the first time in the current project directory
         _log.info(f"Creating venv in {venv_path}")
         subprocess.Popen(
             [sys.executable, "-m", "venv", venv_path, "--system-site-packages"],
@@ -21,7 +21,7 @@ async def create_dedicated_venv():
 
 
 def get_current_project_venv_path():
-    return Path.cwd() / ".aic" / ".venv"
+    return Path.cwd() / ".aic" / "venv"
 
 
 def get_current_project_venv_bin_path():
