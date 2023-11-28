@@ -16,14 +16,12 @@
 
 import logging
 from pathlib import Path
+
+from aiconsole.consts import AICONSOLE_PATH
 from fastapi import APIRouter
 from fastapi.responses import FileResponse
 
-from aiconsole.consts import AICONSOLE_PATH
-
 router = APIRouter()
-
-_log = logging.getLogger(__name__)
 
 
 @router.get("/image")
@@ -33,5 +31,5 @@ async def image(path: str):
     if abs_path.exists():
         return FileResponse(str(abs_path))
 
-    static_path = AICONSOLE_PATH / "agents" / "core" / "default.jpg"
+    static_path = AICONSOLE_PATH / "preinstalled" / "agents" / "default.jpg"
     return FileResponse(str(static_path))

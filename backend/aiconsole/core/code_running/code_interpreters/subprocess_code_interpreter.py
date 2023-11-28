@@ -43,7 +43,7 @@ from aiconsole.core.assets.materials.material import Material
 from .base_code_interpreter import BaseCodeInterpreter
 import logging
 
-from ...project.interpreter import get_current_project_venv_path
+from ...project.venv import get_current_project_venv_path
 
 _log = logging.getLogger(__name__)
 
@@ -95,7 +95,7 @@ class SubprocessCodeInterpreter(BaseCodeInterpreter):
         threading.Thread(target=self.handle_stream_output, args=(self.process.stderr, True), daemon=True).start()
 
     async def run(
-            self, code: str, chat_id: str, tool_call_id: str, materials: List[Material]
+        self, code: str, chat_id: str, tool_call_id: str, materials: List[Material]
     ) -> AsyncGenerator[str, None]:
         retry_count = 0
         max_retries = 3
@@ -179,9 +179,11 @@ class SubprocessCodeInterpreter(BaseCodeInterpreter):
     def _patched_env(self):
         venv_path = get_current_project_venv_path()
 
+        path = os.environ.get("PATH") or ""
+
         # replace the first element in the PATH with the venv bin path
         # this is the one we've added to get the correct embedded interpreter when the app is starting
-        _path = os.pathsep.join([str(venv_path / "bin")] + os.environ.get("PATH").split(os.pathsep)[1:])
+        _path = os.pathsep.join([str(venv_path / "bin")] + path.split(os.pathsep)[1:])
 
         return {
             **os.environ,

@@ -31,12 +31,6 @@ if MAX_BUDGET:
 # this is pointing to the backend/aiconsole directory
 AICONSOLE_PATH = Path(__file__).parent
 
-# this is a path to the root of the project - source code for the installation
-# for the dev version it's the same as AICONSOLE_PATH.
-# for the production one it should be set by the installation executor
-AICONSOLE_ROOT_PACKAGE_PATH = Path(os.environ.get("AICONSOLE_ROOT_PACKAGE_PATH", AICONSOLE_PATH.parent))
-
-
 ORIGINS: list[str] = [
     "http://localhost:3000",
     "http://localhost:3001",

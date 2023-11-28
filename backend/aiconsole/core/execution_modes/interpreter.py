@@ -83,8 +83,6 @@ async def execution_mode_interpreter(
         materials=context.relevant_materials,
     )
 
-    _log.debug(f"System message:\n{system_message}")
-
     executor = GPTExecutor()
 
     class ToolCallStatus(BaseModel):

@@ -25,8 +25,10 @@ from aiconsole.core.assets.materials.documentation_from_code import documentatio
 from aiconsole.core.assets.materials.rendered_material import RenderedMaterial
 from typing import TYPE_CHECKING
 
-from aiconsole.core.project.interpreter import create_dedicated_venv, get_current_project_venv_available_packages, \
-    get_current_project_venv_python_path
+from aiconsole.core.project.venv import (
+    get_current_project_venv_available_packages,
+    get_current_project_venv_python_path,
+)
 
 if TYPE_CHECKING:
     from aiconsole.core.assets.materials.content_evaluation_context import ContentEvaluationContext
