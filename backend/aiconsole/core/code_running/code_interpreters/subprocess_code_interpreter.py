@@ -94,9 +94,7 @@ class SubprocessCodeInterpreter(BaseCodeInterpreter):
         threading.Thread(target=self.handle_stream_output, args=(self.process.stdout, False), daemon=True).start()
         threading.Thread(target=self.handle_stream_output, args=(self.process.stderr, True), daemon=True).start()
 
-    async def run(
-        self, code: str, chat_id: str, tool_call_id: str, materials: List[Material]
-    ) -> AsyncGenerator[str, None]:
+    async def run(self, code: str, materials: List[Material]) -> AsyncGenerator[str, None]:
         retry_count = 0
         max_retries = 3
 

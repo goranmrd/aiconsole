@@ -42,9 +42,7 @@ class BaseCodeInterpreter:
     .run is a generator that yields a dict with attributes: active_line, output
     """
 
-    async def run(
-        self, code: str, chat_id: str, tool_call_id: str, materials: list[Material]
-    ) -> AsyncGenerator[str, None]:
+    async def run(self, code: str, materials: list[Material]) -> AsyncGenerator[str, None]:
         yield "Not implemented"
 
     def terminate(self):

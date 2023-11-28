@@ -66,7 +66,7 @@ async def run_code(request: Request, data: RunCodeData, chat_id: str):
             data.code = data.code[1:]
 
         try:
-            async for token in get_code_interpreter(data.language).run(data.code, chat_id, data.tool_call_id, mats):
+            async for token in get_code_interpreter(data.language).run(data.code, mats):
                 await UpdateToolCallOutputWSMessage(
                     request_id=data.request_id,
                     stage=SequenceStage.MIDDLE,
