@@ -17,7 +17,7 @@
 import { StateCreator } from 'zustand';
 
 import { AICToolCall } from '@/types/editables/chatTypes';
-import { getLastGroup, getLastMessage, getMessage, getToolCall } from '@/utils/editables/chatUtils';
+import { getLastGroup, getLastMessage, getToolCall } from '@/utils/editables/chatUtils';
 import { ChatAPI } from '../../../api/api/ChatAPI';
 import { ChatStore, useChatStore } from './useChatStore';
 

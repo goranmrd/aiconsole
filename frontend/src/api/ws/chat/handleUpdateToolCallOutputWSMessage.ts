@@ -24,7 +24,7 @@ export async function handleUpdateToolCallOutputWSMessage(data: UpdateToolCallOu
 
       // if all tools have finished running, continue operation with the same agent
       const finishedRunnigCode = message?.tool_calls.every(
-        (toolCall) => toolCall.is_code_executing === false && toolCall.output,
+        (toolCall) => toolCall.is_code_executing === false && toolCall.output !== undefined,
       );
 
       if (finishedRunnigCode) {

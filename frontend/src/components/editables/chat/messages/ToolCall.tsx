@@ -89,10 +89,10 @@ export function ToolCall({ group, toolCall: tool_call }: MessageProps) {
         <div className="flex flex-row gap-2 items-center">
           <div className="flex-grow flex flex-row gap-3 items-center">
             {shouldDisplaySpinner && <Spinner />}
-            {!shouldDisplaySpinner && !isError && !tool_call.output && (
+            {!shouldDisplaySpinner && !isError && tool_call.output === undefined && (
               <CircleDashedIcon className="h-5 w-5 text-green-500" />
             )}
-            {!shouldDisplaySpinner && !isError && tool_call.output && (
+            {!shouldDisplaySpinner && !isError && tool_call.output !== undefined && (
               <CheckCircle2Icon className="h-5 w-5 text-green-500" />
             )}
             {!shouldDisplaySpinner && isError && <AlertCircleIcon className="h-5 w-5 text-red-500" />}
@@ -141,7 +141,7 @@ export function ToolCall({ group, toolCall: tool_call }: MessageProps) {
             </div>
           </div>
 
-          <div>{tool_call.output && <ToolOutput tool_call={tool_call} />}</div>
+          <div>{tool_call.output !== undefined && <ToolOutput tool_call={tool_call} />}</div>
         </>
       )}
     </div>

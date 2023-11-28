@@ -102,30 +102,6 @@ export function getMessage(chat: Chat | undefined, messageId: string): AICMessag
   }
 }
 
-export function getLastToolCall(chat: Chat): AICOutputLocaion {
-  const group = chat.message_groups[chat.message_groups.length - 1];
-  const message = group.messages[group.messages.length - 1];
-
-  if (!('outputs' in message)) {
-    throw new Error('Last message is not a code message');
-  }
-
-  const toolCall = message.tool_calls[message.tool_calls.length - 1];
-
-  if (!toolCall) {
-    throw new Error('No tool_call found');
-  }
-
-  return {
-    groupIndex: chat.message_groups.length - 1,
-    group,
-    messageIndex: group.messages.length - 1,
-    message,
-    toolCallIndex: message.tool_calls.length - 1,
-    toolCall,
-  };
-}
-
 export function getToolCall(chat: Chat | undefined, outputId: string): AICOutputLocaion | undefined {
   let groupIndex = 0;
   for (const group of chat?.message_groups || []) {
