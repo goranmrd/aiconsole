@@ -27,7 +27,9 @@ Example (Replace the example +1111111111 with a real phone number):
 
 ```
 tell application "Messages"
-    send "Your message text here line 1" & "\\nline2" to buddy "+1111111111"
+    set targetService to 1st service whose service type = iMessage
+    set targetBuddy to participant "+1111111111" of targetService
+    send "Your message text here line 1" & "\nline2" to targetBuddy
 end tell
 ```
 
@@ -99,9 +101,9 @@ on run
 \t
 \tset chat_db_path to POSIX path of (path to home folder as text) & "Library/Messages/chat.db"
 \tset sql_query to "
-\t\tSELECT T1.is_read FROM message T1 
-\t\tINNER JOIN chat T3 ON T3.guid = \\"" & chat_id & "\\" 
-\t\tINNER JOIN chat_message_join T2 ON T2.chat_id = T3.ROWID AND T1.ROWID = T2.message_id AND T1.is_from_me = 1 
+\t\tSELECT T1.is_read FROM message T1
+\t\tINNER JOIN chat T3 ON T3.guid = \\"" & chat_id & "\\"
+\t\tINNER JOIN chat_message_join T2 ON T2.chat_id = T3.ROWID AND T1.ROWID = T2.message_id AND T1.is_from_me = 1
 \t\tORDER BY T1.date DESC LIMIT 1;"
 \tset sql_shell_command to "sqlite3 " & chat_db_path & " '" & sql_query & "'"
 \t
