@@ -16,11 +16,9 @@
 
 import { useCallback, useState } from 'react';
 
-import { Spinner } from '@/components/editables/chat/Spinner';
 import { useChatStore } from '@/store/editables/chat/useChatStore';
 import { useSettingsStore } from '@/store/settings/useSettingsStore';
 import { AICMessage, AICMessageGroup, AICToolCall } from '@/types/editables/chatTypes';
-import { upperFirst } from '@mantine/hooks';
 import {
   AlertCircleIcon,
   CheckCircle2Icon,
@@ -28,6 +26,7 @@ import {
   ChevronUp,
   CircleDashedIcon,
   Infinity,
+  Loader,
   Play,
 } from 'lucide-react';
 import SyntaxHighlighter from 'react-syntax-highlighter';
@@ -35,6 +34,8 @@ import { duotoneDark as vs2015 } from 'react-syntax-highlighter/dist/cjs/styles/
 import { Button } from '../../../common/Button';
 import { EditableContentMessage } from './EditableContentMessage';
 import { ToolOutput } from './ToolOutput';
+import { cn } from '@/utils/common/cn';
+import { upperFirst } from '@mantine/hooks';
 
 interface MessageProps {
   group: AICMessageGroup;
@@ -83,20 +84,40 @@ export function ToolCall({ group, toolCall: tool_call }: MessageProps) {
 
   const isError = tool_call.output?.includes('Traceback') || tool_call.output?.includes('Error');
 
+  const customVs2015 = {
+    ...vs2015,
+    'pre[class*="language-"]': {
+      ...vs2015['pre[class*="language-"]'],
+      background: '#1A1A1A', // Change this to your desired text color
+    },
+    'code[class*="language-"]': {
+      ...vs2015['code[class*="language-"]'],
+      background: '#1A1A1A', // Change this to your desired text color
+    },
+  };
+
   return (
-    <div className="p-5 rounded-md flex flex-col gap-5 bg-primary/5 flex-grow mr-4 overflow-auto">
-      <div className="cursor-pointer" onClick={() => setFolded((folded) => !folded)}>
-        <div className="flex flex-row gap-2 items-center">
+    <div className="rounded-md flex flex-col bg-gray-700 flex-grow mr-4 overflow-auto ">
+      <div
+        className={cn(
+          'cursor-pointer rounded-md text-gray-400  rounded-b-md px-[30px] py-[15px] border-2 border-gray-600 hover:text-gray-300 hover:border-gray-300 hover:bg-gray-600 transition-ease duration-100',
+          {
+            'border-b-2 border-gray-600 rounded-b-none': !folded,
+          },
+        )}
+        onClick={() => setFolded((folded) => !folded)}
+      >
+        <div className="flex flex-row gap-2 items-center ">
           <div className="flex-grow flex flex-row gap-3 items-center">
-            {shouldDisplaySpinner && <Spinner />}
+            {shouldDisplaySpinner && <Loader className="animate-spin h-5 w-5" />}
             {!shouldDisplaySpinner && !isError && tool_call.output === undefined && (
-              <CircleDashedIcon className="h-5 w-5 text-green-500" />
+              <CircleDashedIcon className="h-5 w-5 text-success" />
             )}
             {!shouldDisplaySpinner && !isError && tool_call.output !== undefined && (
-              <CheckCircle2Icon className="h-5 w-5 text-green-500" />
+              <CheckCircle2Icon className="h-5 w-5 text-success" />
             )}
-            {!shouldDisplaySpinner && isError && <AlertCircleIcon className="h-5 w-5 text-red-500" />}
-            {tool_call.headline ? `${tool_call.headline}` : `${upperFirst(tool_call.language)} task`}
+            {!shouldDisplaySpinner && isError && <AlertCircleIcon className="h-5 w-5 text-danger" />}
+            <span className="font-semibold">{folded ? 'Show the code' : 'Hide the code'}</span>
           </div>
 
           {folded && <ChevronUp className="h-5 w-5" />}
@@ -105,26 +126,27 @@ export function ToolCall({ group, toolCall: tool_call }: MessageProps) {
       </div>
 
       {!folded && (
-        <>
+        <div className="px-[30px] pr-[14px] py-[15px] border-2 border-gray-600 border-t-0">
           <div className="flex flex-row w-full">
-            <span className="w-20 flex-none">{upperFirst(tool_call.language)}: </span>
             <div className="flex-grow overflow-auto">
+              <span className="text-[15px] w-20 flex-none">{upperFirst(tool_call.language)}: </span>
               <EditableContentMessage
                 initialContent={tool_call.code}
                 isStreaming={tool_call.is_streaming}
                 language={tool_call.language}
                 handleAcceptedContent={handleAcceptedContent}
                 handleRemoveClick={handleRemoveClick}
+                className="mt-2"
               >
                 <SyntaxHighlighter
-                  style={vs2015}
+                  style={customVs2015}
                   children={tool_call.code}
                   language={tool_call.language}
-                  className="overflow-scroll flex-grow rounded-md"
+                  className="overflow-scroll flex-grow rounded-md !m-0"
                 />
               </EditableContentMessage>
               {isViableForRunningCode(tool_call.id) && !tool_call.is_streaming && (
-                <div className="flex gap-4 pt-2">
+                <div className="flex gap-4 pt-2 mt-2">
                   <Button variant="status" statusColor="green" small onClick={handleRunClick}>
                     <Play />
                     Run
@@ -141,8 +163,10 @@ export function ToolCall({ group, toolCall: tool_call }: MessageProps) {
             </div>
           </div>
 
-          <div>{tool_call.output !== undefined && <ToolOutput tool_call={tool_call} />}</div>
-        </>
+          <div>
+            {tool_call.output && <ToolOutput syntaxHighlighterCustomStyles={customVs2015} tool_call={tool_call} />}
+          </div>
+        </div>
       )}
     </div>
   );

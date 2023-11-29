@@ -35,24 +35,24 @@ export function MessageControls({
       {isEditing ? (
         <>
           <button>
-            <Check onClick={onSaveClick} className="h-5 w-5 text-green" />{' '}
+            <Check onClick={onSaveClick} className="h-4 w-4 text-green" />{' '}
           </button>
           <button>
-            <X onClick={onCancelClick} className="h-5 w-5 text-red" />{' '}
+            <X onClick={onCancelClick} className="h-4 w-4 text-red" />{' '}
           </button>
         </>
       ) : (
         <>
           {onSaveClick && onEditClick && onCancelClick ? (
             <button onClick={onEditClick}>
-              <Pencil className="h-5 w-5 pointer-events-none" />{' '}
+              <Pencil className="h-4 w-4 pointer-events-none" />{' '}
             </button>
           ) : (
-            <div className="h-5 w-5"></div>
+            <div className="h-4 w-4"></div>
           )}
           {onRemoveClick && (
             <button onClick={onRemoveClick}>
-              <Trash className="h-5 w-5" />{' '}
+              <Trash className="h-4 w-4" />{' '}
             </button>
           )}
         </>

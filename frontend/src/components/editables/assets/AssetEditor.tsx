@@ -105,7 +105,7 @@ const AgentContent = ({ agent }: { agent: Agent }) => {
 };
 
 enum SubmitButtonLabels {
-  Override = 'Override',
+  Overwrite = 'Overwrite',
   Create = 'Create',
   RenameAndSave = 'Rename and Save Changes',
   SaveChanges = 'Save Changes',
@@ -321,7 +321,7 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
 
   const getSubmitButtonLabel = (): SubmitButtonLabels => {
     if (lastSavedAsset === undefined) {
-      return hasCore ? SubmitButtonLabels.Override : SubmitButtonLabels.Create;
+      return hasCore ? SubmitButtonLabels.Overwrite : SubmitButtonLabels.Create;
     } else if (lastSavedAsset && lastSavedAsset.id !== asset?.id) {
       return isAssetChanged ? SubmitButtonLabels.RenameAndSave : SubmitButtonLabels.Saved;
     } else {
@@ -352,13 +352,13 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
                 <>
                   {hasCore && asset.defined_in === 'aiconsole' && (
                     <div className="flex-none flex flex-row gap-2 bg-primary/10 px-6 py-2 items-center -m-6 mb-0 ">
-                      <span className="flex-grow">This is a system {assetType} start editing to override it.</span>
+                      <span className="flex-grow">This is a system {assetType} start editing to overwrite it.</span>
                     </div>
                   )}
                   {hasCore && asset.defined_in === 'project' && (
                     <div className="flex-none flex flex-row gap-2 bg-secondary/10 px-6 py-2 items-center -m-6 mb-0 ">
                       <span className="flex-grow">
-                        This {assetType} {lastSavedAsset !== undefined ? 'is overriding' : 'will override'} a default
+                        This {assetType} {lastSavedAsset !== undefined ? 'is overwriting' : 'will overwrite'} a default
                         system {assetType}.
                       </span>
                       <Button

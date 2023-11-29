@@ -70,7 +70,7 @@ export function EditableContentMessage({
   return (
     <div className={cn('flex flex-row items-start overflow-auto', className)}>
       {isEditing ? (
-        <div className="bg-[#00000080] rounded-md flex-grow">
+        <div className="bg-gray-700 rounded-md flex-grow">
           <CodeInput
             className="resize-none border-0 bg-transparent w-full outline-none h-96"
             value={content}

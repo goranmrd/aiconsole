@@ -17,15 +17,16 @@
 import { useChatStore } from '@/store/editables/chat/useChatStore';
 import { AICToolCall as AICToolCall } from '@/types/editables/chatTypes';
 import { useCallback } from 'react';
-import SyntaxHighlighter from 'react-syntax-highlighter';
+import SyntaxHighlighter, { SyntaxHighlighterProps } from 'react-syntax-highlighter';
 import { duotoneDark as vs2015 } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { EditableContentMessage } from './EditableContentMessage';
 
 interface OutputProps {
   tool_call: AICToolCall;
+  syntaxHighlighterCustomStyles?: SyntaxHighlighterProps['style'];
 }
 
-export function ToolOutput({ tool_call }: OutputProps) {
+export function ToolOutput({ tool_call, syntaxHighlighterCustomStyles }: OutputProps) {
   const editToolCall = useChatStore((state) => state.editToolCall);
 
   const handleAcceptedContent = useCallback(
@@ -44,8 +45,8 @@ export function ToolOutput({ tool_call }: OutputProps) {
   }, [tool_call.id, editToolCall]);
 
   return (
-    <div className="flex flex-row w-full">
-      <span className="w-20 flex-none">Output: </span>
+    <div className="flex flex-col w-full mt-2">
+      <span className="text-[15px] w-20 flex-none">Output: </span>
       <EditableContentMessage
         initialContent={tool_call.output || ''}
         isStreaming={tool_call.is_code_executing}
@@ -54,7 +55,7 @@ export function ToolOutput({ tool_call }: OutputProps) {
         className="flex-grow"
       >
         <SyntaxHighlighter
-          style={vs2015}
+          style={syntaxHighlighterCustomStyles || vs2015}
           children={tool_call.output || ''}
           language={'text'}
           className="basis-0 flex-grow rounded-md p-2 overflow-auto"
