@@ -26,6 +26,7 @@ python-multipart = "^0.0.6"
 appdirs = "^1.4.4"
 rtoml = "^0.9.0"
 send2trash = "^1.8.2"
+sentry-sdk = {extras = ["fastapi"], version = "^1.37.1"}
 
 [tool.ruff]
 line-length = 119
