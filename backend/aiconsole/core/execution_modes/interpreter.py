@@ -162,7 +162,7 @@ async def execution_mode_interpreter(
 
             for index, tool_call in enumerate(tool_calls):
                 # All tool calls with lower indexes are finished
-                if index > 0 and tool_calls_data[tool_calls[index - 1].id].finished == False:
+                if index > 0 and tool_calls_data[tool_calls[index - 1].id].finished is False:
                     tool_calls_data[tool_calls[index - 1].id].finished = True
 
                 await finish_finished()
@@ -253,7 +253,7 @@ async def execution_mode_interpreter(
                                     await send_code_delta(code_delta, headline_delta)
     finally:
         for tool_call_data in tool_calls_data.values():
-            if tool_call_data.finished == False:
+            if tool_call_data.finished is False:
                 tool_call_data.finished = True
 
         await finish_finished()

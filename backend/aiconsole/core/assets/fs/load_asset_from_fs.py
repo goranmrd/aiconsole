@@ -36,14 +36,14 @@ async def load_asset_from_fs(asset_type: AssetType, asset_id: str, location: Ass
     core_resource_path = get_core_assets_directory(asset_type)
 
     if (project_dir_path / f"{asset_id}.toml").exists() and (
-        location == None or location == AssetLocation.PROJECT_DIR
+        location is None or location == AssetLocation.PROJECT_DIR
     ):
         if (core_resource_path / f"{asset_id}.toml").exists():
             _log.info(f"Asset {asset_id} exists in core and project directory")
         location = AssetLocation.PROJECT_DIR
         path = project_dir_path / f"{asset_id}.toml"
     elif (core_resource_path / f"{asset_id}.toml").exists() and (
-        location == None or location == AssetLocation.AICONSOLE_CORE
+        location is None or location == AssetLocation.AICONSOLE_CORE
     ):
         location = AssetLocation.AICONSOLE_CORE
         path = core_resource_path / f"{asset_id}.toml"

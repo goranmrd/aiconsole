@@ -19,7 +19,6 @@ from aiconsole.core.chat.types import ChatHeadline
 from aiconsole.api.endpoints.chats.chat import router
 from aiconsole.core.chats.list_possible_historic_chat_ids import list_possible_historic_chat_ids
 from aiconsole.core.chats.load_chat_history import load_chat_history
-from aiconsole.core.chats.save_chat_history import save_chat_history
 
 _log = logging.getLogger(__name__)
 

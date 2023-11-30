@@ -15,7 +15,7 @@
 # limitations under the License.
 
 from datetime import datetime
-from typing import List, Union
+from typing import List
 from aiconsole.core.assets.asset import EditableObject
 
 from aiconsole.core.code_running.code_interpreters.language_map import LanguageStr

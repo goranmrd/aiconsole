@@ -34,7 +34,7 @@ async def load_chat_history(id: str, project_path: Path | None = None) -> Chat:
             data = json.load(f)
 
             # Convert old format
-            if not "message_groups" in data or not data["message_groups"]:
+            if "message_groups" not in data or not data["message_groups"]:
                 data["message_groups"] = []
 
                 if "messages" in data and data["messages"]:
@@ -63,7 +63,7 @@ async def load_chat_history(id: str, project_path: Path | None = None) -> Chat:
             for group in data["message_groups"]:
                 if "messages" in group and group["messages"]:
                     for msg in group["messages"]:
-                        if not "tool_calls" in msg:
+                        if "tool_calls" not in msg:
                             msg["tool_calls"] = []
 
             # For all tool calls without headline add an empty headline
@@ -72,10 +72,10 @@ async def load_chat_history(id: str, project_path: Path | None = None) -> Chat:
                     for msg in group["messages"]:
                         if "tool_calls" in msg and msg["tool_calls"]:
                             for tool_call in msg["tool_calls"]:
-                                if not "headline" in tool_call:
+                                if "headline" not in tool_call:
                                     tool_call["headline"] = ""
 
-            if not "name" in data or not data["name"]:
+            if "name" not in data or not data["name"]:
                 if "headline" in data and data["headline"]:
                     data["name"] = data["headline"]
                 elif "title" in data and data["title"]:

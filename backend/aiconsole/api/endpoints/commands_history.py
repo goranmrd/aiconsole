@@ -19,7 +19,6 @@ import os
 
 from aiconsole.consts import COMMANDS_HISTORY_JSON, HISTORY_LIMIT
 from aiconsole.core.chat.types import Command
-from aiconsole.core.project import project
 from aiconsole.core.project.paths import get_aic_directory
 from fastapi import APIRouter
 

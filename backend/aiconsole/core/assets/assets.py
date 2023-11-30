@@ -16,7 +16,7 @@
 
 import datetime
 import logging
-from typing import Dict, List, Optional
+from typing import Dict, List
 from aiconsole.core.assets.asset import Asset, AssetLocation, AssetStatus, AssetType
 from aiconsole.core.assets.fs.move_asset_in_fs import move_asset_in_fs
 from aiconsole.core.assets.fs.project_asset_exists_fs import project_asset_exists_fs
@@ -131,7 +131,7 @@ class Assets:
             return None
 
         for asset in self._assets[id]:
-            if location == None or asset.defined_in == location:
+            if location is None or asset.defined_in == location:
                 return asset
 
         return None

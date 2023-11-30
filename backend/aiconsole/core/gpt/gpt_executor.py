@@ -65,7 +65,7 @@ class GPTExecutor:
 
         for attempt in range(3):
             try:
-                _log.info(f"Executing GPT request:", request_dict)
+                _log.info("Executing GPT request:", request_dict)
                 self.request = request_dict
                 response = await litellm.acompletion(
                     **request_dict,
@@ -94,7 +94,7 @@ class GPTExecutor:
                 _log.exception(f"Error on attempt {attempt}: {error}", exc_info=error)
                 if attempt == 2:
                     raise error
-            _log.info(f"Retrying GPT request")
+            _log.info("Retrying GPT request")
             yield CLEAR_STR
 
         raise Exception("Unable to complete GPT request.")

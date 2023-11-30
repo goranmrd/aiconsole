@@ -15,7 +15,7 @@
 # limitations under the License.
 
 import logging
-from typing import List, Optional, cast
+from typing import List, cast
 
 from aiconsole.consts import DIRECTOR_MIN_TOKENS, DIRECTOR_PREFERRED_TOKENS
 from aiconsole.core.analysis.agents_to_choose_from import agents_to_choose_from

@@ -38,5 +38,5 @@ async def check_key(key: str) -> bool:
             cached_good_keys.add(key)
 
         return good
-    except Exception as e:
+    except Exception:
         return False
