@@ -103,7 +103,7 @@ class SubprocessCodeInterpreter(BaseCodeInterpreter):
             code = self.preprocess_code(code, materials)
             if not self.process:
                 self.start_process()
-        except:
+        except: # noqa E722
             yield traceback.format_exc()
             return
 
@@ -120,7 +120,7 @@ class SubprocessCodeInterpreter(BaseCodeInterpreter):
                 self.process.stdin.write(code + "\n")
                 self.process.stdin.flush()
                 break
-            except:
+            except: # noqa E722
                 if retry_count != 0:
                     # For UX, I like to hide this if it happens once. Obviously feels better to not see errors
                     # Most of the time it doesn't matter, but we should figure out why it happens frequently with:

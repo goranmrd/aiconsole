@@ -202,7 +202,7 @@ class Settings:
 
         _set_openai_api_key_environment(settings_data)
 
-        _log.info(f"Loaded settings")
+        _log.info("Loaded settings")
         return settings_data
 
     @staticmethod

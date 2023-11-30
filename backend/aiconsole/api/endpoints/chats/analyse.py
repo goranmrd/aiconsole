@@ -22,7 +22,6 @@ from fastapi import APIRouter, HTTPException, Request
 from aiconsole.core.analysis.director import director_analyse
 from aiconsole.core.chat.types import Chat
 from aiconsole.utils.cancel_on_disconnect import cancelable_endpoint
-from aiconsole.api.websockets.outgoing_messages import ErrorWSMessage
 from pydantic import BaseModel, ValidationError
 
 router = APIRouter()

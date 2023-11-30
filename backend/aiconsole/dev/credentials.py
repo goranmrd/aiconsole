@@ -19,7 +19,6 @@ import json
 import os
 from typing import Dict, List
 
-from aiconsole.core.project import project
 from aiconsole.core.project.paths import get_credentials_directory
 
 

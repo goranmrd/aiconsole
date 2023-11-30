@@ -17,7 +17,6 @@
 
 import asyncio
 from functools import wraps
-import inspect
 import logging
 import threading
 import time

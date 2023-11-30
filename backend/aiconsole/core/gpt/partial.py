@@ -188,7 +188,7 @@ class GPTPartialResponse(BaseModel):
                     if "role" in chunk_delta:
                         message.role = chunk_delta["role"]
 
-                    if "content" in chunk_delta and chunk_delta["content"] != None:
+                    if "content" in chunk_delta and chunk_delta["content"] is not None:
                         if message.content_builder is None:
                             message.content_builder = []
 

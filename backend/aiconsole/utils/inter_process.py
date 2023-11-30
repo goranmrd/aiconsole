@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
     
-from multiprocessing import Process, Manager
+from multiprocessing import Manager
 
 manager = Manager()
 shared_dict = manager.dict()
