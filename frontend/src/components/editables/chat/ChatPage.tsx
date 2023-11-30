@@ -29,9 +29,11 @@ import { v4 as uuidv4 } from 'uuid';
 import { Button } from '../../common/Button';
 import { EditorHeader } from '../EditorHeader';
 import { CommandInput } from './CommandInput';
-import { Tooltip } from '@/components/common/Tooltip';
-import { BlinkingCursor } from './BlinkingCursor';
 import { useChat } from '@/utils/editables/useChat';
+import { GuideMe } from './GuideMe';
+import { RefreshCw } from 'lucide-react';
+import { StopIcon } from '@/components/common/icons/StopIcon';
+import { cn } from '@/utils/common/cn';
 
 export function ChatWindowScrollToBottomSave() {
   const scrollToBottom = useScrollToBottom();
@@ -63,9 +65,6 @@ export function ChatPage() {
   const isProjectLoading = useProjectStore((state) => state.isProjectLoading);
   const { showContextMenu } = useEditableObjectContextMenu({ editable: chat, editableObjectType: 'chat' });
   const { setChat, renameChat } = useChat();
-
-  const thinkingProcess = useChatStore((store) => store.analysis.thinking_process);
-  const nextStep = useChatStore((store) => store.analysis.next_step);
 
   // Acquire the initial object
   useEffect(() => {
@@ -121,86 +120,25 @@ export function ChatPage() {
     }
   };
 
-  let greatButton;
+  const isProcessesAreNotRunning = !isExecutionRunning && !isAnalysisRunning;
 
-  if (!isExecutionRunning && !isAnalysisRunning && !isLastMessageFromUser) {
-    greatButton = (
-      <Button
-        variant="secondary"
-        onClick={() =>
-          submitCommand(
-            `I'm stuck at using AIConsole, can you suggest what can I do from this point in the conversation?`,
-          )
-        }
-      >
-        Guide me
-      </Button>
-    );
-  } else if (!isExecutionRunning && !isAnalysisRunning && isLastMessageFromUser) {
-    greatButton = (
-      <Button variant="secondary" onClick={() => submitCommand(``)}>
-        Answer
-      </Button>
-    );
-  } else if (isExecutionRunning) {
-    greatButton = (
-      <div>
-        <Button
-          variant="secondary"
-          classNames="animate-pulse relative group"
-          onClick={() => {
-            stopWork();
-          }}
-        >
-          <span className="inset-0 flex items-center justify-center opacity-100 group-hover:opacity-0 transition-opacity">
-            Working ...
-          </span>
-          <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-            Stop
-          </span>
-        </Button>
-      </div>
-    );
-  } else {
-    greatButton = (
-      <Tooltip
-        w={400}
-        opened={true}
-        offset={10}
-        withArrow
-        zIndex={5}
-        label={
-          <>
-            {` ${thinkingProcess || ''}`}{' '}
-            {nextStep && (
-              <>
-                <br /> Next step: <span className="text-secondary/50 leading-[24px]">{nextStep}</span>
-              </>
-            )}{' '}
-            <BlinkingCursor />
-          </>
-        }
-        multiline={true}
-      >
-        <div>
-          <Button
-            variant="secondary"
-            classNames="animate-pulse relative group"
-            onClick={() => {
-              stopWork();
-            }}
-          >
-            <span className="inset-0 flex items-center justify-center opacity-100 group-hover:opacity-0 transition-opacity">
-              Analysing ...
-            </span>
-            <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-              Stop
-            </span>
-          </Button>
-        </div>
-      </Tooltip>
-    );
-  }
+  const getActionButton = () => {
+    if (isProcessesAreNotRunning) {
+      return {
+        label: 'Regenerate',
+        icon: RefreshCw,
+        action: () => submitCommand(``), // is this action for regenerate a response?
+      };
+    }
+
+    return {
+      label: 'Stop generating',
+      icon: StopIcon,
+      action: stopWork,
+    };
+  };
+
+  const { label: actionButtonLabel, icon: ActionButtonIcon, action: actionButtonAction } = getActionButton();
 
   return (
     <div className="flex flex-col w-full h-full max-h-full overflow-auto">
@@ -215,17 +153,45 @@ export function ChatPage() {
               mode={'bottom'}
             >
               <ChatWindowScrollToBottomSave />
-              {chat.message_groups.length === 0 && <EmptyChat />}
+              {chat.message_groups.length === 0 ? (
+                <EmptyChat />
+              ) : (
+                <div>
+                  {chat.message_groups.map((group) => (
+                    <MessageGroup group={group} key={group.id} />
+                  ))}
+                </div>
+              )}
 
-              {chat.message_groups.map((group) => (
-                <MessageGroup group={group} key={group.id} />
-              ))}
+              {isProcessesAreNotRunning && !isLastMessageFromUser ? (
+                <Button
+                  variant="secondary"
+                  classNames="mx-auto my-[30px]"
+                  onClick={() =>
+                    submitCommand(
+                      `I'm stuck at using AIConsole, can you suggest what can I do from this point in the conversation?`,
+                    )
+                  }
+                >
+                  Guide me
+                </Button>
+              ) : null}
 
-              <div className="flex items-center justify-center m-5">{greatButton}</div>
+              <div
+                className={cn('absolute  mb-[30px] px-[30px] flex flex-col gap-[10px] items-end bottom-0 right-0 ', {
+                  'w-full': isAnalysisRunning,
+                })}
+              >
+                {isAnalysisRunning ? <GuideMe /> : null}
+                <Button variant="secondary" small onClick={actionButtonAction}>
+                  <ActionButtonIcon /> {actionButtonLabel}
+                </Button>
+              </div>
             </ScrollToBottom>
           ) : (
             <div className="h-full overflow-y-auto flex flex-col"></div>
           )}
+
           <CommandInput className="flex-none" />
         </div>
       </div>
