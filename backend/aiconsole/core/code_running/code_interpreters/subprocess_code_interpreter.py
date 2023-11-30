@@ -179,7 +179,7 @@ class SubprocessCodeInterpreter(BaseCodeInterpreter):
 
         # replace the first element in the PATH with the venv bin path
         # this is the one we've added to get the correct embedded interpreter when the app is starting
-        _path = os.pathsep.join([str(get_current_project_venv_bin_path())] + path.split(os.pathsep)[1:])
+        _path = os.pathsep.join([str(get_current_project_venv_bin_path())] + path.split(os.pathsep))
 
         return {
             **os.environ,
