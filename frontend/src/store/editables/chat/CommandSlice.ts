@@ -31,6 +31,7 @@ export type CommandSlice = {
   newCommand: () => Promise<void>;
   editCommand: (prompt: string) => void;
   getCommand: () => string;
+  appendFilePathToCommand: (path: string) => void;
   saveCommandAndMessagesToHistory: (command: string, isUserCommand: boolean) => Promise<void>;
   submitCommand: (prompt: string) => Promise<void>;
   initCommandHistory: () => Promise<void>;
@@ -73,6 +74,10 @@ export const createCommandSlice: StateCreator<ChatStore, [], [], CommandSlice> =
   },
   getCommand: () => {
     return get().commandHistory[get().commandIndex];
+  },
+  appendFilePathToCommand: (path: string) => {
+    const command = get().getCommand();
+    get().editCommand(`${command} ${path}`);
   },
   saveCommandAndMessagesToHistory: async (command: string, isUserCommand: boolean) => {
     if (isUserCommand) {

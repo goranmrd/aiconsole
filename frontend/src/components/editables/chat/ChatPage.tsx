@@ -35,6 +35,11 @@ import { HelpCircleIcon, RefreshCw, ReplyIcon } from 'lucide-react';
 import { StopIcon } from '@/components/common/icons/StopIcon';
 import { cn } from '@/utils/common/cn';
 
+// Electron adds the path property to File objects
+interface FileWithPath extends File {
+  path: string;
+}
+
 export function ChatWindowScrollToBottomSave() {
   const scrollToBottom = useScrollToBottom();
   const setScrollChatToBottom = useChatStore((state) => state.setScrollChatToBottom);
@@ -63,8 +68,34 @@ export function ChatPage() {
   const submitCommand = useChatStore((state) => state.submitCommand);
   const isProjectOpen = useProjectStore((state) => state.isProjectOpen);
   const isProjectLoading = useProjectStore((state) => state.isProjectLoading);
+  const appendFilePathToCommand = useChatStore((state) => state.appendFilePathToCommand);
   const { showContextMenu } = useEditableObjectContextMenu({ editable: chat, editableObjectType: 'chat' });
   const { setChat, renameChat } = useChat();
+
+  useEffect(() => {
+    const stopEvent = (e: Event) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    const handleDrop = (e: DragEvent) => {
+      stopEvent(e);
+
+      if (e.dataTransfer?.files) {
+        appendFilePathToCommand((e.dataTransfer.files[0] as FileWithPath).path);
+      }
+    };
+
+    document.addEventListener('dragover', stopEvent);
+
+    document.addEventListener('drop', handleDrop);
+
+    return () => {
+      document.removeEventListener('dragover', stopEvent);
+
+      document.removeEventListener('drop', handleDrop);
+    };
+  });
 
   // Acquire the initial object
   useEffect(() => {
