@@ -31,7 +31,7 @@ import { EditorHeader } from '../EditorHeader';
 import { CommandInput } from './CommandInput';
 import { useChat } from '@/utils/editables/useChat';
 import { GuideMe } from './GuideMe';
-import { RefreshCw } from 'lucide-react';
+import { HelpCircleIcon, RefreshCw, ReplyIcon } from 'lucide-react';
 import { StopIcon } from '@/components/common/icons/StopIcon';
 import { cn } from '@/utils/common/cn';
 
@@ -123,6 +123,31 @@ export function ChatPage() {
   const isProcessesAreNotRunning = !isExecutionRunning && !isAnalysisRunning;
 
   const getActionButton = () => {
+    if (isProcessesAreNotRunning && isLastMessageFromUser) {
+      return {
+        label: 'Answer',
+        icon: ReplyIcon,
+        action: () => submitCommand(``),
+      };
+    }
+
+    if (isProcessesAreNotRunning && !isLastMessageFromUser) {
+      return {
+        label: 'Get Help',
+        icon: HelpCircleIcon,
+        action: () =>
+          submitCommand(
+            `I'm stuck at using AIConsole, can you suggest what can I do from this point in the conversation?`,
+          ),
+      };
+    }
+
+    return {
+      label: 'Stop',
+      icon: StopIcon,
+      action: stopWork,
+    };
+
     if (isProcessesAreNotRunning) {
       return {
         label: 'Regenerate',
@@ -130,12 +155,6 @@ export function ChatPage() {
         action: () => submitCommand(``), // is this action for regenerate a response?
       };
     }
-
-    return {
-      label: 'Stop generating',
-      icon: StopIcon,
-      action: stopWork,
-    };
   };
 
   const { label: actionButtonLabel, icon: ActionButtonIcon, action: actionButtonAction } = getActionButton();
@@ -162,20 +181,6 @@ export function ChatPage() {
                   ))}
                 </div>
               )}
-
-              {isProcessesAreNotRunning && !isLastMessageFromUser ? (
-                <Button
-                  variant="secondary"
-                  classNames="mx-auto my-[30px]"
-                  onClick={() =>
-                    submitCommand(
-                      `I'm stuck at using AIConsole, can you suggest what can I do from this point in the conversation?`,
-                    )
-                  }
-                >
-                  Guide me
-                </Button>
-              ) : null}
 
               <div
                 className={cn('absolute  mb-[30px] px-[30px] flex flex-col gap-[10px] items-end bottom-0 right-0 ', {
