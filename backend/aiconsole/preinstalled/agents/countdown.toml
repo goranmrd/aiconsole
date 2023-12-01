@@ -1,0 +1,7 @@
+name = "Countdown"
+usage = "Countdown from 10 to 0"
+gpt_mode = "speed"
+execution_mode = "aiconsole.core.execution_modes.example_countdown:execution_mode_example_countdown"
+default_status = "disabled"
+system = """
+"""

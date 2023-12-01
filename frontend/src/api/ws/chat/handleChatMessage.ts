@@ -4,6 +4,7 @@ import { handleUpdateMessageWSMessage } from './handleUpdateMessageWSMessage';
 import { handleUpdateToolCallOutputWSMessage } from './handleUpdateToolCallOutputWSMessage';
 import { handleUpdateAnalysisWSMessage } from './handleUpdateAnalysisWSMessage';
 import { handleResetMessageWSMessage } from './handleResetMessageWSMessage';
+import { handleRequestProcessingFinishedWSMessage } from './handleRequestProcessingFinishedWSMessage';
 
 export async function handleChatMessage(data: ChatWSMessage) {
   switch (data.type) {
@@ -21,6 +22,9 @@ export async function handleChatMessage(data: ChatWSMessage) {
       break;
     case 'ResetMessageWSMessage':
       await handleResetMessageWSMessage(data);
+      break;
+    case 'RequestProcessingFinishedWSMessage':
+      await handleRequestProcessingFinishedWSMessage(data);
       break;
     default:
       console.error('Unknown message type: ', data);

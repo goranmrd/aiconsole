@@ -58,9 +58,16 @@ export type UpdateToolCallOutputWSMessage = {
   output_delta?: string;
 };
 
+export type RequestProcessingFinishedWSMessage = {
+  request_id: string;
+  aborted: boolean;
+  type: 'RequestProcessingFinishedWSMessage';
+};
+
 export type ChatWSMessage =
   | UpdateAnalysisWSMessage
   | UpdateMessageWSMessage
   | ResetMessageWSMessage
   | UpdateToolCallWSMessage
-  | UpdateToolCallOutputWSMessage;
+  | UpdateToolCallOutputWSMessage
+  | RequestProcessingFinishedWSMessage;

@@ -1,4 +1,3 @@
-import { useSettingsStore } from '@/store/settings/useSettingsStore';
 import { AICToolCall } from '@/types/editables/chatTypes';
 import { UpdateToolCallWSMessage } from '@/types/editables/chatWebSocketTypes';
 import { useChatStore } from '../../../store/editables/chat/useChatStore';
@@ -29,10 +28,6 @@ export async function handleUpdateToolCallWSMessage(data: UpdateToolCallWSMessag
         message.is_streaming = false;
       }
     }, data.id);
-
-    if (data.stage === 'end' && useSettingsStore.getState().alwaysExecuteCode) {
-      useChatStore.getState().doRun(data.id);
-    }
   } else {
     console.warn(`Received code delta for tool call ${data.id} that is not ongoing`);
   }

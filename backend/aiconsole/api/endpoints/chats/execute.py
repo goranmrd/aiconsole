@@ -19,7 +19,7 @@ import importlib
 import logging
 from typing import cast
 
-from aiconsole.api.websockets.outgoing_messages import ErrorWSMessage
+from aiconsole.api.websockets.outgoing_messages import ErrorWSMessage, RequestProcessingFinishedWSMessage
 from aiconsole.core.assets.agents.agent import Agent, ExecutionModeContext
 from aiconsole.core.assets.materials.material import Material
 from aiconsole.core.chat.types import Chat
@@ -95,10 +95,16 @@ async def execute(request: Request, data: ExecuteRequestData, chat_id):
         gpt_mode=agent.gpt_mode,
     )
 
+    aborted = False
     try:
         await dynamic_import_and_call_execution_mode(agent, context)
     except asyncio.CancelledError:
-        _log.warning("Cancelled execution_mode_interpreter")
+        _log.warning("Cancelled execution mode")
+        aborted = True
     except Exception as e:
         await ErrorWSMessage(error=str(e)).send_to_chat(data.chat.id)
         raise e
+    finally:
+        await RequestProcessingFinishedWSMessage(request_id=data.request_id, aborted=aborted).send_to_chat(
+            data.chat.id
+        )

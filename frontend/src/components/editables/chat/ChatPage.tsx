@@ -29,10 +29,10 @@ import { useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import ScrollToBottom, { useScrollToBottom } from 'react-scroll-to-bottom';
 import { v4 as uuidv4 } from 'uuid';
+import { QuestionMarkIcon } from '../../common/icons/QuestionMarkIcon';
 import { EditorHeader } from '../EditorHeader';
 import { CommandInput } from './CommandInput';
 import { GuideMe } from './GuideMe';
-import { QuestionMarkIcon } from '../../common/icons/QuestionMarkIcon';
 
 export function ChatWindowScrollToBottomSave() {
   const scrollToBottom = useScrollToBottom();
@@ -129,7 +129,10 @@ export function ChatPage() {
       return {
         label: 'Send',
         icon: SendHorizonalIcon,
-        action: () => submitCommand(command),
+        action: async () => {
+          await submitCommand(command);
+          await newCommand();
+        },
       };
     } else {
       if (isProcessesAreNotRunning && isLastMessageFromUser) {
@@ -200,15 +203,7 @@ export function ChatPage() {
             className="flex-none"
             actionIcon={ActionButtonIcon}
             actionLabel={actionButtonLabel}
-            onSubmit={async (command) => {
-              const trimmed = command.trim();
-              if (trimmed === '') {
-                actionButtonAction();
-              } else {
-                await submitCommand(trimmed);
-                await newCommand();
-              }
-            }}
+            onSubmit={actionButtonAction}
           />
         </div>
       </div>
