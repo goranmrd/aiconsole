@@ -20,20 +20,19 @@ import { MessageGroup } from '@/components/editables/chat/MessageGroup';
 import { useChatStore } from '@/store/editables/chat/useChatStore';
 import { useProjectStore } from '@/store/projects/useProjectStore';
 import { Chat } from '@/types/editables/chatTypes';
+import { cn } from '@/utils/common/cn';
 import showNotification from '@/utils/common/showNotification';
+import { useChat } from '@/utils/editables/useChat';
 import { useEditableObjectContextMenu } from '@/utils/editables/useContextMenuForEditable';
+import { ReplyIcon, SendHorizonalIcon, SquareIcon } from 'lucide-react';
 import { useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import ScrollToBottom, { useScrollToBottom } from 'react-scroll-to-bottom';
 import { v4 as uuidv4 } from 'uuid';
-import { Button } from '../../common/Button';
 import { EditorHeader } from '../EditorHeader';
 import { CommandInput } from './CommandInput';
-import { useChat } from '@/utils/editables/useChat';
 import { GuideMe } from './GuideMe';
-import { HelpCircleIcon, RefreshCw, ReplyIcon } from 'lucide-react';
-import { StopIcon } from '@/components/common/icons/StopIcon';
-import { cn } from '@/utils/common/cn';
+import { QuestionMarkIcon } from '../../common/icons/QuestionMarkIcon';
 
 export function ChatWindowScrollToBottomSave() {
   const scrollToBottom = useScrollToBottom();
@@ -54,6 +53,7 @@ export function ChatPage() {
   const searchParams = useSearchParams()[0];
   const copyId = searchParams.get('copy');
   const forceRefresh = searchParams.get('forceRefresh'); // used to force a refresh
+  const command = useChatStore((state) => state.commandHistory[state.commandIndex]);
 
   const chat = useChatStore((state) => state.chat);
   const loadingMessages = useChatStore((state) => state.loadingMessages);
@@ -61,6 +61,7 @@ export function ChatPage() {
   const isExecutionRunning = useChatStore((state) => state.isExecutionRunning());
   const stopWork = useChatStore((state) => state.stopWork);
   const submitCommand = useChatStore((state) => state.submitCommand);
+  const newCommand = useChatStore((state) => state.newCommand);
   const isProjectOpen = useProjectStore((state) => state.isProjectOpen);
   const isProjectLoading = useProjectStore((state) => state.isProjectLoading);
   const { showContextMenu } = useEditableObjectContextMenu({ editable: chat, editableObjectType: 'chat' });
@@ -121,38 +122,39 @@ export function ChatPage() {
   };
 
   const isProcessesAreNotRunning = !isExecutionRunning && !isAnalysisRunning;
+  const hasAnyCommandInput = command.trim() !== '';
 
   const getActionButton = () => {
-    if (isProcessesAreNotRunning && isLastMessageFromUser) {
+    if (hasAnyCommandInput) {
       return {
-        label: 'Answer',
-        icon: ReplyIcon,
-        action: () => submitCommand(``),
+        label: 'Send',
+        icon: SendHorizonalIcon,
+        action: () => submitCommand(command),
       };
-    }
+    } else {
+      if (isProcessesAreNotRunning && isLastMessageFromUser) {
+        return {
+          label: 'Get reply',
+          icon: ReplyIcon,
+          action: () => submitCommand(``),
+        };
+      }
 
-    if (isProcessesAreNotRunning && !isLastMessageFromUser) {
+      if (isProcessesAreNotRunning && !isLastMessageFromUser) {
+        return {
+          label: 'Ask for help',
+          icon: QuestionMarkIcon,
+          action: () =>
+            submitCommand(
+              `I'm stuck at using AIConsole, can you suggest what can I do from this point in the conversation?`,
+            ),
+        };
+      }
+
       return {
-        label: 'Get Help',
-        icon: HelpCircleIcon,
-        action: () =>
-          submitCommand(
-            `I'm stuck at using AIConsole, can you suggest what can I do from this point in the conversation?`,
-          ),
-      };
-    }
-
-    return {
-      label: 'Stop',
-      icon: StopIcon,
-      action: stopWork,
-    };
-
-    if (isProcessesAreNotRunning) {
-      return {
-        label: 'Regenerate',
-        icon: RefreshCw,
-        action: () => submitCommand(``), // is this action for regenerate a response?
+        label: 'Stop ' + (isAnalysisRunning ? ' analysis' : ' generation'),
+        icon: SquareIcon,
+        action: stopWork,
       };
     }
   };
@@ -188,16 +190,26 @@ export function ChatPage() {
                 })}
               >
                 {isAnalysisRunning ? <GuideMe /> : null}
-                <Button variant="secondary" small onClick={actionButtonAction}>
-                  <ActionButtonIcon /> {actionButtonLabel}
-                </Button>
               </div>
             </ScrollToBottom>
           ) : (
             <div className="h-full overflow-y-auto flex flex-col"></div>
           )}
 
-          <CommandInput className="flex-none" />
+          <CommandInput
+            className="flex-none"
+            actionIcon={ActionButtonIcon}
+            actionLabel={actionButtonLabel}
+            onSubmit={async (command) => {
+              const trimmed = command.trim();
+              if (trimmed === '') {
+                actionButtonAction();
+              } else {
+                await submitCommand(trimmed);
+                await newCommand();
+              }
+            }}
+          />
         </div>
       </div>
     </div>

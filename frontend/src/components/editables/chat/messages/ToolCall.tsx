@@ -18,7 +18,9 @@ import { useCallback, useState } from 'react';
 
 import { useChatStore } from '@/store/editables/chat/useChatStore';
 import { useSettingsStore } from '@/store/settings/useSettingsStore';
-import { AICMessage, AICMessageGroup, AICToolCall } from '@/types/editables/chatTypes';
+import { AICMessageGroup, AICToolCall } from '@/types/editables/chatTypes';
+import { cn } from '@/utils/common/cn';
+import { upperFirst } from '@mantine/hooks';
 import {
   AlertCircleIcon,
   CheckCircle2Icon,
@@ -34,8 +36,6 @@ import { duotoneDark as vs2015 } from 'react-syntax-highlighter/dist/cjs/styles/
 import { Button } from '../../../common/Button';
 import { EditableContentMessage } from './EditableContentMessage';
 import { ToolOutput } from './ToolOutput';
-import { cn } from '@/utils/common/cn';
-import { upperFirst } from '@mantine/hooks';
 
 interface MessageProps {
   group: AICMessageGroup;

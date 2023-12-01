@@ -14,23 +14,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { Button } from '@/components/common/Button';
+import { Tooltip } from '@/components/common/Tooltip';
 import { useChatStore } from '@/store/editables/chat/useChatStore';
 import { cn } from '@/utils/common/cn';
-import { SendHorizonal } from 'lucide-react';
-import { useEffect, useRef } from 'react';
+import { LucideIcon } from 'lucide-react';
+import React, { useEffect, useRef } from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
 
 interface MessageInputProps {
+  actionIcon: LucideIcon | ((props: React.SVGProps<SVGSVGElement>) => JSX.Element);
   className?: string;
-  onSubmit?: () => void;
+  actionLabel: string;
+  onSubmit?: (command: string) => void;
 }
 
-export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
+export const CommandInput = ({ className, onSubmit, actionIcon, actionLabel }: MessageInputProps) => {
+  const ActionIcon = actionIcon;
   const command = useChatStore((state) => state.commandHistory[state.commandIndex]);
 
   const setCommand = useChatStore((state) => state.editCommand);
-  const newCommand = useChatStore((state) => state.newCommand);
-  const submitCommand = useChatStore((state) => state.submitCommand);
   const promptUp = useChatStore((state) => state.historyUp);
   const promptDown = useChatStore((state) => state.historyDown);
   const chat = useChatStore((state) => state.chat);
@@ -66,13 +69,10 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
     }
   };
 
-  const handleSendMessage = async () => {
-    const trimmed = command.trim();
+  const handleSendMessage = async (e?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    if (onSubmit) onSubmit(command);
 
-    await submitCommand(trimmed);
-    await newCommand();
-
-    if (onSubmit) onSubmit();
+    if (e) e.currentTarget.blur();
   };
 
   // auto focus this text area on changes to chatId
@@ -89,7 +89,7 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
         'flex w-full flex-col p-4  bg-gray-800/90 border-t border-white/10 drop-shadow-2xl  z-50',
       )}
     >
-      <div className="flex items-center">
+      <div className="flex items-center gap-2">
         <TextareaAutosize
           ref={textAreaRef}
           className="border-white/20 ring-secondary/30 bg-black flex-grow resize-none overflow-hidden rounded-3xl border px-4 py-2 focus:outline-none focus:ring-2"
@@ -100,20 +100,19 @@ export const CommandInput = ({ className, onSubmit }: MessageInputProps) => {
           rows={1}
           style={{ boxSizing: 'border-box', transition: 'height 0.2s' }}
         />
-        <button
-          className={cn(
-            'focus:ring-secondary ml-4 rounded-full p-2 text-gray-800 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-4',
-            {
-              'bg-slate-500  text-slate-800 cursor-not-allowed': sendingMessagesBlocked,
-              'bg-secondary-dark hover:bg-secondary': !sendingMessagesBlocked,
-            },
-          )}
-          type="button"
-          onClick={handleSendMessage}
-          disabled={sendingMessagesBlocked}
-        >
-          <SendHorizonal className="h-6 w-6" />
-        </button>
+        <Tooltip label={actionLabel} position="top-end" offset={10}>
+          <div>
+            <Button
+              variant="primary"
+              iconOnly={true}
+              onClick={handleSendMessage}
+              disabled={sendingMessagesBlocked}
+              classNames={cn('p-2', {})}
+            >
+              <ActionIcon className="w-6 h-6" />
+            </Button>
+          </div>
+        </Tooltip>
       </div>
     </div>
   );
