@@ -146,7 +146,7 @@ export function ChatPage() {
           icon: QuestionMarkIcon,
           action: () =>
             submitCommand(
-              `I'm stuck at using AIConsole, can you suggest what can I do from this point in the conversation?`,
+              `I need help with using AIConsole, can you suggest what can I do from this point in the conversation?`,
             ),
         };
       }

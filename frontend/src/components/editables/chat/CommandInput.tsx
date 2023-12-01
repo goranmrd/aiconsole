@@ -38,8 +38,6 @@ export const CommandInput = ({ className, onSubmit, actionIcon, actionLabel }: M
   const promptDown = useChatStore((state) => state.historyDown);
   const chat = useChatStore((state) => state.chat);
 
-  const sendingMessagesBlocked = command === '' && chat?.message_groups?.length == 0;
-
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -50,9 +48,7 @@ export const CommandInput = ({ className, onSubmit, actionIcon, actionLabel }: M
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
 
-      if (!sendingMessagesBlocked) {
-        await handleSendMessage();
-      }
+      await handleSendMessage();
     }
 
     if (textAreaRef.current) {
@@ -102,13 +98,7 @@ export const CommandInput = ({ className, onSubmit, actionIcon, actionLabel }: M
         />
         <Tooltip label={actionLabel} position="top-end" offset={10}>
           <div>
-            <Button
-              variant="primary"
-              iconOnly={true}
-              onClick={handleSendMessage}
-              disabled={sendingMessagesBlocked}
-              classNames={cn('p-2', {})}
-            >
+            <Button variant="primary" iconOnly={true} onClick={handleSendMessage} classNames={cn('p-2', {})}>
               <ActionIcon className="w-6 h-6" />
             </Button>
           </div>
