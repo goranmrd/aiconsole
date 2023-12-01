@@ -158,3 +158,8 @@ body {
   font-weight: 900;
   line-height: 18px;
 }
+
+
+.guide-gradient {
+  background: radial-gradient(265.78% 127.04% at 28.53% -25.58%, #221C2C 0%, #111 100%);
+}
