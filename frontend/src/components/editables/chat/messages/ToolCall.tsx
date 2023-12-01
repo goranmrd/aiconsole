@@ -99,7 +99,7 @@ export function ToolCall({ group, toolCall: tool_call }: MessageProps) {
     <div className="rounded-md flex flex-col bg-gray-700 flex-grow mr-4 overflow-auto ">
       <div
         className={cn(
-          'cursor-pointer rounded-md text-gray-400  rounded-b-md px-[30px] py-[15px] border-2 border-gray-600 hover:text-gray-300 hover:border-gray-300 hover:bg-gray-600 transition-ease duration-100',
+          'cursor-pointer rounded-md  rounded-b-md px-[30px] py-[15px] border-2 border-gray-600 hover:text-gray-300 hover:border-gray-500 hover:bg-gray-600 transition-ease duration-100',
           {
             'border-b-2 border-gray-600 rounded-b-none': !folded,
           },
@@ -116,7 +116,8 @@ export function ToolCall({ group, toolCall: tool_call }: MessageProps) {
               <CheckCircle2Icon className="h-5 w-5 text-success" />
             )}
             {!shouldDisplaySpinner && isError && <AlertCircleIcon className="h-5 w-5 text-danger" />}
-            <span className="font-semibold">{folded ? 'Show the code' : 'Hide the code'}</span>
+
+            <span className="font-semibold"> {tool_call.headline ? tool_call.headline : 'Task'}</span>
           </div>
 
           {folded && <ChevronUp className="h-5 w-5" />}
