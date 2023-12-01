@@ -20,11 +20,13 @@ from aiconsole.core.assets.asset import AssetType
 from aiconsole.core.project.project import is_project_initialized
 from aiconsole.utils.resource_to_path import resource_to_path
 
+
 def get_project_assets_directory(asset_type: AssetType, project_path: Path | None = None):
     if not is_project_initialized() and not project_path:
         raise ValueError("Project settings are not initialized")
 
     return get_project_directory(project_path) / f"{asset_type.value}s"
+
 
 def get_core_assets_directory(asset_type: AssetType):
     return resource_to_path(f"aiconsole.preinstalled.{asset_type.value}s")
@@ -33,7 +35,7 @@ def get_core_assets_directory(asset_type: AssetType):
 def get_history_directory(project_path: Path | None = None):
     if not is_project_initialized() and not project_path:
         raise ValueError("Project settings are not initialized")
-    return get_aic_directory(project_path) / "history"
+    return get_project_directory(project_path) / "chats"
 
 
 def get_aic_directory(project_path: Path | None = None):
