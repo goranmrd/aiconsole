@@ -44,7 +44,7 @@ interface MessageProps {
 
 export function ToolCall({ group, toolCall: tool_call }: MessageProps) {
   const removeToolCallFromMessage = useChatStore((state) => state.removeToolCallFromMessage);
-  const editMessage = useChatStore((state) => state.editMessage);
+  const editToolCall = useChatStore((state) => state.editToolCall);
   const saveCommandAndMessagesToHistory = useChatStore((state) => state.saveCommandAndMessagesToHistory);
 
   const alwaysExecuteCode = useSettingsStore((state) => state.alwaysExecuteCode);
@@ -65,13 +65,12 @@ export function ToolCall({ group, toolCall: tool_call }: MessageProps) {
 
   const handleAcceptedContent = useCallback(
     (content: string) => {
-      editMessage((message: AICMessage) => {
-        message.content = content;
+      editToolCall((toolCall) => {
+        toolCall.code = content;
       }, tool_call.id);
-
       saveCommandAndMessagesToHistory(content, group.role === 'user');
     },
-    [tool_call.id, editMessage, saveCommandAndMessagesToHistory, group.role],
+    [tool_call.id, editToolCall, saveCommandAndMessagesToHistory, group.role],
   );
 
   const handleRemoveClick = useCallback(() => {
