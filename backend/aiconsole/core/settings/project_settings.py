@@ -224,17 +224,21 @@ class Settings:
 
     def save(self, settings_data: PartialSettingsData, to_global: bool = False) -> None:
         if to_global:
+            global_file_path = self._global_settings_file_path
             file_path = self._global_settings_file_path
         else:
             if not self._project_settings_file_path:
                 raise ValueError("Cannnot save to project settings file, because project is not initialized")
 
+            global_file_path = self._global_settings_file_path
             file_path = self._project_settings_file_path
 
+        global_document = self.__get_tolmdocument_to_save(global_file_path)
         document = self.__get_tolmdocument_to_save(file_path)
         doc_settings: tomlkit.table.Table = document["settings"]
         doc_materials: tomlkit.table.Table = document["materials"]
         doc_agents: tomlkit.table.Table = document["agents"]
+        global_doc_agents: tomlkit.table.Table = global_document["agents"]
 
         if settings_data.code_autorun is not None:
             doc_settings["code_autorun"] = settings_data.code_autorun
@@ -260,8 +264,10 @@ class Settings:
                 was_forced = agent
 
         if was_forced:
-            for agent in doc_agents:
-                if agent != was_forced and doc_agents[agent] == AssetStatus.FORCED.value:
+            for agent in set([*global_doc_agents, *doc_agents]):
+                if agent != was_forced and (
+                    doc_agents.get(agent, global_doc_agents.get(agent, "")) == AssetStatus.FORCED.value
+                ):
                     doc_agents[agent] = AssetStatus.ENABLED.value
 
         self._suppress_notification_until = datetime.datetime.now() + datetime.timedelta(seconds=30)
