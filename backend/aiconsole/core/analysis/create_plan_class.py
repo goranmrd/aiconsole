@@ -23,7 +23,7 @@ from pydantic import Field
 
 
 import random
-from typing import List
+from typing import list
 
 
 def create_plan_class(available_agents):
@@ -56,7 +56,7 @@ def create_plan_class(available_agents):
             json_schema_extra={"enum": [s.id for s in random.sample(available_agents, len(available_agents))]},
         )
 
-        relevant_material_ids: List[str] = Field(
+        relevant_material_ids: list[str] = Field(
             ...,
             description="Chosen material ids relevant for the task",
             json_schema_extra={

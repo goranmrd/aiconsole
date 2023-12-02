@@ -16,12 +16,10 @@
 
 import os
 from pathlib import Path
-from typing import Optional
 
-from aiconsole.core.project.venv import create_dedicated_venv
 from aiconsole.core.project.paths import get_project_directory
 from aiconsole.core.project.project import change_project_directory, is_project_initialized
-
+from aiconsole.core.project.venv import create_dedicated_venv
 from fastapi import APIRouter, BackgroundTasks
 from pydantic import BaseModel
 
@@ -51,7 +49,7 @@ async def _ask_directory():
 
 
 class ChooseParams(BaseModel):
-    directory: Optional[str] = None
+    directory: str | None = None
 
 
 @router.post("/is_project")

@@ -15,7 +15,7 @@
 # limitations under the License.
 
 import logging
-from typing import List, cast
+from typing import cast
 
 from aiconsole.consts import DIRECTOR_MIN_TOKENS, DIRECTOR_PREFERRED_TOKENS
 from aiconsole.core.analysis.agents_to_choose_from import agents_to_choose_from
@@ -74,7 +74,7 @@ def pick_agent(arguments, chat: Chat, available_agents: list[Agent]) -> Agent:
     return picked_agent
 
 
-def _get_relevant_materials(relevant_material_ids: List[str]) -> List[Material]:
+def _get_relevant_materials(relevant_material_ids: list[str]) -> list[Material]:
     # Maximum of 5 materials
     relevant_materials = [
         cast(Material, k)

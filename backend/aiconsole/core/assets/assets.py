@@ -16,7 +16,6 @@
 
 import datetime
 import logging
-from typing import Dict, List
 from aiconsole.core.assets.asset import Asset, AssetLocation, AssetStatus, AssetType
 from aiconsole.core.assets.fs.move_asset_in_fs import move_asset_in_fs
 from aiconsole.core.assets.fs.project_asset_exists_fs import project_asset_exists_fs
@@ -36,7 +35,7 @@ _log = logging.getLogger(__name__)
 
 class Assets:
     # _assets have lists, where the first element is the one overriding the others (currently there can be only one overriden element)
-    _assets: Dict[str, list[Asset]]
+    _assets: dict[str, list[Asset]]
 
     def __init__(self, asset_type: AssetType):
         self._suppress_notification_until = None
@@ -54,13 +53,13 @@ class Assets:
     def stop(self):
         self.observer.stop()
 
-    def all_assets(self) -> List[Asset]:
+    def all_assets(self) -> list[Asset]:
         """
         Return all loaded assets.
         """
         return list(assets[0] for assets in self._assets.values())
 
-    def assets_with_status(self, status: AssetStatus) -> List[Asset]:
+    def assets_with_status(self, status: AssetStatus) -> list[Asset]:
         """
         Return all loaded assets with a specific status.
         """

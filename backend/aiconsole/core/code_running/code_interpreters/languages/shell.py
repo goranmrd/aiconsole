@@ -21,23 +21,23 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-#     ____                      ____      __                            __           
+#     ____                      ____      __                            __
 #    / __ \____  ___  ____     /  _/___  / /____  _________  ________  / /____  _____
 #   / / / / __ \/ _ \/ __ \    / // __ \/ __/ _ \/ ___/ __ \/ ___/ _ \/ __/ _ \/ ___/
-#  / /_/ / /_/ /  __/ / / /  _/ // / / / /_/  __/ /  / /_/ / /  /  __/ /_/  __/ /    
-#  \____/ .___/\___/_/ /_/  /___/_/ /_/\__/\___/_/  / .___/_/   \___/\__/\___/_/     
-#      /_/                                         /_/                               
+#  / /_/ / /_/ /  __/ / / /  _/ // / / / /_/  __/ /  / /_/ / /  /  __/ /_/  __/ /
+#  \____/ .___/\___/_/ /_/  /___/_/ /_/\__/\___/_/  / .___/_/   \___/\__/\___/_/
+#      /_/                                         /_/
 #
 # This file has been taken from the wonderful project "open-interpreter" by Killian Lucas
 # https://github.com/KillianLucas/open-interpreter
 #
 
 import platform
-from typing import List
 
 from aiconsole.core.assets.materials.material import Material
 from ..subprocess_code_interpreter import SubprocessCodeInterpreter
 import os
+
 
 class Shell(SubprocessCodeInterpreter):
     file_extension = "sh"
@@ -47,20 +47,20 @@ class Shell(SubprocessCodeInterpreter):
         super().__init__()
 
         # Determine the start command based on the platform
-        if platform.system() == 'Windows':
-            self.start_cmd = 'cmd.exe'
+        if platform.system() == "Windows":
+            self.start_cmd = "cmd.exe"
         else:
-            self.start_cmd = os.environ.get('SHELL', 'bash')
+            self.start_cmd = os.environ.get("SHELL", "bash")
 
-    def preprocess_code(self, code, materials: List[Material]):
+    def preprocess_code(self, code, materials: list[Material]):
         return preprocess_shell(code)
-    
+
     def line_postprocessor(self, line):
         return line
 
     def detect_end_of_execution(self, line):
         return "## end_of_execution ##" in line
-        
+
 
 def preprocess_shell(code):
     """
@@ -68,17 +68,15 @@ def preprocess_shell(code):
     Wrap in a try except (trap in shell)
     Add end of execution marker
     """
-    
+
     # Wrap in a trap for errors
-    if platform.system() != 'Windows':
+    if platform.system() != "Windows":
         code = wrap_in_trap(code)
-    
+
     # Add end command (we'll be listening for this so we know when it ends)
     code += '\necho "## end_of_execution ##"'
-    
+
     return code
-
-
 
 
 def wrap_in_trap(code):

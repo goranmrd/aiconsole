@@ -26,13 +26,10 @@ from aiconsole.core.gpt.types import (
 )
 
 
-from typing import List
-
-
 last_system_message = None
 
 
-def convert_message(group: AICMessageGroup, message: AICMessage, is_last: bool) -> List[GPTRequestMessage]:
+def convert_message(group: AICMessageGroup, message: AICMessage, is_last: bool) -> list[GPTRequestMessage]:
     global last_system_message
 
     result = []
@@ -114,11 +111,11 @@ Output truncated to last {FUNCTION_CALL_OUTPUT_LIMIT} characters:
     return result
 
 
-def convert_messages(chat: Chat) -> List[GPTRequestMessage]:
+def convert_messages(chat: Chat) -> list[GPTRequestMessage]:
     global last_system_message
     last_system_message = None
 
-    messages: List[GPTRequestMessage] = []
+    messages: list[GPTRequestMessage] = []
 
     for message_group in chat.message_groups:
         is_last_group = message_group == chat.message_groups[-1]

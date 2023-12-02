@@ -15,7 +15,6 @@
 # limitations under the License.
 
 from enum import Enum
-from typing import List
 from pydantic import BaseModel
 
 
@@ -43,7 +42,7 @@ class AssetStatus(str, Enum):
 class Asset(EditableObject):
     version: str = "0.0.1"
     usage: str
-    usage_examples: List[str]
+    usage_examples: list[str]
     defined_in: AssetLocation
     type: AssetType
     default_status: AssetStatus = AssetStatus.ENABLED

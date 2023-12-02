@@ -15,7 +15,6 @@
 # limitations under the License.
 
 from datetime import datetime
-from typing import List
 from aiconsole.core.assets.asset import EditableObject
 
 from aiconsole.core.code_running.code_interpreters.language_map import LanguageStr
@@ -43,8 +42,8 @@ class AICMessageGroup(BaseModel):
     agent_id: str
     role: GPTRole
     task: str
-    materials_ids: List[str]
-    messages: List[AICMessage]
+    materials_ids: list[str]
+    messages: list[AICMessage]
 
 
 class ChatHeadline(EditableObject):
@@ -59,7 +58,7 @@ class ChatHeadline(EditableObject):
 
 class Chat(ChatHeadline):
     title_edited: bool = False
-    message_groups: List[AICMessageGroup]
+    message_groups: list[AICMessageGroup]
 
 
 class Command(BaseModel):
@@ -67,4 +66,4 @@ class Command(BaseModel):
 
 
 class ChatHeadlines(BaseModel):
-    headlines: List[ChatHeadline]
+    headlines: list[ChatHeadline]

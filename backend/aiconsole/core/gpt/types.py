@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import List, Literal, Union
+from typing import Literal
 from pydantic import BaseModel
 from typing_extensions import TypedDict
 
@@ -37,7 +37,7 @@ class EnforcedFunctionCall(TypedDict):
 
 class GPTFunctionCall(BaseModel):
     name: str
-    arguments: Union[dict, str]
+    arguments: dict | str
 
 
 class GPTToolCall(BaseModel):
@@ -67,14 +67,14 @@ class GPTRequestTextMessage(BaseModel):
     role: GPTRole
     content: str | None = None
     name: str | None = None
-    tool_calls: List[GPTToolCall] | None = None
+    tool_calls: list[GPTToolCall] | None = None
 
     def model_dump(self):
         # Don't include None values, call to super to avoid recursion
         return {k: v for k, v in super().model_dump().items() if v is not None}
 
 
-GPTRequestMessage = Union[GPTRequestTextMessage, GPTRequestToolMessage]
+GPTRequestMessage = GPTRequestTextMessage | GPTRequestToolMessage
 
 
 class GPTChoice(BaseModel):
@@ -88,4 +88,4 @@ class GPTResponse(BaseModel):
     object: str = ""
     created: int = 0
     model: str = ""
-    choices: List[GPTChoice]
+    choices: list[GPTChoice]

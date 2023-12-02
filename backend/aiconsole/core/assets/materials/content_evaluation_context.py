@@ -23,11 +23,8 @@ from aiconsole.core.assets.materials.material import Material
 from pydantic import BaseModel
 
 
-from typing import List
-
-
 class ContentEvaluationContext(BaseModel):
     chat: Chat
     agent: Agent
     gpt_mode: GPTMode
-    relevant_materials: List["Material"]
+    relevant_materials: list["Material"]

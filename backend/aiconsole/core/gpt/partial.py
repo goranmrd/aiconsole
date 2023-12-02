@@ -15,13 +15,12 @@
 # limitations under the License.
 
 import json
-from typing import List, Optional, Union
 
 from aiconsole.core.gpt.types import GPTChoice, GPTFunctionCall, GPTResponse, GPTResponseMessage, GPTRole, GPTToolCall
 from pydantic import BaseModel
 
 
-def _parse_partial_json(s: str) -> Union[dict, str]:
+def _parse_partial_json(s: str) -> dict | str:
     try:
         return json.loads(s)
     except json.JSONDecodeError:
@@ -63,10 +62,10 @@ def _parse_partial_json(s: str) -> Union[dict, str]:
 
 class GPTPartialFunctionCall(BaseModel):
     name: str = ""
-    arguments_builder: List[str] = []
+    arguments_builder: list[str] = []
 
     @property
-    def arguments(self) -> Union[dict, str]:
+    def arguments(self) -> dict | str:
         self.arguments_builder = ["".join(self.arguments_builder)]
         return _parse_partial_json(self.arguments_builder[0])
 
@@ -78,11 +77,11 @@ class GPTPartialToolsCall(BaseModel):
 
 
 class GPTPartialMessage(BaseModel):
-    role: Optional[GPTRole] = None
-    content_builder: Union[List[str], None] = None
+    role: GPTRole | None = None
+    content_builder: list[str] | None = None
 
     tool_calls: list[GPTPartialToolsCall] = []
-    name: Optional[str] = None
+    name: str | None = None
 
     @property
     def content(self):
@@ -105,7 +104,7 @@ class GPTPartialResponse(BaseModel):
     object: str = ""
     created: int = 0
     model: str = ""
-    choices: List[GPTPartialChoice] = []
+    choices: list[GPTPartialChoice] = []
 
     def to_final_response(self):
         return GPTResponse(

@@ -14,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import List
 from aiconsole.core.assets.asset import Asset, AssetStatus, AssetType
 from pydantic import BaseModel
 from aiconsole.core.chat.types import Chat
@@ -39,4 +38,4 @@ class ExecutionModeContext(BaseModel):
     chat: Chat
     agent: Agent
     gpt_mode: GPTMode
-    relevant_materials: List[RenderedMaterial]
+    relevant_materials: list[RenderedMaterial]

@@ -33,7 +33,7 @@
 #
 
 import os
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING
 
 
 if TYPE_CHECKING:
@@ -50,7 +50,7 @@ class AppleScript(SubprocessCodeInterpreter):
         super().__init__()
         self.start_cmd = os.environ.get("SHELL", "/bin/zsh")
 
-    def preprocess_code(self, code, materials: List["Assets"]):
+    def preprocess_code(self, code, materials: list["Assets"]):
         """
         Inserts an end_of_execution marker and adds active line indicators.
         """
