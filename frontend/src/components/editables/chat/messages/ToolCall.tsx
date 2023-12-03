@@ -81,7 +81,12 @@ export function ToolCall({ group, toolCall: tool_call }: MessageProps) {
   const shouldDisplaySpinner =
     tool_call.is_code_executing || (tool_call.is_streaming && tool_call.output === undefined);
 
-  const isError = tool_call.output?.includes('Traceback') || tool_call.output?.includes('Error');
+  const isError =
+    tool_call.output?.toLowerCase().includes('traceback') ||
+    tool_call.output?.toLowerCase().includes('syntax error:') ||
+    tool_call.output?.toLowerCase().includes('execution error:') ||
+    tool_call.output?.toLowerCase().includes('an error occurred on line') ||
+    tool_call.output?.toLowerCase().match(/file\s*".*",\s*line/g);
 
   const customVs2015 = {
     ...vs2015,
