@@ -23,7 +23,6 @@ from pydantic import Field
 
 
 import random
-from typing import list
 
 
 def create_plan_class(available_agents):

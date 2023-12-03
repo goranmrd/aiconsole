@@ -33,8 +33,8 @@ if TYPE_CHECKING:
     from aiconsole.core.assets import assets
 
 
-_materials: "assets.Assets" | None = None
-_agents: "assets.Assets" | None = None
+_materials: "assets.Assets | None" = None
+_agents: "assets.Assets | None" = None
 _project_initialized = False
 
 
