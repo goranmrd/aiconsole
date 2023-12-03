@@ -129,6 +129,16 @@ async function deleteEditableObject(editableObjectType: EditableObjectType, id: 
   });
 }
 
+async function getPathForEditableObject(editableObjectType: EditableObjectType, id: string) {
+  return (
+    (await ky
+      .get(`${getBaseURL()}/api/${editableObjectType}s/${id}/path`, {
+        hooks: API_HOOKS,
+      })
+      .json()) as { path: string }
+  ).path;
+}
+
 export const EditablesAPI = {
   deleteEditableObject,
   fetchEditableObjects,
@@ -138,4 +148,5 @@ export const EditablesAPI = {
   previewMaterial,
   saveNewEditableObject,
   updateEditableObject,
+  getPathForEditableObject,
 };

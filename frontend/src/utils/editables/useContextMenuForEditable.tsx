@@ -16,7 +16,7 @@
 
 import { useAssetStore } from '@/store/editables/asset/useAssetStore';
 import { Asset, AssetStatus, AssetType, EditableObject, EditableObjectType } from '@/types/editables/assetTypes';
-import { Circle, Copy, Edit, File, Trash, Undo2 } from 'lucide-react';
+import { Circle, Copy, Edit, File, FolderOpenIcon, Trash, Undo2 } from 'lucide-react';
 import { ContextMenuContent } from 'mantine-contextmenu';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
@@ -25,6 +25,7 @@ import { useDeleteEditableObjectWithUserInteraction } from './useDeleteEditableO
 import { useMemo } from 'react';
 import { RadioCheckedIcon } from '@/components/common/icons/RadioCheckedIcon';
 import { noop } from '../common/noop';
+import { useEditablesStore } from '@/store/editables/useEditablesStore';
 
 export const DISABLED_CSS_CLASSES = 'max-w-[400px] truncate !text-gray-400 pointer-events-none !cursor-default ';
 
@@ -71,6 +72,8 @@ export function useEditableObjectContextMenu({
   const navigate = useNavigate();
   const location = useLocation();
   const handleDelete = useDeleteEditableObjectWithUserInteraction(editableObjectType);
+  const canOpenFinderForEditable = useEditablesStore((state) => state.canOpenFinderForEditable);
+  const openFinderForEditable = useEditablesStore((state) => state.openFinderForEditable);
 
   function showContextMenuReplacement() {
     if (!editableObject) {
@@ -141,6 +144,15 @@ export function useEditableObjectContextMenu({
         hidden: location.pathname === `/${editableObjectType}s/${editableObject.id}`,
         onClick: () => {
           navigate(`/${editableObjectType}s/${editableObject.id}`);
+        },
+      },
+      {
+        key: 'reveal',
+        icon: <FolderOpenIcon className="w-4 h-4" />,
+        title: `Reveal in ${window.window?.electron?.getFileManagerName()}`,
+        hidden: !canOpenFinderForEditable(editableObject),
+        onClick: () => {
+          openFinderForEditable(editableObject);
         },
       },
 

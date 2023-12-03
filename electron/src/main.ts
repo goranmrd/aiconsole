@@ -272,6 +272,9 @@ ipcMain.on("request-backend-port", async (event) => {
 
 app.whenReady().then(() => {
   ipcMain.handle("open-dir-picker", handleDirPicker);
+  ipcMain.handle("open-finder", async (event, path) => {
+    shell.showItemInFolder(path);
+  });
 
   // Close the FastAPI process when the Electron app closes
   app.on("will-quit", () => {

@@ -62,3 +62,8 @@ async def save_history(chat_id, chat: Chat):
         status_code=status.HTTP_201_CREATED,
         content="Chat history saved successfully",
     )
+
+
+@router.get("/{chat_id}/path")
+async def get_history_path(chat_id: str):
+    return {"path": str(get_history_directory() / f"{chat_id}.json")}

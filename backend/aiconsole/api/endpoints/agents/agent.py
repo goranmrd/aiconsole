@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from aiconsole.api.utils.asset_exists import asset_exists
+from aiconsole.api.utils.asset_exists import asset_exists, asset_path
 from aiconsole.api.utils.asset_get import asset_get
 from aiconsole.api.utils.asset_save import asset_patch, asset_post
 from aiconsole.api.utils.asset_status_change import asset_status_change
@@ -76,3 +76,8 @@ async def delete_agent(agent_id: str):
 @router.get("/{asset_id}/exists")
 async def agent_exists(request: Request, asset_id: str):
     return await asset_exists(AssetType.AGENT, request, asset_id)
+
+
+@router.get("/{asset_id}/path")
+async def agent_path(request: Request, asset_id: str):
+    return asset_path(AssetType.AGENT, request, asset_id)
