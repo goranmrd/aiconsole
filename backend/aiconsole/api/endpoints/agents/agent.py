@@ -36,7 +36,7 @@ async def agent_get(request: Request, agent_id: str):
         AssetType.AGENT,
         agent_id,
         lambda: AgentWithStatus(
-            id="",
+            id="new_agent",
             name="New Agent",
             usage="",
             usage_examples=[],

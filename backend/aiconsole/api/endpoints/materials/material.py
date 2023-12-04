@@ -39,7 +39,7 @@ async def material_get(request: Request, material_id: str):
         AssetType.MATERIAL,
         material_id,
         lambda: MaterialWithStatus(
-            id="",
+            id="new_" + get_material_content_name(type).lower(),
             name="New " + get_material_content_name(type),
             usage="",
             usage_examples=[],
