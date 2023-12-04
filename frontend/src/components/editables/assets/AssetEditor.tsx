@@ -131,7 +131,7 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
   const isAssetChanged = useAssetChanged();
   const isPrevAssetChanged = usePrevious(isAssetChanged);
   const [newPath, setNewPath] = useState<string>('');
-
+  const isNew = id === 'new';
   const { updateStatusIfNecessary, isAssetStatusChanged, renameAsset } = useAssets(assetType);
 
   const wasAssetChangedInitially = !isPrevAssetChanged && isAssetChanged;
@@ -330,9 +330,18 @@ export function AssetEditor({ assetType }: { assetType: AssetType }) {
   };
   const submitButtonLabel = getSubmitButtonLabel();
   const isSavedButtonLabel = submitButtonLabel === SubmitButtonLabels.Saved;
+  const hasNameAndId = asset?.id && asset?.name;
+  const enableSubmitRule = (isAssetChanged || isAssetStatusChanged) && hasNameAndId;
 
-  const enableSubmit = (isAssetChanged || isAssetStatusChanged) && asset?.id && asset?.name;
-  const disableSubmit = !enableSubmit && !isSavedButtonLabel;
+  const enableSubmit = () => {
+    if (isNew) {
+      return hasNameAndId;
+    }
+
+    return enableSubmitRule;
+  };
+  const isSubmitEnabled = enableSubmit();
+  const disableSubmit = !isSubmitEnabled && !isSavedButtonLabel;
 
   return (
     <div className="flex flex-col w-full h-full max-h-full overflow-auto">
