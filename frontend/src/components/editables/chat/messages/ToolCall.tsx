@@ -125,8 +125,8 @@ export function ToolCall({ group, toolCall: tool_call }: MessageProps) {
             <span className="font-semibold"> {tool_call.headline ? tool_call.headline : 'Task'}</span>
           </div>
 
-          {folded && <ChevronUp className="h-5 w-5" />}
-          {!folded && <ChevronDown className="h-5 w-5" />}
+          {!folded && <ChevronUp className="h-5 w-5" />}
+          {folded && <ChevronDown className="h-5 w-5" />}
         </div>
       </div>
 

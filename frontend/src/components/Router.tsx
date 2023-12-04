@@ -75,7 +75,7 @@ export function Router() {
               <Route
                 path="*"
                 element={
-                  <div className="App flex flex-col h-screen fixed top-0 left-0 bottom-0 right-0 bg-gray-800/95 text-stone-400">
+                  <div className="App flex flex-col h-screen fixed top-0 left-0 bottom-0 right-0 bg-gray-900 text-stone-400">
                     <GlobalSettingsModal />
                     <TopBar>
                       <ProjectTopBarElements />
