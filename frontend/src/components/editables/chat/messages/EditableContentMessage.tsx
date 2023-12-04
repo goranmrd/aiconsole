@@ -72,11 +72,12 @@ export function EditableContentMessage({
       {isEditing ? (
         <div className="bg-gray-700 rounded-md flex-grow">
           <CodeInput
-            className="resize-none border-0 bg-transparent w-full outline-none h-96"
+            className="resize-none border-0 bg-transparent w-full outline-none"
             value={content}
             onChange={handleOnChange}
             codeLanguage={language ? language : 'text'}
             transparent
+            maxHeight="400px"
             onBlur={handleBlur} // added onBlur event here
           />
         </div>

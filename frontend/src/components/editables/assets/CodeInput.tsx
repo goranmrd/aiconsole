@@ -22,6 +22,8 @@ import { cn } from '@/utils/common/cn';
 import { FocusEvent, useCallback, useRef, useState } from 'react';
 import { useClickOutside } from '@/hooks/useClickOutside';
 
+const DEFAULT_MAX_HEIGHT = 'calc(100% - 50px)';
+
 interface CodeInputProps {
   label?: string;
   value: string;
@@ -32,6 +34,7 @@ interface CodeInputProps {
   disabled?: boolean;
   readOnly?: boolean;
   transparent?: boolean;
+  maxHeight?: string;
 }
 
 export function CodeInput({
@@ -44,6 +47,7 @@ export function CodeInput({
   disabled = false,
   readOnly = false,
   transparent = false,
+  maxHeight = DEFAULT_MAX_HEIGHT,
 }: CodeInputProps) {
   const [focus, setFocus] = useState(false);
   const editorBoxRef = useRef<HTMLDivElement | null>(null);
@@ -123,11 +127,13 @@ export function CodeInput({
       )}
       <div
         ref={editorBoxRef}
-        className={cn(
-          className,
-          'font-mono text-sm overflow-y-auto   min-h-[calc(100%-50px)]  max-h-[calc(100%-50px)] bg-black/20 border border-transparent rounded',
-          { 'border-primary/50 ': focus },
-        )}
+        style={{
+          maxHeight,
+          minHeight: maxHeight,
+        }}
+        className={cn(className, 'font-mono text-sm overflow-y-auto bg-black/20 border border-transparent rounded', {
+          'border-primary/50 ': focus,
+        })}
         onClick={focus ? undefined : handleEditorBoxClick}
       >
         <Editor
