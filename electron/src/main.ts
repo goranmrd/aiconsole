@@ -309,13 +309,11 @@ ipcMain.on('request-backend-port', async (event) => {
 });
 
 app.whenReady().then(() => {
-  ipcMain.handle("open-dir-picker", handleDirPicker);
-  ipcMain.handle("open-finder", async (event, path) => {
+  ipcMain.handle('open-dir-picker', handleDirPicker);
+  ipcMain.handle('open-finder', async (event, path) => {
     shell.showItemInFolder(path);
   });
   createLoaderWindow();
-
-  ipcMain.handle('open-dir-picker', handleDirPicker);
 
   app.on('will-quit', () => {
     windowManager.windows.forEach(({ backendProcess }) => {
