@@ -37,7 +37,7 @@ import threading
 import queue
 import time
 import traceback
-from typing import AsyncGenerator, List
+from typing import AsyncGenerator
 
 from aiconsole.core.assets.materials.material import Material
 from .base_code_interpreter import BaseCodeInterpreter
@@ -62,7 +62,7 @@ class SubprocessCodeInterpreter(BaseCodeInterpreter):
     def line_postprocessor(self, line):
         return line
 
-    def preprocess_code(self, code, materials: List[Material]):
+    def preprocess_code(self, code, materials: list[Material]):
         """
         This needs to insert an end_of_execution marker of some kind,
         which can be detected by detect_end_of_execution.
@@ -94,7 +94,7 @@ class SubprocessCodeInterpreter(BaseCodeInterpreter):
         threading.Thread(target=self.handle_stream_output, args=(self.process.stdout, False), daemon=True).start()
         threading.Thread(target=self.handle_stream_output, args=(self.process.stderr, True), daemon=True).start()
 
-    async def run(self, code: str, materials: List[Material]) -> AsyncGenerator[str, None]:
+    async def run(self, code: str, materials: list[Material]) -> AsyncGenerator[str, None]:
         retry_count = 0
         max_retries = 3
 
@@ -103,7 +103,7 @@ class SubprocessCodeInterpreter(BaseCodeInterpreter):
             code = self.preprocess_code(code, materials)
             if not self.process:
                 self.start_process()
-        except: # noqa E722
+        except:  # noqa E722
             yield traceback.format_exc()
             return
 
@@ -120,7 +120,7 @@ class SubprocessCodeInterpreter(BaseCodeInterpreter):
                 self.process.stdin.write(code + "\n")
                 self.process.stdin.flush()
                 break
-            except: # noqa E722
+            except:  # noqa E722
                 if retry_count != 0:
                     # For UX, I like to hide this if it happens once. Obviously feels better to not see errors
                     # Most of the time it doesn't matter, but we should figure out why it happens frequently with:

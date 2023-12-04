@@ -1,6 +1,6 @@
 import asyncio
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 from aiconsole.core.settings.project_settings import Settings
 
@@ -12,7 +12,7 @@ def set_code_autorun(autorun: bool) -> None:
     settings.stop()
 
 
-def get_settings() -> Dict[str, Any]:
+def get_settings() -> dict[str, Any]:
     settings = Settings()
     asyncio.run(settings.reload())
     settings.stop()

@@ -22,11 +22,10 @@ Connection manager for websockets. Keeps track of all active connections
 
 import logging
 from fastapi import WebSocket
-from typing import List
 from aiconsole.api.websockets.outgoing_messages import BaseWSMessage
 
 _log = logging.getLogger(__name__)
-_active_connections: List["AICConnection"] = []
+_active_connections: list["AICConnection"] = []
 
 
 class AICConnection:

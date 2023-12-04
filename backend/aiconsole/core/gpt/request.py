@@ -16,7 +16,7 @@
 
 import json
 import logging
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Any, Literal
 from pydantic import BaseModel
 
 import tiktoken
@@ -32,7 +32,7 @@ EXTRA_BUFFER_FOR_ENCODING_OVERHEAD = 50
 
 class ToolFunctionParameters(BaseModel):
     type: "object"
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
     required: list[str]
 
 
@@ -51,10 +51,10 @@ class GPTRequest:
     def __init__(
         self,
         system_message: str,
-        messages: List[GPTRequestMessage],
+        messages: list[GPTRequestMessage],
         gpt_mode: GPTMode,
-        tools: List[ToolDefinition] = [],
-        tool_choice: Union[Literal["none"], Literal["auto"], EnforcedFunctionCall, None] = None,
+        tools: list[ToolDefinition] = [],
+        tool_choice: Literal["none"] | Literal["auto"] | EnforcedFunctionCall | None = None,
         temperature: float = 1,
         presence_penalty: float = 0,
         min_tokens: int = 0,
@@ -131,7 +131,7 @@ class GPTRequest:
 
         return messages_tokens
 
-    def count_tokens_output(self, message_content: str, message_function_call: Optional[Dict]):
+    def count_tokens_output(self, message_content: str, message_function_call: dict | None):
         encoding = tiktoken.encoding_for_model(self.model_data.encoding)
 
         return len(encoding.encode(message_content)) + (

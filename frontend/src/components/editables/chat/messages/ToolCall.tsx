@@ -18,7 +18,9 @@ import { useCallback, useState } from 'react';
 
 import { useChatStore } from '@/store/editables/chat/useChatStore';
 import { useSettingsStore } from '@/store/settings/useSettingsStore';
-import { AICMessage, AICMessageGroup, AICToolCall } from '@/types/editables/chatTypes';
+import { AICMessageGroup, AICToolCall } from '@/types/editables/chatTypes';
+import { cn } from '@/utils/common/cn';
+import { upperFirst } from '@mantine/hooks';
 import {
   AlertCircleIcon,
   CheckCircle2Icon,
@@ -34,8 +36,6 @@ import { duotoneDark as vs2015 } from 'react-syntax-highlighter/dist/cjs/styles/
 import { Button } from '../../../common/Button';
 import { EditableContentMessage } from './EditableContentMessage';
 import { ToolOutput } from './ToolOutput';
-import { cn } from '@/utils/common/cn';
-import { upperFirst } from '@mantine/hooks';
 
 interface MessageProps {
   group: AICMessageGroup;
@@ -81,7 +81,12 @@ export function ToolCall({ group, toolCall: tool_call }: MessageProps) {
   const shouldDisplaySpinner =
     tool_call.is_code_executing || (tool_call.is_streaming && tool_call.output === undefined);
 
-  const isError = tool_call.output?.includes('Traceback') || tool_call.output?.includes('Error');
+  const isError =
+    tool_call.output?.toLowerCase().includes('traceback') ||
+    tool_call.output?.toLowerCase().includes('syntax error:') ||
+    tool_call.output?.toLowerCase().includes('execution error:') ||
+    tool_call.output?.toLowerCase().includes('an error occurred on line') ||
+    tool_call.output?.toLowerCase().match(/file\s*".*",\s*line/g);
 
   const customVs2015 = {
     ...vs2015,
@@ -99,7 +104,7 @@ export function ToolCall({ group, toolCall: tool_call }: MessageProps) {
     <div className="rounded-md flex flex-col bg-gray-700 flex-grow mr-4 overflow-auto ">
       <div
         className={cn(
-          'cursor-pointer rounded-md text-gray-400  rounded-b-md px-[30px] py-[15px] border-2 border-gray-600 hover:text-gray-300 hover:border-gray-300 hover:bg-gray-600 transition-ease duration-100',
+          'cursor-pointer rounded-md  rounded-b-md px-[30px] py-[15px] border-2 border-gray-600 hover:text-gray-300 hover:border-gray-500 hover:bg-gray-600 transition-ease duration-100',
           {
             'border-b-2 border-gray-600 rounded-b-none': !folded,
           },
@@ -116,7 +121,8 @@ export function ToolCall({ group, toolCall: tool_call }: MessageProps) {
               <CheckCircle2Icon className="h-5 w-5 text-success" />
             )}
             {!shouldDisplaySpinner && isError && <AlertCircleIcon className="h-5 w-5 text-danger" />}
-            <span className="font-semibold">{folded ? 'Show the code' : 'Hide the code'}</span>
+
+            <span className="font-semibold"> {tool_call.headline ? tool_call.headline : 'Task'}</span>
           </div>
 
           {folded && <ChevronUp className="h-5 w-5" />}

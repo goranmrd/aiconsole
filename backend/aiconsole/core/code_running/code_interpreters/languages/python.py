@@ -32,14 +32,13 @@
 # https://github.com/KillianLucas/open-interpreter
 #
 
-import sys
-from typing import List
+import ast
+import logging
+import re
 
 from aiconsole.core.assets.materials.material import Material
+
 from ..subprocess_code_interpreter import SubprocessCodeInterpreter
-import ast
-import re
-import logging
 
 _log = logging.getLogger(__name__)
 
@@ -52,7 +51,7 @@ class Python(SubprocessCodeInterpreter):
         super().__init__()
         self.start_cmd = "python -i -q -u"
 
-    def preprocess_code(self, code: str, materials: List[Material]):
+    def preprocess_code(self, code: str, materials: list[Material]):
         return preprocess_python(code, materials)
 
     def line_postprocessor(self, line):
@@ -64,7 +63,7 @@ class Python(SubprocessCodeInterpreter):
         return "## end_of_execution ##" in line
 
 
-def preprocess_python(code: str, materials: List[Material]):
+def preprocess_python(code: str, materials: list[Material]):
     """
     Add active line markers
     Wrap in a try except

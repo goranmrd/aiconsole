@@ -17,7 +17,7 @@
 from typing import cast
 from aiconsole.api.utils.asset_save import asset_patch, asset_post
 from aiconsole.core.assets.get_material_content_name import get_material_content_name
-from aiconsole.api.utils.asset_exists import asset_exists
+from aiconsole.api.utils.asset_exists import asset_exists, asset_path
 from aiconsole.api.utils.asset_get import asset_get
 from aiconsole.api.utils.asset_status_change import asset_status_change
 from aiconsole.api.utils.status_change_post_body import StatusChangePostBody
@@ -77,3 +77,8 @@ async def delete_material(material_id: str):
 @router.get("/{asset_id}/exists")
 async def material_exists(request: Request, asset_id: str):
     return await asset_exists(AssetType.MATERIAL, request, asset_id)
+
+
+@router.get("/{asset_id}/path")
+async def material_path(request: Request, asset_id: str):
+    return asset_path(AssetType.MATERIAL, request, asset_id)

@@ -163,7 +163,7 @@ export const createActionSlice: StateCreator<ChatStore, [], [], ActionSlice> = (
   },
 
   /**
-   * doExecute expects that the last message is the one it should be filling in.
+   * doExecute expects that the last message group is the one it should be filling in.
    */
   doExecute: async () => {
     const chat = get().chat;
@@ -175,6 +175,16 @@ export const createActionSlice: StateCreator<ChatStore, [], [], ActionSlice> = (
     }
 
     const lastGroup = lastGroupLocation.group;
+
+    //reset analysis
+    useChatStore.setState(() => ({
+      analysis: {
+        agent_id: undefined,
+        relevant_material_ids: undefined,
+        next_step: undefined,
+        thinking_process: undefined,
+      },
+    }));
 
     get().runApiWithProcess(
       {

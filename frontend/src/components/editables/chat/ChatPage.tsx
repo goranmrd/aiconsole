@@ -20,18 +20,24 @@ import { MessageGroup } from '@/components/editables/chat/MessageGroup';
 import { useChatStore } from '@/store/editables/chat/useChatStore';
 import { useProjectStore } from '@/store/projects/useProjectStore';
 import { Chat } from '@/types/editables/chatTypes';
+import { cn } from '@/utils/common/cn';
 import showNotification from '@/utils/common/showNotification';
+import { useChat } from '@/utils/editables/useChat';
 import { useEditableObjectContextMenu } from '@/utils/editables/useContextMenuForEditable';
+import { ReplyIcon, SendHorizonalIcon, SquareIcon } from 'lucide-react';
 import { useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import ScrollToBottom, { useScrollToBottom } from 'react-scroll-to-bottom';
 import { v4 as uuidv4 } from 'uuid';
-import { Button } from '../../common/Button';
+import { QuestionMarkIcon } from '../../common/icons/QuestionMarkIcon';
 import { EditorHeader } from '../EditorHeader';
 import { CommandInput } from './CommandInput';
-import { Tooltip } from '@/components/common/Tooltip';
-import { BlinkingCursor } from './BlinkingCursor';
-import { useChat } from '@/utils/editables/useChat';
+import { GuideMe } from './GuideMe';
+
+// Electron adds the path property to File objects
+interface FileWithPath extends File {
+  path: string;
+}
 
 export function ChatWindowScrollToBottomSave() {
   const scrollToBottom = useScrollToBottom();
@@ -52,6 +58,7 @@ export function ChatPage() {
   const searchParams = useSearchParams()[0];
   const copyId = searchParams.get('copy');
   const forceRefresh = searchParams.get('forceRefresh'); // used to force a refresh
+  const command = useChatStore((state) => state.commandHistory[state.commandIndex]);
 
   const chat = useChatStore((state) => state.chat);
   const loadingMessages = useChatStore((state) => state.loadingMessages);
@@ -59,26 +66,51 @@ export function ChatPage() {
   const isExecutionRunning = useChatStore((state) => state.isExecutionRunning());
   const stopWork = useChatStore((state) => state.stopWork);
   const submitCommand = useChatStore((state) => state.submitCommand);
+  const newCommand = useChatStore((state) => state.newCommand);
   const isProjectOpen = useProjectStore((state) => state.isProjectOpen);
   const isProjectLoading = useProjectStore((state) => state.isProjectLoading);
+  const appendFilePathToCommand = useChatStore((state) => state.appendFilePathToCommand);
   const { showContextMenu } = useEditableObjectContextMenu({ editable: chat, editableObjectType: 'chat' });
   const { setChat, renameChat } = useChat();
 
-  const thinkingProcess = useChatStore((store) => store.analysis.thinking_process);
-  const nextStep = useChatStore((store) => store.analysis.next_step);
+  useEffect(() => {
+    const stopEvent = (e: Event) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    const handleDrop = (e: DragEvent) => {
+      stopEvent(e);
+
+      if (e.dataTransfer?.files) {
+        appendFilePathToCommand((e.dataTransfer.files[0] as FileWithPath).path);
+      }
+    };
+
+    document.addEventListener('dragover', stopEvent);
+
+    document.addEventListener('drop', handleDrop);
+
+    return () => {
+      document.removeEventListener('dragover', stopEvent);
+
+      document.removeEventListener('drop', handleDrop);
+    };
+  });
 
   // Acquire the initial object
   useEffect(() => {
     if (copyId) {
-      EditablesAPI.fetchEditableObject<Chat>({ editableObjectType: 'chat', id }).then((chat) => {
-        chat.id = uuidv4();
-        chat.name = chat.name + ' (copy)';
-        setChat(chat);
+      EditablesAPI.fetchEditableObject<Chat>({ editableObjectType, id: copyId }).then((orgChat) => {
+        orgChat.id = uuidv4();
+        orgChat.name = orgChat.name + ' (copy)';
+        orgChat.title_edited = true;
+        setChat(orgChat);
       });
     } else {
       //For id === 'new' This will get a default new asset
-      EditablesAPI.fetchEditableObject<Chat>({ editableObjectType, id }).then((newChat) => {
-        setChat(newChat);
+      EditablesAPI.fetchEditableObject<Chat>({ editableObjectType, id }).then((chat) => {
+        setChat(chat);
       });
     }
 
@@ -121,86 +153,48 @@ export function ChatPage() {
     }
   };
 
-  let greatButton;
+  const isProcessesAreNotRunning = !isExecutionRunning && !isAnalysisRunning;
+  const hasAnyCommandInput = command.trim() !== '';
 
-  if (!isExecutionRunning && !isAnalysisRunning && !isLastMessageFromUser) {
-    greatButton = (
-      <Button
-        variant="secondary"
-        onClick={() =>
-          submitCommand(
-            `I'm stuck at using AIConsole, can you suggest what can I do from this point in the conversation?`,
-          )
-        }
-      >
-        Guide me
-      </Button>
-    );
-  } else if (!isExecutionRunning && !isAnalysisRunning && isLastMessageFromUser) {
-    greatButton = (
-      <Button variant="secondary" onClick={() => submitCommand(``)}>
-        Answer
-      </Button>
-    );
-  } else if (isExecutionRunning) {
-    greatButton = (
-      <div>
-        <Button
-          variant="secondary"
-          classNames="animate-pulse relative group"
-          onClick={() => {
-            stopWork();
-          }}
-        >
-          <span className="inset-0 flex items-center justify-center opacity-100 group-hover:opacity-0 transition-opacity">
-            Working ...
-          </span>
-          <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-            Stop
-          </span>
-        </Button>
-      </div>
-    );
-  } else {
-    greatButton = (
-      <Tooltip
-        w={400}
-        opened={true}
-        offset={10}
-        withArrow
-        zIndex={5}
-        label={
-          <>
-            {` ${thinkingProcess || ''}`}{' '}
-            {nextStep && (
-              <>
-                <br /> Next step: <span className="text-secondary/50 leading-[24px]">{nextStep}</span>
-              </>
-            )}{' '}
-            <BlinkingCursor />
-          </>
-        }
-        multiline={true}
-      >
-        <div>
-          <Button
-            variant="secondary"
-            classNames="animate-pulse relative group"
-            onClick={() => {
-              stopWork();
-            }}
-          >
-            <span className="inset-0 flex items-center justify-center opacity-100 group-hover:opacity-0 transition-opacity">
-              Analysing ...
-            </span>
-            <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-              Stop
-            </span>
-          </Button>
-        </div>
-      </Tooltip>
-    );
-  }
+  const getActionButton = () => {
+    if (hasAnyCommandInput) {
+      return {
+        label: 'Send',
+        icon: SendHorizonalIcon,
+        action: async () => {
+          await submitCommand(command);
+          await newCommand();
+        },
+      };
+    } else {
+      if (isProcessesAreNotRunning && isLastMessageFromUser) {
+        return {
+          label: 'Get reply',
+          icon: ReplyIcon,
+          action: () => submitCommand(``),
+        };
+      }
+
+      if (isProcessesAreNotRunning && !isLastMessageFromUser) {
+        return {
+          label: 'Ask for help',
+          icon: QuestionMarkIcon,
+          action: () =>
+            submitCommand(
+              `I need help with using AIConsole, can you suggest what can I do from this point in the conversation?`,
+            ),
+        };
+      }
+
+      return {
+        label: 'Stop ' + (isAnalysisRunning ? ' analysis' : ' generation'),
+        icon: SquareIcon,
+        action: stopWork,
+      };
+    }
+  };
+
+  const { label: actionButtonLabel, icon: ActionButtonIcon, action: actionButtonAction } = getActionButton();
 
   return (
     <div className="flex flex-col w-full h-full max-h-full overflow-auto">
@@ -215,18 +209,34 @@ export function ChatPage() {
               mode={'bottom'}
             >
               <ChatWindowScrollToBottomSave />
-              {chat.message_groups.length === 0 && <EmptyChat />}
+              {chat.message_groups.length === 0 ? (
+                <EmptyChat />
+              ) : (
+                <div>
+                  {chat.message_groups.map((group) => (
+                    <MessageGroup group={group} key={group.id} />
+                  ))}
+                </div>
+              )}
 
-              {chat.message_groups.map((group) => (
-                <MessageGroup group={group} key={group.id} />
-              ))}
-
-              <div className="flex items-center justify-center m-5">{greatButton}</div>
+              <div
+                className={cn('absolute  mb-[30px] px-[30px] flex flex-col gap-[10px] items-end bottom-0 right-0 ', {
+                  'w-full': isAnalysisRunning,
+                })}
+              >
+                {isAnalysisRunning ? <GuideMe /> : null}
+              </div>
             </ScrollToBottom>
           ) : (
             <div className="h-full overflow-y-auto flex flex-col"></div>
           )}
-          <CommandInput className="flex-none" />
+
+          <CommandInput
+            className="flex-none"
+            actionIcon={ActionButtonIcon}
+            actionLabel={actionButtonLabel}
+            onSubmit={actionButtonAction}
+          />
         </div>
       </div>
     </div>

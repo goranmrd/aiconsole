@@ -16,6 +16,7 @@
 
 import asyncio
 import logging
+from aiconsole.api.websockets.outgoing_messages import RequestProcessingFinishedWSMessage
 
 from fastapi import APIRouter, HTTPException, Request
 
@@ -39,10 +40,16 @@ async def analyse(request: Request, data: AnalysisRequestData, chat_id):
     if chat_id != data.chat.id:
         raise ValidationError("Chat ID does not match")
 
+    aborted = False
     try:
         return await director_analyse(data.chat, data.request_id)
     except asyncio.CancelledError:
         _log.info("Analysis cancelled")
+        aborted = True
     except Exception as e:
         _log.exception("Analysis failed", exc_info=e)
         raise HTTPException(status_code=400, detail=str(e))
+    finally:
+        await RequestProcessingFinishedWSMessage(request_id=data.request_id, aborted=aborted).send_to_chat(
+            data.chat.id
+        )

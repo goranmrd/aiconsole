@@ -21,6 +21,8 @@ declare global {
     electron: {
       requestBackendPort: () => Promise<number>;
       openDirectoryPicker: () => Promise<string | undefiend>;
+      openFinder: (path: string) => Promise<void>;
+      getFileManagerName: () => string;
     };
   }
 }

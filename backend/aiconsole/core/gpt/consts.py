@@ -15,7 +15,7 @@
 # limitations under the License.
 
 from enum import Enum
-from typing import Dict, Literal
+from typing import Literal
 from pydantic import BaseModel
 
 
@@ -23,7 +23,7 @@ class GPTModel(str, Enum):
     GPT_4_0613 = "gpt-4-0613"
     GPT_35_TURBO_0613 = "gpt-3.5-turbo-0613"
     GPT_35_TURBO_16k_0613 = "gpt-3.5-turbo-16k-0613"
-    GPT_4_11106_PREVIEW =  "gpt-4-1106-preview"
+    GPT_4_11106_PREVIEW = "gpt-4-1106-preview"
 
 
 class GPTMode(str, Enum):
@@ -45,7 +45,7 @@ class GPTModelData(BaseModel):
     max_tokens: int
 
 
-MODEL_DATA: Dict[str, GPTModelData] = {
+MODEL_DATA: dict[str, GPTModelData] = {
     GPTModel.GPT_4_0613: GPTModelData(
         max_tokens=8192,
         encoding=GPTEncoding.GPT_4,

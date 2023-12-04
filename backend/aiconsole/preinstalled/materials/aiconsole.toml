@@ -163,7 +163,7 @@ Files are monitored and automatically loaded, then used as context. You can keep
 You can see examples of materials i ./materials directory
 
 * You can go back to previous commands using up arrow
-* All chats histories are saved in ./.aic/history
+* All chats histories are saved in ./chats
 * AIConsole is open source, link to repo: https://github.com/10clouds/aiconsole
 * 10Clouds (10clouds.com) is developing custom integrations for it, if you need one feel free to contact us.
 * Each directory you run it in is your new project directory

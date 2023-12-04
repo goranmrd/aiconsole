@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-from typing import Dict
 
 from aiconsole.api.websockets.outgoing_messages import ErrorWSMessage
 from aiconsole.core.assets.asset import Asset, AssetLocation, AssetType
@@ -9,7 +8,7 @@ from aiconsole.core.project.paths import get_core_assets_directory, get_project_
 from aiconsole.utils.list_files_in_file_system import list_files_in_file_system
 
 
-async def load_all_assets(asset_type: AssetType) -> Dict[str, list[Asset]]:
+async def load_all_assets(asset_type: AssetType) -> dict[str, list[Asset]]:
     _assets = {}
 
     locations = [

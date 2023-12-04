@@ -77,3 +77,8 @@ class AssetsUpdatedWSMessage(BaseWSMessage):
 
 class SettingsWSMessage(BaseWSMessage):
     initial: bool
+
+
+class RequestProcessingFinishedWSMessage(BaseWSMessage):
+    request_id: str
+    aborted: bool

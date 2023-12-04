@@ -17,7 +17,7 @@
 import os
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from aiconsole.api.websockets.connection_manager import AICConnection
 from aiconsole.api.websockets.outgoing_messages import (
@@ -33,8 +33,8 @@ if TYPE_CHECKING:
     from aiconsole.core.assets import assets
 
 
-_materials: Optional["assets.Assets"] = None
-_agents: Optional["assets.Assets"] = None
+_materials: "assets.Assets | None" = None
+_agents: "assets.Assets | None" = None
 _project_initialized = False
 
 

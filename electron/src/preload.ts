@@ -17,6 +17,7 @@
 import { IpcMainEvent, IpcRendererEvent } from "electron";
 
 const { contextBridge, ipcRenderer } = require("electron");
+const { shell } = require("electron");
 
 contextBridge.exposeInMainWorld("electron", {
   requestBackendPort: async () => {
@@ -42,4 +43,18 @@ contextBridge.exposeInMainWorld("electron", {
     });
   },
   openDirectoryPicker: async () => ipcRenderer.invoke("open-dir-picker"),
+  openFinder: async (path: string) => {
+    ipcRenderer.invoke("open-finder", path);
+  },
+  getFileManagerName: () => {
+    if (process.platform === "darwin") {
+      return "Finder";
+    }
+
+    if (process.platform === "win32") {
+      return "Explorer";
+    }
+
+    return "File Manager";
+  },
 });

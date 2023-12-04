@@ -30,7 +30,6 @@ from aiconsole.core.project import project
 from aiconsole.utils.cancel_on_disconnect import cancelable_endpoint
 from fastapi import APIRouter, Request
 
-from typing import List
 from pydantic import BaseModel
 
 
@@ -39,7 +38,7 @@ class RunCodeData(BaseModel):
     tool_call_id: str
     language: str
     code: str
-    materials_ids: List[str]
+    materials_ids: list[str]
 
 
 router = APIRouter()

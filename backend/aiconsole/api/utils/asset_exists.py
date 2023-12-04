@@ -1,5 +1,6 @@
 from aiconsole.core.assets.asset import AssetLocation, AssetType
 from aiconsole.core.project import project
+from aiconsole.core.project.paths import get_project_assets_directory
 from fastapi import HTTPException, Request
 from fastapi.responses import JSONResponse
 
@@ -24,3 +25,19 @@ async def asset_exists(asset_type: AssetType, request: Request, asset_id: str):
         asset = assets.get_asset(asset_id, location)
 
         return JSONResponse({"exists": asset is not None})
+
+
+def asset_path(asset_type: AssetType, request: Request, asset_id: str):
+    if asset_type == AssetType.AGENT:
+        asset = project.get_project_agents().get_asset(asset_id)
+    elif asset_type == AssetType.MATERIAL:
+        asset = project.get_project_materials().get_asset(asset_id)
+    else:
+        raise ValueError(f"Invalid asset type: {asset_type}")
+
+    if asset is None:
+        raise HTTPException(status_code=404, detail=f"Asset {asset_id} of type {asset_type} not found")
+
+    path = get_project_assets_directory(asset_type) / f"{asset_id}.toml"
+
+    return JSONResponse({"path": str(path)})

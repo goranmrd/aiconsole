@@ -142,6 +142,7 @@ export const useWebSocketStore = create<WebSockeStore>((set, get) => ({
         case 'UpdateMessageWSMessage':
         case 'UpdateToolCallWSMessage':
         case 'UpdateToolCallOutputWSMessage':
+        case 'RequestProcessingFinishedWSMessage':
           await handleChatMessage(data);
           break;
         default:

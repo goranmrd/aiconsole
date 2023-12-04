@@ -70,9 +70,6 @@ async def execution_mode_normal(
                 id=message_id,
                 text_delta=chunk["choices"][0]["delta"].get("content", ""),
             ).send_to_chat(context.chat.id)
-
-    except asyncio.CancelledError:
-        _log.warning("Cancelled execution_mode_normal")
     finally:
         await UpdateMessageWSMessage(
             request_id=context.request_id,
