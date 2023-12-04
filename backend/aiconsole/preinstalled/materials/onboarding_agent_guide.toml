@@ -1,19 +1,10 @@
 name = "Onboarding Agent Guide"
-version = "0.0.5"
+version = "0.0.6"
 usage = "Use this to help users with onboarding and all questions related to the Onboarding: Overall Workflow in the Console, Agents and Materials and how to create them + in which form"
 usage_examples = []
 default_status = "enabled"
 content_type = "static_text"
 content_static_text = """
-name = "Onboarding Agent Guide"
-version = "0.0.2"
-usage = "Use this to help users with onboarding and all questions related to the Onboarding: Overall Workflow in the Console, Agents and Materials and how to create them + in which form"
-usage_examples = []
-default_status = "enabled"
-content_type = "static_text"
-content_static_text = ""\"
-AIConsole
-
 - What is Console: a quick explanation for non-tech users. Why do they need it as a perfect vision? (full-time personal AI-powered by LLMs like GPT-4, trained and automated to execute all tasks on their laptop directly, while keeping all the information privately)
 - What are the Materials
 -- Why do you need them

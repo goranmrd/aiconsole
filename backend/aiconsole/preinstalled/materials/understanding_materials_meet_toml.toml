@@ -1,18 +1,10 @@
 name = "understanding materials : meet toml"
-version = "0.0.4"
+version = "0.0.6"
 usage = "Use this to get to help users when they ask about Materials as a support info to guide through the right material creation or about Format of the materials or help with material creation. It is used in pair with the Onboarding agent"
 usage_examples = []
 default_status = "enabled"
 content_type = "static_text"
 content_static_text = """
-name = "Understanding Materials Creation: Meet TOML"
-version = "0.0.1"
-usage = "Use this to get to help users when they ask about Materials as a support info to guide through the right material creation or about Format of the materials or help with material creation. It is used in pair with the Onboarding agent"
-usage_examples = []
-default_status = "enabled"
-content_type = "static_text"
-content_static_text = ""\"
-
 ## The Preamble: Of TOML and its Purpose In the realm of machines and marvellous AI, TOML stands as a beacon of order. That's Tom's Obvious, Minimal Language for those unacquainted with its simple elegance. Picture a scribe, meticulously recording the attributes and characteristics needed to summon forth an AI agent in your personal Console kingdom—this is TOML!
 
 Now, lean in closer, for I tell you this: you need not be a scholar of esoteric technomancy to master it. If the very thought of scripting such a file sends shivers down your spine, fear not! The wise AI Console can craft these files on your command, ready for you to simply copy, paste, and engage!
@@ -106,37 +98,36 @@ In awe, we stand at the culmination of our journey through the fabled land of TO
 
 And so, with the road behind us bathed in the golden glow of newfound understanding, I bid thee, intrepid traveler of the technological realm, to sally forth, create and command, with the wisdom of TOML firmly grasped in your hands!
 
- Note: Should the arcane symbols and runes of TOML elude you, always remember that your AI Console holds the power to conjure the proper configurations on its own. A simple request is all it needs to draft the TOML you require. From there, sheer simplicity: copy and paste, and your AI familiar is summoned, ready to serve! 📜
+Note: Should the arcane symbols and runes of TOML elude you, always remember that your AI Console holds the power to conjure the proper configurations on its own. A simple request is all it needs to draft the TOML you require. From there, sheer simplicity: copy and paste, and your AI familiar is summoned, ready to serve! 
 
-
-## Mini-Quest: Understanding the TOML Configuration (note: use emojis for such scenario) 
+## Mini-Quest: Understanding the TOML Configuration (feel free tom use emojis) 
 Field: name The name field is like giving a title to a book. It's the identifier for this particular agent. In your case, "Understanding Materials Creation: Meet TOML" is the name given to the agent that helps users with Materials creation.
 
 Your Task: If you were to name your own agent, what would it be? Create a fun and descriptive name for an agent that you would like to use. For instance, "Calendar Conqueror" if you'd want help managing your schedule.
 
 Field: version Think of version like episodes of your favorite TV series. It shows which iteration of the agent you are on, implying that it's been updated or changed over time. Your example "0.0.1" signifies that it's the first version, kind of like the pilot episode.
 
-Your Task: Come up with a new version number for your agent. If it's your first time, stick with "0.0.1". If you're updating, you might go to "0.0.2" or even "1.0.0" for big changes!
+-> Your Task: Come up with a new version number for your agent. If it's your first time, stick with "0.0.1". If you're updating, you might go to "0.0.2" or even "1.0.0" for big changes!
 
 Field: usage The usage field is a helping hand, giving us hints on when this agent should be used. Your example tells us that the agent is intended to guide users through the right material creation when they ask about Materials.
 
-Your Task: Write down a brief description for your agent that explains when it should be used. For example, "Activate this agent when you need to tame the chaos of your weekly meetings."
+-> Your Task: Write down a brief description for your agent that explains when it should be used. For example, "Activate this agent when you need to tame the chaos of your weekly meetings."
 
 Field: usage_examples Here we imagine what we might say to the agent in usage_examples. It's an array that would normally include examples of how to use the agent. It's left empty in your example ([]), but you could fill it with potential commands or queries.
 
-Your Task: List one or two examples of how you'd like to interact with your agent. For instance, "Tell me my schedule for today" or "Reschedule my appointment with the dentist."
+-> Your Task: List one or two examples of how you'd like to interact with your agent. For instance, "Tell me my schedule for today" or "Reschedule my appointment with the dentist."
 
- Field: default_status default_status is where you set the default switch position for your agent, kind of like leaving a light on or off when you're not in the room. "enabled" means the agent is ready to go from the start.
+Field: default_status default_status is where you set the default switch position for your agent, kind of like leaving a light on or off when you're not in the room. "enabled" means the agent is ready to go from the start.
 
-Your Task: Decide if your agent is going to be "enabled" by default or if you'd rather keep it "disabled" until you need it.
+-> Your Task: Decide if your agent is going to be "enabled" by default or if you'd rather keep it "disabled" until you need it.
 
 Field: content_type This decides the kind of material your agent uses. content_type can be "static_text", "dynamic_text", or "api". Your example is "static_text", which means the content doesn't change unless you update it manually – it's steadfast.
 
-Your Task: Choose a content_type for your agent. Will it be "static_text" that doesn't change, "dynamic_text" that updates with info, or "api" that interacts with web services?
+-> Your Task: Choose a content_type for your agent. Will it be "static_text" that doesn't change, "dynamic_text" that updates with info, or "api" that interacts with web services?
 
- Field: content_static_text Finally, content_static_text is the actual script for your agent; it's what your agent says or does, based on content_type. Since your example is static, you'd put text here that doesn't change.
+Field: content_static_text Finally, content_static_text is the actual script for your agent; it's what your agent says or does, based on content_type. Since your example is static, you'd put text here that doesn't change.
 
-Your Task: Craft a message or a piece of advice your agent would give. Maybe it's a warm greeting or a standard response to a common question.
+-> Your Task: Craft a message or a piece of advice your agent would give. Maybe it's a warm greeting or a standard response to a common question.
 
 
 ""\"
