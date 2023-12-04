@@ -27,12 +27,13 @@ import { useEditableObjectContextMenu } from '@/utils/editables/useContextMenuFo
 import { ReplyIcon, SendHorizonalIcon, SquareIcon } from 'lucide-react';
 import { useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import ScrollToBottom, { useScrollToBottom } from 'react-scroll-to-bottom';
+import ScrollToBottom, { useAnimating, useScrollToBottom, useSticky } from 'react-scroll-to-bottom';
 import { v4 as uuidv4 } from 'uuid';
 import { QuestionMarkIcon } from '../../common/icons/QuestionMarkIcon';
 import { EditorHeader } from '../EditorHeader';
 import { CommandInput } from './CommandInput';
 import { GuideMe } from './GuideMe';
+import { ArrowDown } from 'lucide-react';
 
 // Electron adds the path property to File objects
 interface FileWithPath extends File {
@@ -49,6 +50,25 @@ export function ChatWindowScrollToBottomSave() {
 
   return <></>;
 }
+
+const ScrollToBottomButton = () => {
+  const [isScrollingToBottom] = useAnimating();
+  const [isSticky] = useSticky();
+
+  const scrollToBottom = useScrollToBottom();
+
+  return (
+    <button
+      className={cn(
+        'absolute w-9 h-9 rounded-full bg-gray-600/70	-translate-x-1/2 left-1/2 top-[90%] flex justify-center items-center hover:bg-gray-600/90',
+        (isScrollingToBottom || isSticky) && 'hidden',
+      )}
+      onClick={() => scrollToBottom()}
+    >
+      <ArrowDown />
+    </button>
+  );
+};
 
 export function ChatPage() {
   // Monitors params and initialises useChatStore.chat and useAssetStore.selectedAsset zustand stores
@@ -207,12 +227,14 @@ export function ChatPage() {
               scrollViewClassName="main-chat-window"
               initialScrollBehavior="auto"
               mode={'bottom'}
+              followButtonClassName="hidden"
             >
               <ChatWindowScrollToBottomSave />
               {chat.message_groups.length === 0 ? (
                 <EmptyChat />
               ) : (
                 <div>
+                  <ScrollToBottomButton />
                   {chat.message_groups.map((group) => (
                     <MessageGroup group={group} key={group.id} />
                   ))}
