@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap" rel="stylesheet" />
+    <title>Loader</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
+            font-family: 'Inter', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        .wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+            justify-content: center;
+            background: #1A1A1A;
+            color: #ffffff;
+            padding: 60px;
+            padding-top: 80px;
+            position: relative;
+        }
+
+        .glow {
+            position: absolute;
+            top: 0;
+        }
+
+        .content {
+            position: relative;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 13px;
+            min-height: 13px;
+            padding: 3px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            border: 1px solid #1F1F1F;
+            background: #111;
+            margin-top: 30px;
+        }
+
+        .progress-bar {
+            width: 0;
+            height: 100%;
+            border-radius: 16px;
+            box-shadow: 0px 0px 5px 0px #A67CFF;
+            background: #A67CFF;
+            transition: .3s all linear;
+        }
+
+        .progress-text {
+            font-size: 15px;
+            text-align: center;
+        }
+
+        .version {
+            color: #6F687E;
+            font-size: 14px;
+            text-align: center;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <img src="../assets/glow.png" alt="" class="glow">
+        <div class="content">
+            <img src="../assets/loader-logo.png" alt="" class="logo">
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <p id="progress-text">Loading...</p>
+            <p class="version"></p>
+        </div>
+    </div>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+
+        ipcRenderer.on('progress-update', (event, progress) => {
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+        });
+
+        ipcRenderer.on('get-version', (event, version) => {
+            document.querySelector('.version').textContent = version
+        });
+    </script>
+</body>
+
+</html>

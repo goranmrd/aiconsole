@@ -128,6 +128,9 @@ module.exports = {
             entry: "./src/preload.ts",
             config: "vite.preload.config.ts",
           },
+          {
+            entry: "./src/loader.html", 
+          },
         ],
         renderer: [
           {
