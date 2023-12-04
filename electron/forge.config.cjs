@@ -44,6 +44,7 @@ module.exports = {
         name: "AIConsole",
         // An URL to an ICO file to use as the application icon (displayed in Control Panel > Programs and Features).
         iconUrl: "https://url/to/icon.ico",
+        loadingGif: "./assets/blank.gif",
         // The ICO file to use as the icon for the generated Setup.exe
         setupIcon: "./assets/icon.ico",
       },

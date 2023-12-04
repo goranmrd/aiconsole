@@ -198,6 +198,7 @@ function createLoaderWindow() {
     width: 600,
     height: 350,
     frame: false,
+    resizable: false,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
