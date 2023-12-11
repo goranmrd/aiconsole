@@ -21,7 +21,7 @@ from aiconsole.api.endpoints.chats import chat, index, analyse, execute
 
 router = APIRouter()
 
-router.include_router(index.router, tags=["image"])
-router.include_router(chat.router, tags=["analyse"])
-router.include_router(analyse.router, tags=["analyse"])
-router.include_router(execute.router, tags=["analyse"])
+router.include_router(index.router)
+router.include_router(chat.router)
+router.include_router(analyse.router)
+router.include_router(execute.router)
